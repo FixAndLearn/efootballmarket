@@ -217,7 +217,7 @@ export async function POST(req: NextRequest) {
       parseMode: "HTML",
       inlineButtons: [
         [{ text: "🛡️ Open Admin Hub", url: `${APP_URL}/admin` }],
-        [{ text: "⚽ Browse Marketplace", url: `${APP_URL}/marketplace` }],
+        [{ text: "⚽ Browse Squads", url: `${APP_URL}/browse` }],
       ],
     });
 

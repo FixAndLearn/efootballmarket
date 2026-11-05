@@ -7,6 +7,7 @@ import { Listing } from "@/types/database";
 import { Badge } from "@/components/ui/Badge";
 import { VerifiedSellerBadge } from "@/components/marketplace/VerifiedSellerBadge";
 import { SquadInspectorModal } from "@/components/marketplace/SquadInspectorModal";
+import { ChatSellerWhatsAppButton } from "@/components/marketplace/ChatSellerWhatsAppButton";
 import { formatCompactNumber, formatCurrency, getPlatformLabel, getPlaystyleLabel } from "@/lib/utils";
 import { isListingOnFlashSale } from "@/lib/utils/flashSale";
 import {
@@ -147,9 +148,9 @@ export function ListingCard3D({ listing, featured = false }: ListingCard3DProps)
                     <span>{epics + bigTime} Epics</span>
                   </span>
                 )}
-                {epics + bigTime > 0 && <span className="text-slate-700">•</span>}
+                {epics + bigTime > 0 && <span className="text-slate-700">|</span>}
                 <span className="truncate">{getPlaystyleLabel(listing.primary_playstyle)}</span>
-                <span className="text-slate-700">•</span>
+                <span className="text-slate-700">|</span>
                 <span className="text-emerald-400 font-semibold">Clean ID</span>
               </div>
             </div>
@@ -173,6 +174,17 @@ export function ListingCard3D({ listing, featured = false }: ListingCard3DProps)
                       : "Verified Trader"}
                   </span>
                 </div>
+                <ChatSellerWhatsAppButton
+                  sellerPhone={listing.seller?.phone_number}
+                  sellerUsername={listing.seller?.username}
+                  listingId={listing.id}
+                  listingTitle={listing.title}
+                  listingPrice={listing.price}
+                  listingCurrency={listing.currency}
+                  overallTeamStrength={listing.overall_team_strength}
+                  variant="icon"
+                  className="w-7 h-7 shrink-0"
+                />
               </div>
 
               <div className="text-right shrink-0">

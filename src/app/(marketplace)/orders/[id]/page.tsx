@@ -22,6 +22,7 @@ import { OrderChatBox } from "@/components/chat/OrderChatBox";
 import { OrderEscrowController } from "@/components/escrow/OrderEscrowController";
 import { OrderCopyButton } from "@/components/orders/OrderCopyButton";
 import { formatCurrency, formatCompactNumber, getPlatformLabel, getPlaystyleLabel } from "@/lib/utils";
+import { formatWhatsAppPhone } from "@/lib/utils/phone";
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { MessageService } from "@/services/messageService";
@@ -420,6 +421,35 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
                 </div>
               </div>
             </div>
+
+            {/* Direct WhatsApp Chat Action for Fast Handover */}
+            {isBuyer && (order.seller?.phone_number || "254794400365") && (
+              <a
+                href={`https://wa.me/${formatWhatsAppPhone(order.seller?.phone_number || "254794400365")}?text=${encodeURIComponent(
+                  `Hello ${order.seller?.username || "Seller"}, I am the buyer for Order #${order.order_number} (${order.listing?.title || "eFootball Squad"}) on eFootballMarket.\n\nEscrow Amount: KES ${Number(order.total_amount).toLocaleString()} is secured in Till 1572931. I'm ready for the Konami ID credentials handover.`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black text-xs transition-all shadow-md active:scale-95"
+              >
+                <MessageCircle className="w-4 h-4 fill-slate-950" />
+                <span>Chat Seller on WhatsApp ({order.seller?.username ? `@${order.seller.username}` : "Seller"})</span>
+              </a>
+            )}
+
+            {!isBuyer && (order.buyer?.phone_number || "254794400365") && (
+              <a
+                href={`https://wa.me/${formatWhatsAppPhone(order.buyer?.phone_number || "254794400365")}?text=${encodeURIComponent(
+                  `Hello ${order.buyer?.username || "Buyer"}, I am the seller for Order #${order.order_number} (${order.listing?.title || "eFootball Squad"}) on eFootballMarket. I am ready to assist you with the Konami ID transfer.`
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full inline-flex items-center justify-center gap-2 py-2.5 px-3 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black text-xs transition-all shadow-md active:scale-95"
+              >
+                <MessageCircle className="w-4 h-4 fill-slate-950" />
+                <span>Chat Buyer on WhatsApp ({order.buyer?.username ? `@${order.buyer.username}` : "Buyer"})</span>
+              </a>
+            )}
 
             {/* Security Rules Box */}
             <div className="p-3.5 rounded-xl bg-pitch-card border border-pitch-border text-xs text-slate-300 space-y-2">

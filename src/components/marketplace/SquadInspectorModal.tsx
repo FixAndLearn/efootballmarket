@@ -7,6 +7,7 @@ import { Listing } from "@/types/database";
 import { formatCompactNumber, formatCurrency, getPlatformLabel, getPlaystyleLabel } from "@/lib/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { isListingOnFlashSale } from "@/lib/utils/flashSale";
+import { ChatSellerWhatsAppButton } from "@/components/marketplace/ChatSellerWhatsAppButton";
 import {
   X,
   ShieldCheck,
@@ -369,15 +370,28 @@ export function SquadInspectorModal({ listing, isOpen, onClose }: SquadInspector
                 {listing.status === "sold" ? "Account Sold" : "Under Escrow Lock"}
               </button>
             ) : (
-              <Link href={`/pay/${listing.id}`} className="flex-1 sm:flex-none">
-                <button
-                  type="button"
-                  className="w-full px-4 sm:px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#22C55E] to-emerald-400 hover:from-emerald-500 hover:to-emerald-400 text-slate-950 font-black text-xs shadow-lg shadow-emerald-950/40 flex items-center justify-center gap-1.5 transition-all active:scale-95 min-h-[44px]"
-                >
-                  <ShieldCheck className="w-4 h-4 stroke-[2.5]" />
-                  <span>Buy Safely with M-Pesa Escrow</span>
-                </button>
-              </Link>
+              <div className="flex items-center gap-2 flex-1 sm:flex-none">
+                <ChatSellerWhatsAppButton
+                  sellerPhone={listing.seller?.phone_number}
+                  sellerUsername={listing.seller?.username}
+                  listingId={listing.id}
+                  listingTitle={listing.title}
+                  listingPrice={listing.price}
+                  listingCurrency={listing.currency}
+                  overallTeamStrength={listing.overall_team_strength}
+                  variant="compact"
+                  label="Chat Seller"
+                />
+                <Link href={`/pay/${listing.id}`} className="flex-1 sm:flex-none">
+                  <button
+                    type="button"
+                    className="w-full px-4 sm:px-5 py-2.5 rounded-xl bg-gradient-to-r from-[#22C55E] to-emerald-400 hover:from-emerald-500 hover:to-emerald-400 text-slate-950 font-black text-xs shadow-lg shadow-emerald-950/40 flex items-center justify-center gap-1.5 transition-all active:scale-95 min-h-[44px]"
+                  >
+                    <ShieldCheck className="w-4 h-4 stroke-[2.5]" />
+                    <span>Buy Safely with M-Pesa Escrow</span>
+                  </button>
+                </Link>
+              </div>
             )}
           </div>
         </div>

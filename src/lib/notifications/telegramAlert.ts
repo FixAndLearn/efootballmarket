@@ -319,7 +319,7 @@ export async function broadcastListingToTelegramChannel(
     [{ text: `🛒 Buy Safely (${priceKes})`, url: listingUrl }],
     [
       { text: "💬 Deal Inquiry / WhatsApp", url: waInquiryUrl },
-      { text: "⚽ Browse All Squads", url: `${APP_URL}/marketplace` },
+      { text: "⚽ Browse All Squads", url: `${APP_URL}/browse` },
     ],
   ];
 

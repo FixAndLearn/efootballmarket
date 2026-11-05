@@ -9,6 +9,7 @@ import { BuyNowButton } from "@/components/marketplace/BuyNowButton";
 import { ListingGallery } from "@/components/marketplace/ListingGallery";
 import { VerifiedSellerBadge } from "@/components/marketplace/VerifiedSellerBadge";
 import { MakeOfferButton } from "@/components/marketplace/MakeOfferButton";
+import { ChatSellerWhatsAppButton } from "@/components/marketplace/ChatSellerWhatsAppButton";
 import { SellerListingOffersPanel } from "@/components/marketplace/SellerListingOffersPanel";
 import { ListingCard3D } from "@/components/marketplace/ListingCard3D";
 import { AdBanner } from "@/components/common/AdBanner";
@@ -522,6 +523,15 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                   listingId={listing.id}
                   priceFormatted={formatCurrency(listing.price, listing.currency)}
                 />
+                <ChatSellerWhatsAppButton
+                  sellerPhone={listing.seller?.phone_number}
+                  sellerUsername={listing.seller?.username}
+                  listingId={listing.id}
+                  listingTitle={listing.title}
+                  listingPrice={listing.price}
+                  listingCurrency={listing.currency}
+                  overallTeamStrength={listing.overall_team_strength}
+                />
               </div>
             ) : (
               <div className="space-y-2.5">
@@ -530,16 +540,25 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                   priceFormatted={formatCurrency(listing.price, listing.currency)}
                 />
                 <MakeOfferButton listing={listing} />
+                <ChatSellerWhatsAppButton
+                  sellerPhone={listing.seller?.phone_number}
+                  sellerUsername={listing.seller?.username}
+                  listingId={listing.id}
+                  listingTitle={listing.title}
+                  listingPrice={listing.price}
+                  listingCurrency={listing.currency}
+                  overallTeamStrength={listing.overall_team_strength}
+                />
                 <a
                   href={`https://wa.me/254794400365?text=${encodeURIComponent(
                     `Hello Brian Okibo (eFootballMarket Admin), I want to trigger WhatsApp escrow for this squad:\n\n🎮 Squad: ${listing.title}\n💰 Price: KES ${Number(listing.price).toLocaleString()}\n🔗 Link: https://www.efootballmarket.co.ke/listings/${listing.id}\n\nPlease verify and fast-track the Till 1572931 escrow process.`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-xs shadow-lg shadow-emerald-950/40 border border-emerald-400/30 transition-all active:scale-95"
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white font-bold text-xs shadow-md border border-pitch-border hover:border-emerald-500/50 transition-all active:scale-95"
                 >
-                  <MessageCircle className="w-4 h-4 fill-white" />
-                  <span>Instant WhatsApp Escrow Trigger</span>
+                  <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
+                  <span>Contact Platform Escrow Desk</span>
                 </a>
               </div>
             )}
@@ -587,8 +606,8 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
             </div>
 
             {/* Seller Trust Card */}
-            <div className="border-t border-pitch-border/60 pt-4">
-              <h4 className="text-xs uppercase font-bold text-slate-400 tracking-wider mb-3">
+            <div className="border-t border-pitch-border/60 pt-4 space-y-3">
+              <h4 className="text-xs uppercase font-bold text-slate-400 tracking-wider">
                 Seller Information
               </h4>
               <div className="flex items-center gap-3">
@@ -614,6 +633,20 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                   </div>
                 </div>
               </div>
+
+              {!isOwner && listing.status === "published" && (
+                <ChatSellerWhatsAppButton
+                  sellerPhone={listing.seller?.phone_number}
+                  sellerUsername={listing.seller?.username}
+                  listingId={listing.id}
+                  listingTitle={listing.title}
+                  listingPrice={listing.price}
+                  listingCurrency={listing.currency}
+                  overallTeamStrength={listing.overall_team_strength}
+                  variant="secondary"
+                  label={`Chat with ${listing.seller?.username ? `@${listing.seller.username}` : "Seller"} on WhatsApp`}
+                />
+              )}
             </div>
           </div>
         </div>
@@ -687,13 +720,37 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
               {listing.status === "sold" ? "Sold" : "In Escrow"}
             </span>
           ) : isListingOnFlashSale(listing) ? (
-            <BuyNowButton
-              listingId={listing.id}
-              priceFormatted={formatCurrency(listing.price, listing.currency)}
-              compact={true}
-            />
+            <div className="flex items-center gap-1.5">
+              <ChatSellerWhatsAppButton
+                sellerPhone={listing.seller?.phone_number}
+                sellerUsername={listing.seller?.username}
+                listingId={listing.id}
+                listingTitle={listing.title}
+                listingPrice={listing.price}
+                listingCurrency={listing.currency}
+                overallTeamStrength={listing.overall_team_strength}
+                variant="compact"
+                label="Chat"
+              />
+              <BuyNowButton
+                listingId={listing.id}
+                priceFormatted={formatCurrency(listing.price, listing.currency)}
+                compact={true}
+              />
+            </div>
           ) : (
             <div className="flex items-center gap-1.5">
+              <ChatSellerWhatsAppButton
+                sellerPhone={listing.seller?.phone_number}
+                sellerUsername={listing.seller?.username}
+                listingId={listing.id}
+                listingTitle={listing.title}
+                listingPrice={listing.price}
+                listingCurrency={listing.currency}
+                overallTeamStrength={listing.overall_team_strength}
+                variant="compact"
+                label="Chat"
+              />
               <MakeOfferButton listing={listing} size="sm" />
               <BuyNowButton
                 listingId={listing.id}

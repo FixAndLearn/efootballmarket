@@ -28,6 +28,11 @@ const nextConfig = {
   ],
   redirects: async () => [
     {
+      source: '/marketplace',
+      destination: '/browse',
+      permanent: true,
+    },
+    {
       source: '/seller/orders/:id',
       destination: '/orders/:id',
       permanent: true,

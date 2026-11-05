@@ -401,7 +401,7 @@ export async function POST(req: NextRequest) {
         inlineButtons: [
           [{ text: "📊 Open Seller Dashboard", url: `${APP_URL}/dashboard/seller` }],
           [{ text: "👥 Join Official Group (@efootballmarket254)", url: "https://t.me/efootballmarket254" }],
-          [{ text: "⚽ Browse Marketplace", url: `${APP_URL}/marketplace` }],
+          [{ text: "⚽ Browse Squads", url: `${APP_URL}/browse` }],
         ],
       });
 
@@ -429,7 +429,7 @@ export async function POST(req: NextRequest) {
         chatId,
         inlineButtons: [
           [{ text: "👥 Join Official Group (@efootballmarket254)", url: "https://t.me/efootballmarket254" }],
-          [{ text: "⚽ Browse Marketplace", url: `${APP_URL}/marketplace` }],
+          [{ text: "⚽ Browse Squads", url: `${APP_URL}/browse` }],
           [{ text: "🛡️ Admin Panel", url: `${APP_URL}/admin` }],
         ],
       });
@@ -506,7 +506,7 @@ export async function POST(req: NextRequest) {
       chatId,
       inlineButtons: [
         [{ text: "🛡️ Executive Panel", url: `${APP_URL}/admin` }],
-        [{ text: "⚽ Marketplace", url: `${APP_URL}/marketplace` }],
+        [{ text: "⚽ Browse Squads", url: `${APP_URL}/browse` }],
       ],
     });
 
