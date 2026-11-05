@@ -376,11 +376,11 @@ export default function EditListingPage() {
             <h3 className="text-base font-bold text-white font-display">{title}</h3>
             <div className="flex flex-wrap items-center gap-3 text-xs text-slate-300">
               <span className="text-emerald-400 font-mono font-bold">KES {Number(price || 0).toLocaleString()}</span>
-              <span className="text-slate-600">•</span>
+              <span className="text-slate-600">|</span>
               <span>{platform.toUpperCase()}</span>
               {overallStrength && (
                 <>
-                  <span className="text-slate-600">•</span>
+                  <span className="text-slate-600">|</span>
                   <span className="text-amber-300 font-mono font-bold">⚡ {overallStrength} OVR</span>
                 </>
               )}
@@ -727,7 +727,7 @@ export default function EditListingPage() {
                     Click to browse or drag &amp; drop squad screenshots here
                   </p>
                   <p className="text-[11px] text-slate-400">
-                    PNG, JPG, or WebP up to 10MB each • Full HD quality preserved
+                    PNG, JPG, or WebP up to 10MB each | Full HD quality preserved
                   </p>
                 </>
               )}

@@ -263,7 +263,7 @@ export default function HostTournamentPage() {
                     <Swords className="w-5 h-5" />
                   </div>
                   <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300">
-                    2 Players • Winner Takes All
+                    2 Players | Winner Takes All
                   </span>
                 </div>
                 <h3 className="text-sm font-bold text-white font-display">
@@ -319,7 +319,7 @@ export default function HostTournamentPage() {
               >
                 <span className="text-xs font-bold block text-white">💰 Paid Prize Pool</span>
                 <span className="text-[11px] text-slate-400 mt-0.5 block leading-tight">
-                  Till 1572931 or Wallet • Fair platform fee
+                  Till 1572931 or Wallet | Fair platform fee
                 </span>
               </button>
 
@@ -334,7 +334,7 @@ export default function HostTournamentPage() {
               >
                 <span className="text-xs font-bold block text-white">🎮 Free Community Match</span>
                 <span className="text-[11px] text-slate-400 mt-0.5 block leading-tight">
-                  Free to enter • Community ranking
+                  Free to enter | Community ranking
                 </span>
               </button>
             </div>

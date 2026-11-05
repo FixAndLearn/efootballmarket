@@ -561,7 +561,7 @@ export default function CreateListingPage() {
                     Click to browse or drag &amp; drop squad screenshots here
                   </p>
                   <p className="text-[11px] text-slate-400">
-                    PNG, JPG, or WebP up to 10MB each • Full HD quality preserved
+                    PNG, JPG, or WebP up to 10MB each | Full HD quality preserved
                   </p>
                 </>
               )}

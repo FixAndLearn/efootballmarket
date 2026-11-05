@@ -353,7 +353,7 @@ export default function TournamentsPage() {
             </Link>
 
             <span className="text-[11px] text-slate-400 font-medium text-center">
-              Fair Fee (KES 10-20 to ~5%) • 12-Min Matches
+              Fair Fee (KES 10-20 to ~5%) | 12-Min Matches
             </span>
           </div>
         </div>
@@ -412,7 +412,7 @@ export default function TournamentsPage() {
               Community &amp; Official Tournaments
             </h2>
           </div>
-          <span className="text-xs text-slate-400 font-medium">Weekly Knockouts • Kenya Time (EAT)</span>
+          <span className="text-xs text-slate-400 font-medium">Weekly Knockouts | Kenya Time (EAT)</span>
         </div>
 
         {loading ? (

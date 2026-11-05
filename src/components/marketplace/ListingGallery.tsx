@@ -447,7 +447,7 @@ export function ListingGallery({
               <span>to navigate</span>
             </div>
             <div className="sm:hidden text-[11px] text-slate-400">
-              Tap image to zoom • Tap outside to close
+              Tap image to zoom | Tap outside to close
             </div>
 
             <div className="flex items-center gap-2">
