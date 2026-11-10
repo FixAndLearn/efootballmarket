@@ -2,6 +2,7 @@ import React from "react";
 import Link from "next/link";
 import { Metadata } from "next";
 import { PolicyPageShell } from "@/components/layout/PolicyPageShell";
+import { KonamiIdExplainerVideo } from "@/components/common/KonamiIdExplainerVideo";
 
 export const metadata: Metadata = {
   title: "How M-Pesa Escrow & Clean ID Verification Works | eFootballMarket",
@@ -16,7 +17,7 @@ export default function EscrowGuaranteePage() {
       currentPath="/escrow-guarantee"
       badge="Escrow & Verification Guide"
       title="How M-Pesa Escrow & Verification Works"
-      subtitle="Peer-to-peer gaming trades fail in WhatsApp, Telegram, and Facebook groups because one person is forced to go first. eFootballMarket eliminates that risk by holding M-Pesa funds in neutral custody while the buyer verifies Clean Konami ID ownership in-game."
+      subtitle="Peer-to-peer gaming trades fail in WhatsApp, Discord, and Facebook groups because one person is forced to go first. eFootballMarket eliminates that risk by holding M-Pesa funds in neutral custody while the buyer verifies Clean Konami ID ownership in-game."
       summaryPoints={[
         "Never send M-Pesa directly to a stranger's personal phone number — fund orders exclusively via Safaricom Buy Goods Till 1572931.",
         "Sellers never see your money until you confirm in-game squad accuracy or 24 uncontested inspection hours pass.",
@@ -26,6 +27,10 @@ export default function EscrowGuaranteePage() {
         "Full refund protection applies if Google Play or Apple ID is still linked or if permanent cards are missing.",
       ]}
     >
+      <section className="pb-2">
+        <KonamiIdExplainerVideo />
+      </section>
+
       <section className="space-y-3">
         <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display">
           1. Why Direct Group-Chat Transfers Lose Money
@@ -123,7 +128,7 @@ export default function EscrowGuaranteePage() {
           5. Using Middleman Escrow for Off-Platform Deals
         </h2>
         <p>
-          Found a squad on WhatsApp, Telegram, Discord, or TikTok? Either party can open our{" "}
+          Found a squad on WhatsApp, Discord, Instagram, or TikTok? Either party can open our{" "}
           <Link href="/middleman" className="text-sx-green-text underline font-semibold">
             Middleman Escrow Room
           </Link>

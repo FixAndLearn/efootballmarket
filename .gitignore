@@ -42,3 +42,7 @@ yarn-error.log*
 # Uploaded listing media
 public/uploads/*
 !public/uploads/.gitkeep
+
+# Social media export masters (kept in workspace, web embed lives in public/videos/)
+/videos/
+

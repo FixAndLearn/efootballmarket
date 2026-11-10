@@ -1,4 +1,5 @@
 import { AdBanner } from "@/components/common/AdBanner";
+import { KonamiIdExplainerVideo } from "@/components/common/KonamiIdExplainerVideo";
 import { Button } from "@/components/ui/Button";
 import { getCategoryLabel } from "@/lib/data/editorialGuides";
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
@@ -410,6 +411,15 @@ export default async function NewsArticlePage({
               {article.summary}
             </p>
           </header>
+
+          {(article.category === "escrow_guide" ||
+            article.category === "scammer_alert" ||
+            article.slug.includes("konami") ||
+            article.slug.includes("escrow")) && (
+            <div className="py-1">
+              <KonamiIdExplainerVideo compact />
+            </div>
+          )}
 
           <div className="space-y-4">
             {renderStructuredArticleContent(article.content)}
