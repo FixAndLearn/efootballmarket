@@ -1,8 +1,16 @@
+import crypto from "crypto";
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { normalizePhoneNumber } from "@/lib/utils/phone";
 import { dispatchAdminWhatsAppAlert } from "@/lib/notifications/adminAlert";
 import { dispatchAdminTelegramAlert } from "@/lib/notifications/telegramAlert";
+import { checkRateLimit } from "@/lib/security/rateLimiter";
+import {
+  getClientIp,
+  maskPhoneNumber,
+  sanitizeTransactionId,
+  verifyAdminOrSecret,
+} from "@/lib/security/guards";
 
 export const dynamic = "force-dynamic";
 
@@ -29,20 +37,65 @@ const MEMORY_DEALS: MiddlemanDeal[] = [];
 
 export async function GET(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+    const rate = checkRateLimit(`middleman_get:${ip}`, 30, 60000);
+    if (!rate.success) {
+      return NextResponse.json({ error: "Rate limit exceeded" }, { status: 429 });
+    }
+
     const { searchParams } = new URL(req.url);
-    const code = searchParams.get("code");
-    const phone = searchParams.get("phone");
+    const rawCode = searchParams.get("code");
+    const rawPhone = searchParams.get("phone");
+
+    const code = sanitizeTransactionId(rawCode).toUpperCase();
+    const cleanPhone = rawPhone ? rawPhone.replace(/[^0-9+]/g, "").slice(0, 16) : "";
+
+    // Prevent unauthenticated bulk enumeration: require exact deal code unless caller is Admin
+    if (!code && !cleanPhone) {
+      const adminAuth = await verifyAdminOrSecret(req);
+      if (!adminAuth.authorized) {
+        return NextResponse.json(
+          { deals: [], message: "Provide your EFM contract code to look up a deal." },
+          { status: 200 }
+        );
+      }
+    }
+
+    const redactDeal = (d: any) => ({
+      ...d,
+      buyer_phone: maskPhoneNumber(d.buyer_phone),
+      seller_phone: maskPhoneNumber(d.seller_phone),
+    });
 
     // Check Supabase if table exists
     try {
       const supabase = createAdminClient();
-      let query = supabase.from("middleman_deals").select("*");
-      if (code) query = query.eq("deal_code", code.trim().toUpperCase());
-      if (phone) query = query.or(`buyer_phone.eq.${phone},seller_phone.eq.${phone}`);
-
-      const { data, error } = await query;
-      if (!error && data && data.length > 0) {
-        return NextResponse.json({ deals: data });
+      if (code) {
+        const { data, error } = await supabase
+          .from("middleman_deals")
+          .select("*")
+          .eq("deal_code", code);
+        if (!error && data && data.length > 0) {
+          return NextResponse.json({ deals: data.map(redactDeal) });
+        }
+      } else if (cleanPhone) {
+        const [{ data: asBuyer }, { data: asSeller }] = await Promise.all([
+          supabase.from("middleman_deals").select("*").eq("buyer_phone", cleanPhone),
+          supabase.from("middleman_deals").select("*").eq("seller_phone", cleanPhone),
+        ]);
+        const merged = [...(asBuyer || []), ...(asSeller || [])];
+        if (merged.length > 0) {
+          return NextResponse.json({ deals: merged.map(redactDeal) });
+        }
+      } else {
+        const { data, error } = await supabase
+          .from("middleman_deals")
+          .select("*")
+          .order("created_at", { ascending: false })
+          .limit(50);
+        if (!error && data) {
+          return NextResponse.json({ deals: data });
+        }
       }
     } catch {
       // fallback
@@ -50,23 +103,31 @@ export async function GET(req: NextRequest) {
 
     let results = [...MEMORY_DEALS];
     if (code) {
-      results = results.filter((d) => d.deal_code.toLowerCase() === code.trim().toLowerCase());
-    }
-    if (phone) {
-      const cleanPhone = phone.replace(/[^0-9]/g, "");
+      results = results.filter((d) => d.deal_code.toUpperCase() === code);
+    } else if (cleanPhone) {
+      const digits = cleanPhone.replace(/\D/g, "");
       results = results.filter(
-        (d) => d.buyer_phone.includes(cleanPhone) || d.seller_phone.includes(cleanPhone)
+        (d) => d.buyer_phone.includes(digits) || d.seller_phone.includes(digits)
       );
     }
 
-    return NextResponse.json({ deals: results });
+    return NextResponse.json({ deals: results.map(redactDeal) });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Failed to query deals" }, { status: 500 });
+    return NextResponse.json({ error: "Failed to query deals" }, { status: 500 });
   }
 }
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+    const rate = checkRateLimit(`middleman_post:${ip}`, 5, 60000);
+    if (!rate.success) {
+      return NextResponse.json(
+        { error: "Too many middleman contracts created. Please wait 1 minute." },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const {
       buyer_name,
@@ -95,7 +156,7 @@ export async function POST(req: NextRequest) {
     const fee = Math.max(50, Math.min(500, rawFee));
     const total = amount + fee;
 
-    const randomSuffix = Math.floor(10000 + Math.random() * 90000);
+    const randomSuffix = crypto.randomBytes(4).toString("hex").toUpperCase();
     const dealCode = `EFM-${randomSuffix}`;
 
     const normBuyer = normalizePhoneNumber(buyer_phone);

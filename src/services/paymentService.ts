@@ -93,6 +93,14 @@ export class PaymentService {
 
     if (payment.status === "completed") return;
 
+    const expectedOrderAmount = Number(payment.amount || payment.order?.total_amount || 0);
+    if (expectedOrderAmount > 0 && amount > 0 && amount + 0.01 < expectedOrderAmount) {
+      console.error(
+        `[Security] Blocked underpayment on payment ${paymentId}: paid KES ${amount}, expected KES ${expectedOrderAmount}`
+      );
+      return;
+    }
+
     // 1. First attempt to call the RPC handle_mpesa_payment_success
     try {
       const { error: rpcError } = await this.supabase.rpc("handle_mpesa_payment_success", {
@@ -293,8 +301,10 @@ export class PaymentService {
     if (orderId) {
       query = query.eq("order_id", orderId);
     } else if (identifier) {
+      const safeIdent = identifier.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 80);
+      if (!safeIdent) return null;
       query = query.or(
-        `checkout_request_id.eq.${identifier},merchant_request_id.eq.${identifier},id.eq.${identifier}`
+        `checkout_request_id.eq.${safeIdent},merchant_request_id.eq.${safeIdent},id.eq.${safeIdent}`
       );
     } else {
       return null;
@@ -434,10 +444,12 @@ export class PaymentService {
 
     // 1. Try finding payment by IDs
     const searchConditions = [];
-    if (checkoutId) searchConditions.push(`checkout_request_id.eq.${checkoutId}`);
-    if (unifiedTransId) {
-      searchConditions.push(`merchant_request_id.eq.${unifiedTransId}`);
-      searchConditions.push(`checkout_request_id.eq.${unifiedTransId}`);
+    const safeCheckout = checkoutId ? checkoutId.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 80) : "";
+    const safeUnified = unifiedTransId ? unifiedTransId.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 80) : "";
+    if (safeCheckout) searchConditions.push(`checkout_request_id.eq.${safeCheckout}`);
+    if (safeUnified) {
+      searchConditions.push(`merchant_request_id.eq.${safeUnified}`);
+      searchConditions.push(`checkout_request_id.eq.${safeUnified}`);
     }
 
     if (searchConditions.length > 0) {

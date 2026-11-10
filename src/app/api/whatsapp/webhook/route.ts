@@ -1,7 +1,10 @@
+import crypto from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { formatWhatsAppPhone } from "@/lib/utils/phone";
 import { sendWhatsAppMessage } from "@/lib/whatsapp/cloudApi";
 import { dispatchAdminWhatsAppAlert } from "@/lib/notifications/adminAlert";
+import { checkRateLimit } from "@/lib/security/rateLimiter";
+import { getClientIp, timingSafeCompare } from "@/lib/security/guards";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
@@ -31,7 +34,28 @@ export async function GET(req: NextRequest) {
  */
 export async function POST(req: NextRequest) {
   try {
-    const body = await req.json();
+    const ip = getClientIp(req);
+    const rate = checkRateLimit(`wa_webhook:${ip}`, 120, 60000);
+    if (!rate.success) {
+      return NextResponse.json({ status: "rate_limited" }, { status: 429 });
+    }
+
+    const rawText = await req.text();
+
+    // Verify Meta X-Hub-Signature-256 HMAC when WHATSAPP_APP_SECRET is configured
+    const appSecret = process.env.WHATSAPP_APP_SECRET?.trim();
+    if (appSecret) {
+      const sigHeader = req.headers.get("x-hub-signature-256");
+      const expectedSig =
+        "sha256=" +
+        crypto.createHmac("sha256", appSecret).update(rawText, "utf8").digest("hex");
+      if (!timingSafeCompare(sigHeader, expectedSig)) {
+        console.warn(`[Security] Rejected forged WhatsApp webhook signature from IP ${ip}`);
+        return NextResponse.json({ error: "Invalid webhook signature" }, { status: 401 });
+      }
+    }
+
+    const body = JSON.parse(rawText || "{}");
 
     // Handle Meta Cloud API payload structure
     const entry = body?.entry?.[0];
@@ -107,8 +131,14 @@ export async function POST(req: NextRequest) {
     }
 
     if (trimmedText === "3" || trimmedText.startsWith("STATUS") || trimmedText.startsWith("EFM-") || trimmedText.startsWith("ORD-")) {
-      // Try extracting order reference
-      const orderRef = text.trim().replace(/^STATUS\s*/i, "");
+      const orderRef = text
+        .trim()
+        .replace(/^STATUS\s*/i, "")
+        .replace(/[^a-zA-Z0-9_-]/g, "")
+        .slice(0, 40);
+      if (!orderRef || orderRef.length < 4) {
+        return NextResponse.json({ status: "ignored_short_ref" });
+      }
       const supabase = createAdminClient();
 
       const { data: order } = await supabase

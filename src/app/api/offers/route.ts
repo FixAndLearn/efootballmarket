@@ -6,6 +6,9 @@ import { normalizePhoneNumber, formatWhatsAppPhone } from "@/lib/utils/phone";
 import { dispatchAdminWhatsAppAlert } from "@/lib/notifications/adminAlert";
 import { sendSellerOfferReceivedSms, sendBuyerOfferResponseSms } from "@/lib/notifications/smsAlert";
 import { notifySellerNewOfferViaTelegram } from "@/lib/notifications/telegramAlert";
+import { checkRateLimit } from "@/lib/security/rateLimiter";
+import { getClientIp, maskPhoneNumber } from "@/lib/security/guards";
+import { isUserAdmin } from "@/lib/security/adminAuth";
 
 export const dynamic = "force-dynamic";
 
@@ -26,6 +29,23 @@ export async function GET(req: NextRequest) {
     const sellerId = searchParams.get("sellerId");
     const buyerPhone = searchParams.get("phone");
     const buyerId = searchParams.get("buyerId");
+
+    const userSupabase = createServerSupabaseClient();
+    const {
+      data: { user: viewer },
+    } = await userSupabase.auth.getUser();
+    const viewerIsAdmin = isUserAdmin(viewer?.email);
+
+    const redactOfferForViewer = (o: any) => {
+      const canViewFullPhone =
+        viewerIsAdmin ||
+        (viewer && (o.seller_id === viewer.id || o.buyer_id === viewer.id));
+      if (canViewFullPhone) return o;
+      return {
+        ...o,
+        buyer_phone: maskPhoneNumber(o.buyer_phone),
+      };
+    };
 
     const supabase = getClient();
 
@@ -51,9 +71,9 @@ export async function GET(req: NextRequest) {
       const { data, error } = await query;
       if (!error && data && data.length > 0) {
         if (offerId) {
-          return NextResponse.json({ offer: data[0] });
+          return NextResponse.json({ offer: redactOfferForViewer(data[0]) });
         }
-        return NextResponse.json({ offers: data });
+        return NextResponse.json({ offers: data.map(redactOfferForViewer) });
       }
     } catch (e) {
       console.warn("Supabase offers query fallback:", e);
@@ -99,8 +119,23 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+    const rate = checkRateLimit(`offer_post:${ip}`, 10, 60000);
+    if (!rate.success) {
+      return NextResponse.json(
+        { error: "Too many offers submitted. Please wait 1 minute." },
+        { status: 429 }
+      );
+    }
+
+    const userSupabase = createServerSupabaseClient();
+    const {
+      data: { user: authBuyer },
+    } = await userSupabase.auth.getUser();
+
     const body = await req.json();
-    const { listing_id, buyer_name, buyer_phone, offered_price, note, buyer_id } = body;
+    const { listing_id, buyer_name, buyer_phone, offered_price, note } = body;
+    const verifiedBuyerId = authBuyer?.id || null;
 
     if (!listing_id || !buyer_name || !buyer_phone || !offered_price) {
       return NextResponse.json(
@@ -155,8 +190,8 @@ export async function POST(req: NextRequest) {
       id: offerId,
       listing_id,
       seller_id: listing.seller_id,
-      buyer_id: buyer_id || null,
-      buyer_name: buyer_name.trim(),
+      buyer_id: verifiedBuyerId,
+      buyer_name: String(buyer_name).trim().slice(0, 80),
       buyer_phone: internationalBuyerPhone,
       offered_price: offerNum,
       original_price: originalPrice,
@@ -179,7 +214,7 @@ export async function POST(req: NextRequest) {
 
     const newOffer: ListingOffer = {
       ...dbPayload,
-      buyer_id: buyer_id || undefined,
+      buyer_id: verifiedBuyerId || undefined,
       status: "pending",
       note: note ? String(note).slice(0, 300) : undefined,
       listing: {
@@ -264,21 +299,42 @@ export async function POST(req: NextRequest) {
 
 export async function PATCH(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+    const rate = checkRateLimit(`offer_patch:${ip}`, 20, 60000);
+    if (!rate.success) {
+      return NextResponse.json(
+        { error: "Too many offer updates. Please wait a moment." },
+        { status: 429 }
+      );
+    }
+
+    const userSupabase = createServerSupabaseClient();
+    const {
+      data: { user },
+    } = await userSupabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "Unauthorized. Only the authenticated seller can respond to offers." },
+        { status: 401 }
+      );
+    }
+
     const body = await req.json();
     const { offer_id, action, counter_price, seller_note } = body;
 
-    if (!offer_id || !action) {
-      return NextResponse.json({ error: "Offer ID and action are required" }, { status: 400 });
+    if (!offer_id || !["accept", "counter", "decline"].includes(action)) {
+      return NextResponse.json({ error: "Valid Offer ID and action are required" }, { status: 400 });
     }
 
     const supabase = getClient();
 
-    // 1. Fetch current offer
+    // 1. Fetch current offer + listing seller_id
     let targetOffer: ListingOffer | null = null;
     try {
       const { data } = await supabase
         .from("listing_offers")
-        .select("*, listing:listings(id, title, price)")
+        .select("*, listing:listings(id, title, price, seller_id)")
         .eq("id", offer_id)
         .maybeSingle();
       if (data) targetOffer = data;
@@ -292,6 +348,27 @@ export async function PATCH(req: NextRequest) {
 
     if (!targetOffer) {
       return NextResponse.json({ error: "Offer not found" }, { status: 404 });
+    }
+
+    // Strict ownership verification: caller MUST be the squad seller or a verified Admin
+    const listingSellerId = (targetOffer.listing as any)?.seller_id;
+    const isSellerOwner =
+      targetOffer.seller_id === user.id ||
+      (listingSellerId && listingSellerId === user.id);
+
+    if (!isSellerOwner) {
+      const { data: callerProfile } = await supabase
+        .from("profiles")
+        .select("role, is_suspended")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (callerProfile?.is_suspended || !isUserAdmin(user.email, callerProfile?.role)) {
+        return NextResponse.json(
+          { error: "Forbidden: Only the squad seller can accept, counter, or decline offers." },
+          { status: 403 }
+        );
+      }
     }
 
     const now = new Date();

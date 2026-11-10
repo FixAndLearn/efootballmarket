@@ -392,12 +392,17 @@ export class TournamentService {
    * Retrieve a tournament payment by checkoutRequestId or merchantRequestId
    */
   static async getTournamentPayment(checkoutRequestId: string): Promise<TournamentPayment | null> {
+    const safeCheckoutId = String(checkoutRequestId || "")
+      .replace(/[^a-zA-Z0-9_-]/g, "")
+      .slice(0, 80);
+    if (!safeCheckoutId) return null;
+
     try {
       const supabase = getSupabase();
       const { data, error } = await supabase
         .from("tournament_payments")
         .select("*")
-        .or(`checkout_request_id.eq.${checkoutRequestId},merchant_request_id.eq.${checkoutRequestId},id.eq.${checkoutRequestId}`)
+        .or(`checkout_request_id.eq.${safeCheckoutId},merchant_request_id.eq.${safeCheckoutId},id.eq.${safeCheckoutId}`)
         .order("created_at", { ascending: false })
         .maybeSingle();
 
@@ -433,12 +438,15 @@ export class TournamentService {
         .eq("tournament_id", tournamentId)
         .order("created_at", { ascending: false });
 
-      if (userId && phoneNumber) {
-        query = query.or(`user_id.eq.${userId},phone_number.eq.${phoneNumber}`);
-      } else if (userId) {
-        query = query.eq("user_id", userId);
-      } else if (phoneNumber) {
-        query = query.eq("phone_number", phoneNumber);
+      const safeUserId = userId ? userId.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 64) : "";
+      const safePhone = phoneNumber ? phoneNumber.replace(/[^0-9+]/g, "").slice(0, 20) : "";
+
+      if (safeUserId && safePhone) {
+        query = query.or(`user_id.eq.${safeUserId},phone_number.eq.${safePhone}`);
+      } else if (safeUserId) {
+        query = query.eq("user_id", safeUserId);
+      } else if (safePhone) {
+        query = query.eq("phone_number", safePhone);
       }
 
       const { data, error } = await query.limit(1).maybeSingle();

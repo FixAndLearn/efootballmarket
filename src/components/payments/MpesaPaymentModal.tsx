@@ -275,6 +275,11 @@ export function MpesaPaymentModal({
 
       if (data.status === "completed") {
         handleCompleteSuccess();
+      } else if (data.status === "pending_verification") {
+        setManualNote(
+          data.message ||
+            "Receipt submitted for Till 1572931 statement verification. Escrow unlocks once confirmed."
+        );
       } else {
         setReceiptError("Verification pending. Please wait a moment.");
       }

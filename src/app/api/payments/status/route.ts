@@ -2,9 +2,12 @@ import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { mpesaClient } from "@/lib/mpesa/client";
 import { dispatchAdminOrderAlert } from "@/lib/notifications/adminAlert";
-import { sendBuyerPaymentConfirmedSms, sendSellerOrderReceivedSms } from "@/lib/notifications/smsAlert";
-import { sendBuyerPaymentSecuredWhatsApp, sendSellerDeliverCredentialsWhatsApp } from "@/lib/whatsapp/notifications";
-import { notifySellerOrderSecuredViaTelegram } from "@/lib/notifications/telegramAlert";
+import { checkRateLimit } from "@/lib/security/rateLimiter";
+import {
+  getClientIp,
+  isValidUuid,
+  sanitizeTransactionId,
+} from "@/lib/security/guards";
 import { PaymentService } from "@/services/paymentService";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -13,34 +16,49 @@ export const dynamic = "force-dynamic";
 const NO_CACHE_HEADERS = {
   "Cache-Control": "no-store, no-cache, must-revalidate, max-age=0, proxy-revalidate",
   "CDN-Cache-Control": "no-store",
-  "Pragma": "no-cache",
-  "Expires": "0",
+  Pragma: "no-cache",
+  Expires: "0",
 };
 
 /**
  * GET /api/payments/status
- * High-performance, real-time polling endpoint to detect M-Pesa payment settlements instantly.
+ * Real-time polling endpoint to detect server-verified M-Pesa settlements.
  */
 export async function GET(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+    const rate = checkRateLimit(`pay_status_get:${ip}`, 90, 60000);
+    if (!rate.success) {
+      return NextResponse.json(
+        { error: "Too many status requests. Please wait a moment." },
+        { status: 429, headers: NO_CACHE_HEADERS }
+      );
+    }
+
     const { searchParams } = new URL(req.url);
-    const checkoutRequestId = searchParams.get("checkoutRequestId");
-    const orderId = searchParams.get("orderId");
+    const rawCheckoutId = searchParams.get("checkoutRequestId");
+    const rawOrderId = searchParams.get("orderId");
     const forceCheck = searchParams.get("forceCheck") === "true";
+
+    const checkoutRequestId = sanitizeTransactionId(rawCheckoutId);
+    const orderId = isValidUuid(rawOrderId) ? rawOrderId.trim() : null;
 
     if (!checkoutRequestId && !orderId) {
       return NextResponse.json(
-        { error: "Missing checkoutRequestId or orderId" },
+        { error: "Valid checkoutRequestId or orderId is required" },
         { status: 400, headers: NO_CACHE_HEADERS }
       );
     }
 
-    // Always prefer authenticated client first so buyer's session passes RLS
     const userClient = createServerSupabaseClient();
+    const {
+      data: { user },
+    } = await userClient.auth.getUser();
+
     const adminSupabase = createAdminClient();
     const primaryClient = hasServiceRoleKey() ? adminSupabase : userClient;
 
-    // 1. Direct check on orders table (instant detection if webhook or background worker locked escrow)
+    // 1. Check orders table if valid UUID orderId supplied
     let order: any = null;
     if (orderId) {
       const { data: orderData } = await primaryClient
@@ -50,6 +68,20 @@ export async function GET(req: NextRequest) {
         .maybeSingle();
 
       order = orderData;
+
+      // Require caller to either own the order or provide a checkoutRequestId
+      if (
+        order &&
+        user &&
+        order.buyer_id !== user.id &&
+        order.seller_id !== user.id &&
+        !checkoutRequestId
+      ) {
+        return NextResponse.json(
+          { error: "Forbidden order status lookup" },
+          { status: 403, headers: NO_CACHE_HEADERS }
+        );
+      }
 
       if (order && order.status !== "payment_pending") {
         return NextResponse.json(
@@ -64,7 +96,7 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // 2. Check payments table directly
+    // 2. Safe parameterized lookup on payments table (no raw string interpolation in .or())
     let payment: any = null;
     if (orderId) {
       const { data: payments } = await primaryClient
@@ -76,14 +108,24 @@ export async function GET(req: NextRequest) {
 
       payment = payments?.[0];
     } else if (checkoutRequestId) {
-      const { data: payments } = await primaryClient
+      const { data: byCheckout } = await primaryClient
         .from("payments")
         .select("*")
-        .or(`checkout_request_id.eq.${checkoutRequestId},merchant_request_id.eq.${checkoutRequestId}`)
+        .eq("checkout_request_id", checkoutRequestId)
         .order("created_at", { ascending: false })
         .limit(1);
 
-      payment = payments?.[0];
+      if (byCheckout && byCheckout.length > 0) {
+        payment = byCheckout[0];
+      } else {
+        const { data: byMerchant } = await primaryClient
+          .from("payments")
+          .select("*")
+          .eq("merchant_request_id", checkoutRequestId)
+          .order("created_at", { ascending: false })
+          .limit(1);
+        payment = byMerchant?.[0];
+      }
     }
 
     if (payment && payment.status === "completed") {
@@ -98,15 +140,29 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // 3. If UnifiedPay is active and we have an ID to query, actively query Safaricom Till 1572931
-    const transIdToCheck =
+    // 3. Actively query UnifiedPay upstream when configured
+    const transIdToCheck = sanitizeTransactionId(
       checkoutRequestId ||
-      payment?.checkout_request_id ||
-      payment?.merchant_request_id;
+        payment?.checkout_request_id ||
+        payment?.merchant_request_id
+    );
 
-    if (transIdToCheck && mpesaClient.isUnifiedPay() && (forceCheck || payment?.status === "pending")) {
+    if (
+      transIdToCheck &&
+      mpesaClient.isUnifiedPay() &&
+      (forceCheck || payment?.status === "pending")
+    ) {
       const liveStatus = await mpesaClient.checkUnifiedPayStatus(transIdToCheck);
-      if (liveStatus && liveStatus.isSuccess) {
+      const expectedAmount = Number(
+        payment?.amount || order?.total_amount || 0
+      );
+      const settledAmount = Number(liveStatus?.amount || expectedAmount);
+
+      if (
+        liveStatus &&
+        liveStatus.isSuccess &&
+        (expectedAmount <= 0 || settledAmount + 0.01 >= expectedAmount)
+      ) {
         const receipt = liveStatus.receiptNumber || `CONFIRMED_${Date.now()}`;
         const paymentService = new PaymentService(primaryClient);
 
@@ -114,14 +170,9 @@ export async function GET(req: NextRequest) {
           await paymentService.markPaymentSuccessful(
             payment.id,
             receipt,
-            liveStatus.amount || payment.amount || (order ? Number(order.total_amount) : 0),
+            settledAmount,
             liveStatus
           );
-        } else if (order) {
-          // Direct fallback update to mark order escrow locked
-          const now = new Date().toISOString();
-          await primaryClient.from("orders").update({ status: "escrow_locked", updated_at: now }).eq("id", order.id);
-          await primaryClient.from("escrow_accounts").update({ escrow_state: "waiting_for_seller", updated_at: now }).eq("order_id", order.id);
         }
 
         return NextResponse.json(
@@ -136,26 +187,6 @@ export async function GET(req: NextRequest) {
       }
     }
 
-    // 4. Fallback to PaymentService status check
-    const paymentService = new PaymentService(primaryClient);
-    const resolvedPayment = await paymentService.getPaymentStatus(
-      checkoutRequestId || undefined,
-      orderId || undefined
-    );
-
-    if (resolvedPayment && resolvedPayment.status === "completed") {
-      return NextResponse.json(
-        {
-          status: "completed",
-          receiptNumber: resolvedPayment.mpesa_receipt_number || "CONFIRMED",
-          resultCode: 0,
-          resultDesc: "Payment completed successfully",
-        },
-        { headers: NO_CACHE_HEADERS }
-      );
-    }
-
-    // Return pending status gracefully (200 OK so client fetch is successful and continues monitoring)
     return NextResponse.json(
       {
         status: "pending",
@@ -167,7 +198,7 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     console.error("Status check route error:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to check payment status" },
+      { error: "Failed to check payment status" },
       { status: 500, headers: NO_CACHE_HEADERS }
     );
   }
@@ -175,12 +206,14 @@ export async function GET(req: NextRequest) {
 
 /**
  * POST /api/payments/status
- * Instant M-Pesa Receipt Verification:
- * Allows the buyer who has already received their Safaricom SMS (e.g., UJD9J9UHFD)
- * to instantly verify and unlock funds into escrow without waiting.
+ * Zero-Trust M-Pesa Receipt Verification:
+ * - Unlocks escrow IMMEDIATELY only when cryptographic/upstream gateway verification confirms settlement >= order total.
+ * - For manual Buy Goods Till 1572931 transfers without an STK checkout reference, logs the receipt
+ *   under `pending_verification` and alerts the Escrow Desk—NEVER unlocks escrow from an unverified string.
  */
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
     const supabase = createServerSupabaseClient();
     const {
       data: { user },
@@ -188,47 +221,46 @@ export async function POST(req: NextRequest) {
 
     if (!user) {
       return NextResponse.json(
-        { error: "Please log in to confirm payment." },
+        { error: "Please log in to submit an M-Pesa receipt." },
         { status: 401, headers: NO_CACHE_HEADERS }
       );
     }
 
-    const body = await req.json();
-    const { orderId, receiptNumber, checkoutRequestId } = body;
-
-    if (!orderId || !receiptNumber) {
+    const rate = checkRateLimit(`receipt_verify:${user.id}:${ip}`, 5, 60000);
+    if (!rate.success) {
       return NextResponse.json(
-        { error: "Order ID and M-Pesa receipt code are required." },
+        { error: "Too many receipt verification attempts. Please wait 1 minute." },
+        { status: 429, headers: NO_CACHE_HEADERS }
+      );
+    }
+
+    const body = await req.json();
+    const rawOrderId = body?.orderId;
+    const rawReceipt = body?.receiptNumber;
+    const checkoutRequestId = sanitizeTransactionId(body?.checkoutRequestId);
+
+    if (!isValidUuid(rawOrderId) || !rawReceipt) {
+      return NextResponse.json(
+        { error: "Valid Order ID and M-Pesa receipt code are required." },
         { status: 400, headers: NO_CACHE_HEADERS }
       );
     }
 
-    const cleanReceipt = String(receiptNumber).trim().toUpperCase();
+    const orderId = rawOrderId.trim();
+    const cleanReceipt = String(rawReceipt).trim().toUpperCase();
 
-    // M-Pesa receipt format validation (typically 10 alphanumeric chars e.g. UJD9J9UHFD)
     if (!/^[A-Z0-9]{8,12}$/.test(cleanReceipt)) {
       return NextResponse.json(
-        { error: "Please enter a valid M-Pesa receipt code (e.g. UJD9J9UHFD)." },
+        { error: "Enter a valid 8–12 character Safaricom M-Pesa receipt code." },
         { status: 400, headers: NO_CACHE_HEADERS }
       );
     }
 
-    // Check if receipt was already used on another order
-    const { data: existingPayment } = await supabase
-      .from("payments")
-      .select("id, order_id")
-      .eq("mpesa_receipt_number", cleanReceipt)
-      .maybeSingle();
+    const adminSupabase = createAdminClient();
+    const primaryClient = hasServiceRoleKey() ? adminSupabase : supabase;
 
-    if (existingPayment && existingPayment.order_id !== orderId) {
-      return NextResponse.json(
-        { error: "This M-Pesa receipt code has already been registered for another transaction." },
-        { status: 400, headers: NO_CACHE_HEADERS }
-      );
-    }
-
-    // Fetch order and verify current user is the buyer
-    const { data: order, error: orderErr } = await supabase
+    // 1. Fetch order and verify ownership
+    const { data: order, error: orderErr } = await primaryClient
       .from("orders")
       .select("*, listing:listings(id, title)")
       .eq("id", orderId)
@@ -260,186 +292,156 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const now = new Date().toISOString();
-    const amount = Number(order.total_amount);
+    const expectedAmount = Number(order.total_amount || 0);
 
-    // 1. Locate or create payment record
-    const { data: existingOrderPayment } = await supabase
+    // 2. Check if receipt is already tied to another order
+    const { data: existingByReceipt } = await primaryClient
       .from("payments")
-      .select("id")
+      .select("*")
+      .eq("mpesa_receipt_number", cleanReceipt)
+      .maybeSingle();
+
+    if (existingByReceipt && existingByReceipt.order_id !== orderId) {
+      return NextResponse.json(
+        { error: "This M-Pesa receipt code is already registered to another order." },
+        { status: 400, headers: NO_CACHE_HEADERS }
+      );
+    }
+
+    // 3. Check if webhook ALREADY verified this exact payment in DB
+    if (
+      existingByReceipt &&
+      existingByReceipt.order_id === orderId &&
+      existingByReceipt.status === "completed" &&
+      Number(existingByReceipt.amount || 0) + 0.01 >= expectedAmount
+    ) {
+      const paymentService = new PaymentService(primaryClient);
+      await paymentService.markPaymentSuccessful(
+        existingByReceipt.id,
+        cleanReceipt,
+        Number(existingByReceipt.amount),
+        existingByReceipt.raw_callback || { verified_from_completed_payment: true }
+      );
+
+      return NextResponse.json(
+        {
+          success: true,
+          status: "completed",
+          receiptNumber: cleanReceipt,
+          message: "Payment verified via Safaricom callback and locked in escrow.",
+        },
+        { headers: NO_CACHE_HEADERS }
+      );
+    }
+
+    // 4. Locate pending payment for this order and query UnifiedPay upstream
+    const { data: existingOrderPayment } = await primaryClient
+      .from("payments")
+      .select("*")
       .eq("order_id", orderId)
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
 
-    let paymentId = existingOrderPayment?.id;
+    const transId = sanitizeTransactionId(
+      checkoutRequestId ||
+        existingOrderPayment?.checkout_request_id ||
+        existingOrderPayment?.merchant_request_id
+    );
 
-    if (!paymentId) {
-      const { data: insertedPayment } = await supabase
-        .from("payments")
-        .insert({
-          order_id: orderId,
-          payment_method: "mpesa",
-          phone_number: user.phone || "254700000000",
-          amount: amount,
-          currency: order.currency || "KES",
-          merchant_request_id: checkoutRequestId || `MANUAL-${cleanReceipt}`,
-          checkout_request_id: checkoutRequestId || `MANUAL-${cleanReceipt}`,
-          mpesa_receipt_number: cleanReceipt,
-          status: "completed",
-          completed_at: now,
-          raw_callback: {
-            manual_confirmation: true,
-            receipt_code: cleanReceipt,
-            confirmed_by: user.id,
-            timestamp: now,
-          },
-        })
-        .select("id")
-        .single();
+    if (transId && mpesaClient.isUnifiedPay()) {
+      const liveStatus = await mpesaClient.checkUnifiedPayStatus(transId);
+      const liveReceipt = String(liveStatus?.receiptNumber || "").trim().toUpperCase();
+      const liveAmount = Number(liveStatus?.amount || 0);
 
-      paymentId = insertedPayment?.id;
-    } else {
-      await supabase
-        .from("payments")
-        .update({
-          status: "completed",
-          mpesa_receipt_number: cleanReceipt,
-          completed_at: now,
-          raw_callback: {
-            manual_confirmation: true,
-            receipt_code: cleanReceipt,
-            confirmed_by: user.id,
-            timestamp: now,
-          },
-        })
-        .eq("id", paymentId);
-    }
+      if (
+        liveStatus &&
+        liveStatus.isSuccess &&
+        (!liveReceipt || liveReceipt === cleanReceipt) &&
+        (liveAmount <= 0 || liveAmount + 0.01 >= expectedAmount)
+      ) {
+        const paymentService = new PaymentService(primaryClient);
+        if (existingOrderPayment) {
+          await paymentService.markPaymentSuccessful(
+            existingOrderPayment.id,
+            liveReceipt || cleanReceipt,
+            liveAmount || expectedAmount,
+            liveStatus
+          );
 
-    // 2. Transition order to escrow_locked
-    await supabase
-      .from("orders")
-      .update({
-        status: "escrow_locked",
-        updated_at: now,
-      })
-      .eq("id", orderId);
-
-    // 3. Update escrow account
-    await supabase
-      .from("escrow_accounts")
-      .update({
-        escrow_state: "waiting_for_seller",
-        updated_at: now,
-      })
-      .eq("order_id", orderId);
-
-    // 4. Update listing status
-    if (order.listing_id) {
-      await supabase
-        .from("listings")
-        .update({
-          status: "in_escrow",
-          updated_at: now,
-        })
-        .eq("id", order.listing_id);
-    }
-
-    // 5. Update seller escrow balance & notification
-    if (order.seller_id) {
-      const netAmount = Number(order.seller_net_amount) || amount;
-      const { data: sellerProf } = await supabase
-        .from("profiles")
-        .select("escrow_balance, phone_number")
-        .eq("id", order.seller_id)
-        .maybeSingle();
-
-      const currentBalance = Number(sellerProf?.escrow_balance || 0);
-      await supabase
-        .from("profiles")
-        .update({
-          escrow_balance: currentBalance + netAmount,
-          updated_at: now,
-        })
-        .eq("id", order.seller_id);
-
-      await supabase.from("notifications").insert({
-        recipient_id: order.seller_id,
-        type: "payment_received",
-        title: "Payment Secured in Escrow!",
-        message: `Buyer verified M-Pesa payment (${cleanReceipt}). KES ${netAmount} is locked in your escrow balance. Deliver credentials to complete.`,
-        action_url: `/orders/${orderId}`,
-        is_read: false,
-      });
-
-      // Notify seller via SMS & WhatsApp
-      if (sellerProf?.phone_number) {
-        sendSellerOrderReceivedSms(
-          sellerProf.phone_number,
-          order.order_number,
-          amount,
-          order.listing?.title || "eFootball Squad",
-          orderId
-        ).catch((err) => console.warn("Seller order SMS error:", err));
-
-        sendSellerDeliverCredentialsWhatsApp(
-          sellerProf.phone_number,
-          order.order_number,
-          amount,
-          order.listing?.title || "eFootball Squad",
-          orderId
-        ).catch((err) => console.warn("Seller WhatsApp error:", err));
+          return NextResponse.json(
+            {
+              success: true,
+              status: "completed",
+              receiptNumber: liveReceipt || cleanReceipt,
+              message: "Payment verified upstream on Till 1572931 and locked in escrow.",
+            },
+            { headers: NO_CACHE_HEADERS }
+          );
+        }
       }
-
-      notifySellerOrderSecuredViaTelegram({
-        sellerId: order.seller_id,
-        orderId,
-        orderNumber: order.order_number,
-        listingTitle: order.listing?.title || "eFootball Squad",
-        amount,
-        buyerPhone: user.phone || undefined,
-      }).catch((err) => console.warn("Seller Telegram order alert error:", err));
     }
 
-    // 6. Admin alert to Brian Okibo (0794400365)
+    // 5. Unverified manual Buy Goods receipt: NEVER auto-unlock escrow!
+    // Log receipt claim for Admin statement reconciliation on Till 1572931.
+    const now = new Date().toISOString();
+    if (existingOrderPayment) {
+      await primaryClient
+        .from("payments")
+        .update({
+          raw_callback: {
+            ...(existingOrderPayment.raw_callback || {}),
+            buyer_submitted_receipt: cleanReceipt,
+            submitted_by: user.id,
+            submitted_at: now,
+            verification_state: "awaiting_statement_reconciliation",
+          },
+        })
+        .eq("id", existingOrderPayment.id);
+    } else {
+      await primaryClient.from("payments").insert({
+        order_id: orderId,
+        payment_method: "mpesa",
+        phone_number: user.phone || "254700000000",
+        amount: expectedAmount,
+        currency: order.currency || "KES",
+        merchant_request_id: `MANUAL-CLAIM-${order.order_number}`,
+        checkout_request_id: `MANUAL-CLAIM-${order.order_number}`,
+        status: "pending",
+        raw_callback: {
+          buyer_submitted_receipt: cleanReceipt,
+          submitted_by: user.id,
+          submitted_at: now,
+          verification_state: "awaiting_statement_reconciliation",
+        },
+      });
+    }
+
     dispatchAdminOrderAlert({
-      orderId: orderId,
+      orderId,
       orderNumber: order.order_number,
-      listingTitle: order.listing?.title || "eFootball Verified Squad",
-      amount: amount,
-      currency: "KES",
+      listingTitle: `${order.listing?.title || "Squad"} [VERIFY TILL 1572931 RECEIPT: ${cleanReceipt}]`,
+      amount: expectedAmount,
+      currency: order.currency || "KES",
       buyerPhone: user.phone || "",
       receiptNumber: cleanReceipt,
-      eventType: "PAYMENT_RECEIVED",
-    }).catch((err) => console.error("Admin order alert error:", err));
-
-    // 7. Buyer SMS & WhatsApp confirmation
-    if (user.phone) {
-      sendBuyerPaymentConfirmedSms(user.phone, order.order_number, amount, orderId).catch((err) =>
-        console.warn("Buyer payment SMS error:", err)
-      );
-      sendBuyerPaymentSecuredWhatsApp(
-        user.phone,
-        order.order_number,
-        amount,
-        order.listing?.title || "eFootball Squad",
-        orderId
-      ).catch((err) => console.warn("Buyer WhatsApp error:", err));
-    }
+      eventType: "NEW_ORDER_CREATED",
+    }).catch((err) => console.warn("Manual receipt admin alert error:", err));
 
     return NextResponse.json(
       {
         success: true,
-        status: "completed",
+        status: "pending_verification",
         receiptNumber: cleanReceipt,
-        message: "Payment successfully verified and locked in escrow.",
+        message:
+          "Receipt submitted for Till 1572931 statement verification. Escrow unlocks automatically as soon as Safaricom confirms settlement.",
       },
-      { headers: NO_CACHE_HEADERS }
+      { status: 202, headers: NO_CACHE_HEADERS }
     );
   } catch (error: any) {
     console.error("Manual receipt verification error:", error);
     return NextResponse.json(
-      { error: error.message || "Failed to verify receipt." },
+      { error: "Failed to process M-Pesa receipt submission." },
       { status: 500, headers: NO_CACHE_HEADERS }
     );
   }

@@ -25,10 +25,25 @@ const TAG_LENGTH = 16;
  */
 
 /**
- * Derives a 32-byte key from CREDENTIAL_ENCRYPTION_KEY or a fallback for testing.
+ * Derives a 32-byte key from CREDENTIAL_ENCRYPTION_KEY.
+ * Fails closed in production if CREDENTIAL_ENCRYPTION_KEY is missing or weak (< 24 chars)
+ * when encrypting/decrypting real Konami account credentials.
  */
 function getEncryptionKey(): Buffer {
-  const secret = process.env.CREDENTIAL_ENCRYPTION_KEY || "efootball-market-default-encryption-secret-key-32b";
+  const configured = process.env.CREDENTIAL_ENCRYPTION_KEY?.trim();
+  const isPlaceholderEnv = (process.env.NEXT_PUBLIC_SUPABASE_URL || "").includes("placeholder-project");
+
+  if (
+    process.env.NODE_ENV === "production" &&
+    !isPlaceholderEnv &&
+    (!configured || configured.length < 24 || configured.includes("default-encryption-secret"))
+  ) {
+    throw new Error(
+      "CRITICAL SECURITY CONFIGURATION ERROR: CREDENTIAL_ENCRYPTION_KEY must be set to a strong >=24-char secret in production."
+    );
+  }
+
+  const secret = configured || "efootball-market-local-dev-only-key-not-for-prod";
   return crypto.createHash("sha256").update(secret).digest();
 }
 

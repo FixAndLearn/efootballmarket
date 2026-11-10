@@ -4,6 +4,9 @@ import { existsSync } from "fs";
 import path from "path";
 import crypto from "crypto";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { checkRateLimit } from "@/lib/security/rateLimiter";
+import { getClientIp, verifyImageMagicBytes } from "@/lib/security/guards";
 
 export const dynamic = "force-dynamic";
 
@@ -18,6 +21,27 @@ const MAX_FILE_SIZE_BYTES = 10 * 1024 * 1024; // 10MB limit
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+    const userSupabase = createServerSupabaseClient();
+    const {
+      data: { user },
+    } = await userSupabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "Unauthorized. Please sign in before uploading images." },
+        { status: 401 }
+      );
+    }
+
+    const rate = checkRateLimit(`upload:${user.id}:${ip}`, 15, 60000);
+    if (!rate.success) {
+      return NextResponse.json(
+        { error: "Upload rate limit reached. Please wait 1 minute." },
+        { status: 429 }
+      );
+    }
+
     const formData = await req.formData();
     const file = formData.get("file") as File | null;
 
@@ -51,15 +75,25 @@ export async function POST(req: NextRequest) {
     const bytes = await file.arrayBuffer();
     const buffer = Buffer.from(bytes);
 
-    // Determine safe extension
-    let ext = "jpg";
-    if (file.type === "image/png") ext = "png";
-    else if (file.type === "image/webp") ext = "webp";
-    else if (file.type === "image/jpeg" || file.type === "image/jpg") ext = "jpg";
+    // Binary magic-byte inspection: blocks disguised HTML/SVG/JS/executable payloads
+    const magic = verifyImageMagicBytes(buffer);
+    if (!magic.valid || !magic.detectedExt || !magic.detectedMime) {
+      return NextResponse.json(
+        {
+          error:
+            "Rejected file: binary content does not match a genuine JPEG, PNG, or WebP image.",
+        },
+        { status: 400 }
+      );
+    }
+
+    const ext = magic.detectedExt;
+    const verifiedMime = magic.detectedMime;
 
     const uniqueId = crypto.randomBytes(8).toString("hex");
     const sanitizedOriginalName = file.name
-      .replace(/[^a-zA-Z0-9.-]/g, "_")
+      .replace(/\.[^/.]+$/, "")
+      .replace(/[^a-zA-Z0-9_-]/g, "_")
       .slice(0, 24);
     const fileName = `squad_${Date.now()}_${uniqueId}_${sanitizedOriginalName}.${ext}`;
 
@@ -98,8 +132,8 @@ export async function POST(req: NextRequest) {
         const { data: uploadData, error: uploadError } = await supabase.storage
           .from(bucketName)
           .upload(fileName, buffer, {
-            contentType: file.type,
-            upsert: true,
+            contentType: verifiedMime,
+            upsert: false,
           });
 
         if (!uploadError && uploadData) {

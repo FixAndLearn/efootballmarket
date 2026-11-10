@@ -4,6 +4,8 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { WantedRequest } from "@/types/database";
 import { normalizePhoneNumber } from "@/lib/utils/phone";
 import { dispatchAdminWhatsAppAlert } from "@/lib/notifications/adminAlert";
+import { checkRateLimit } from "@/lib/security/rateLimiter";
+import { getClientIp } from "@/lib/security/guards";
 
 export const dynamic = "force-dynamic";
 
@@ -60,6 +62,15 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+    const rate = checkRateLimit(`wanted_post:${ip}`, 5, 60000);
+    if (!rate.success) {
+      return NextResponse.json(
+        { error: "Too many squad requests submitted. Please wait 1 minute." },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
 
     const {
@@ -74,15 +85,21 @@ export async function POST(req: NextRequest) {
       key_players_wanted,
     } = body;
 
-    if (!title || !budget_kes || !preferred_platform) {
+    if (!title || !budget_kes || !preferred_platform || !buyer_phone) {
       return NextResponse.json(
-        { error: "Title, Budget (KES), and Platform are required fields." },
+        { error: "Title, Budget (KES), Platform, and WhatsApp phone number are required." },
         { status: 400 }
       );
     }
 
-    const norm = normalizePhoneNumber(buyer_phone || "0794400365");
-    const internationalPhone = norm.isValid ? norm.international : buyer_phone?.trim() || "+254794400365";
+    const norm = normalizePhoneNumber(String(buyer_phone));
+    if (!norm.isValid) {
+      return NextResponse.json(
+        { error: "Enter a valid Kenyan phone number (e.g. 07XX XXX XXX)." },
+        { status: 400 }
+      );
+    }
+    const internationalPhone = norm.international;
 
     const newRequest: WantedRequest = {
       id: `req_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`,

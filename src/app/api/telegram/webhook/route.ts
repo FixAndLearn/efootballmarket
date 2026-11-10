@@ -7,10 +7,17 @@ import {
   answerTelegramCallbackQuery,
   editTelegramMessageText,
   broadcastListingToTelegramChannel,
+  deriveTelegramWebhookSecret,
 } from "@/lib/notifications/telegramAlert";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { sendSellerWithdrawalStatusWhatsApp } from "@/lib/whatsapp/notifications";
 import { sendSellerWithdrawalStatusSms } from "@/lib/notifications/smsAlert";
+import { checkRateLimit } from "@/lib/security/rateLimiter";
+import {
+  getClientIp,
+  timingSafeCompare,
+  verifyAdminOrSecret,
+} from "@/lib/security/guards";
 
 export const dynamic = "force-dynamic";
 
@@ -29,10 +36,17 @@ function escapeHtml(str: string): string {
  * Usage: /api/telegram/webhook?action=register
  */
 export async function GET(req: NextRequest) {
+  const auth = await verifyAdminOrSecret(req);
+  if (!auth.authorized) {
+    return NextResponse.json(
+      { ok: false, error: "Forbidden: Admin privileges required" },
+      { status: 403 }
+    );
+  }
+
   const url = new URL(req.url);
   const action = url.searchParams.get("action");
-  const customToken = url.searchParams.get("token") || undefined;
-  const token = customToken || process.env.TELEGRAM_BOT_TOKEN || process.env.TELEGRAM_API_TOKEN;
+  const token = process.env.TELEGRAM_BOT_TOKEN || process.env.TELEGRAM_API_TOKEN;
 
   if (!token) {
     return NextResponse.json({
@@ -77,6 +91,24 @@ export async function GET(req: NextRequest) {
  */
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+    const rate = checkRateLimit(`tg_webhook:${ip}`, 120, 60000);
+    if (!rate.success) {
+      return NextResponse.json({ ok: false, error: "Rate limited" }, { status: 429 });
+    }
+
+    const expectedSecret = deriveTelegramWebhookSecret();
+    const providedHeader = req.headers.get("x-telegram-bot-api-secret-token");
+
+    // Enforce strict secret check whenever TELEGRAM_WEBHOOK_SECRET is explicitly set,
+    // or whenever Telegram provides the secret header.
+    if (process.env.TELEGRAM_WEBHOOK_SECRET || providedHeader) {
+      if (!timingSafeCompare(providedHeader, expectedSecret)) {
+        console.warn(`[Security] Rejected forged Telegram webhook POST from IP ${ip}`);
+        return NextResponse.json({ ok: false, error: "Unauthorized" }, { status: 401 });
+      }
+    }
+
     const body = await req.json().catch(() => ({}));
 
     const time = new Date().toLocaleTimeString("en-KE", {
@@ -90,6 +122,11 @@ export async function POST(req: NextRequest) {
     // =========================================================================
     const callbackQuery = body?.callback_query;
     if (callbackQuery) {
+      // Privileged financial callback actions MUST carry valid X-Telegram-Bot-Api-Secret-Token
+      if (expectedSecret && !timingSafeCompare(providedHeader, expectedSecret)) {
+        console.warn(`[Security] Blocked unsigned Telegram callback_query from IP ${ip}`);
+        return NextResponse.json({ ok: false, error: "Missing webhook secret token" }, { status: 401 });
+      }
       const queryId = callbackQuery.id;
       const fromId = String(callbackQuery.from?.id);
       const data = String(callbackQuery.data || "").trim();

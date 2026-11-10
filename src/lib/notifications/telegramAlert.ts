@@ -120,12 +120,29 @@ export async function getTelegramBotInfo(customToken?: string): Promise<{ succes
 /**
  * Registers webhook URL with Telegram so incoming messages to the bot trigger 2-way replies.
  */
+import crypto from "crypto";
+
+export function deriveTelegramWebhookSecret(customToken?: string): string {
+  if (process.env.TELEGRAM_WEBHOOK_SECRET) {
+    return process.env.TELEGRAM_WEBHOOK_SECRET.trim();
+  }
+  const token = customToken || process.env.TELEGRAM_BOT_TOKEN || process.env.TELEGRAM_API_TOKEN || "";
+  if (!token) return "";
+  return crypto
+    .createHmac("sha256", token.trim())
+    .update("efootballmarket-tg-webhook-v1")
+    .digest("hex")
+    .slice(0, 48);
+}
+
 export async function setTelegramWebhook(
   webhookUrl: string,
   customToken?: string
 ): Promise<{ success: boolean; description?: string; error?: string }> {
   const token = customToken || process.env.TELEGRAM_BOT_TOKEN || process.env.TELEGRAM_API_TOKEN;
   if (!token) return { success: false, error: "Telegram Bot Token is not configured." };
+
+  const secretToken = deriveTelegramWebhookSecret(token);
 
   try {
     const res = await fetch(`https://api.telegram.org/bot${token.trim()}/setWebhook`, {
@@ -134,6 +151,7 @@ export async function setTelegramWebhook(
       body: JSON.stringify({
         url: webhookUrl,
         drop_pending_updates: true,
+        ...(secretToken ? { secret_token: secretToken } : {}),
       }),
     });
     const data = await res.json();

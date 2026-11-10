@@ -2,18 +2,25 @@ import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { mpesaClient } from "@/lib/mpesa/client";
 import { dispatchAdminWhatsAppAlert } from "@/lib/notifications/adminAlert";
+import {
+  checkRateLimit,
+  getIdempotencyResult,
+  setIdempotencyResult,
+} from "@/lib/security/rateLimiter";
+import { getClientIp } from "@/lib/security/guards";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
 export const dynamic = "force-dynamic";
 
 const withdrawalSchema = z.object({
-  amount: z.number().min(10, "Minimum withdrawal is KES 10"),
+  amount: z.number().finite().positive().min(10, "Minimum withdrawal is KES 10").max(250000, "Maximum single withdrawal is KES 250,000"),
   phoneNumber: z.string().min(9, "Valid M-Pesa phone number required"),
 });
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
     const supabase = createServerSupabaseClient();
     const {
       data: { user },
@@ -21,6 +28,14 @@ export async function POST(req: NextRequest) {
 
     if (!user) {
       return NextResponse.json({ error: "Unauthorized. Please log in to withdraw." }, { status: 401 });
+    }
+
+    const rate = checkRateLimit(`withdraw:${user.id}:${ip}`, 3, 60000);
+    if (!rate.success) {
+      return NextResponse.json(
+        { error: "Too many withdrawal attempts. Please wait 1 minute before retrying." },
+        { status: 429 }
+      );
     }
 
     const json = await req.json();
@@ -33,8 +48,17 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const { amount, phoneNumber } = parsed.data;
+    const amount = Math.round(parsed.data.amount * 100) / 100;
+    const { phoneNumber } = parsed.data;
     const normalizedPhone = mpesaClient.normalizePhoneNumber(phoneNumber);
+
+    const idemKey =
+      req.headers.get("x-idempotency-key") ||
+      `withdraw:${user.id}:${amount}:${normalizedPhone}`;
+    const existingIdem = getIdempotencyResult<any>(idemKey, 30000);
+    if (existingIdem) {
+      return NextResponse.json(existingIdem);
+    }
 
     const adminSupabase = createAdminClient();
     const serviceRoleConfigured = hasServiceRoleKey();
@@ -87,33 +111,40 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    // Deduct available balance
-    const newAvailBal = Math.max(0, availBal - amount);
-    let balanceDeducted = false;
+    // Atomic Compare-And-Swap (CAS) balance deduction: prevents parallel race-condition double-spends
+    const newAvailBal = Math.round(Math.max(0, availBal - amount) * 100) / 100;
 
-    const { error: deductErr1 } = await primaryClient
+    const { data: casPrimary, error: deductErr1 } = await primaryClient
       .from("profiles")
       .update({
         available_balance: newAvailBal,
         updated_at: new Date().toISOString(),
       })
-      .eq("id", user.id);
+      .eq("id", user.id)
+      .eq("available_balance", availBal)
+      .gte("available_balance", amount)
+      .select("id");
 
-    if (!deductErr1) {
-      balanceDeducted = true;
-    } else {
-      const { error: deductErr2 } = await adminSupabase
+    if (deductErr1 || !casPrimary || casPrimary.length === 0) {
+      const { data: casAdmin, error: deductErr2 } = await adminSupabase
         .from("profiles")
         .update({
           available_balance: newAvailBal,
           updated_at: new Date().toISOString(),
         })
-        .eq("id", user.id);
+        .eq("id", user.id)
+        .eq("available_balance", availBal)
+        .gte("available_balance", amount)
+        .select("id");
 
-      if (!deductErr2) {
-        balanceDeducted = true;
-      } else {
-        return NextResponse.json({ error: "Failed to update available balance." }, { status: 500 });
+      if (deductErr2 || !casAdmin || casAdmin.length === 0) {
+        return NextResponse.json(
+          {
+            error:
+              "Concurrent balance change detected. Please refresh your wallet balance and try again.",
+          },
+          { status: 409 }
+        );
       }
     }
 
@@ -213,11 +244,14 @@ export async function POST(req: NextRequest) {
       console.warn("Admin alert dispatch warning:", err);
     });
 
-    return NextResponse.json({
+    const responsePayload = {
       success: true,
       message: `Withdrawal of KES ${amount} to ${normalizedPhone} submitted successfully.`,
       withdrawal,
-    });
+    };
+    setIdempotencyResult(idemKey, responsePayload);
+
+    return NextResponse.json(responsePayload);
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

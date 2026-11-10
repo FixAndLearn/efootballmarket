@@ -66,19 +66,29 @@ export async function POST(req: NextRequest) {
       // On Fridays, squads are locked at promotional flash drop price and bargaining is withdrawn
       finalPrice = Number(listing.price);
     } else if (offerId) {
-      // Check /api/offers or Supabase
+      // Strictly verify offer belongs to THIS listing, is accepted, and has not expired
       try {
         const { data: offerData } = await adminSupabase
           .from("listing_offers")
           .select("*")
           .eq("id", offerId)
-          .single();
+          .eq("listing_id", listingId)
+          .maybeSingle();
 
-        if (offerData && offerData.status === "accepted") {
-          finalPrice = Number(offerData.offered_price);
+        const notExpired =
+          !offerData?.expires_at ||
+          new Date(offerData.expires_at).getTime() > Date.now();
+
+        if (offerData && offerData.status === "accepted" && notExpired) {
+          const agreed = Number(
+            offerData.counter_price || offerData.offered_price || listing.price
+          );
+          if (agreed >= 50) {
+            finalPrice = agreed;
+          }
         }
       } catch {
-        // Continue with original price if offer lookup fails
+        // Continue with original listing price if offer lookup fails
       }
     }
 

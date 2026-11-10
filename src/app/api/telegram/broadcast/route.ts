@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { broadcastListingToTelegramChannel } from "@/lib/notifications/telegramAlert";
+import { verifyAdminOrSecret } from "@/lib/security/guards";
 
 export const dynamic = "force-dynamic";
 
@@ -8,10 +9,15 @@ const TARGET_GROUP = process.env.TELEGRAM_CHANNEL_ID || "@efootballmarket254";
 
 /**
  * GET /api/telegram/broadcast
- * Returns inventory metrics and last broadcast capabilities.
+ * Admin-only endpoint returning broadcast inventory metrics.
  */
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
+    const auth = await verifyAdminOrSecret(req);
+    if (!auth.authorized) {
+      return NextResponse.json({ error: "Forbidden: Admin privileges required" }, { status: 403 });
+    }
+
     const adminSupabase = createAdminClient();
     const { count, error } = await adminSupabase
       .from("listings")
@@ -36,6 +42,11 @@ export async function GET() {
  */
 export async function POST(req: NextRequest) {
   try {
+    const auth = await verifyAdminOrSecret(req);
+    if (!auth.authorized) {
+      return NextResponse.json({ error: "Forbidden: Admin privileges required" }, { status: 403 });
+    }
+
     const body = await req.json().catch(() => ({}));
     const { listingId, broadcastAll, limit = 20, targetChannel = TARGET_GROUP } = body;
 

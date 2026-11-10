@@ -2,12 +2,38 @@ import { dispatchAdminWhatsAppAlert } from "@/lib/notifications/adminAlert";
 import { sendTelegramMessage } from "@/lib/notifications/telegramAlert";
 import { formatCurrency } from "@/lib/utils";
 import { TournamentService } from "@/services/tournamentService";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
+import { isUserAdmin } from "@/lib/security/adminAuth";
+import { checkRateLimit } from "@/lib/security/rateLimiter";
+import { getClientIp } from "@/lib/security/guards";
 import { NextRequest, NextResponse } from "next/server";
 
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+    const supabase = createServerSupabaseClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json(
+        { error: "Unauthorized. Sign in as the tournament host or administrator." },
+        { status: 401 }
+      );
+    }
+
+    const rate = checkRateLimit(`tourney_match:${user.id}:${ip}`, 20, 60000);
+    if (!rate.success) {
+      return NextResponse.json(
+        { error: "Too many match updates. Please wait a moment." },
+        { status: 429 }
+      );
+    }
+
     const body = await req.json();
     const { tournament_id, match_id, score1, score2, winner_name, match_code } = body;
 
@@ -15,6 +41,30 @@ export async function POST(req: NextRequest) {
       return NextResponse.json(
         { error: "tournament_id, match_id, score1, score2, and winner_name are required." },
         { status: 400 }
+      );
+    }
+
+    // Verify caller is the tournament host or a verified Admin
+    const existingTourney = await TournamentService.getTournamentById(tournament_id);
+    if (!existingTourney) {
+      return NextResponse.json({ error: "Tournament not found." }, { status: 404 });
+    }
+
+    const client = hasServiceRoleKey() ? createAdminClient() : supabase;
+    const { data: callerProfile } = await client
+      .from("profiles")
+      .select("role, is_suspended")
+      .eq("id", user.id)
+      .maybeSingle();
+
+    const isHostOrAdmin =
+      !callerProfile?.is_suspended &&
+      (existingTourney.created_by === user.id || isUserAdmin(user.email, callerProfile?.role));
+
+    if (!isHostOrAdmin) {
+      return NextResponse.json(
+        { error: "Forbidden: Only the tournament host or an escrow administrator can record match scores." },
+        { status: 403 }
       );
     }
 
