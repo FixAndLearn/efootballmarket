@@ -58,6 +58,31 @@ function renderStructuredArticleContent(raw: string): React.ReactNode[] {
     .filter(Boolean);
 
   return blocks.map((block, idx) => {
+    const imgMatch = block.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+    if (imgMatch) {
+      const [, caption, src] = imgMatch;
+      return (
+        <figure
+          key={idx}
+          className="my-6 rounded-xl overflow-hidden border border-sx-border bg-sx-stone"
+        >
+          <div className="aspect-[16/10] w-full relative overflow-hidden bg-sx-elevated">
+            <img
+              src={src}
+              alt={caption || "eFootballMarket Guide Photo"}
+              loading="lazy"
+              className="w-full h-full object-cover"
+            />
+          </div>
+          {caption && (
+            <figcaption className="px-4 py-2.5 text-xs text-sx-muted border-t border-sx-border bg-sx-subtle">
+              {caption}
+            </figcaption>
+          )}
+        </figure>
+      );
+    }
+
     if (block.startsWith("### ")) {
       return (
         <h3
@@ -364,27 +389,41 @@ export default async function NewsArticlePage({
               <Link
                 key={rel.id}
                 href={`/news/${rel.slug}`}
-                className="group p-4 rounded-lg bg-sx-subtle border border-sx-border hover:border-sx-ink flex flex-col justify-between space-y-3 transition-colors"
+                className="group rounded-lg bg-sx-subtle border border-sx-border hover:border-sx-ink overflow-hidden flex flex-col justify-between transition-colors"
               >
-                <div className="space-y-2">
-                  <span
-                    className={`inline-block text-[10px] px-2 py-0.5 rounded font-semibold border ${
-                      getCategoryLabel(rel.category).color
-                    }`}
-                  >
-                    {getCategoryLabel(rel.category).label}
-                  </span>
-                  <h3 className="text-sm font-bold text-sx-ink group-hover:underline font-display line-clamp-2 leading-snug">
-                    {rel.title}
-                  </h3>
-                  <p className="text-xs text-sx-muted line-clamp-2 leading-relaxed">
-                    {rel.summary}
-                  </p>
+                <div>
+                  {rel.cover_image_url && (
+                    <div className="h-36 w-full bg-sx-stone overflow-hidden border-b border-sx-border">
+                      <img
+                        src={rel.cover_image_url}
+                        alt={rel.title}
+                        loading="lazy"
+                        className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300"
+                      />
+                    </div>
+                  )}
+                  <div className="p-4 space-y-2">
+                    <span
+                      className={`inline-block text-[10px] px-2 py-0.5 rounded font-semibold border ${
+                        getCategoryLabel(rel.category).color
+                      }`}
+                    >
+                      {getCategoryLabel(rel.category).label}
+                    </span>
+                    <h3 className="text-sm font-bold text-sx-ink group-hover:underline font-display line-clamp-2 leading-snug">
+                      {rel.title}
+                    </h3>
+                    <p className="text-xs text-sx-muted line-clamp-2 leading-relaxed">
+                      {rel.summary}
+                    </p>
+                  </div>
                 </div>
-                <span className="inline-flex items-center gap-1 text-[11px] font-bold text-sx-green-text">
-                  <span>Read Guide</span>
-                  <ArrowRight className="w-3 h-3" />
-                </span>
+                <div className="px-4 pb-4 pt-1">
+                  <span className="inline-flex items-center gap-1 text-[11px] font-bold text-sx-green-text">
+                    <span>Read Guide</span>
+                    <ArrowRight className="w-3 h-3" />
+                  </span>
+                </div>
               </Link>
             ))}
           </div>

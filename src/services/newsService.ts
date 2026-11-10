@@ -1,6 +1,17 @@
-import { EDITORIAL_GUIDES } from "@/lib/data/editorialGuides";
+import { EDITORIAL_GUIDES, resolveRealArticlePhoto } from "@/lib/data/editorialGuides";
 import { NewsArticle, NewsCategory } from "@/types/database";
 import { SupabaseClient } from "@supabase/supabase-js";
+
+function normalizeArticlePhoto(article: NewsArticle): NewsArticle {
+  return {
+    ...article,
+    cover_image_url: resolveRealArticlePhoto(
+      article.slug,
+      article.category,
+      article.cover_image_url
+    ),
+  };
+}
 
 function hasLiveSupabaseConfig(): boolean {
   const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
@@ -56,7 +67,7 @@ export class NewsService {
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
 
-    return combined;
+    return combined.map(normalizeArticlePhoto);
   }
 
   /**
@@ -97,7 +108,7 @@ export class NewsService {
             // Non-blocking view increment
           }
 
-          return data as NewsArticle;
+          return normalizeArticlePhoto(data as NewsArticle);
         }
       } catch (err) {
         console.warn("getArticleBySlug DB lookup fallback:", err);
@@ -110,7 +121,7 @@ export class NewsService {
         (g.slug.toLowerCase() === cleanLower || g.id.toLowerCase() === cleanLower)
     );
 
-    return staticMatch || null;
+    return staticMatch ? normalizeArticlePhoto(staticMatch) : null;
   }
 
   /**

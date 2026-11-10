@@ -31,6 +31,66 @@ export function getCategoryLabel(category: NewsCategory | string) {
   }
 }
 
+const ARTICLE_REAL_PHOTO_BY_SLUG: Record<string, string> = {
+  "efootball-2026-team-playstyles-meta-guide":
+    "/images/articles/team-playstyles-stadium.jpg",
+  "booster-managers-88-proficiency-stat-breakpoints":
+    "/images/articles/manager-tactics-coach.jpg",
+  "custom-player-progression-builds-guide":
+    "/images/articles/custom-progression-controller.jpg",
+  "essential-player-skills-legacy-transfer-guide":
+    "/images/articles/player-skills-dribbling.jpg",
+  "live-update-condition-ratings-permanent-b-form":
+    "/images/articles/live-update-condition-night.jpg",
+  "division-1-defending-match-up-individual-instructions":
+    "/images/articles/division-1-defending-tackle.jpg",
+  "efootball-mobile-60fps-ping-optimization-kenya":
+    "/images/articles/mobile-60fps-gaming.jpg",
+  "how-to-check-google-play-and-game-center-links-in-efootball":
+    "/images/articles/account-links-verification.jpg",
+  "konami-id-email-transfer-and-two-step-verification-guide":
+    "/images/articles/konami-id-two-step-pin.jpg",
+  "how-mpesa-escrow-protection-works-in-kenya":
+    "/images/articles/mpesa-escrow-payment.jpg",
+  "avoiding-whatsapp-and-facebook-efootball-scams-in-kenya":
+    "/images/articles/whatsapp-scam-protection.jpg",
+  "how-to-prepare-and-price-your-efootball-squad-for-sale":
+    "/images/articles/seller-squad-setup-guide.jpg",
+};
+
+const CATEGORY_FALLBACK_REAL_PHOTO: Record<string, string> = {
+  efootball_news: "/images/articles/team-playstyles-stadium.jpg",
+  escrow_guide: "/images/articles/mpesa-escrow-payment.jpg",
+  scammer_alert: "/images/articles/whatsapp-scam-protection.jpg",
+  announcement: "/images/articles/live-update-condition-night.jpg",
+  update: "/images/articles/mobile-60fps-gaming.jpg",
+};
+
+/**
+ * Ensures every article uses a real photograph rather than legacy 3D/AI category icons.
+ */
+export function resolveRealArticlePhoto(
+  slug?: string | null,
+  category?: string | null,
+  currentCoverUrl?: string | null
+): string {
+  const cleanSlug = (slug || "").trim().toLowerCase();
+  if (cleanSlug && ARTICLE_REAL_PHOTO_BY_SLUG[cleanSlug]) {
+    if (!currentCoverUrl || currentCoverUrl.startsWith("/images/sx-")) {
+      return ARTICLE_REAL_PHOTO_BY_SLUG[cleanSlug];
+    }
+  }
+
+  if (currentCoverUrl && !currentCoverUrl.startsWith("/images/sx-")) {
+    return currentCoverUrl;
+  }
+
+  return (
+    (category && CATEGORY_FALLBACK_REAL_PHOTO[category]) ||
+    "/images/articles/team-playstyles-stadium.jpg"
+  );
+}
+
 export const EDITORIAL_GUIDES: NewsArticle[] = [
   {
     id: "guide-team-playstyles-meta-2026",
@@ -56,6 +116,8 @@ Quick Counter remains the most aggressive transition playstyle in competitive eF
 
 ## Long Ball Counter: Compact Low Block for Division 1 Consistency
 
+![Touchline tactical organization determines how compact your back four stays during counter-attacks](/images/articles/manager-tactics-coach.jpg)
+
 Despite its name, Long Ball Counter does not force you to hoof long clearances. Instead, it combines the deepest, most compact defensive block in eFootball with immediate forward runs once you win the ball back near your own 18-yard box.
 
 1. Defensive Line Behavior: Instead of stepping up to press after losing the ball, your back four immediately drops toward your own penalty arc, denying space in behind against Mbappé, Owen, Rumme, or Eto'o cards.
@@ -78,7 +140,7 @@ Out Wide stretches play to both touchlines, instructing opposite-side wingers an
 - Start matches in Quick Counter or Possession Game to press opponents early and test their composure under pressure.
 - Switch to your Sub-Tactic set to Long Ball Counter after taking a two-goal lead or entering the 70th minute, dropping your defensive line automatically while keeping full +3 manager stat boosts across your entire squad.`,
     author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/sx-hero-banner.jpg",
+    cover_image_url: "/images/articles/team-playstyles-stadium.jpg",
     is_pinned: true,
     is_published: true,
     views_count: 0,
@@ -131,7 +193,7 @@ Before spending GP on progression resets (or during free progression reset campa
 3. Account for Epic Card Boosters first: On Epic and Show Time cards with active +2/+3 slot boosters, verify whether the card booster already lifts a stat from 83 to 85 before committing extra progression points.
 4. Keep both Main and Sub-Tactic at 88 if switching playstyles: If your manager has 88 Quick Counter and only 75 Long Ball Counter, switching to Long Ball Counter mid-match strips away your +3 squad boosts and tanks pass accuracy. Always pair dual-88 managers when running two playstyles.`,
     author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/sx-cat-epic.jpg",
+    cover_image_url: "/images/articles/manager-tactics-coach.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
@@ -185,7 +247,7 @@ Auto-Allocate frequently dumps 14 to 16 levels into Defending while leaving cent
 2. Reallocate those saved 8–12 points into **Lower Body Strength (Speed 84–88)** and **Dexterity (Acceleration 78–83)**. A CB with 93 Defensive Awareness and 86 Speed recovers far more breakaways than a CB with 99 Defensive Awareness and 75 Speed.
 3. On Anchor Man DMFs, invest 4 levels into Passing and 4 levels into Dribbling so your pivot does not gift immediate turnovers when pressed after winning a header.`,
     author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/sx-cat-mobile.jpg",
+    cover_image_url: "/images/articles/custom-progression-controller.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
@@ -239,7 +301,7 @@ To bank every single Skill Training Program cleanly so zero tokens ever go to wa
 - **Aerial Superiority** (boosts jump duel win rates against tall Target Men and corner routines)
 - **One-Touch Pass** or **Weighted Pass** (cleans up first-time clearances and outlet balls under press)`,
     author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/sx-cat-console.jpg",
+    cover_image_url: "/images/articles/player-skills-dribbling.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
@@ -281,7 +343,7 @@ Every **Epic**, **Big Time**, and **Legendary** card—along with select **Show 
 
 In practical squad building, fielding 6 to 8 Permanent-B starters shrinks the number of bench slots you need for injury/arrow insurance. Instead of carrying three spare Centre-Backs in case C-rated defenders roll downward arrows, two Permanent-B Centre-Backs let you pack your bench with specialized **Super-Sub** wingers, physical target strikers, and tactical midfield closers.`,
     author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/sx-cat-epic.jpg",
+    cover_image_url: "/images/articles/live-update-condition-night.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
@@ -302,6 +364,8 @@ Watch any Division 3 vs Division 1 replay and the sharpest difference is not att
 Consistent Division 1 players defend **passing lanes first and the ball carrier second**, letting their defensive structure compress space until the opponent takes a heavy touch.
 
 ## Mastering Match-Up vs Dash Tracking
+
+![Timed defensive tackles inside the penalty box rely on holding Match-Up at the moment of release rather than sprinting out of line](/images/articles/match-up-box-defense.jpg)
 
 1. **Never hold Match-Up while sprinting full-distance in open space**: Holding Match-Up drops your player into a wide-stance jockey with slower top speed. Use **Dash** alone to sprint back toward your own goal along the runner's inside shoulder, then tap/hold **Match-Up** only at the exact moment the passer winds up their foot.
 2. **Defend with your DMF and CMFs—leave your CBs in line**: Manually select your Anchor Man or Box-to-Box midfielder using right-stick player switching (or swipe cursor directional switching on Mobile) and drag them backward into the central pocket in front of your two Centre-Backs. Only switch onto a CB to track a manual deep run or block an imminent shot.
@@ -324,7 +388,7 @@ During kick-offs (0', 45', and immediately after scoring), AI defensive awarenes
 
 - Immediately flick **Attack/Defense Level down one notch (Blue 1)** before the opponent kicks off, manually select your **DMF or fastest CB**, and sprint straight back 10 yards toward your penalty spot to head away any lofted kick-off chip—then return to balanced level once play settles.`,
     author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/sx-hero-banner.jpg",
+    cover_image_url: "/images/articles/division-1-defending-tackle.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
@@ -357,7 +421,7 @@ eFootball Mobile uses regional cloud relay servers (primarily nearest African/Mi
 2. **Safaricom 4G LTE vs 5G Stability Tip**: In areas where 5G signal sits at only 1–2 bars indoors, phones constantly hand over between 5G NSA and 4G LTE mid-match—creating a 1.5-second freeze right as an opponent enters your penalty box! Locking Preferred Network Type to **4G / LTE Only** during tournament games often delivers flatter, jitter-free frame pacing than weak indoor 5G.
 3. **Matchmaking Search Area Setting**: Inside **eFootball League -> Matchmaking Settings**, choose **Search Nearby Area Only**. Widening matchmaking searches pairs you onto distant overseas relay servers (130 ms+ round-trip latency) where One-Touch Passes register half a second late. Only accept **4-bar or 5-bar antenna** pre-match connections during ranked Division climbs.`,
     author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/sx-cat-middleman.jpg",
+    cover_image_url: "/images/articles/mobile-60fps-gaming.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
@@ -402,7 +466,7 @@ Do **not** click Release Funds, do **not** link your own Google/Apple account ov
 
 Once our moderation desk confirms that a third-party Google Play or Game Center link is attached contrary to listing terms, the held M-Pesa escrow balance is refunded in full to your Safaricom number.`,
     author_name: "eFootballMarket Support",
-    cover_image_url: "/images/sx-cat-budget.jpg",
+    cover_image_url: "/images/articles/account-links-verification.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
@@ -448,7 +512,7 @@ Only after the squad passes inspection should you proceed to rebind the Konami I
 
 Once your new email, new password, and 2FA are live—and your device is signed into the squad—you can safely click **Confirm & Release Funds** inside the order room.`,
     author_name: "eFootballMarket Support",
-    cover_image_url: "/images/sx-cat-mobile.jpg",
+    cover_image_url: "/images/articles/konami-id-two-step-pin.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
@@ -476,6 +540,9 @@ When a buyer clicks **Buy Now** on a verified listing, eFootballMarket creates a
 Never send funds to a seller's personal M-Pesa phone number, Pochi la Biashara, or external Paybill—any off-platform transfer bypasses escrow custody and cannot be reversed by eFootballMarket.
 
 ### Stage 2: Payment Verification & Seller Delivery Lock
+
+![Escrow custody locks funds until Konami ID credentials and clean Link Data status are confirmed](/images/articles/escrow-vault-lock.jpg)
+
 Once the M-Pesa Till receipt is matched against the exact order total:
 
 1. The listing is automatically locked from other buyers on the storefront so double-selling cannot occur.
@@ -492,7 +559,7 @@ After credentials are delivered, the buyer enters the protected inspection windo
 - **Smooth Handover**: As soon as the buyer confirms ownership (or when valid delivery expires uncontested per dispute policy rules), eFootballMarket disburses the seller's net payout directly to their registered Safaricom M-Pesa number.
 - **Discrepancy Found**: If Google Play is linked, cards are missing, or the seller fails to provide valid credentials within the delivery SLA, the buyer clicks **Raise Dispute**, freezing payout while moderators inspect uncropped screenshots and refund the buyer's M-Pesa payment when listing rules were violated.`,
     author_name: "eFootballMarket Support",
-    cover_image_url: "/images/sx-cat-middleman.jpg",
+    cover_image_url: "/images/articles/mpesa-escrow-payment.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
@@ -526,7 +593,7 @@ Because SIM cards, burner Facebook profiles, and Telegram handles take less than
 - Never share a **my.konami.net** 6-digit verification code until verified escrow payment is locked inside an active order room.
 - Insist on full-screen, uncropped Link Data proof on every Mobile transaction.`,
     author_name: "eFootballMarket Trust & Safety",
-    cover_image_url: "/images/sx-cat-budget.jpg",
+    cover_image_url: "/images/articles/whatsapp-scam-protection.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
@@ -565,7 +632,7 @@ One of the biggest pricing mistakes first-time sellers make is pricing an accoun
 4. **Preserve Monthly Data Transfers**: Avoid hopping between multiple phones right before selling so the buyer has plenty of Konami's 10 monthly Data Transfers available.
 5. **Stay Reachable After Listing**: Sellers who respond rapidly when an M-Pesa escrow order locks earn 5-star verified seller ratings and faster repeat sales.`,
     author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/sx-cat-console.jpg",
+    cover_image_url: "/images/articles/seller-squad-setup-guide.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
