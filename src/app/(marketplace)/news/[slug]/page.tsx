@@ -28,15 +28,12 @@ interface NewsArticlePageProps {
 }
 
 function renderInlineText(text: string): React.ReactNode[] {
-  const tokens = text.split(/(\*\*[^*]+\*\*|`[^`]+`)/g);
+  const tokens = text.split(
+    /(`[^`]+`|\*\*[^*]+\*\*|\[[^\]]+\]\([^)]+\)|(?<!\*)\*[^*\n]+\*(?!\*))/g
+  );
   return tokens.map((token, idx) => {
-    if (token.startsWith("**") && token.endsWith("**") && token.length > 4) {
-      return (
-        <strong key={idx} className="font-semibold text-sx-ink">
-          {token.slice(2, -2)}
-        </strong>
-      );
-    }
+    if (!token) return null;
+
     if (token.startsWith("`") && token.endsWith("`") && token.length > 2) {
       return (
         <code
@@ -47,23 +44,63 @@ function renderInlineText(text: string): React.ReactNode[] {
         </code>
       );
     }
+
+    if (token.startsWith("**") && token.endsWith("**") && token.length > 4) {
+      return (
+        <strong key={idx} className="font-semibold text-sx-ink">
+          {token.slice(2, -2)}
+        </strong>
+      );
+    }
+
+    const linkMatch = token.match(/^\[([^\]]+)\]\(([^)]+)\)$/);
+    if (linkMatch) {
+      const [, label, href] = linkMatch;
+      return (
+        <Link
+          key={idx}
+          href={href}
+          className="font-semibold text-sx-green-text hover:underline"
+        >
+          {label}
+        </Link>
+      );
+    }
+
+    if (token.startsWith("*") && token.endsWith("*") && token.length > 2) {
+      return (
+        <em key={idx} className="italic text-sx-ink">
+          {token.slice(1, -1)}
+        </em>
+      );
+    }
+
     return <React.Fragment key={idx}>{token}</React.Fragment>;
   });
 }
 
 function renderStructuredArticleContent(raw: string): React.ReactNode[] {
-  const blocks = raw
-    .split(/\n{2,}/)
-    .map((b) => b.trim())
-    .filter(Boolean);
+  const lines = raw.replace(/\r\n/g, "\n").split("\n");
+  const elements: React.ReactNode[] = [];
 
-  return blocks.map((block, idx) => {
-    const imgMatch = block.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
+  let i = 0;
+  let keyCounter = 0;
+
+  while (i < lines.length) {
+    const trimmed = lines[i].trim();
+
+    if (!trimmed) {
+      i += 1;
+      continue;
+    }
+
+    // 1. Standalone image: ![caption](src)
+    const imgMatch = trimmed.match(/^!\[([^\]]*)\]\(([^)]+)\)$/);
     if (imgMatch) {
       const [, caption, src] = imgMatch;
-      return (
+      elements.push(
         <figure
-          key={idx}
+          key={keyCounter++}
           className="my-6 rounded-xl overflow-hidden border border-sx-border bg-sx-stone"
         >
           <div className="aspect-[16/10] w-full relative overflow-hidden bg-sx-elevated">
@@ -81,98 +118,145 @@ function renderStructuredArticleContent(raw: string): React.ReactNode[] {
           )}
         </figure>
       );
+      i += 1;
+      continue;
     }
 
-    if (block.startsWith("### ")) {
-      return (
+    // 2. Sub-headings: ### or ####
+    if (/^#{3,4}\s+/.test(trimmed)) {
+      elements.push(
         <h3
-          key={idx}
-          className="text-lg font-bold text-sx-ink font-display tracking-tight pt-3"
+          key={keyCounter++}
+          className="text-base sm:text-lg font-bold text-sx-ink font-display tracking-tight pt-4"
         >
-          {block.replace(/^###\s+/, "")}
+          {renderInlineText(trimmed.replace(/^#{3,4}\s+/, ""))}
         </h3>
       );
+      i += 1;
+      continue;
     }
 
-    if (block.startsWith("## ")) {
-      return (
+    // 3. Section headings: ## or #
+    if (/^#{1,2}\s+/.test(trimmed)) {
+      const isFirstHeading = elements.length === 0;
+      elements.push(
         <h2
-          key={idx}
-          className="text-xl sm:text-2xl font-bold text-sx-ink font-display tracking-tight pt-6 border-t border-sx-border first:border-t-0 first:pt-0"
+          key={keyCounter++}
+          className={`text-xl sm:text-2xl font-bold text-sx-ink font-display tracking-tight ${
+            isFirstHeading ? "pt-0" : "pt-6 border-t border-sx-border"
+          }`}
         >
-          {block.replace(/^##\s+/, "")}
+          {renderInlineText(trimmed.replace(/^#{1,2}\s+/, ""))}
         </h2>
       );
+      i += 1;
+      continue;
     }
 
-    const lines = block.split("\n").map((l) => l.trim());
-    const allNumbered =
-      lines.length > 0 && lines.every((l) => /^\d+\.\s+/.test(l));
-    if (allNumbered) {
-      return (
+    // 4. Numbered list items: 1. ... (supports indented - / * sub-bullets under a numbered step)
+    if (/^\d+\.\s+/.test(trimmed)) {
+      const firstNum = parseInt(trimmed.match(/^(\d+)\./)?.[1] || "1", 10);
+      const items: { main: string; subs: string[] }[] = [];
+
+      while (i < lines.length && /^\d+\.\s+/.test(lines[i].trim())) {
+        const mainText = lines[i].trim().replace(/^\d+\.\s+/, "");
+        const subs: string[] = [];
+        i += 1;
+
+        while (i < lines.length && /^\s{2,}[-*]\s+/.test(lines[i])) {
+          subs.push(lines[i].trim().replace(/^[-*]\s+/, ""));
+          i += 1;
+        }
+
+        items.push({ main: mainText, subs });
+      }
+
+      elements.push(
         <ol
-          key={idx}
+          key={keyCounter++}
+          start={firstNum}
           className="space-y-2.5 pl-5 list-decimal marker:text-sx-green-text marker:font-bold"
         >
-          {lines.map((line, lIdx) => (
+          {items.map((item, idx) => (
             <li
-              key={lIdx}
+              key={idx}
               className="text-sx-ink-soft text-sm sm:text-[15px] leading-relaxed pl-1"
             >
-              {renderInlineText(line.replace(/^\d+\.\s+/, ""))}
+              {renderInlineText(item.main)}
+              {item.subs.length > 0 && (
+                <ul className="mt-2 space-y-1.5 pl-5 list-disc marker:text-sx-muted">
+                  {item.subs.map((sub, sIdx) => (
+                    <li key={sIdx} className="text-sx-ink-soft text-sm leading-relaxed">
+                      {renderInlineText(sub)}
+                    </li>
+                  ))}
+                </ul>
+              )}
             </li>
           ))}
         </ol>
       );
+      continue;
     }
 
-    const allBullets =
-      lines.length > 0 && lines.every((l) => /^[-*]\s+/.test(l));
-    if (allBullets) {
-      return (
+    // 5. Bullet list items: - ... or * ...
+    if (/^[-*]\s+/.test(trimmed)) {
+      const items: string[] = [];
+      while (i < lines.length && /^[-*]\s+/.test(lines[i].trim())) {
+        items.push(lines[i].trim().replace(/^[-*]\s+/, ""));
+        i += 1;
+      }
+      elements.push(
         <ul
-          key={idx}
+          key={keyCounter++}
           className="space-y-2.5 pl-5 list-disc marker:text-sx-green-text"
         >
-          {lines.map((line, lIdx) => (
+          {items.map((item, idx) => (
             <li
-              key={lIdx}
+              key={idx}
               className="text-sx-ink-soft text-sm sm:text-[15px] leading-relaxed pl-1"
             >
-              {renderInlineText(line.replace(/^[-*]\s+/, ""))}
+              {renderInlineText(item)}
             </li>
           ))}
         </ul>
       );
+      continue;
     }
 
-    if (
-      lines.length === 1 &&
-      block.length < 85 &&
-      !/[.:;!?]$/.test(block) &&
-      idx > 0
-    ) {
-      return (
-        <h2
-          key={idx}
-          className="text-xl font-bold text-sx-ink font-display tracking-tight pt-4"
-        >
-          {block}
-        </h2>
-      );
+    // 6. Regular paragraph lines (stop before blank line, heading, image, or list)
+    const paraLines: string[] = [];
+    while (i < lines.length) {
+      const cur = lines[i].trim();
+      if (
+        !cur ||
+        /^#{1,4}\s+/.test(cur) ||
+        /^\d+\.\s+/.test(cur) ||
+        /^[-*]\s+/.test(cur) ||
+        /^!\[([^\]]*)\]\(([^)]+)\)$/.test(cur)
+      ) {
+        break;
+      }
+      paraLines.push(cur);
+      i += 1;
     }
 
-    return (
-      <p key={idx} className="text-sx-ink-soft text-sm sm:text-[15px] leading-relaxed">
-        {lines.map((line, lIdx) => (
-          <React.Fragment key={lIdx}>
-            {lIdx > 0 && <br />}
+    elements.push(
+      <p
+        key={keyCounter++}
+        className="text-sx-ink-soft text-sm sm:text-[15px] leading-relaxed"
+      >
+        {paraLines.map((line, idx) => (
+          <React.Fragment key={idx}>
+            {idx > 0 && " "}
             {renderInlineText(line)}
           </React.Fragment>
         ))}
       </p>
     );
-  });
+  }
+
+  return elements;
 }
 
 export async function generateMetadata({
