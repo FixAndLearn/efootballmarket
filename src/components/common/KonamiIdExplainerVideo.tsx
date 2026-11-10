@@ -12,12 +12,12 @@ export function KonamiIdExplainerVideo({ compact = false }: KonamiIdExplainerVid
         <div className="flex items-center gap-2">
           <PlayCircle className="w-4 h-4 text-sx-green-text shrink-0" />
           <span className="text-xs sm:text-sm font-bold text-sx-ink font-display">
-            Watch: Complete Konami ID Escrow Exchange Walkthrough (1:18)
+            Watch: Complete Konami ID Escrow Exchange Masterclass (4:25)
           </span>
         </div>
         <span className="inline-flex items-center gap-1.5 text-[11px] font-semibold text-sx-green-text bg-sx-green-tint px-2.5 py-0.5 rounded-full">
           <ShieldCheck className="w-3.5 h-3.5" />
-          <span>Voiceover + Captions</span>
+          <span>Real Screenshots + Voiceover</span>
         </span>
       </div>
 
