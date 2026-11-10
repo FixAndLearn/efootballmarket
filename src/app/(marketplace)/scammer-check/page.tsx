@@ -1,117 +1,112 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Metadata } from "next";
 import { ScammerLookupTool } from "@/components/scammer/ScammerLookupTool";
-import { AdBanner } from "@/components/common/AdBanner";
-import { ShieldAlert, AlertTriangle, ShieldCheck, Lock, Phone, MessageCircle, ArrowRight, ExternalLink } from "lucide-react";
+import { ShieldCheck, MessageCircle, Handshake } from "lucide-react";
 import Link from "next/link";
+import { Button } from "@/components/ui/Button";
 
 export const metadata: Metadata = {
-  title: "Live Scammer Blacklist & Fraud Checker | eFootballMarket Kenya",
+  title: "Scammer Phone & Handle Check",
   description:
-    "Verify Kenyan phone numbers, WhatsApp accounts, and trader handles against our community scammer blacklist before buying or selling eFootball accounts.",
+    "Check Kenyan phone numbers, WhatsApp contacts, and trader handles against reported fraud incidents before trading an eFootball account.",
 };
 
 export default function ScammerCheckPage() {
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-14 w-full space-y-12">
+    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 w-full space-y-10">
       {/* Header */}
-      <div className="text-center max-w-3xl mx-auto space-y-3">
-        <h1 className="text-3xl sm:text-4xl md:text-5xl font-extrabold text-white font-display tracking-tight">
-          Scammer Blacklist Directory
+      <div className="space-y-2 border-b border-[#1E2636] pb-6">
+        <span className="inline-block text-[11px] font-mono uppercase tracking-wider text-rose-400 font-bold">
+          Fraud Incident Lookup
+        </span>
+        <h1 className="text-2xl sm:text-4xl font-bold text-white font-display tracking-tight">
+          Check a Phone Number or Handle Before You Pay
         </h1>
-        <p className="text-sm sm:text-base text-slate-400 leading-relaxed">
-          Verify any Kenyan phone number, WhatsApp contact, or trader handle against verified escrow dispute records and community incident reports before transacting.
+        <p className="text-xs sm:text-sm text-slate-400 max-w-2xl leading-relaxed">
+          Search any Kenyan `07...` / `01...` phone number or social handle against confirmed escrow dispute bans and community fraud reports.
         </p>
       </div>
 
-      {/* Interactive Tool Container */}
-      <div className="p-6 sm:p-8 rounded-2xl bg-[#0F172A] border border-slate-800 shadow-xl space-y-6">
-        <div>
-          <h2 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
-            <span>Instant Trader Verification</span>
-          </h2>
-          <p className="text-xs text-slate-400 mt-1">
-            Search by 10-digit Kenyan phone number (e.g. 0712345678), international format (+254...), or username handle.
-          </p>
-        </div>
-
-        <ScammerLookupTool />
+      {/* Lookup Panel */}
+      <div className="store-panel rounded-2xl p-6 sm:p-8 space-y-5">
+        <Suspense fallback={<div className="h-14 rounded-xl bg-[#131923] animate-pulse" />}>
+          <ScammerLookupTool />
+        </Suspense>
       </div>
 
-      {/* Top 3 Scams in Kenyan eFootball Trading */}
-      <div className="space-y-6">
-        <div>
-          <h2 className="text-2xl font-black text-white font-display">
-            The 3 Most Common Scams in Kenya & How to Stay Safe
-          </h2>
-        </div>
+      {/* 3 Most Common Scams */}
+      <div className="space-y-4">
+        <h2 className="text-lg sm:text-xl font-bold text-white font-display">
+          Common Social Media Scams in Kenya
+        </h2>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="p-6 rounded-2xl bg-[#111827] border border-slate-800 space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-rose-500/10 border border-rose-500/20 text-rose-400 flex items-center justify-center font-bold">
-              01
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          {[
+            {
+              num: "01",
+              title: "Direct M-Pesa Prepayment",
+              desc: "Seller asks for full or 50% deposit directly to their personal M-Pesa number, then blocks you on WhatsApp.",
+              fix: "Pay only via Till 1572931",
+            },
+            {
+              num: "02",
+              title: "Cloned Group Admin Profiles",
+              desc: "Impersonators copy a group admin's display photo and create a fake 3-way escrow group chat to steal logins.",
+              fix: "Start contract at /middleman",
+            },
+            {
+              num: "03",
+              title: "Hidden Google / Apple Link",
+              desc: "Seller transfers Konami ID email but keeps Google Play or Game Center attached to log back in days later.",
+              fix: "Verify Link Data in 24h window",
+            },
+          ].map((item) => (
+            <div key={item.num} className="store-panel rounded-xl p-5 space-y-3 flex flex-col justify-between">
+              <div className="space-y-2">
+                <span className="inline-block px-2 py-0.5 rounded bg-[#131923] border border-[#242E42] font-mono text-[11px] font-bold text-rose-400">
+                  {item.num}
+                </span>
+                <h3 className="text-sm font-bold text-white font-display">{item.title}</h3>
+                <p className="text-xs text-slate-400 leading-relaxed">{item.desc}</p>
+              </div>
+              <div className="pt-3 border-t border-[#1E2636] text-xs text-emerald-400 font-medium flex items-center gap-1.5">
+                <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
+                <span>{item.fix}</span>
+              </div>
             </div>
-            <h3 className="text-base font-bold text-white">Direct M-Pesa Prepayment</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              The seller promises to send the Konami ID right after you send M-Pesa to their personal number, then blocks you immediately.
-            </p>
-            <div className="pt-2 text-xs text-emerald-400 font-semibold flex items-center gap-1">
-              <ShieldCheck className="w-4 h-4" />
-              <span>Use Till 1572931 Escrow</span>
-            </div>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-[#111827] border border-slate-800 space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
-              02
-            </div>
-            <h3 className="text-base font-bold text-white">Fake Middleman Profiles</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              Scammers clone community admins&apos; photos and numbers on WhatsApp groups to steal squads pretending to be trusted escrow brokers.
-            </p>
-            <div className="pt-2 text-xs text-emerald-400 font-semibold flex items-center gap-1">
-              <ShieldCheck className="w-4 h-4" />
-              <span>Check 0794400365 Helpline</span>
-            </div>
-          </div>
-
-          <div className="p-6 rounded-2xl bg-[#111827] border border-slate-800 space-y-3">
-            <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold">
-              03
-            </div>
-            <h3 className="text-base font-bold text-white">Post-Sale Account Recovery</h3>
-            <p className="text-xs text-slate-400 leading-relaxed">
-              The seller hands over the account, waits for payment, then resets the password via linked recovery email or unlinked Google Play ID.
-            </p>
-            <div className="pt-2 text-xs text-emerald-400 font-semibold flex items-center gap-1">
-              <ShieldCheck className="w-4 h-4" />
-              <span>24H Mandatory Inspection</span>
-            </div>
-          </div>
+          ))}
         </div>
       </div>
 
-      {/* Sponsored Ad Unit */}
-      <AdBanner slot="scammer_check_bottom" format="horizontal" />
-
-      {/* Community Report Callout */}
-      <div className="rounded-2xl bg-[#0F172A] border border-slate-800 p-6 sm:p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-        <div className="space-y-1.5">
-          <h3 className="text-lg font-bold text-white">Encountered an Impersonator or Scammer?</h3>
+      {/* Report / Middleman Split */}
+      <div className="store-panel rounded-2xl p-6 sm:p-7 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
+        <div className="space-y-1">
+          <h3 className="text-base font-bold text-white font-display">
+            Report a Scammer or Open a Safe Middleman Contract
+          </h3>
           <p className="text-xs text-slate-400 max-w-xl leading-relaxed">
-            Submit screenshots, M-Pesa transaction statements, or phone numbers directly to our desk. We review evidence promptly and flag bad actors to protect the community.
+            Note: Even if a number has 0 prior reports, scammers switch SIM cards regularly. Always lock off-platform deals through Till 1572931 Middleman.
           </p>
         </div>
 
-        <a
-          href="https://wa.me/254794400365?text=Hello%20Brian%2C%20I%20want%20to%20report%20a%20scammer%20number"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="px-5 py-3 rounded-xl bg-slate-800 hover:bg-slate-700 text-white font-semibold text-xs flex items-center gap-2 shrink-0 border border-slate-700 active:scale-95 transition-all"
-        >
-          <MessageCircle className="w-4 h-4 text-emerald-400" />
-          <span>Report to Admin (0794400365)</span>
-        </a>
+        <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+          <Link href="/middleman">
+            <Button variant="primary" size="sm">
+              <Handshake className="w-3.5 h-3.5" />
+              <span>Open Middleman</span>
+            </Button>
+          </Link>
+          <a
+            href="https://wa.me/254794400365?text=Hello%2C%20I%20want%20to%20report%20a%20scam%20incident%20with%20evidence"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Button variant="secondary" size="sm">
+              <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Report Incident</span>
+            </Button>
+          </a>
+        </div>
       </div>
     </div>
   );

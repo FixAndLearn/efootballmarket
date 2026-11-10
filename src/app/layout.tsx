@@ -1,57 +1,62 @@
 import type { Metadata, Viewport } from "next";
 import Script from "next/script";
-import { Inter, Outfit } from "next/font/google";
+import { Inter, Space_Grotesk, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
+import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { CookieConsentBanner } from "@/components/common/CookieConsentBanner";
 import { AdSenseScript } from "@/components/common/AdSenseScript";
 import { SupportHubWidget } from "@/components/support/SupportHubWidget";
-import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { LanguageProvider } from "@/context/LanguageContext";
 
 const inter = Inter({
   subsets: ["latin"],
-  variable: "--font-inter",
+  variable: "--font-sans",
   display: "swap",
 });
 
-const outfit = Outfit({
+const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
-  variable: "--font-outfit",
+  variable: "--font-display",
+  weight: ["600", "700"],
   display: "swap",
 });
 
-const siteUrl =
-  process.env.NEXT_PUBLIC_APP_URL || "https://www.efootballmarket.co.ke";
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  variable: "--font-mono",
+  weight: ["500", "600", "700"],
+  display: "swap",
+});
+
+const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://www.efootballmarket.co.ke";
 
 export const viewport: Viewport = {
-  themeColor: "#090B0E",
+  themeColor: "#07090D",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
 };
 
 export const metadata: Metadata = {
-  metadataBase: new URL(siteUrl),
+  metadataBase: new URL(APP_URL),
   title: {
-    default: "eFootballMarket | Buy & Sell eFootball Accounts in Kenya",
+    default: "eFootballMarket — Buy & Sell Verified eFootball Squads in Kenya",
     template: "%s | eFootballMarket",
   },
   description:
-    "Buy and sell verified eFootball accounts in Kenya with M-Pesa buyer protection (Till 1572931), 24-hour squad inspection, and clean Konami ID transfers.",
-  applicationName: "eFootballMarket",
-  authors: [{ name: "Brian Okibo" }],
-  generator: "Next.js",
+    "Kenyan marketplace for unlinked Konami ID eFootball accounts. Automated Safaricom M-Pesa Till 1572931 escrow hold and 24-hour buyer inspection.",
   keywords: [
     "buy eFootball account Kenya",
-    "sell eFootball squad M-Pesa",
-    "eFootball escrow Kenya",
+    "sell eFootball account M-Pesa",
+    "eFootball marketplace Kenya",
     "Konami ID accounts Kenya",
-    "eFootball market Kenya",
-    "eFootball mobile accounts",
+    "eFootball middleman Kenya",
+    "eFootballMarket",
   ],
-  creator: "Brian Okibo",
+  authors: [{ name: "eFootballMarket", url: APP_URL }],
+  creator: "eFootballMarket",
   publisher: "eFootballMarket",
   formatDetection: {
     email: false,
@@ -59,19 +64,28 @@ export const metadata: Metadata = {
     telephone: false,
   },
   alternates: {
-    canonical: "/",
+    canonical: APP_URL,
   },
+  icons: {
+    icon: [
+      { url: "/favicon.svg", type: "image/svg+xml" },
+      { url: "/icon.svg", type: "image/svg+xml", sizes: "any" },
+    ],
+    shortcut: "/favicon.svg",
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
+  },
+  manifest: "/manifest.webmanifest",
   openGraph: {
     type: "website",
     locale: "en_KE",
-    url: siteUrl,
+    url: APP_URL,
     siteName: "eFootballMarket",
-    title: "eFootballMarket | Buy & Sell eFootball Accounts in Kenya",
+    title: "eFootballMarket — Buy & Sell Verified eFootball Squads in Kenya",
     description:
-      "Peer-to-peer eFootball marketplace in Kenya with M-Pesa payment holds (Till 1572931) and a 24-hour buyer inspection window.",
+      "Kenyan marketplace for unlinked Konami ID eFootball accounts with Safaricom M-Pesa Till 1572931 buyer protection.",
     images: [
       {
-        url: "/og-image.svg",
+        url: "/opengraph-image",
         width: 1200,
         height: 630,
         alt: "eFootballMarket Kenya",
@@ -80,10 +94,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "eFootballMarket | Buy & Sell eFootball Accounts in Kenya",
+    title: "eFootballMarket — Buy & Sell Verified eFootball Squads in Kenya",
     description:
-      "Peer-to-peer eFootball marketplace in Kenya with M-Pesa payment holds and 24-hour buyer verification.",
-    images: ["/og-image.svg"],
+      "Trade unlinked Konami ID eFootball squads in Kenya with M-Pesa Till 1572931 buyer protection.",
+    images: ["/opengraph-image"],
   },
   robots: {
     index: true,
@@ -96,25 +110,8 @@ export const metadata: Metadata = {
       "max-snippet": -1,
     },
   },
-  icons: {
-    icon: [
-      { url: "/favicon.ico", sizes: "48x48" },
-      { url: "/icon-48.png", sizes: "48x48", type: "image/png" },
-      { url: "/icon-96.png", sizes: "96x96", type: "image/png" },
-      { url: "/icon-192.png", sizes: "192x192", type: "image/png" },
-      { url: "/icon-512.png", sizes: "512x512", type: "image/png" },
-    ],
-    shortcut: "/favicon.ico",
-    apple: [
-      { url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" },
-    ],
-  },
-  manifest: "/manifest.webmanifest",
-  verification: {
-    google: [
-      process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION || "jArU_x-bgCj3AzwB_o8h7757C6udJVplNQuhkAiYPvQ",
-      "googlee8e97a3f5a54db68",
-    ],
+  other: {
+    "google-adsense-account": "ca-pub-2263419283400001",
   },
 };
 
@@ -123,30 +120,41 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || "ca-pub-2263419283400001";
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
-  const adsenseId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || "ca-pub-5924764989915276";
+
+  const organizationJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "Organization",
+    name: "eFootballMarket",
+    url: APP_URL,
+    logo: `${APP_URL}/favicon.svg`,
+    description:
+      "Kenyan marketplace and M-Pesa escrow service for trading unlinked Konami ID eFootball accounts.",
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: "Nairobi",
+      addressCountry: "KE",
+    },
+    contactPoint: {
+      "@type": "ContactPoint",
+      telephone: "+254-794-400-365",
+      contactType: "customer support",
+      areaServed: "KE",
+      availableLanguage: ["English", "Swahili"],
+    },
+  };
 
   return (
-    <html lang="en" className={`dark ${inter.variable} ${outfit.variable}`}>
+    <html
+      lang="en"
+      className={`dark ${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
+    >
       <head>
-        <Script
-          id="google-consent-mode"
-          strategy="beforeInteractive"
-          dangerouslySetInnerHTML={{
-            __html: `
-              window.dataLayer = window.dataLayer || [];
-              function gtag(){dataLayer.push(arguments);}
-              gtag('consent', 'default', {
-                'analytics_storage': 'denied',
-                'ad_storage': 'denied',
-                'ad_user_data': 'denied',
-                'ad_personalization': 'denied',
-                'wait_for_update': 500
-              });
-            `,
-          }}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
         />
-
         {gaId && (
           <>
             <Script
@@ -161,19 +169,17 @@ export default function RootLayout({
                   window.dataLayer = window.dataLayer || [];
                   function gtag(){dataLayer.push(arguments);}
                   gtag('js', new Date());
-                  gtag('config', '${gaId}', {
-                    page_path: window.location.pathname,
-                  });
+                  gtag('config', '${gaId}', { page_path: window.location.pathname });
                 `,
               }}
             />
           </>
         )}
       </head>
-      <body className="bg-[#090B0E] text-[#F1F5F9] min-h-screen flex flex-col antialiased selection:bg-emerald-500 selection:text-zinc-950 relative font-sans pb-16 md:pb-0">
+      <body className="font-sans antialiased flex flex-col min-h-screen bg-[#07090D] text-slate-100 selection:bg-emerald-500/30 selection:text-emerald-200">
         <LanguageProvider>
           <Header />
-          <main className="flex-1 flex flex-col relative z-10">{children}</main>
+          <main className="flex-1 flex flex-col pb-20 md:pb-0">{children}</main>
           <Footer />
           <MobileBottomNav />
           <CookieConsentBanner />

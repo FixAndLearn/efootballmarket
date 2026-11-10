@@ -1,76 +1,92 @@
 import React from "react";
 import Link from "next/link";
+import { cn } from "@/lib/utils";
 
 interface LogoProps {
   className?: string;
-  size?: "sm" | "md" | "lg" | "xl";
+  size?: "sm" | "md" | "lg";
   showText?: boolean;
   clickable?: boolean;
+  href?: string | null;
 }
 
 export function Logo({
-  className = "",
+  className,
   size = "md",
   showText = true,
-  clickable = false,
+  clickable = true,
+  href = "/",
 }: LogoProps) {
   const iconDimensions = {
-    sm: "w-6 h-6",
-    md: "w-7 h-7 sm:w-8 sm:h-8",
-    lg: "w-9 h-9",
-    xl: "w-11 h-11",
-  }[size];
+    sm: "w-7 h-7",
+    md: "w-8 h-8",
+    lg: "w-10 h-10",
+  };
 
-  const titleSizes = {
-    sm: "text-sm",
-    md: "text-base sm:text-[17px]",
-    lg: "text-lg",
-    xl: "text-xl",
-  }[size];
+  const textSizes = {
+    sm: "text-base",
+    md: "text-[18px]",
+    lg: "text-2xl",
+  };
 
-  const LogoMark = (
-    <div className={`relative ${iconDimensions} shrink-0 flex items-center justify-center rounded-lg bg-emerald-500 text-zinc-950`}>
-      <svg
-        viewBox="0 0 24 24"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-        className="w-4/6 h-4/6"
+  const content = (
+    <div className={cn("inline-flex items-center gap-2.5 group select-none shrink-0", className)}>
+      <div
+        className={cn(
+          "relative flex items-center justify-center rounded-lg bg-[#111722] border border-emerald-500/35 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] group-hover:border-emerald-400 transition-colors",
+          iconDimensions[size]
+        )}
       >
-        <path
-          d="M12 2.5L19.5 5.5V11.5C19.5 16.4 16.3 20.6 12 22C7.7 20.6 4.5 16.4 4.5 11.5V5.5L12 2.5Z"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinejoin="round"
-        />
-        <path
-          d="M9 12L11 14L15.2 9.8"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        />
-      </svg>
-    </div>
-  );
+        <svg
+          viewBox="0 0 28 28"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+          className="w-5 h-5"
+          aria-hidden="true"
+        >
+          <path
+            d="M14 2.5L23.5 7.2V14.8C23.5 20.1 19.4 24.1 14 25.7C8.6 24.1 4.5 20.1 4.5 14.8V7.2L14 2.5Z"
+            fill="#10B981"
+            fillOpacity="0.16"
+            stroke="#10B981"
+            strokeWidth="1.8"
+            strokeLinejoin="round"
+          />
+          <path
+            d="M9.8 14.2L12.6 17L18.4 11.2"
+            stroke="#34D399"
+            strokeWidth="2.2"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          />
+        </svg>
+      </div>
 
-  const Content = (
-    <div className={`inline-flex items-center gap-2.5 select-none min-w-0 ${className}`}>
-      {LogoMark}
       {showText && (
-        <span className={`font-display font-bold tracking-tight text-white whitespace-nowrap leading-none ${titleSizes}`}>
-          eFootballMarket
-        </span>
+        <div className="flex items-center gap-1.5 leading-none">
+          <span
+            className={cn(
+              "font-display font-bold tracking-[-0.03em] text-white",
+              textSizes[size]
+            )}
+          >
+            eFootball<span className="text-emerald-400">Market</span>
+          </span>
+          <span className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded bg-[#131923] border border-[#232D3F] text-[9px] font-mono font-bold text-slate-400 uppercase">
+            KE
+          </span>
+        </div>
       )}
     </div>
   );
 
-  if (clickable) {
+  if (clickable && href) {
     return (
-      <Link href="/" className="inline-flex items-center hover:opacity-90 transition-opacity">
-        {Content}
+      <Link href={href} className="focus:outline-none">
+        {content}
       </Link>
     );
   }
 
-  return Content;
+  return content;
 }

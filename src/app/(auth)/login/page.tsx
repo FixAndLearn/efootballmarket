@@ -275,14 +275,14 @@ function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-md bg-pitch-surface border border-pitch-border rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
-      <div className="text-center">
-        <div className="w-12 h-12 rounded-2xl bg-brand-600/20 border border-brand-500/30 flex items-center justify-center text-brand-400 mx-auto mb-3 shadow-inner">
-          <ShieldCheck className="w-6 h-6" />
-        </div>
-        <h1 className="text-2xl font-bold text-white font-display">Welcome Back</h1>
-        <p className="text-xs text-slate-400 mt-1">
-          Access your eFootballMarket escrow account &amp; orders
+    <div className="w-full max-w-md store-panel rounded-2xl p-6 sm:p-8 space-y-6">
+      <div className="space-y-1">
+        <span className="text-[11px] font-mono uppercase tracking-wider text-emerald-400 font-bold">
+          Trader Sign In
+        </span>
+        <h1 className="text-2xl font-bold text-white font-display">Sign in to eFootballMarket</h1>
+        <p className="text-xs text-slate-400">
+          Manage your active orders, squad listings, and M-Pesa payouts.
         </p>
       </div>
 

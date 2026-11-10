@@ -210,7 +210,7 @@ function MiddlemanContent() {
   };
 
   const copyDealText = (deal: MiddlemanDeal) => {
-    const text = `🤝 *eFootballMarket Safe Escrow Deal [${deal.deal_code}]*\n🎮 *Account*: ${deal.deal_title}\n💰 *Escrow Amount*: KES ${deal.item_amount_kes}\n🛡️ *Funds Locked In*: Till 1572931 (EFootballMarket)\n👤 *Escrow Officer*: Brian Okibo (0794400365)\n🔗 *Track Contract*: https://www.efootballmarket.co.ke/middleman?code=${deal.deal_code}`;
+    const text = `*eFootballMarket Middleman Contract [${deal.deal_code}]*\nAccount: ${deal.deal_title}\nAmount: KES ${deal.item_amount_kes}\nEscrow Till: 1572931 (eFootballMarket)\nSupport: 0794 400 365\nTrack Contract: https://www.efootballmarket.co.ke/middleman?code=${deal.deal_code}`;
     navigator.clipboard.writeText(text);
     setCopiedCode(true);
     setTimeout(() => setCopiedCode(false), 3000);
@@ -218,128 +218,88 @@ function MiddlemanContent() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-8">
-      
       {/* Header */}
-      <div className="relative rounded-3xl bg-gradient-to-r from-emerald-950/60 via-pitch-card to-slate-900 border border-emerald-500/40 p-6 sm:p-10 shadow-2xl overflow-hidden">
-        <div className="absolute top-0 right-0 w-80 h-80 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="relative rounded-2xl store-panel p-6 sm:p-9 overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-20 pointer-events-none"
+          style={{ backgroundImage: "url('/images/cat-middleman.jpg')" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0D1117] via-[#0D1117]/90 to-[#0D1117]/60 pointer-events-none" />
 
-        <div className="relative z-10 space-y-4 max-w-2xl">
-          <h1 className="text-3xl sm:text-4xl font-extrabold text-white font-display tracking-tight">
-            Safe Escrow for WhatsApp & Facebook Trades
+        <div className="relative z-10 space-y-3 max-w-2xl">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/35 text-[11px] font-mono font-bold text-emerald-300 uppercase">
+            Off-Platform Trade Protection
+          </span>
+          <h1 className="text-2xl sm:text-4xl font-bold text-white font-display tracking-tight">
+            Middleman Escrow for WhatsApp &amp; Facebook Deals
           </h1>
 
-          <p className="text-sm text-slate-300 leading-relaxed">
-            Met an eFootball trader in a private WhatsApp group or on social media? Stop arguing over who sends first. Lock the money into <strong>Safaricom Till 1572931</strong>, verify the Konami ID credentials, and complete the deal securely.
+          <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+            Agreed on a price in a WhatsApp group or Facebook DM? Generate a tracked contract code below—the buyer deposits into <strong>Safaricom Till 1572931</strong>, the seller delivers Konami ID details, and payout releases after buyer confirmation.
           </p>
-
-          <div className="flex flex-wrap items-center gap-4 pt-2 text-xs text-slate-300">
-            <span className="flex items-center gap-1.5 font-semibold text-emerald-300">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" /> Safaricom Escrow Protected
-            </span>
-            <span className="flex items-center gap-1.5 font-semibold text-amber-300">
-              <Smartphone className="w-4 h-4 text-amber-400" /> M-Pesa Till 1572931
-            </span>
-            <span className="flex items-center gap-1.5 font-semibold text-indigo-300">
-              <UserCheck className="w-4 h-4 text-indigo-400" /> Officer: Brian Okibo (+254 794 400 365)
-            </span>
-          </div>
         </div>
       </div>
 
-      {/* 4-Step Institutional Workflow Roadmap */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-4 rounded-2xl bg-[#111827] border border-[#1F2937] space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="w-7 h-7 rounded-xl bg-emerald-500/20 text-emerald-300 flex items-center justify-center text-xs font-bold border border-emerald-500/40">
-              1
-            </span>
-            <span className="text-[10px] uppercase font-bold text-[#94A3B8]">Agreement</span>
+      {/* 4-Step Pipeline */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+        {[
+          { num: "01", tag: "CONTRACT", title: "Open Deal Code", desc: "Enter agreed KES amount and both trader phone numbers to generate a contract code." },
+          { num: "02", tag: "DEPOSIT", title: "Pay Till 1572931", desc: "Buyer completes payment into Till 1572931. Funds stay locked on the platform." },
+          { num: "03", tag: "VERIFY", title: "24h Buyer Check", desc: "Seller delivers Konami ID. Buyer verifies squad, Link Data, and rebinds email." },
+          { num: "04", tag: "PAYOUT", title: "Release M-Pesa", desc: "Buyer confirms handover (or 24h passes without dispute) to trigger seller payout." },
+        ].map((s) => (
+          <div key={s.num} className="p-4 rounded-xl store-panel space-y-2">
+            <div className="flex items-center justify-between">
+              <span className="px-1.5 py-0.5 rounded bg-[#131923] border border-[#242E42] font-mono text-[11px] font-bold text-emerald-400">
+                {s.num}
+              </span>
+              <span className="text-[10px] font-mono uppercase text-slate-400">{s.tag}</span>
+            </div>
+            <h3 className="text-xs font-bold text-white font-display">{s.title}</h3>
+            <p className="text-[11px] text-slate-400 leading-relaxed">{s.desc}</p>
           </div>
-          <h4 className="text-xs font-bold text-white">Create Contract</h4>
-          <p className="text-[11px] text-[#94A3B8] leading-normal">
-            Enter trade title, price, and WhatsApp numbers. Unique contract code is generated.
-          </p>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-[#111827] border border-[#1F2937] space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="w-7 h-7 rounded-xl bg-[#22C55E]/20 text-[#22C55E] flex items-center justify-center text-xs font-bold border border-[#22C55E]/40">
-              2
-            </span>
-            <span className="text-[10px] uppercase font-bold text-[#94A3B8]">M-Pesa Vault</span>
-          </div>
-          <h4 className="text-xs font-bold text-white">Buyer Pays Till 1572931</h4>
-          <p className="text-[11px] text-[#94A3B8] leading-normal">
-            Buyer pays Safaricom Till 1572931. Officer Brian Okibo locks funds into neutral holding.
-          </p>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-[#111827] border border-[#1F2937] space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="w-7 h-7 rounded-xl bg-amber-500/20 text-amber-300 flex items-center justify-center text-xs font-bold border border-amber-500/40">
-              3
-            </span>
-            <span className="text-[10px] uppercase font-bold text-[#94A3B8]">Handover</span>
-          </div>
-          <h4 className="text-xs font-bold text-white">24h Inspection</h4>
-          <p className="text-[11px] text-[#94A3B8] leading-normal">
-            Seller submits Konami ID. Buyer logs in, tests squad, changes email & activates 2FA.
-          </p>
-        </div>
-
-        <div className="p-4 rounded-2xl bg-[#111827] border border-[#1F2937] space-y-2">
-          <div className="flex items-center justify-between">
-            <span className="w-7 h-7 rounded-xl bg-indigo-500/20 text-indigo-300 flex items-center justify-center text-xs font-bold border border-indigo-500/40">
-              4
-            </span>
-            <span className="text-[10px] uppercase font-bold text-[#94A3B8]">Settlement</span>
-          </div>
-          <h4 className="text-xs font-bold text-white">Payout Released</h4>
-          <p className="text-[11px] text-[#94A3B8] leading-normal">
-            Buyer approves delivery or 24 hours lapse. Seller receives direct M-Pesa payout.
-          </p>
-        </div>
+        ))}
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap items-center gap-3 mb-8 border-b border-pitch-border/60 pb-3">
+      <div className="flex flex-wrap items-center gap-2 border-b border-[#1E2636] pb-3">
         <button
           type="button"
           onClick={() => setActiveTab("create")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
             activeTab === "create"
-              ? "bg-emerald-600 text-white shadow-lg"
-              : "bg-pitch-surface border border-pitch-border text-slate-300 hover:text-white"
+              ? "bg-emerald-500 text-zinc-950 font-bold"
+              : "bg-[#0D1117] border border-[#1E2636] text-slate-300 hover:text-white"
           }`}
         >
-          <Handshake className="w-4 h-4" />
-          <span>Create Escrow Contract</span>
+          <Handshake className="w-3.5 h-3.5" />
+          <span>New Contract</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab("generator")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-medium transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
             activeTab === "generator"
-              ? "bg-slate-800 text-white shadow-sm border border-slate-700"
-              : "bg-pitch-surface border border-pitch-border text-slate-300 hover:text-white"
+              ? "bg-emerald-500 text-zinc-950 font-bold"
+              : "bg-[#0D1117] border border-[#1E2636] text-slate-300 hover:text-white"
           }`}
         >
-          <Share2 className="w-4 h-4 text-emerald-400" />
-          <span>WhatsApp Deal Link</span>
+          <Share2 className="w-3.5 h-3.5" />
+          <span>Share Deal Link</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveTab("track")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all ${
+          className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
             activeTab === "track"
-              ? "bg-emerald-600 text-white shadow-lg"
-              : "bg-pitch-surface border border-pitch-border text-slate-300 hover:text-white"
+              ? "bg-emerald-500 text-zinc-950 font-bold"
+              : "bg-[#0D1117] border border-[#1E2636] text-slate-300 hover:text-white"
           }`}
         >
-          <Search className="w-4 h-4" />
-          <span>Track Deal Status</span>
+          <Search className="w-3.5 h-3.5" />
+          <span>Track Contract</span>
         </button>
       </div>
 

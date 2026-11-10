@@ -135,33 +135,38 @@ export default function WantedBoardPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
       {/* Hero Header */}
-      <div className="relative rounded-3xl bg-gradient-to-r from-amber-950/60 via-pitch-card to-slate-900 border border-amber-500/30 p-6 sm:p-10 mb-10 overflow-hidden shadow-2xl">
-        {/* Ambient Glow */}
-        <div className="absolute top-0 right-0 w-80 h-80 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+      <div className="relative rounded-2xl store-panel p-6 sm:p-9 mb-8 overflow-hidden">
+        <div
+          className="absolute inset-0 bg-cover bg-center opacity-20 pointer-events-none"
+          style={{ backgroundImage: "url('/images/cat-budget.jpg')" }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-[#0D1117] via-[#0D1117]/90 to-[#0D1117]/60 pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
-          <div className="max-w-2xl space-y-3">
-            <h1 className="text-3xl sm:text-4xl font-extrabold text-white font-display tracking-tight">
-              Buyers Requesting eFootball Accounts
+          <div className="max-w-2xl space-y-2.5">
+            <span className="inline-block px-2.5 py-0.5 rounded bg-amber-500/15 border border-amber-500/35 text-[11px] font-mono font-bold text-amber-300 uppercase">
+              Buyer Wanted Board
+            </span>
+            <h1 className="text-2xl sm:text-4xl font-bold text-white font-display tracking-tight">
+              Buyers Looking for Specific Squads
             </h1>
-            <p className="text-sm text-slate-300 leading-relaxed">
-              Have a high OVR account or specific Epic cards? Connect directly with ready Kenyan buyers with M-Pesa funds on standby. Every deal is locked through Till <strong className="text-emerald-400">1572931</strong> escrow!
+            <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
+              Post the exact Collective Strength, Epic cards, and KES budget you want—or pitch your matching squad to verified Kenyan buyers via Till <strong className="text-emerald-400">1572931</strong>.
             </p>
           </div>
 
-          <div className="shrink-0 flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
+          <div className="shrink-0 flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
             <Button
               variant="gold"
-              size="lg"
+              size="md"
               onClick={() => setIsModalOpen(true)}
-              className="font-bold shadow-xl active:scale-95 transition-transform"
             >
-              <PlusCircle className="w-4 h-4 mr-2" />
-              Post Account Request
+              <PlusCircle className="w-4 h-4" />
+              <span>Post Squad Request</span>
             </Button>
             <Link href="/seller/create-listing">
-              <Button variant="outline" size="lg" className="w-full text-xs font-semibold">
-                Sell Squad Directly
+              <Button variant="secondary" size="md" className="w-full">
+                List a Squad
               </Button>
             </Link>
           </div>

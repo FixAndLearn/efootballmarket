@@ -335,14 +335,14 @@ function RegisterForm() {
   }
 
   return (
-    <div className="w-full max-w-lg bg-pitch-surface border border-pitch-border rounded-2xl p-8 shadow-2xl space-y-6">
-      <div className="text-center">
-        <div className="w-12 h-12 rounded-2xl bg-brand-600/20 border border-brand-500/30 flex items-center justify-center text-brand-400 mx-auto mb-3">
-          <ShieldCheck className="w-6 h-6" />
-        </div>
+    <div className="w-full max-w-lg store-panel rounded-2xl p-6 sm:p-8 space-y-6">
+      <div className="space-y-1">
+        <span className="text-[11px] font-mono uppercase tracking-wider text-emerald-400 font-bold">
+          New Trader Account
+        </span>
         <h1 className="text-2xl font-bold text-white font-display">Create Your Account</h1>
-        <p className="text-xs text-slate-400 mt-1">
-          Join the verified eFootball trading network with institutional escrow
+        <p className="text-xs text-slate-400">
+          Buy and sell unlinked eFootball squads in Kenya with M-Pesa Till 1572931 protection.
         </p>
       </div>
 
@@ -354,11 +354,8 @@ function RegisterForm() {
       )}
 
       {refParam && (
-        <div className="p-3.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-xs text-amber-200 flex items-center gap-2.5">
-          <Sparkles className="w-4 h-4 text-amber-400 shrink-0" />
-          <span>
-            You were invited by <strong className="text-white font-semibold">@{refParam}</strong>! Register now to trade safely with 100% Escrow Protection.
-          </span>
+        <div className="p-3 rounded-xl bg-[#131923] border border-[#242E42] text-xs text-slate-200">
+          Invited by <strong className="text-emerald-400 font-semibold">@{refParam}</strong>
         </div>
       )}
 

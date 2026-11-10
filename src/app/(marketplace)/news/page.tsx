@@ -147,37 +147,47 @@ export default function NewsFeedPage() {
 
       {/* Featured Guide */}
       {!loading && pinnedArticle && (
-        <div className="p-6 sm:p-7 rounded-xl bg-[#11141B] border border-[#242A36] space-y-3">
-          <div className="flex flex-wrap items-center gap-2.5 text-xs text-slate-400">
-            <span className="px-2 py-0.5 rounded bg-emerald-950/60 border border-emerald-800/60 text-emerald-400 font-medium text-[11px]">
-              Featured Guide
-            </span>
-            <span className="flex items-center gap-1">
-              <Calendar className="w-3.5 h-3.5" />
-              {new Date(pinnedArticle.created_at).toLocaleDateString()}
-            </span>
-          </div>
+        <Link
+          href={`/news/${pinnedArticle.slug}`}
+          className="group store-panel rounded-2xl overflow-hidden grid grid-cols-1 lg:grid-cols-12 hover:border-emerald-500/50 transition-colors"
+        >
+          {pinnedArticle.cover_image_url && (
+            <div className="lg:col-span-5 relative h-52 lg:h-auto min-h-[220px] bg-[#131923] overflow-hidden border-b lg:border-b-0 lg:border-r border-[#1E2636]">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={pinnedArticle.cover_image_url}
+                alt={pinnedArticle.title}
+                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+              />
+            </div>
+          )}
+          <div className="lg:col-span-7 p-6 sm:p-8 flex flex-col justify-between space-y-4">
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center gap-2.5 text-xs text-slate-400">
+                <span className="px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/35 text-emerald-300 font-mono font-bold text-[10px] uppercase">
+                  Essential Guide
+                </span>
+                <span className="flex items-center gap-1 font-mono text-[11px]">
+                  <Calendar className="w-3.5 h-3.5" />
+                  {new Date(pinnedArticle.created_at).toLocaleDateString()}
+                </span>
+              </div>
 
-          <h2 className="text-xl sm:text-2xl font-bold text-white font-display">
-            <Link href={`/news/${pinnedArticle.slug}`} className="hover:text-emerald-400 transition-colors">
-              {pinnedArticle.title}
-            </Link>
-          </h2>
+              <h2 className="text-xl sm:text-2xl font-bold text-white font-display group-hover:text-emerald-400 transition-colors leading-snug">
+                {pinnedArticle.title}
+              </h2>
 
-          <p className="text-xs sm:text-sm text-slate-400 max-w-3xl leading-relaxed">
-            {pinnedArticle.summary}
-          </p>
+              <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
+                {pinnedArticle.summary}
+              </p>
+            </div>
 
-          <div className="pt-2">
-            <Link
-              href={`/news/${pinnedArticle.slug}`}
-              className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300"
-            >
+            <div className="pt-2 inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 group-hover:text-emerald-300">
               <span>Read full guide</span>
               <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+            </div>
           </div>
-        </div>
+        </Link>
       )}
 
       {/* Articles Grid */}

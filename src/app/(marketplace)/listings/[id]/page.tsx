@@ -1,5 +1,3 @@
-import { Badge } from "@/components/ui/Badge";
-import { Card, CardContent } from "@/components/ui/Card";
 import { formatCompactNumber, formatCurrency, getKonamiIdStatusInfo, getPlatformLabel, getPlaystyleLabel } from "@/lib/utils";
 import { formatWhatsAppPhone } from "@/lib/utils/phone";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -17,28 +15,16 @@ import { Button } from "@/components/ui/Button";
 import {
   ArrowLeft,
   ArrowRight,
+  ArrowRightLeft,
   CheckCircle2,
-  Clock,
-  Coins,
-  CreditCard,
   Edit3,
-  Eye,
   Lock,
-  Shield,
+  MessageCircle,
   ShieldCheck,
   Star,
-  Swords,
-  Trophy,
   Users,
-  Zap,
-  ArrowRightLeft,
-  MessageCircle,
-  Building2,
-  Sparkles,
-  Flame,
 } from "lucide-react";
 import { isListingOnFlashSale } from "@/lib/utils/flashSale";
-import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
@@ -60,19 +46,19 @@ export async function generateMetadata({ params }: ListingDetailPageProps): Prom
 
     if (!listing) {
       return {
-        title: "Account Listing | eFootballMarket",
+        title: "Squad Listing | eFootballMarket",
       };
     }
 
     const primaryImage =
       listing.images?.find((img) => img.is_primary)?.image_url ||
       listing.images?.[0]?.image_url ||
-      "/og-image.svg";
+      "/opengraph-image";
 
-    const title = `${listing.title} | eFootballMarket`;
-    const description = `Buy verified ${listing.overall_team_strength} OVR eFootball account for ${formatCurrency(
+    const title = `${listing.title} (${listing.overall_team_strength} OVR)`;
+    const description = `${listing.overall_team_strength} OVR unlinked eFootball squad listed at ${formatCurrency(
       listing.price
-    )}. Includes ${listing.epic_players_count} Epics, ${listing.coin_balance} Coins, and automated Safaricom M-Pesa escrow protection.`;
+    )}. Protected via Safaricom M-Pesa Till 1572931 with 24-hour buyer inspection.`;
 
     return {
       title,
@@ -81,12 +67,7 @@ export async function generateMetadata({ params }: ListingDetailPageProps): Prom
         title,
         description,
         type: "website",
-        images: [
-          {
-            url: primaryImage,
-            alt: listing.title,
-          },
-        ],
+        images: [{ url: primaryImage, alt: listing.title }],
       },
       twitter: {
         card: "summary_large_image",
@@ -97,7 +78,7 @@ export async function generateMetadata({ params }: ListingDetailPageProps): Prom
     };
   } catch {
     return {
-      title: "Account Listing | eFootballMarket",
+      title: "Squad Listing | eFootballMarket",
     };
   }
 }
@@ -115,7 +96,6 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
     notFound();
   }
 
-  // Fetch real related listings from the database (zero demo data)
   let relatedListings: Listing[] = [];
   try {
     const relatedResult = await listingService.getListings({
@@ -130,27 +110,20 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
   const isOwner = Boolean(user && listing.seller_id === user.id);
   const konamiStatus = getKonamiIdStatusInfo(listing.konami_id_status);
 
-  const breadcrumbItems = [
-    { name: "Home", url: "/" },
-    { name: "Browse Squads", url: "/browse" },
-    { name: listing.title, url: `/listings/${listing.id}` },
-  ];
-
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 lg:pb-8 w-full space-y-8">
-            
-      {/* Semantic Breadcrumbs & Navigation Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-pitch-border/60">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 lg:pb-12 w-full space-y-8">
+      {/* Top Breadcrumb Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#1E2636]">
         <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-slate-400 flex-wrap">
-          <Link href="/" className="hover:text-slate-200 transition-colors">
+          <Link href="/" className="hover:text-white transition-colors">
             Home
           </Link>
-          <span>/</span>
-          <Link href="/browse" className="hover:text-slate-200 transition-colors">
-            Browse Squads
+          <span className="text-slate-600">/</span>
+          <Link href="/browse" className="hover:text-white transition-colors">
+            Marketplace
           </Link>
-          <span>/</span>
-          <span className="text-slate-200 font-semibold truncate max-w-[240px] sm:max-w-md">
+          <span className="text-slate-600">/</span>
+          <span className="text-slate-200 font-medium truncate max-w-[260px] sm:max-w-md">
             {listing.title}
           </span>
         </nav>
@@ -158,26 +131,25 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
         <div className="flex items-center gap-3">
           <Link
             href="/browse"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-white transition-colors"
           >
-            <ArrowLeft className="w-4 h-4" />
-            <span>Back to Browse</span>
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Back to Marketplace</span>
           </Link>
           {isOwner && listing.status !== "sold" && listing.status !== "in_escrow" && (
             <Link href={`/seller/edit-listing/${listing.id}`}>
               <Button variant="gold" size="sm">
-                <Edit3 className="w-3.5 h-3.5 mr-1.5" />
-                Edit Listing
+                <Edit3 className="w-3.5 h-3.5" />
+                <span>Edit Listing</span>
               </Button>
             </Link>
           )}
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column: Gallery & In-Depth Details (2 cols) */}
-        <div className="lg:col-span-2 space-y-6">
-          {/* Main Visual Banner / Screenshots with HD Lossless Viewer & Lightbox */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
+        {/* Left Column: Screenshots & Squad Telemetry (8 cols) */}
+        <div className="lg:col-span-8 space-y-6">
           <ListingGallery
             images={listing.images || []}
             title={listing.title}
@@ -185,139 +157,104 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
             overallTeamStrength={listing.overall_team_strength}
           />
 
-
-          {/* Title & Key Attributes */}
-          <div className="bg-pitch-surface border border-pitch-border rounded-2xl p-6 space-y-4">
-            <div>
-              <div className="flex items-center gap-2 text-xs text-slate-400 mb-1 flex-wrap">
-                <span>Account ID: <span className="font-mono text-slate-300">{listing.id.slice(0, 8)}</span></span>
-                <span className="text-slate-600">/</span>
-                <span>Region: <span className="text-slate-300">{listing.region || "Global"}</span></span>
-                <span className="text-slate-600">/</span>
-                <span>Version: <span className="text-slate-300">{listing.game_version || "eFootball 2026"}</span></span>
+          {/* Main Squad Telemetry Sheet */}
+          <div className="store-panel rounded-2xl p-6 sm:p-7 space-y-6">
+            <div className="space-y-2 border-b border-[#1E2636] pb-5">
+              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-400 flex-wrap">
+                <span className="px-2 py-0.5 rounded bg-[#131923] border border-[#242E42] text-slate-200 uppercase">
+                  {getPlatformLabel(listing.platform)}
+                </span>
+                <span>ID: #{listing.id.slice(0, 8).toUpperCase()}</span>
+                <span>&middot;</span>
+                <span>Region: {listing.region || "Global"}</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-slate-100 font-display">
+              <h1 className="text-2xl sm:text-3xl font-bold text-white font-display">
                 {listing.title}
               </h1>
             </div>
 
-            {/* In-Game Resource Counter Badges */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
-              <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border">
-                <span className="block text-[10px] uppercase font-bold text-amber-400">eFootball Coins</span>
-                <span className="text-lg font-bold text-slate-100 font-mono">
-                  {formatCompactNumber(listing.coin_balance)}
+            {/* Primary Resource Telemetry */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <div className="p-3.5 rounded-xl bg-[#131923] border border-[#222B3C]">
+                <span className="block text-[10px] font-mono uppercase text-slate-400">
+                  Team Strength
                 </span>
-              </div>
-              <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border">
-                <span className="block text-[10px] uppercase font-bold text-emerald-400">Collective Strength</span>
-                <span className="text-lg font-bold text-slate-100 font-mono">
+                <span className="text-lg font-bold text-emerald-400 font-mono mt-0.5 block">
                   {listing.overall_team_strength ? `${listing.overall_team_strength} OVR` : "Verified"}
                 </span>
               </div>
-              <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border col-span-2 sm:col-span-1">
-                <span className="block text-[10px] uppercase font-bold text-sky-400">Head Coach</span>
-                <span className="text-lg font-bold text-slate-100 truncate block">
-                  {listing.manager_name || "Assigned Manager"}
+              <div className="p-3.5 rounded-xl bg-[#131923] border border-[#222B3C]">
+                <span className="block text-[10px] font-mono uppercase text-slate-400">
+                  eFootball Coins
+                </span>
+                <span className="text-lg font-bold text-amber-300 font-mono mt-0.5 block">
+                  {formatCompactNumber(listing.coin_balance)}
                 </span>
               </div>
-              {((listing.gp_balance || 0) > 0 || (listing.efootball_points || 0) > 0) && (
-                <>
-                  {(listing.gp_balance || 0) > 0 && (
-                    <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border">
-                      <span className="block text-[10px] uppercase font-bold text-emerald-400">GP Balance</span>
-                      <span className="text-lg font-bold text-slate-100 font-mono">
-                        {formatCompactNumber(listing.gp_balance)}
-                      </span>
-                    </div>
-                  )}
-                  {(listing.efootball_points || 0) > 0 && (
-                    <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border">
-                      <span className="block text-[10px] uppercase font-bold text-indigo-400">ePoints</span>
-                      <span className="text-lg font-bold text-slate-100 font-mono">
-                        {formatCompactNumber(listing.efootball_points)}
-                      </span>
-                    </div>
-                  )}
-                </>
-              )}
+              <div className="p-3.5 rounded-xl bg-[#131923] border border-[#222B3C]">
+                <span className="block text-[10px] font-mono uppercase text-slate-400">
+                  Head Coach
+                </span>
+                <span className="text-sm font-bold text-white truncate mt-1 block">
+                  {listing.manager_name || "Assigned"}
+                </span>
+              </div>
+              <div className="p-3.5 rounded-xl bg-[#131923] border border-[#222B3C]">
+                <span className="block text-[10px] font-mono uppercase text-slate-400">
+                  Division Peak
+                </span>
+                <span className="text-sm font-bold text-white font-mono mt-1 block">
+                  Div {listing.current_division} (Best: Div {listing.highest_division})
+                </span>
+              </div>
             </div>
 
-            {/* Special Player Tiers Count (Rendered only when player counts exist) */}
+            {/* Card Tier Counts */}
             {((listing.epic_players_count || 0) +
               (listing.big_time_players_count || 0) +
               (listing.highlight_players_count || 0) +
               (listing.featured_players_count || 0) +
               (listing.legend_players_count || 0) > 0 ||
               (listing.key_players_list && listing.key_players_list.length > 0)) && (
-              <div className="p-4 sm:p-5 rounded-2xl bg-pitch-card/70 border border-pitch-border shadow-xl">
-                <h3 className="text-xs uppercase font-bold text-slate-300 tracking-wider mb-3">
-                  Squad Player Composition
-                </h3>
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 text-center">
-                  <div className="p-3 rounded-xl bg-gradient-to-b from-amber-500/20 via-yellow-600/15 to-amber-950/40 border border-amber-400/60 shadow-lg shadow-amber-500/10 transition-transform hover:scale-[1.02]">
-                    <div className="flex items-center justify-center gap-1 text-[11px] font-black uppercase text-amber-300">
-                      <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
-                      <span>Epics</span>
+              <div className="p-5 rounded-xl bg-[#131923] border border-[#222B3C] space-y-4">
+                <h2 className="text-xs font-mono uppercase font-bold text-slate-400 tracking-wider">
+                  Card Breakdown
+                </h2>
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-center">
+                  {[
+                    { label: "Epics", value: listing.epic_players_count || 0, accent: "text-amber-300" },
+                    { label: "Big Time", value: listing.big_time_players_count || 0, accent: "text-amber-300" },
+                    { label: "Highlights", value: listing.highlight_players_count || 0, accent: "text-emerald-300" },
+                    { label: "Featured", value: listing.featured_players_count || 0, accent: "text-slate-100" },
+                    { label: "Legends", value: listing.legend_players_count || 0, accent: "text-slate-100" },
+                  ].map((tier) => (
+                    <div
+                      key={tier.label}
+                      className="p-3 rounded-lg bg-[#0D1117] border border-[#1E2636]"
+                    >
+                      <span className="block text-[10px] font-mono uppercase text-slate-400">
+                        {tier.label}
+                      </span>
+                      <span className={`text-xl font-bold font-mono mt-0.5 block ${tier.accent}`}>
+                        {tier.value}
+                      </span>
                     </div>
-                    <span className="text-2xl font-black text-amber-100 font-mono mt-1 block">
-                      {listing.epic_players_count}
-                    </span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-gradient-to-b from-purple-500/20 via-fuchsia-600/15 to-indigo-950/40 border border-purple-400/60 shadow-lg shadow-purple-500/10 transition-transform hover:scale-[1.02]">
-                    <div className="flex items-center justify-center gap-1 text-[11px] font-black uppercase text-purple-300">
-                      <Zap className="w-3 h-3 text-purple-400 fill-purple-400" />
-                      <span>Big Time</span>
-                    </div>
-                    <span className="text-2xl font-black text-purple-100 font-mono mt-1 block">
-                      {listing.big_time_players_count}
-                    </span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-gradient-to-b from-emerald-500/20 via-teal-600/15 to-emerald-950/40 border border-emerald-400/60 shadow-lg shadow-emerald-500/10 transition-transform hover:scale-[1.02]">
-                    <div className="flex items-center justify-center gap-1 text-[11px] font-black uppercase text-emerald-300">
-                      <Star className="w-3 h-3 text-emerald-400" />
-                      <span>Highlights</span>
-                    </div>
-                    <span className="text-2xl font-black text-emerald-100 font-mono mt-1 block">
-                      {listing.highlight_players_count}
-                    </span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-gradient-to-b from-sky-500/15 via-blue-600/10 to-slate-900/40 border border-sky-400/50 transition-transform hover:scale-[1.02]">
-                    <span className="block text-[11px] font-bold uppercase text-sky-300">Featured</span>
-                    <span className="text-2xl font-black text-sky-100 font-mono mt-1 block">
-                      {listing.featured_players_count}
-                    </span>
-                  </div>
-                  <div className="p-3 rounded-xl bg-gradient-to-b from-slate-700/30 to-slate-900/50 border border-slate-600/60 transition-transform hover:scale-[1.02]">
-                    <div className="flex items-center justify-center gap-1 text-[11px] font-bold uppercase text-slate-300">
-                      <Trophy className="w-3 h-3 text-slate-400" />
-                      <span>Legends</span>
-                    </div>
-                    <span className="text-2xl font-black text-slate-200 font-mono mt-1 block">
-                      {listing.legend_players_count}
-                    </span>
-                  </div>
+                  ))}
                 </div>
 
                 {listing.key_players_list && listing.key_players_list.length > 0 && (
-                  <div className="mt-4 pt-4 border-t border-pitch-border/60">
-                    <div className="flex items-center justify-between mb-2">
-                      <span className="text-xs uppercase font-bold text-slate-300 tracking-wider">
-                        Key Featured Squad Cards
-                      </span>
-                      <span className="text-[11px] text-amber-400/90 font-medium">
-                        {listing.key_players_list.length} showcased
-                      </span>
-                    </div>
-                    <div className="flex flex-wrap gap-2">
+                  <div className="pt-3 border-t border-[#1E2636]">
+                    <span className="block text-[11px] font-mono uppercase text-slate-400 mb-2">
+                      Notable Squad Players ({listing.key_players_list.length})
+                    </span>
+                    <div className="flex flex-wrap gap-1.5">
                       {listing.key_players_list.map((player, idx) => (
-                        <div
+                        <span
                           key={idx}
-                          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-gradient-to-r from-amber-950/60 via-slate-900 to-amber-950/40 border border-amber-500/50 text-xs font-bold text-amber-200 shadow-sm shadow-amber-500/10 hover:border-amber-400 transition-all"
+                          className="px-2.5 py-1 rounded-md bg-[#0D1117] border border-[#263248] text-xs font-medium text-slate-200"
                         >
-                          <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
-                          <span>{player}</span>
-                        </div>
+                          {player}
+                        </span>
                       ))}
                     </div>
                   </div>
@@ -325,199 +262,149 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
               </div>
             )}
 
-            {/* Tactical Blueprint & Division Record */}
-            <div className="p-4 rounded-xl bg-pitch-card/60 border border-pitch-border space-y-3">
-              <h3 className="text-xs uppercase font-bold text-slate-300 tracking-wider">
-                Tactical Profile & Division Standing
-              </h3>
-              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs">
-                <div>
-                  <span className="text-slate-400 block">Manager:</span>
-                  <span className="font-semibold text-slate-200">{listing.manager_name || "Unassigned"}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block">Playstyle:</span>
-                  <span className="font-semibold text-brand-300">{getPlaystyleLabel(listing.primary_playstyle)}</span>
-                </div>
-                <div>
-                  <span className="text-slate-400 block">Division Standing:</span>
-                  <span className="font-semibold text-emerald-400">Div {listing.current_division} (Best: Div {listing.highest_division})</span>
-                </div>
+            {/* Seller Notes */}
+            <div className="space-y-2">
+              <h2 className="text-xs font-mono uppercase font-bold text-slate-400 tracking-wider">
+                Seller Notes &amp; Tactical Setup ({getPlaystyleLabel(listing.primary_playstyle)})
+              </h2>
+              <div className="p-4 rounded-xl bg-[#131923] border border-[#222B3C] text-xs sm:text-sm text-slate-300 leading-relaxed whitespace-pre-line">
+                {listing.description || "No additional seller notes provided."}
               </div>
             </div>
 
-            {/* Account Description */}
-            <div className="pt-2">
-              <h3 className="text-sm font-semibold text-slate-200 mb-2">Seller Account Description</h3>
-              <p className="text-xs sm:text-sm text-slate-300 leading-relaxed whitespace-pre-line bg-pitch-card/40 p-4 rounded-xl border border-pitch-border/40">
-                {listing.description}
-              </p>
-            </div>
-
-            {/* Buyer Inspection & Konami ID Security Protocol */}
-            <div className="pt-4 border-t border-pitch-border/60 space-y-4">
-              <div className="flex items-center gap-2">
-                <ShieldCheck className="w-4 h-4 text-[#22C55E]" />
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider font-display">
-                  24-Hour Inspection & Account Security Protocol
-                </h3>
+            {/* 24-Hour Handover Checklist */}
+            <div className="pt-5 border-t border-[#1E2636] space-y-4">
+              <div className="flex items-center justify-between gap-2">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
+                  <h2 className="text-sm font-bold text-white font-display">
+                    24-Hour Buyer Handover Checklist
+                  </h2>
+                </div>
+                <Link href="/escrow-guarantee" className="text-xs font-medium text-emerald-400 hover:text-emerald-300">
+                  Full terms &rarr;
+                </Link>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                <div className="p-3.5 rounded-xl bg-pitch-card/60 border border-pitch-border space-y-1.5">
-                  <span className="font-bold text-white flex items-center gap-1.5">
-                    <span className="w-4 h-4 rounded-full bg-[#22C55E]/20 text-[#22C55E] flex items-center justify-center text-[10px] font-black">1</span>
-                    Verify Roster & Strength
-                  </span>
-                  <p className="text-slate-400 text-[11px] leading-relaxed">
-                    Log in and confirm all {listing.overall_team_strength} OVR players, Epic cards, coins, and GP match this listing description exactly.
-                  </p>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-pitch-card/60 border border-pitch-border space-y-1.5">
-                  <span className="font-bold text-white flex items-center gap-1.5">
-                    <span className="w-4 h-4 rounded-full bg-[#22C55E]/20 text-[#22C55E] flex items-center justify-center text-[10px] font-black">2</span>
-                    Rebind Registered Email
-                  </span>
-                  <p className="text-slate-400 text-[11px] leading-relaxed">
-                    Navigate to my.konami.net, change the registered email to your own, and confirm the verification link sent by Konami.
-                  </p>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-pitch-card/60 border border-pitch-border space-y-1.5">
-                  <span className="font-bold text-white flex items-center gap-1.5">
-                    <span className="w-4 h-4 rounded-full bg-[#22C55E]/20 text-[#22C55E] flex items-center justify-center text-[10px] font-black">3</span>
-                    Activate 2-Step Verification
-                  </span>
-                  <p className="text-slate-400 text-[11px] leading-relaxed">
-                    Turn on Two-Factor Authentication via Google Authenticator or SMS to lock out any previous devices permanently.
-                  </p>
-                </div>
-
-                <div className="p-3.5 rounded-xl bg-pitch-card/60 border border-pitch-border space-y-1.5">
-                  <span className="font-bold text-white flex items-center gap-1.5">
-                    <span className="w-4 h-4 rounded-full bg-[#22C55E]/20 text-[#22C55E] flex items-center justify-center text-[10px] font-black">4</span>
-                    Release Funds or Dispute
-                  </span>
-                  <p className="text-slate-400 text-[11px] leading-relaxed">
-                    Confirm delivery in your order dashboard or tap Open Dispute before the 24-hour timer expires to halt payout.
-                  </p>
-                </div>
-              </div>
-
-              {/* Authority Escrow Seal */}
-              <div className="p-3.5 rounded-xl bg-[#090D16] border border-[#1F2937] flex items-center justify-between text-xs text-slate-400">
-                <div className="flex items-center gap-2">
-                  <Building2 className="w-4 h-4 text-amber-400 shrink-0" />
-                  <span>Escrow Cleared via Till 1572931 | Governed by Brian Okibo, CEO</span>
-                </div>
-                <Link href="/escrow-guarantee" className="text-[#22C55E] hover:underline font-semibold shrink-0">
-                  Read Escrow Terms &rarr;
-                </Link>
+                {[
+                  {
+                    step: "01",
+                    title: "Verify Squad & Balances",
+                    body: "Sign in via Title Screen Data Transfer and confirm Starting XI, reserves, OVR, and Coins match.",
+                  },
+                  {
+                    step: "02",
+                    title: "Check Link Data Screen",
+                    body: "Open Extras -> Support -> Link Data and verify Google Play and Game Center both show Not Linked.",
+                  },
+                  {
+                    step: "03",
+                    title: "Bind Your Own Email & 2FA",
+                    body: "Sign into my.konami.net, replace the registered email and password, and enable your own 2-Step Verification.",
+                  },
+                  {
+                    step: "04",
+                    title: "Confirm or Raise Dispute",
+                    body: "Release seller payout once satisfied, or open a dispute before 24 hours ends to freeze funds for refund.",
+                  },
+                ].map((item) => (
+                  <div
+                    key={item.step}
+                    className="p-3.5 rounded-xl bg-[#131923] border border-[#222B3C] space-y-1"
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="font-mono text-[10px] font-bold text-emerald-400 px-1.5 py-0.5 rounded bg-[#0D1117] border border-[#242E42]">
+                        {item.step}
+                      </span>
+                      <span className="font-semibold text-white">{item.title}</span>
+                    </div>
+                    <p className="text-slate-400 text-[11px] leading-relaxed">{item.body}</p>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
         </div>
 
-        {/* Right Column: Buy & Escrow Checkout Widget (1 col) */}
-        <div className="lg:col-span-1 space-y-6">
-          {/* Price & Buy Now Card */}
-          <div className="bg-pitch-surface border border-pitch-border rounded-2xl p-6 shadow-2xl space-y-5 sticky top-20">
-            <div>
-              <span className="text-xs uppercase tracking-wider font-semibold text-slate-400">
-                Escrow Purchase Price
+        {/* Right Column: Sticky Checkout & Seller Box (4 cols) */}
+        <div className="lg:col-span-4 space-y-5 lg:sticky lg:top-28">
+          <div className="store-panel rounded-2xl p-6 space-y-5">
+            <div className="pb-4 border-b border-[#1E2636]">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400">
+                Purchase Price
               </span>
-              <div className="flex items-baseline gap-2 mt-1">
-                <span className="text-3xl font-extrabold text-white font-display">
+              <div className="flex items-baseline justify-between gap-2 mt-1">
+                <span className="text-3xl font-bold text-white font-mono">
                   {formatCurrency(listing.price, listing.currency)}
                 </span>
-                <span className="text-xs font-semibold text-emerald-400">Fixed Escrow</span>
+                <span className="px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-[10px] font-mono font-bold text-emerald-300 uppercase">
+                  Till 1572931
+                </span>
               </div>
             </div>
 
-            {/* Konami ID Transfer Safety Rating */}
-            <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border space-y-1.5">
+            {/* Konami Link Status */}
+            <div className="p-3.5 rounded-xl bg-[#131923] border border-[#222B3C] space-y-1">
               <div className="flex items-center gap-2">
-                <Lock className="w-4 h-4 text-emerald-400" />
-                <span className="text-xs font-bold text-slate-200">{konamiStatus.label}</span>
+                <Lock className="w-3.5 h-3.5 text-emerald-400" />
+                <span className="text-xs font-semibold text-white">{konamiStatus.label}</span>
               </div>
-              <p className="text-[11px] text-slate-400 leading-normal">
+              <p className="text-[11px] text-slate-400 leading-relaxed">
                 {konamiStatus.description}
               </p>
             </div>
 
-            {/* Buy Now or Edit Interactive Button */}
+            {/* Primary Actions */}
             {isOwner ? (
-              <div className="space-y-4">
+              <div className="space-y-3">
                 {listing.status === "sold" ? (
-                  <div className="p-4 rounded-xl bg-slate-800/80 border border-slate-700 text-center space-y-2">
-                    <div className="flex items-center justify-center gap-2 text-slate-300 font-bold text-sm">
-                      <Lock className="w-4 h-4 text-slate-400" />
-                      <span>Account Sold &amp; Transferred</span>
-                    </div>
-                    <p className="text-xs text-slate-400">
-                      This squad has been sold and delivered. Sold accounts cannot be edited.
-                    </p>
+                  <div className="p-4 rounded-xl bg-[#131923] border border-[#222B3C] text-center space-y-1">
+                    <span className="text-xs font-bold text-slate-200 block">Sold &amp; Transferred</span>
+                    <p className="text-[11px] text-slate-400">Sold accounts cannot be edited.</p>
                   </div>
                 ) : listing.status === "in_escrow" ? (
-                  <div className="p-4 rounded-xl bg-amber-950/40 border border-amber-800/60 text-center space-y-2">
-                    <div className="flex items-center justify-center gap-2 text-amber-300 font-bold text-sm">
-                      <Lock className="w-4 h-4 text-amber-400" />
-                      <span>Locked Under Escrow Trade</span>
-                    </div>
-                    <p className="text-xs text-slate-400">
-                      Active trade in progress. Account details cannot be edited during handover.
-                    </p>
+                  <div className="p-4 rounded-xl bg-amber-950/40 border border-amber-800/60 text-center space-y-1">
+                    <span className="text-xs font-bold text-amber-300 block">In Active Escrow</span>
+                    <p className="text-[11px] text-slate-400">Locked during buyer handover.</p>
                   </div>
                 ) : (
                   <Link href={`/seller/edit-listing/${listing.id}`} className="block">
                     <Button variant="gold" size="lg" className="w-full">
-                      <Edit3 className="w-4 h-4 mr-2" />
-                      Edit This Listing
+                      <Edit3 className="w-4 h-4" />
+                      <span>Edit Listing</span>
                     </Button>
                   </Link>
                 )}
 
-                {/* Seller Offers Management Panel */}
                 {listing.status === "published" && (
                   <SellerListingOffersPanel listingId={listing.id} />
                 )}
-
-                <p className="text-[11px] text-center text-slate-400">
-                  {listing.status === "sold"
-                    ? "This account has been sold under escrow."
-                    : "You own this listing. Buyers see the Buy Now and Make Offer buttons."}
-                </p>
               </div>
             ) : listing.status !== "published" ? (
-              <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 text-center space-y-2">
-                <div className="w-10 h-10 rounded-xl bg-slate-800 text-amber-400 flex items-center justify-center mx-auto">
-                  <Lock className="w-5 h-5 text-amber-400" />
-                </div>
-                <h4 className="text-sm font-bold text-white">
-                  {listing.status === "sold" ? "Account Sold & Delivered" : "Locked in Active Escrow"}
-                </h4>
-                <p className="text-xs text-slate-400 leading-relaxed">
+              <div className="p-4 rounded-xl bg-[#131923] border border-[#222B3C] text-center space-y-2">
+                <Lock className="w-5 h-5 text-amber-400 mx-auto" />
+                <h3 className="text-sm font-bold text-white">
+                  {listing.status === "sold" ? "Account Sold" : "Locked in Escrow"}
+                </h3>
+                <p className="text-xs text-slate-400">
                   {listing.status === "sold"
-                    ? "This squad was successfully delivered to a verified buyer."
-                    : "A buyer has deposited funds into Till 1572931 and 24-hour verification is in progress."}
+                    ? "This squad has already been delivered to a buyer."
+                    : "A buyer is currently completing their 24-hour inspection."}
                 </p>
                 <Link href="/browse" className="inline-block pt-1">
-                  <Button variant="secondary" size="sm" className="text-xs">
-                    Browse Other Verified Squads &rarr;
+                  <Button variant="secondary" size="sm">
+                    Browse Available Squads
                   </Button>
                 </Link>
               </div>
             ) : isListingOnFlashSale(listing) ? (
-              <div className="space-y-3">
-                <div className="p-3.5 rounded-xl bg-gradient-to-r from-amber-500/15 via-rose-500/10 to-amber-500/15 border border-amber-500/40 text-amber-300 text-xs font-semibold flex items-center gap-2.5 shadow-md">
-                  <Flame className="w-5 h-5 text-amber-400 fill-amber-400 animate-pulse shrink-0" />
-                  <div>
-                    <span className="font-bold text-white block">Friday Vault Squad Locked</span>
-                    <span className="text-[11px] text-amber-200/90 leading-tight block mt-0.5">
-                      Bargaining is withdrawn. Squad is time-locked in Friday Drops for immediate escrow checkout via Till 1572931.
-                    </span>
-                  </div>
+              <div className="space-y-2.5">
+                <div className="p-3 rounded-xl bg-amber-950/40 border border-amber-500/35 text-xs text-amber-200">
+                  <strong className="text-white block">Friday Drop Fixed Price</strong>
+                  <span className="text-[11px] text-amber-200/80">
+                    Custom offers are paused during the 8-hour Friday Drop window.
+                  </span>
                 </div>
                 <BuyNowButton
                   listingId={listing.id}
@@ -549,74 +436,65 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                   listingCurrency={listing.currency}
                   overallTeamStrength={listing.overall_team_strength}
                 />
-                <a
-                  href={`https://wa.me/254794400365?text=${encodeURIComponent(
-                    `Hello Brian Okibo (eFootballMarket Admin), I want to trigger WhatsApp escrow for this squad:\n\n🎮 Squad: ${listing.title}\n💰 Price: KES ${Number(listing.price).toLocaleString()}\n🔗 Link: https://www.efootballmarket.co.ke/listings/${listing.id}\n\nPlease verify and fast-track the Till 1572931 escrow process.`
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-slate-300 hover:text-white font-bold text-xs shadow-md border border-pitch-border hover:border-emerald-500/50 transition-all active:scale-95"
-                >
-                  <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Contact Platform Escrow Desk</span>
-                </a>
               </div>
             )}
 
-            {/* Account Swap + Cash Offer Box (Withdrawn during Flash Sales, Escrow Locks & For Owner) */}
+            {/* Swap Option */}
             {listing.allows_swap && !isOwner && !isListingOnFlashSale(listing) && listing.status === "published" && (
-              <div className="p-3.5 rounded-xl bg-emerald-950/40 border border-emerald-500/40 space-y-2 mt-2">
-                <div className="flex items-center gap-1.5 text-xs font-bold text-emerald-300">
-                  <ArrowRightLeft className="w-3.5 h-3.5 text-emerald-400" />
-                  <span>Account Swap + Cash Welcome!</span>
+              <div className="p-3.5 rounded-xl bg-emerald-950/35 border border-emerald-500/35 space-y-2">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-300">
+                  <ArrowRightLeft className="w-3.5 h-3.5" />
+                  <span>Open to Squad Swap + Cash</span>
                 </div>
                 {listing.swap_preferences && (
                   <p className="text-[11px] text-slate-300 leading-relaxed">
-                    Seller preferences: <em>"{listing.swap_preferences}"</em>
+                    Preferences: &ldquo;{listing.swap_preferences}&rdquo;
                   </p>
                 )}
                 <a
                   href={`https://wa.me/${formatWhatsAppPhone(listing.seller?.phone_number || "254794400365")}?text=${encodeURIComponent(
-                    `Hello ${listing.seller?.username || "Seller"}, I saw your listing "${listing.title}" on eFootballMarket. I want to propose an Account Swap + Cash deal!\nEscrow will be held via Till 1572931: https://www.efootballmarket.co.ke/listings/${listing.id}`
+                    `Hello ${listing.seller?.username || "Seller"}, I saw your listing "${listing.title}" on eFootballMarket and want to propose a Squad Swap + Cash deal via Till 1572931: https://www.efootballmarket.co.ke/listings/${listing.id}`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-emerald-800 hover:bg-emerald-700 text-white font-bold text-xs transition-all shadow-md active:scale-95"
+                  className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-zinc-950 font-bold text-xs transition-colors"
                 >
-                  <MessageCircle className="w-3.5 h-3.5 fill-white" />
-                  <span>Propose Swap to Seller</span>
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  <span>Discuss Swap on WhatsApp</span>
                 </a>
               </div>
             )}
 
-            {/* Escrow Guarantee Bullets */}
-            <div className="border-t border-pitch-border/60 pt-4 space-y-2.5 text-xs text-slate-300">
+            {/* Protection Guarantees */}
+            <div className="border-t border-[#1E2636] pt-4 space-y-2 text-xs text-slate-300">
               <div className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <span>Funds held safely in escrow until you verify account login.</span>
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                <span>Payment held on Till 1572931 until login verified</span>
               </div>
               <div className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <span>Instant automated M-Pesa STK push confirmation.</span>
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                <span>12-hour seller credential delivery window</span>
               </div>
               <div className="flex items-start gap-2">
-                <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-                <span>24-Hour full dispute window with platform moderation.</span>
+                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                <span>24-hour dispute &amp; full M-Pesa refund guarantee</span>
               </div>
             </div>
 
-            {/* Seller Trust Card */}
-            <div className="border-t border-pitch-border/60 pt-4 space-y-3">
-              <h4 className="text-xs uppercase font-bold text-slate-400 tracking-wider">
-                Seller Information
-              </h4>
+            {/* Seller Card */}
+            <div className="border-t border-[#1E2636] pt-4 space-y-3">
+              <span className="block text-[10px] font-mono uppercase tracking-wider text-slate-400">
+                Listed By
+              </span>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-sm text-slate-200">
+                <div className="w-10 h-10 rounded-lg bg-[#131923] border border-[#242E42] flex items-center justify-center font-mono font-bold text-xs text-slate-200">
                   {listing.seller?.username ? listing.seller.username.slice(0, 2).toUpperCase() : <Users className="w-4 h-4" />}
                 </div>
                 <div>
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-semibold text-slate-200">{listing.seller?.username || "Verified Seller"}</span>
+                  <div className="flex items-center gap-1.5 flex-wrap">
+                    <span className="text-sm font-semibold text-white">
+                      {listing.seller?.username || "Seller"}
+                    </span>
                     <VerifiedSellerBadge seller={listing.seller} size="sm" showPopover={true} />
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-slate-400 mt-0.5">
@@ -624,62 +502,43 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                       <>
                         <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
                         <span>{Number(listing.seller.seller_rating).toFixed(1)}</span>
-                        <span className="text-slate-600">/</span>
-                        <span>{listing.seller.completed_sales_count} completed orders</span>
+                        <span>&middot;</span>
+                        <span>{listing.seller.completed_sales_count} completed</span>
                       </>
                     ) : (
-                      <span>New Seller (0 completed orders)</span>
+                      <span>Verified seller account</span>
                     )}
                   </div>
                 </div>
               </div>
-
-              {!isOwner && listing.status === "published" && (
-                <ChatSellerWhatsAppButton
-                  sellerPhone={listing.seller?.phone_number}
-                  sellerUsername={listing.seller?.username}
-                  listingId={listing.id}
-                  listingTitle={listing.title}
-                  listingPrice={listing.price}
-                  listingCurrency={listing.currency}
-                  overallTeamStrength={listing.overall_team_strength}
-                  variant="secondary"
-                  label={`Chat with ${listing.seller?.username ? `@${listing.seller.username}` : "Seller"} on WhatsApp`}
-                />
-              )}
             </div>
           </div>
         </div>
       </div>
 
-      {/* Google-Compliant In-Content AdSense Slot */}
-      <div className="pt-2">
-        <AdBanner slot="listing_detail_bottom" format="horizontal" />
-      </div>
+      <AdBanner
+        slot="listing_detail_bottom"
+        format="horizontal"
+        hasContent={Boolean(listing.description && listing.description.length > 80)}
+      />
 
-      {/* Similar Verified Squads Section (Zero Demo Data) */}
+      {/* Related Squads */}
       {relatedListings.length > 0 && (
-        <section className="pt-6 border-t border-pitch-border/60 space-y-5">
+        <section className="pt-6 border-t border-[#1E2636] space-y-5">
           <div className="flex items-center justify-between">
-            <div>
-              <div className="inline-flex items-center gap-1.5 text-xs font-bold text-[#22C55E] uppercase tracking-wider mb-1">
-                <Sparkles className="w-3.5 h-3.5" />
-                <span>Marketplace Recommendations</span>
-              </div>
-              <h2 className="text-xl sm:text-2xl font-bold text-white font-display">
-                Similar Verified Accounts
-              </h2>
-            </div>
+            <h2 className="text-xl font-bold text-white font-display">
+              More {getPlatformLabel(listing.platform)} Squads
+            </h2>
             <Link
-              href="/browse"
-              className="inline-flex items-center gap-1 text-xs font-bold text-[#22C55E] hover:underline"
+              href={`/browse?platform=${listing.platform}`}
+              className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-400 hover:text-emerald-300"
             >
-              <span>View All Squads</span>
+              <span>View all</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
             {relatedListings.map((relListing) => (
               <ListingCard3D key={relListing.id} listing={relListing} />
             ))}
@@ -687,36 +546,29 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
         </section>
       )}
 
-      {/* Mobile Sticky Thumb-Zone Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#0B1220]/95 backdrop-blur-xl border-t border-slate-800/90 px-3.5 py-2.5 lg:hidden flex items-center justify-between gap-2 shadow-2xl safe-area-pb">
+      {/* Mobile Sticky Action Bar */}
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#07090D]/95 backdrop-blur-md border-t border-[#1E2636] px-4 py-2.5 lg:hidden flex items-center justify-between gap-2 safe-area-pb">
         <div className="min-w-0 shrink-0">
-          <p className="text-[9px] uppercase tracking-wider font-semibold text-slate-400 leading-tight">Total Price</p>
-          <p className="text-base font-black font-mono text-emerald-400 leading-tight whitespace-nowrap">
+          <p className="text-[9px] font-mono uppercase text-slate-400 leading-tight">Price</p>
+          <p className="text-base font-bold font-mono text-white leading-tight whitespace-nowrap">
             {formatCurrency(listing.price, listing.currency)}
           </p>
         </div>
         <div className="flex items-center gap-1.5 shrink-0">
           {isOwner ? (
-            listing.status === "sold" ? (
-              <span className="px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-semibold text-slate-400 flex items-center gap-1">
-                <Lock className="w-3.5 h-3.5 text-slate-500" />
-                Sold (Locked)
-              </span>
-            ) : listing.status === "in_escrow" ? (
-              <span className="px-3 py-1.5 rounded-xl bg-amber-950/60 border border-amber-800/60 text-xs font-semibold text-amber-300 flex items-center gap-1">
-                <Lock className="w-3.5 h-3.5 text-amber-400" />
-                In Escrow
-              </span>
-            ) : (
+            listing.status === "published" ? (
               <Link href={`/seller/edit-listing/${listing.id}`}>
-                <Button variant="gold" size="sm" className="text-xs font-bold">
-                  <Edit3 className="w-3.5 h-3.5 mr-1" />
+                <Button variant="gold" size="sm">
                   Edit
                 </Button>
               </Link>
+            ) : (
+              <span className="px-3 py-1.5 rounded-lg bg-[#131923] border border-[#242E42] text-xs font-mono text-slate-400">
+                {listing.status === "sold" ? "Sold" : "In Escrow"}
+              </span>
             )
           ) : listing.status !== "published" ? (
-            <span className="px-3 py-1.5 rounded-xl bg-slate-800 border border-slate-700 text-xs font-semibold text-slate-400">
+            <span className="px-3 py-1.5 rounded-lg bg-[#131923] border border-[#242E42] text-xs font-mono text-slate-400">
               {listing.status === "sold" ? "Sold" : "In Escrow"}
             </span>
           ) : isListingOnFlashSale(listing) ? (

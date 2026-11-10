@@ -40,6 +40,7 @@ Do not click Release Funds and do not spend coins or train players on the accoun
 
 Once our support team confirms that a third-party platform account is attached contrary to platform rules, the held M-Pesa payment is refunded in full to your Safaricom number.`,
     author_name: "eFootballMarket Support",
+    cover_image_url: "/images/cat-budget.jpg",
     is_pinned: true,
     is_published: true,
     views_count: 0,
@@ -180,6 +181,7 @@ Buyers compare squads primarily by permanent Epic/Big Time starters (such as Gul
 
 Before listing, make sure you can access the email inbox tied to your Konami ID without delay. Once a buyer pays into Till 1572931, you have up to 12 hours to deliver credentials, and staying responsive in the Order Chat to pass the one-time Konami email change code lets the buyer verify and release your M-Pesa payout much sooner.`,
     author_name: "eFootballMarket Support",
+    cover_image_url: "/images/cat-elite.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,

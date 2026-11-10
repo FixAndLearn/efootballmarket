@@ -1,439 +1,240 @@
 "use client";
 
-import { Logo } from "@/components/brand/Logo";
-import { Button } from "@/components/ui/Button";
-import { useAuth } from "@/hooks/useAuth";
-import { isUserAdmin } from "@/lib/security/adminAuth";
-import {
-  BookOpen,
-  CheckCircle2,
-  ChevronDown,
-  Clock,
-  Crown,
-  Handshake,
-  Info,
-  LogOut,
-  Menu,
-  MessageCircle,
-  Phone,
-  Plus,
-  PlusCircle,
-  ShieldCheck,
-  ShoppingCart,
-  Target,
-  Trophy,
-  User as UserIcon,
-  Users,
-  X,
-} from "lucide-react";
-import { NotificationBell } from "@/components/layout/NotificationBell";
+import React, { useState } from "react";
 import Link from "next/link";
-import { useRouter, usePathname } from "next/navigation";
-import { useState, useRef, useEffect } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useAuth } from "@/hooks/useAuth";
+import { isSuperAdminEmail } from "@/lib/security/adminAuth";
+import { Button } from "@/components/ui/Button";
+import { Logo } from "@/components/brand/Logo";
+import { NotificationBell } from "@/components/layout/NotificationBell";
+import {
+  Menu,
+  X,
+  Plus,
+  LogOut,
+  ChevronDown,
+  ShoppingBag,
+  Store,
+  Wallet,
+  Settings,
+  ShieldAlert,
+  Search,
+  ShieldCheck,
+} from "lucide-react";
 
 export function Header() {
+  const pathname = usePathname();
   const router = useRouter();
-  const pathname = usePathname() || "/";
-  const { user, profile, loading, signOut, isAuthenticated, displayName } = useAuth();
-  const isAdminUser = isUserAdmin(user?.email, profile?.role);
+  const { user, profile, signOut } = useAuth();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const [moreNavOpen, setMoreNavOpen] = useState(false);
-  const dropdownRef = useRef<HTMLDivElement>(null);
-  const moreNavRef = useRef<HTMLLIElement>(null);
+  const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [headerSearch, setHeaderSearch] = useState("");
 
-  useEffect(() => {
-    function handleClickOutside(event: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setDropdownOpen(false);
-      }
-      if (moreNavRef.current && !moreNavRef.current.contains(event.target as Node)) {
-        setMoreNavOpen(false);
-      }
+  const isSeller = profile?.role === "seller" || profile?.role === "admin";
+  const isAdmin = profile?.role === "admin" || isSuperAdminEmail(user?.email);
+
+  const navLinks = [
+    { name: "Marketplace", href: "/browse" },
+    { name: "Friday Drops", href: "/friday-drops", tag: "8H" },
+    { name: "Middleman", href: "/middleman" },
+    { name: "Wanted", href: "/wanted" },
+    { name: "Tournaments", href: "/tournaments" },
+    { name: "Scam Check", href: "/scammer-check" },
+    { name: "Guides", href: "/news" },
+  ];
+
+  const handleHeaderSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const q = headerSearch.trim();
+    if (q) {
+      router.push(`/browse?search=${encodeURIComponent(q)}`);
+    } else {
+      router.push("/browse");
     }
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
-  const handleSignOut = async () => {
-    setDropdownOpen(false);
     setMobileMenuOpen(false);
-    await signOut();
-    router.push("/");
-    router.refresh();
   };
-
-  const getInitials = (name: string) => {
-    if (!name) return "U";
-    const parts = name.trim().split(" ");
-    if (parts.length >= 2) {
-      return `${parts[0][0]}${parts[1][0]}`.toUpperCase();
-    }
-    return name.slice(0, 2).toUpperCase();
-  };
-
-  const isAuthRoute =
-    pathname === "/login" ||
-    pathname === "/register" ||
-    pathname.startsWith("/forgot-password") ||
-    pathname.startsWith("/reset-password") ||
-    pathname.startsWith("/invite") ||
-    pathname.startsWith("/auth");
-
-  const isHighIntentRoute =
-    pathname.startsWith("/orders/") ||
-    pathname.startsWith("/pay/") ||
-    pathname === "/seller/verification" ||
-    pathname === "/seller/create-listing";
-
-  if (isAuthRoute) {
-    return (
-      <header className="sticky top-0 z-50 w-full border-b border-[#242A36] bg-[#090B0E]/95 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
-          <Logo clickable={true} size="md" />
-          <Link
-            href="/"
-            className="text-xs font-medium text-slate-300 hover:text-white px-3 py-1.5 rounded-lg border border-[#242A36] hover:border-slate-600 bg-[#11141B] transition-colors"
-          >
-            Back to Marketplace
-          </Link>
-        </div>
-      </header>
-    );
-  }
-
-  if (isHighIntentRoute) {
-    let contextTitle = "Order Protection";
-    let backHref = "/";
-    let backLabel = "Back";
-
-    if (pathname.startsWith("/orders/")) {
-      contextTitle = "Order Handover (Till 1572931)";
-      backHref = "/dashboard/buyer";
-      backLabel = "My Orders";
-    } else if (pathname.startsWith("/pay/")) {
-      contextTitle = "M-Pesa Checkout";
-      backHref = "/browse";
-      backLabel = "Cancel";
-    } else if (pathname === "/seller/create-listing") {
-      contextTitle = "New Listing";
-      backHref = "/dashboard/seller";
-      backLabel = "Seller Hub";
-    } else if (pathname === "/seller/verification") {
-      contextTitle = "Seller Verification";
-      backHref = "/dashboard/seller";
-      backLabel = "Seller Hub";
-    }
-
-    return (
-      <header className="sticky top-0 z-50 w-full border-b border-[#242A36] bg-[#090B0E]/95 backdrop-blur-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <Logo clickable={true} size="md" />
-            <div className="h-4 w-px bg-[#242A36] hidden sm:block" />
-            <span className="hidden sm:inline-flex items-center gap-1.5 text-xs font-medium text-slate-300">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>{contextTitle}</span>
-            </span>
-          </div>
-          <Link
-            href={backHref}
-            className="text-xs font-medium text-slate-300 hover:text-white px-3 py-1.5 rounded-lg border border-[#242A36] hover:border-slate-600 bg-[#11141B] transition-colors"
-          >
-            {backLabel}
-          </Link>
-        </div>
-      </header>
-    );
-  }
-
-  const isMoreActive =
-    pathname.startsWith("/friday-drops") ||
-    pathname.startsWith("/wanted") ||
-    pathname.startsWith("/tournaments") ||
-    pathname.startsWith("/escrow-guarantee") ||
-    pathname.startsWith("/about") ||
-    pathname.startsWith("/contact");
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-[#242A36] bg-[#090B0E]/95 backdrop-blur-md">
+    <header className="sticky top-0 z-50 w-full bg-[#07090D]/95 backdrop-blur-md border-b border-[#1E2636]">
+      {/* Primary Storefront Bar */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-16 gap-4">
-          {/* Logo & Primary Navigation */}
-          <div className="flex items-center gap-6 shrink-0">
-            <Logo clickable={true} size="md" />
+        <div className="flex items-center justify-between gap-4 h-16">
+          {/* Left: Brand + Instant Storefront Search (Eldorado / G2G style) */}
+          <div className="flex items-center gap-5 flex-1 min-w-0">
+            <Logo size="md" />
 
-            <nav role="navigation" aria-label="Main Navigation" className="hidden lg:block shrink-0">
-              <ul role="menubar" className="flex items-center gap-1 text-sm font-medium">
-                <li role="none">
-                  <Link
-                    href="/browse"
-                    role="menuitem"
-                    className={`px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap ${
-                      pathname.startsWith("/browse")
-                        ? "text-white bg-[#171B24]"
-                        : "text-slate-400 hover:text-white hover:bg-[#141821]"
-                    }`}
-                  >
-                    Browse
-                  </Link>
-                </li>
-                <li role="none">
-                  <Link
-                    href="/middleman"
-                    role="menuitem"
-                    className={`px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap ${
-                      pathname.startsWith("/middleman")
-                        ? "text-white bg-[#171B24]"
-                        : "text-slate-400 hover:text-white hover:bg-[#141821]"
-                    }`}
-                  >
-                    Middleman
-                  </Link>
-                </li>
-                <li role="none">
-                  <Link
-                    href="/news"
-                    role="menuitem"
-                    className={`px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap ${
-                      pathname.startsWith("/news")
-                        ? "text-white bg-[#171B24]"
-                        : "text-slate-400 hover:text-white hover:bg-[#141821]"
-                    }`}
-                  >
-                    Guides
-                  </Link>
-                </li>
-                <li role="none">
-                  <Link
-                    href="/scammer-check"
-                    role="menuitem"
-                    className={`px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap ${
-                      pathname.startsWith("/scammer-check")
-                        ? "text-white bg-[#171B24]"
-                        : "text-slate-400 hover:text-white hover:bg-[#141821]"
-                    }`}
-                  >
-                    Scammer Check
-                  </Link>
-                </li>
-
-                <li
-                  role="none"
-                  className="relative"
-                  ref={moreNavRef}
-                  onMouseEnter={() => setMoreNavOpen(true)}
-                  onMouseLeave={() => setMoreNavOpen(false)}
-                >
-                  <button
-                    type="button"
-                    onClick={() => setMoreNavOpen(!moreNavOpen)}
-                    className={`flex items-center gap-1 px-3 py-1.5 rounded-lg transition-colors whitespace-nowrap ${
-                      isMoreActive || moreNavOpen
-                        ? "text-white bg-[#171B24]"
-                        : "text-slate-400 hover:text-white hover:bg-[#141821]"
-                    }`}
-                  >
-                    <span>More</span>
-                    <ChevronDown className={`w-3.5 h-3.5 text-slate-500 transition-transform duration-150 ${moreNavOpen ? "rotate-180 text-white" : ""}`} />
-                  </button>
-
-                  {moreNavOpen && (
-                    <div className="absolute left-0 mt-1.5 w-52 rounded-xl bg-[#11141B] border border-[#242A36] shadow-2xl py-1.5 z-50 text-xs font-medium">
-                      <Link
-                        href="/escrow-guarantee"
-                        onClick={() => setMoreNavOpen(false)}
-                        className="flex items-center gap-2.5 px-3.5 py-2 text-slate-300 hover:text-white hover:bg-[#171B24] transition-colors"
-                      >
-                        <ShieldCheck className="w-4 h-4 text-slate-400 shrink-0" />
-                        <span>How Protection Works</span>
-                      </Link>
-                      <Link
-                        href="/wanted"
-                        onClick={() => setMoreNavOpen(false)}
-                        className="flex items-center gap-2.5 px-3.5 py-2 text-slate-300 hover:text-white hover:bg-[#171B24] transition-colors"
-                      >
-                        <Target className="w-4 h-4 text-slate-400 shrink-0" />
-                        <span>Wanted Board</span>
-                      </Link>
-                      <Link
-                        href="/tournaments"
-                        onClick={() => setMoreNavOpen(false)}
-                        className="flex items-center gap-2.5 px-3.5 py-2 text-slate-300 hover:text-white hover:bg-[#171B24] transition-colors"
-                      >
-                        <Trophy className="w-4 h-4 text-slate-400 shrink-0" />
-                        <span>Tournaments</span>
-                      </Link>
-                      <Link
-                        href="/friday-drops"
-                        onClick={() => setMoreNavOpen(false)}
-                        className="flex items-center gap-2.5 px-3.5 py-2 text-slate-300 hover:text-white hover:bg-[#171B24] transition-colors"
-                      >
-                        <Clock className="w-4 h-4 text-slate-400 shrink-0" />
-                        <span>Friday Drops</span>
-                      </Link>
-                      <div className="my-1 border-t border-[#242A36]" />
-                      <Link
-                        href="/about"
-                        onClick={() => setMoreNavOpen(false)}
-                        className="flex items-center gap-2.5 px-3.5 py-2 text-slate-300 hover:text-white hover:bg-[#171B24] transition-colors"
-                      >
-                        <Info className="w-4 h-4 text-slate-400 shrink-0" />
-                        <span>About Us</span>
-                      </Link>
-                      <Link
-                        href="/contact"
-                        onClick={() => setMoreNavOpen(false)}
-                        className="flex items-center gap-2.5 px-3.5 py-2 text-slate-300 hover:text-white hover:bg-[#171B24] transition-colors"
-                      >
-                        <Phone className="w-4 h-4 text-slate-400 shrink-0" />
-                        <span>Contact Support</span>
-                      </Link>
-                    </div>
-                  )}
-                </li>
-              </ul>
-            </nav>
+            <form
+              onSubmit={handleHeaderSearch}
+              className="hidden md:flex items-center flex-1 max-w-md relative"
+            >
+              <Search className="w-4 h-4 text-slate-500 absolute left-3.5 pointer-events-none" />
+              <input
+                type="text"
+                value={headerSearch}
+                onChange={(e) => setHeaderSearch(e.target.value)}
+                placeholder="Search squads, Gullit, Vieira, 3150+ OVR..."
+                className="w-full h-9 pl-9 pr-16 rounded-lg bg-[#0D1117] border border-[#222B3C] hover:border-[#2E3A50] focus:border-emerald-500 text-xs text-white placeholder:text-slate-500 focus:outline-none transition-colors"
+              />
+              <button
+                type="submit"
+                className="absolute right-1.5 px-2 py-1 rounded bg-[#161D2A] hover:bg-[#1E2738] border border-[#273246] text-[10px] font-mono font-semibold text-slate-300 hover:text-white transition-colors"
+              >
+                GO
+              </button>
+            </form>
           </div>
 
-          {/* Right Action Controls */}
-          <div className="flex items-center gap-2 shrink-0">
-            <Link href="/seller/create-listing" className="hidden sm:inline-flex shrink-0">
-              <Button variant="primary" size="sm" className="px-3.5">
-                <Plus className="w-3.5 h-3.5 stroke-[2.5] shrink-0" />
-                <span>Sell Account</span>
+          {/* Right: Till Indicator + Sell CTA + Account */}
+          <div className="hidden md:flex items-center gap-2.5 shrink-0">
+            <Link
+              href="/escrow-guarantee"
+              className="hidden xl:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#0D1117] border border-[#1E2636] hover:border-emerald-500/40 text-[11px] font-mono text-slate-300 transition-colors"
+              title="Safaricom Lipa Na M-Pesa Buyer Protection"
+            >
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Till 1572931</span>
+            </Link>
+
+            {user && <NotificationBell />}
+
+            <Link href="/seller/create-listing">
+              <Button variant="primary" size="sm" className="h-9 px-3.5">
+                <Plus className="w-3.5 h-3.5" />
+                <span>Sell Squad</span>
               </Button>
             </Link>
 
-            <NotificationBell />
-
-            <div className="h-4 w-px bg-[#242A36] mx-1 hidden sm:block shrink-0" />
-
-            {loading ? (
-              <div className="h-8 w-20 bg-[#141821] animate-pulse rounded-lg hidden sm:block shrink-0" />
-            ) : isAuthenticated ? (
-              <div className="relative shrink-0" ref={dropdownRef}>
+            {user ? (
+              <div className="relative">
                 <button
                   type="button"
-                  onClick={() => setDropdownOpen(!dropdownOpen)}
-                  className="flex items-center gap-2 p-1 pr-2.5 rounded-lg bg-[#11141B] border border-[#242A36] hover:border-slate-600 transition-colors whitespace-nowrap"
+                  onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                  className="flex items-center gap-2 h-9 pl-2 pr-2.5 rounded-lg bg-[#0D1117] hover:bg-[#131923] border border-[#222B3C] transition-colors"
                 >
-                  <div className="w-6 h-6 rounded-md bg-emerald-500 text-zinc-950 font-bold text-[11px] flex items-center justify-center shrink-0">
-                    {getInitials(displayName)}
+                  <div className="w-6 h-6 rounded bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-mono font-bold text-[11px]">
+                    {profile?.username ? profile.username.slice(0, 2).toUpperCase() : "ME"}
                   </div>
-                  <span className="text-xs font-medium text-slate-200 max-w-[110px] truncate hidden sm:inline-block">
-                    {displayName}
+                  <span className="text-xs font-medium text-slate-200 max-w-[96px] truncate">
+                    {profile?.username || "Account"}
                   </span>
-                  <ChevronDown className="w-3 h-3 text-slate-500 hidden sm:block shrink-0" />
+                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
                 </button>
 
-                {dropdownOpen && (
-                  <div className="absolute right-0 mt-1.5 w-60 rounded-xl bg-[#11141B] border border-[#242A36] shadow-2xl p-1.5 z-50">
-                    <div className="px-3 py-2 border-b border-[#242A36]">
-                      <p className="text-xs font-semibold text-white truncate">{displayName}</p>
-                      <p className="text-[11px] text-slate-400 truncate">{user?.email}</p>
-                      {profile?.is_verified_seller && (
-                        <div className="mt-1 inline-flex items-center gap-1 text-[10px] font-medium text-emerald-400">
-                          <CheckCircle2 className="w-3 h-3" />
-                          <span>Verified Seller</span>
-                        </div>
-                      )}
-                    </div>
+                {profileDropdownOpen && (
+                  <>
+                    <div
+                      className="fixed inset-0 z-10"
+                      onClick={() => setProfileDropdownOpen(false)}
+                    />
+                    <div className="absolute right-0 mt-2 w-56 rounded-xl bg-[#0D1117] border border-[#222B3C] shadow-2xl py-1.5 z-20 text-sm">
+                      <div className="px-3.5 py-2.5 border-b border-[#1E2636]">
+                        <p className="font-semibold text-white text-xs truncate">
+                          {profile?.username || user.email}
+                        </p>
+                        <p className="text-[11px] text-slate-400 capitalize mt-0.5">
+                          {isAdmin ? "Administrator" : `${profile?.role || "Trader"} Account`}
+                        </p>
+                      </div>
 
-                    <div className="py-1 text-xs">
-                      <Link
-                        href="/dashboard/buyer"
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-[#171B24] transition-colors"
-                      >
-                        <ShoppingCart className="w-4 h-4 text-slate-400" />
-                        <span>Buyer Orders</span>
-                      </Link>
-                      <Link
-                        href="/dashboard/seller"
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-[#171B24] transition-colors"
-                      >
-                        <ShieldCheck className="w-4 h-4 text-slate-400" />
-                        <span>Seller Dashboard</span>
-                      </Link>
-                      <Link
-                        href="/seller/create-listing"
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-[#171B24] transition-colors"
-                      >
-                        <PlusCircle className="w-4 h-4 text-slate-400" />
-                        <span>New Listing</span>
-                      </Link>
-                      {isAdminUser && (
+                      <div className="py-1">
                         <Link
-                          href="/admin"
-                          onClick={() => setDropdownOpen(false)}
-                          className="flex items-center gap-2 px-3 py-2 rounded-lg text-amber-300 bg-amber-500/10 hover:bg-amber-500/15 font-medium transition-colors my-0.5"
+                          href="/dashboard/buyer"
+                          onClick={() => setProfileDropdownOpen(false)}
+                          className="flex items-center gap-2.5 px-3.5 py-2 text-xs text-slate-300 hover:bg-[#131923] hover:text-white"
                         >
-                          <Crown className="w-4 h-4 text-amber-400" />
-                          <span>Admin Panel</span>
+                          <ShoppingBag className="w-3.5 h-3.5 text-slate-400" />
+                          <span>My Purchases</span>
                         </Link>
-                      )}
-                      <Link
-                        href="/seller/verification"
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-[#171B24] transition-colors"
-                      >
-                        <CheckCircle2 className="w-4 h-4 text-slate-400" />
-                        <span>Seller Verification</span>
-                      </Link>
-                      <Link
-                        href="/profile"
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-[#171B24] transition-colors"
-                      >
-                        <UserIcon className="w-4 h-4 text-slate-400" />
-                        <span>Account Settings</span>
-                      </Link>
-                      <Link
-                        href="/invite"
-                        onClick={() => setDropdownOpen(false)}
-                        className="flex items-center gap-2 px-3 py-2 rounded-lg text-slate-300 hover:text-white hover:bg-[#171B24] transition-colors"
-                      >
-                        <Users className="w-4 h-4 text-slate-400" />
-                        <span>Invite Friends</span>
-                      </Link>
-                    </div>
 
-                    <div className="pt-1 border-t border-[#242A36]">
-                      <button
-                        type="button"
-                        onClick={handleSignOut}
-                        className="w-full flex items-center gap-2 px-3 py-2 rounded-lg text-rose-400 hover:bg-rose-950/30 text-xs font-medium transition-colors"
-                      >
-                        <LogOut className="w-4 h-4" />
-                        <span>Sign Out</span>
-                      </button>
+                        <Link
+                          href="/dashboard/seller"
+                          onClick={() => setProfileDropdownOpen(false)}
+                          className="flex items-center gap-2.5 px-3.5 py-2 text-xs text-slate-300 hover:bg-[#131923] hover:text-white"
+                        >
+                          <Store className="w-3.5 h-3.5 text-slate-400" />
+                          <span>Seller Dashboard</span>
+                        </Link>
+
+                        {isSeller && (
+                          <Link
+                            href="/seller/earnings"
+                            onClick={() => setProfileDropdownOpen(false)}
+                            className="flex items-center gap-2.5 px-3.5 py-2 text-xs text-slate-300 hover:bg-[#131923] hover:text-white"
+                          >
+                            <Wallet className="w-3.5 h-3.5 text-slate-400" />
+                            <span>Earnings &amp; Payouts</span>
+                          </Link>
+                        )}
+
+                        <Link
+                          href="/profile"
+                          onClick={() => setProfileDropdownOpen(false)}
+                          className="flex items-center gap-2.5 px-3.5 py-2 text-xs text-slate-300 hover:bg-[#131923] hover:text-white"
+                        >
+                          <Settings className="w-3.5 h-3.5 text-slate-400" />
+                          <span>Account Settings</span>
+                        </Link>
+
+                        {isAdmin && (
+                          <Link
+                            href="/admin"
+                            onClick={() => setProfileDropdownOpen(false)}
+                            className="flex items-center gap-2.5 px-3.5 py-2 text-xs text-amber-400 hover:bg-[#131923]"
+                          >
+                            <ShieldAlert className="w-3.5 h-3.5" />
+                            <span>Admin Console</span>
+                          </Link>
+                        )}
+                      </div>
+
+                      <div className="border-t border-[#1E2636] pt-1">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setProfileDropdownOpen(false);
+                            signOut();
+                          }}
+                          className="flex w-full items-center gap-2.5 px-3.5 py-2 text-xs text-rose-400 hover:bg-[#131923]"
+                        >
+                          <LogOut className="w-3.5 h-3.5" />
+                          <span>Sign Out</span>
+                        </button>
+                      </div>
                     </div>
-                  </div>
+                  </>
                 )}
               </div>
             ) : (
-              <div className="hidden sm:flex items-center gap-2 shrink-0">
+              <div className="flex items-center gap-2">
                 <Link href="/login">
-                  <Button variant="ghost" size="sm">
-                    Log in
+                  <Button variant="ghost" size="sm" className="h-9">
+                    Sign In
                   </Button>
                 </Link>
                 <Link href="/register">
-                  <Button variant="secondary" size="sm">
-                    Sign up
+                  <Button variant="secondary" size="sm" className="h-9">
+                    Register
                   </Button>
                 </Link>
               </div>
             )}
+          </div>
 
+          {/* Mobile Controls */}
+          <div className="flex items-center gap-2 md:hidden">
+            {user && <NotificationBell />}
+            <Link href="/seller/create-listing">
+              <Button variant="primary" size="sm" className="h-8 px-2.5 text-xs">
+                <Plus className="w-3.5 h-3.5" />
+                <span>Sell</span>
+              </Button>
+            </Link>
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="lg:hidden p-2 rounded-lg text-slate-400 hover:text-white hover:bg-[#171B24] transition-colors"
-              aria-label="Toggle Navigation Menu"
+              className="p-2 rounded-lg text-slate-300 hover:text-white bg-[#0D1117] border border-[#222B3C]"
+              aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -441,159 +242,139 @@ export function Header() {
         </div>
       </div>
 
-      {mobileMenuOpen && (
-        <div
-          className="fixed inset-0 top-16 z-40 bg-black/75 lg:hidden"
-          onClick={() => setMobileMenuOpen(false)}
-        />
-      )}
-
-      {mobileMenuOpen && (
-        <div
-          style={{ backgroundColor: "#090B0E" }}
-          className="lg:hidden absolute top-full inset-x-0 z-50 border-b border-[#242A36] bg-[#090B0E] shadow-2xl px-4 py-4 space-y-3 max-h-[calc(100vh-4rem)] overflow-y-auto"
-        >
-          {isAuthenticated ? (
-            <div className="p-3 rounded-xl bg-[#11141B] border border-[#242A36] space-y-2.5">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2.5 min-w-0">
-                  <div className="w-8 h-8 rounded-lg bg-emerald-500 text-zinc-950 font-bold text-xs flex items-center justify-center shrink-0">
-                    {getInitials(displayName)}
-                  </div>
-                  <div className="min-w-0">
-                    <p className="text-xs font-semibold text-white truncate">{displayName}</p>
-                    <p className="text-[11px] text-slate-400 truncate">{user?.email}</p>
-                  </div>
-                </div>
-                {isAdminUser && (
-                  <Link
-                    href="/admin"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="px-2 py-1 rounded-md bg-amber-500/15 text-amber-300 text-[11px] font-medium"
-                  >
-                    Admin
-                  </Link>
-                )}
-              </div>
-              <div className="grid grid-cols-2 gap-2 pt-1 border-t border-[#242A36]">
+      {/* Secondary Storefront Category Rail (Desktop) */}
+      <div className="hidden md:block border-t border-[#161C28] bg-[#0A0D13]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-10">
+          <nav className="flex items-center gap-1 h-full">
+            {navLinks.map((link) => {
+              const isActive =
+                pathname === link.href ||
+                (link.href !== "/" && pathname?.startsWith(link.href));
+              return (
                 <Link
-                  href="/dashboard/buyer"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-center text-xs py-2 rounded-lg bg-[#171B24] border border-[#283040] text-slate-200 font-medium"
+                  key={link.href}
+                  href={link.href}
+                  className={`relative h-full inline-flex items-center gap-1.5 px-3 text-xs font-medium transition-colors ${
+                    isActive
+                      ? "text-white"
+                      : "text-slate-400 hover:text-slate-100"
+                  }`}
                 >
-                  Buyer Orders
+                  <span>{link.name}</span>
+                  {link.tag && (
+                    <span className="px-1.5 py-0.2 rounded bg-amber-500/15 border border-amber-500/30 text-[9px] font-mono font-bold text-amber-300">
+                      {link.tag}
+                    </span>
+                  )}
+                  {isActive && (
+                    <span className="absolute bottom-0 left-3 right-3 h-[2px] bg-emerald-400 rounded-t-full" />
+                  )}
                 </Link>
-                <Link
-                  href="/dashboard/seller"
-                  onClick={() => setMobileMenuOpen(false)}
-                  className="text-center text-xs py-2 rounded-lg bg-[#171B24] border border-[#283040] text-slate-200 font-medium"
-                >
-                  Seller Hub
-                </Link>
-              </div>
-            </div>
-          ) : (
-            <div className="grid grid-cols-2 gap-2">
-              <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-                <Button variant="secondary" size="sm" className="w-full">
-                  Log in
-                </Button>
-              </Link>
-              <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
-                <Button variant="primary" size="sm" className="w-full">
-                  Sign up
-                </Button>
-              </Link>
-            </div>
-          )}
+              );
+            })}
+          </nav>
 
-          <div className="space-y-0.5 pt-1 border-t border-[#242A36] text-xs font-medium">
-            <Link
-              href="/middleman"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-200 hover:bg-[#141821]"
-            >
-              <Handshake className="w-4 h-4 text-slate-400" />
-              <span>Middleman Service</span>
+          <div className="flex items-center gap-4 text-[11px] text-slate-400">
+            <Link href="/browse?minStrength=3150" className="hover:text-emerald-400 transition-colors font-mono">
+              3150+ OVR
             </Link>
-            <Link
-              href="/news"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-200 hover:bg-[#141821]"
-            >
-              <BookOpen className="w-4 h-4 text-slate-400" />
-              <span>Trading Guides &amp; Alerts</span>
+            <Link href="/browse?platform=android" className="hover:text-emerald-400 transition-colors">
+              Android
             </Link>
-            <Link
-              href="/tournaments"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-200 hover:bg-[#141821]"
-            >
-              <Trophy className="w-4 h-4 text-slate-400" />
-              <span>Tournaments</span>
+            <Link href="/browse?platform=ios" className="hover:text-emerald-400 transition-colors">
+              iOS
             </Link>
-            <Link
-              href="/wanted"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-200 hover:bg-[#141821]"
-            >
-              <Target className="w-4 h-4 text-slate-400" />
-              <span>Wanted Board</span>
-            </Link>
-            <Link
-              href="/friday-drops"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-200 hover:bg-[#141821]"
-            >
-              <Clock className="w-4 h-4 text-slate-400" />
-              <span>Friday Drops</span>
-            </Link>
-            <Link
-              href="/about"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-200 hover:bg-[#141821]"
-            >
-              <Info className="w-4 h-4 text-slate-400" />
-              <span>About eFootballMarket</span>
-            </Link>
-            <Link
-              href="/contact"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-slate-200 hover:bg-[#141821]"
-            >
-              <Phone className="w-4 h-4 text-slate-400" />
-              <span>Contact Support</span>
+            <Link href="/contact" className="hover:text-white transition-colors">
+              Support: 0794 400 365
             </Link>
           </div>
+        </div>
+      </div>
 
-          <div className="pt-2.5 border-t border-[#242A36] flex items-center justify-between text-xs text-slate-400">
-            <a
-              href="https://wa.me/254794400365"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => setMobileMenuOpen(false)}
-              className="flex items-center gap-1.5 text-emerald-400 font-medium"
+      {/* Mobile Drawer */}
+      {mobileMenuOpen && (
+        <div className="md:hidden bg-[#0D1117] border-b border-[#1E2636] px-4 pt-3 pb-5 space-y-3">
+          <form onSubmit={handleHeaderSearch} className="relative flex items-center">
+            <Search className="w-4 h-4 text-slate-500 absolute left-3.5 pointer-events-none" />
+            <input
+              type="text"
+              value={headerSearch}
+              onChange={(e) => setHeaderSearch(e.target.value)}
+              placeholder="Search squads, players, OVR..."
+              className="w-full h-10 pl-9 pr-16 rounded-lg bg-[#131923] border border-[#222B3C] text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
+            />
+            <button
+              type="submit"
+              className="absolute right-1.5 px-2.5 py-1 rounded bg-emerald-500 text-zinc-950 text-xs font-bold"
             >
-              <MessageCircle className="w-3.5 h-3.5" />
-              <span>WhatsApp: 0794 400 365</span>
-            </a>
+              Search
+            </button>
+          </form>
 
-            {isAuthenticated && (
-              <div className="flex items-center gap-3">
+          <div className="grid grid-cols-2 gap-1.5">
+            {navLinks.map((link) => {
+              const isActive = pathname === link.href;
+              return (
                 <Link
-                  href="/profile"
+                  key={link.href}
+                  href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-slate-300 hover:text-white"
+                  className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium border ${
+                    isActive
+                      ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-300"
+                      : "bg-[#131923] border-[#222B3C] text-slate-300"
+                  }`}
                 >
-                  Settings
+                  <span>{link.name}</span>
+                  {link.tag && (
+                    <span className="text-[9px] font-mono font-bold text-amber-300">
+                      {link.tag}
+                    </span>
+                  )}
                 </Link>
-                <button
-                  type="button"
-                  onClick={handleSignOut}
-                  className="text-rose-400 hover:text-rose-300 font-medium"
+              );
+            })}
+          </div>
+
+          <div className="pt-2 border-t border-[#1E2636] space-y-2">
+            {user ? (
+              <>
+                <div className="grid grid-cols-2 gap-2">
+                  <Link href="/dashboard/buyer" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="secondary" size="sm" className="w-full">
+                      Purchases
+                    </Button>
+                  </Link>
+                  <Link href="/dashboard/seller" onClick={() => setMobileMenuOpen(false)}>
+                    <Button variant="secondary" size="sm" className="w-full">
+                      Seller Hub
+                    </Button>
+                  </Link>
+                </div>
+                <Button
+                  variant="danger"
+                  size="sm"
+                  className="w-full"
+                  onClick={() => {
+                    setMobileMenuOpen(false);
+                    signOut();
+                  }}
                 >
-                  Sign out
-                </button>
+                  Sign Out
+                </Button>
+              </>
+            ) : (
+              <div className="grid grid-cols-2 gap-2">
+                <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="secondary" size="sm" className="w-full">
+                    Sign In
+                  </Button>
+                </Link>
+                <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="primary" size="sm" className="w-full">
+                    Create Account
+                  </Button>
+                </Link>
               </div>
             )}
           </div>
