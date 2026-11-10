@@ -7,26 +7,33 @@ interface AdSenseScriptProps {
   clientId: string;
 }
 
+/**
+ * Strictly enforces Google AdSense Publisher Policies:
+ * Only loads AdSense on public pages containing substantial editorial/informational content.
+ * Never loads on authentication, checkout, escrow rooms, dashboards, forms, or utility-only screens.
+ */
+const CONTENT_ELIGIBLE_PREFIXES = [
+  "/news",
+  "/escrow-guarantee",
+  "/fraud-prevention",
+  "/dispute-policy",
+  "/seller/guidelines",
+  "/scammer-check",
+  "/about",
+];
+
 export function AdSenseScript({ clientId }: AdSenseScriptProps) {
   const pathname = usePathname() || "/";
 
   if (!clientId) return null;
 
-  // Never load third-party ad scripts on authentication, escrow checkout, order rooms, KYC, or admin routes
-  const isProtectedRoute =
-    pathname === "/login" ||
-    pathname === "/register" ||
-    pathname.startsWith("/forgot-password") ||
-    pathname.startsWith("/reset-password") ||
-    pathname.startsWith("/auth") ||
-    pathname.startsWith("/pay/") ||
-    pathname.startsWith("/orders/") ||
-    pathname.startsWith("/admin") ||
-    pathname.startsWith("/dashboard") ||
-    pathname === "/seller/verification" ||
-    pathname === "/seller/create-listing";
+  const isEligibleContentPage =
+    pathname === "/" ||
+    CONTENT_ELIGIBLE_PREFIXES.some(
+      (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
+    );
 
-  if (isProtectedRoute) {
+  if (!isEligibleContentPage) {
     return null;
   }
 

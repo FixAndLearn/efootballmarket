@@ -1,110 +1,71 @@
-import { AlertCircle, Ban, Lock, ShieldAlert, ShieldCheck, Building2, Zap } from "lucide-react";
+import { Metadata } from "next";
 import Link from "next/link";
 
-export const metadata = {
-  title: "Anti-Fraud & Cyber Security Governance | eFootballMarket",
-  description: "Enterprise security architecture, cybercrime mitigation, and fraud enforcement standards of eFootballMarket Inc.",
+export const metadata: Metadata = {
+  title: "Anti-Fraud & Trading Safety Policy | eFootballMarket",
+  description:
+    "How eFootballMarket verifies M-Pesa callbacks, blocks Google-linked accounts, and handles impersonation or account recovery attempts.",
 };
 
 export default function FraudPreventionPage() {
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full space-y-10">
-      {/* Header */}
-      <div className="text-center space-y-3">
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-white font-display">
-          Anti-Fraud & Cyber Security Policy
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full space-y-8">
+      <header className="space-y-2 border-b border-[#242A36] pb-6">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white font-display tracking-tight">
+          Anti-Fraud &amp; Trading Safety Policy
         </h1>
-        <p className="text-xs sm:text-sm text-slate-400 max-w-2xl mx-auto">
-          How eFootballMarket combats fraudulent payments, phishing, and post-settlement account recoveries.
+        <p className="text-sm text-slate-400 leading-relaxed">
+          Practical safeguards we enforce against fake M-Pesa SMS receipts, linked-account traps, and social media impersonators.
         </p>
-      </div>
+      </header>
 
-      {/* Corporate Governance Notice */}
-      <div className="p-6 rounded-2xl bg-pitch-surface border border-pitch-border shadow-xl space-y-3">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-rose-950/60 border border-rose-800/60 flex items-center justify-center text-rose-400">
-            <Building2 className="w-5 h-5" />
-          </div>
-          <div>
-            <h2 className="text-base font-bold text-slate-100 font-display">
-              Anti-Fraud Infrastructure Directed by Brian Okibo, CEO
-            </h2>
-            <p className="text-xs text-rose-400 font-medium">
-              Enterprise Risk Governance & Mobile Banking Integrity
-            </p>
-          </div>
-        </div>
-        <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-          The fraud prevention framework of <strong>eFootballMarket</strong> was architected under the direction of <strong>Brian Okibo, Chief Executive Officer (CEO)</strong>. The system mitigates common gaming marketplace fraud by cryptographically verifying Safaricom Daraja M-Pesa callbacks and enforcing strict legal consequences for post-sale account retrieval.
-        </p>
-      </div>
-
-      <div className="bg-pitch-surface border border-pitch-border rounded-2xl p-8 shadow-xl space-y-8 text-slate-300 text-sm leading-relaxed">
-        {/* Section 1 */}
-        <section className="space-y-3">
-          <h2 className="text-base sm:text-lg font-bold text-white font-display flex items-center gap-2">
-            <span className="text-rose-400">1.</span> Prevention of Spoofed Payment Scams
-          </h2>
+      <div className="space-y-8 text-sm text-slate-300 leading-relaxed">
+        <section className="space-y-2.5">
+          <h2 className="text-base font-semibold text-white">1. Server-to-Server M-Pesa Verification</h2>
           <p>
-            In unmonitored gaming communities, fraudsters frequently fabricate fake M-Pesa SMS texts or alter screenshot receipts.
-          </p>
-          <div className="p-4 rounded-xl bg-pitch-card border border-pitch-border text-xs text-slate-300 space-y-2">
-            <strong className="text-emerald-400 block font-semibold">Our Cryptographic Defense:</strong>
-            <p>
-              eFootballMarket never validates payments through human inspection of customer screenshots. Transactions are verified exclusively through authenticated server-to-server HTTPS webhooks originating directly from Safaricom PLC infrastructure. Escrow state locks only after validation of exact shilling amounts and merchant reference IDs.
-            </p>
-          </div>
-        </section>
-
-        {/* Section 2 */}
-        <section className="space-y-3">
-          <h2 className="text-base sm:text-lg font-bold text-white font-display flex items-center gap-2">
-            <span className="text-rose-400">2.</span> Post-Delivery Recovery Defined as Cybercrime
-          </h2>
-          <p>
-            Reclaiming a gaming account after receiving escrow payout constitutes unlawful computer interference and criminal fraud:
-          </p>
-          <ul className="list-disc list-inside space-y-1.5 text-xs sm:text-sm pl-2">
-            <li><strong>Mandatory Cooperation with Law Enforcement:</strong> eFootballMarket Inc. cooperates proactively with national cybercrime investigators, providing verified KYC identities, IP access histories, and telecommunication records of rogue sellers.</li>
-            <li><strong>Permanent Blacklist & Forfeiture:</strong> Fraudulent actors face permanent banning across all company platforms, and any undistributed balance is seized as restitution for affected parties.</li>
-          </ul>
-        </section>
-
-        {/* Section 3 */}
-        <section className="space-y-3">
-          <h2 className="text-base sm:text-lg font-bold text-white font-display flex items-center gap-2">
-            <span className="text-rose-400">3.</span> Automated Telemetry & Anomaly Filtering
-          </h2>
-          <p>
-            The Platform continuously monitors for suspicious account activity:
-          </p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-            <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border">
-              <span className="text-slate-100 font-semibold block mb-0.5">Velocity Monitoring</span>
-              <span className="text-slate-400">Automated restrictions on rapid batch purchases or suspicious spikes in account listings.</span>
-            </div>
-            <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border">
-              <span className="text-slate-100 font-semibold block mb-0.5">Scam URL & Keyword Scrubbing</span>
-              <span className="text-slate-400">Real-time filtering of off-platform contact attempts and phishing links.</span>
-            </div>
-          </div>
-        </section>
-
-        {/* Section 4 */}
-        <section className="space-y-3">
-          <h2 className="text-base sm:text-lg font-bold text-white font-display flex items-center gap-2">
-            <span className="text-rose-400">4.</span> Reporting Suspicious Activity
-          </h2>
-          <p>
-            To report suspected fraud or intellectual property infringement, contact the Fraud Investigation Bureau supervised by <strong>Brian Okibo, CEO</strong> at security@efootballmarket.com.
+            In informal trading groups, scammers routinely send edited M-Pesa confirmation messages or altered receipt screenshots. eFootballMarket never marks an order as paid based on a screenshot—payments are verified strictly via automated server callbacks from our payment gateway on Till 1572931.
           </p>
         </section>
-      </div>
 
-      <div className="flex justify-center pt-4">
-        <Link href="/terms" className="text-xs text-rose-400 hover:text-rose-300 font-semibold underline">
-          Read Terms of Service & Escrow Agreement →
-        </Link>
+        <section className="space-y-2.5">
+          <h2 className="text-base font-semibold text-white">2. Zero-Link Account Verification</h2>
+          <p>
+            Accounts that remain linked to Google Play Games or Apple Game Center allow a seller to sign back in even after the Konami ID email has been changed. Sellers are required to unlink all platform accounts before listing, and buyers receive a full refund if any third-party link is present during inspection.
+          </p>
+        </section>
+
+        <section className="space-y-2.5">
+          <h2 className="text-base font-semibold text-white">3. Post-Sale Recovery &amp; Blacklist Enforcement</h2>
+          <p>
+            Attempting to reclaim a sold gaming account after receiving payout is treated as fraud. Confirmed offenders have their accounts permanently terminated, any pending seller balance frozen toward buyer restitution, and their phone numbers recorded on the{" "}
+            <Link href="/scammer-check" className="text-emerald-400 hover:underline">
+              Scammer Check directory
+            </Link>
+            . Where appropriate, transaction records are preserved for lawful police or mobile-money fraud inquiries.
+          </p>
+        </section>
+
+        <section className="space-y-2.5">
+          <h2 className="text-base font-semibold text-white">4. In-Order Chat Protection</h2>
+          <p>
+            All credential handovers and Konami OTP exchanges must take place inside the order chat on eFootballMarket. Automated filters warn users against phishing links or requests to cancel escrow and pay directly off-platform.
+          </p>
+        </section>
+
+        <section className="p-5 rounded-xl bg-[#11141B] border border-[#242A36] space-y-2 text-xs text-slate-400">
+          <strong className="text-white block text-sm">Report a Suspicious Trader</strong>
+          <p>
+            If someone impersonates eFootballMarket staff on WhatsApp or sends a suspicious link, verify their number on{" "}
+            <Link href="/scammer-check" className="text-emerald-400 hover:underline">
+              Scammer Check
+            </Link>{" "}
+            or contact our support desk via{" "}
+            <Link href="/contact" className="text-emerald-400 hover:underline">
+              Contact &amp; Support
+            </Link>
+            .
+          </p>
+        </section>
       </div>
     </div>
   );

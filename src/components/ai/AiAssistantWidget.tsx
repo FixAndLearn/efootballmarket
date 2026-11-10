@@ -33,7 +33,7 @@ const QUICK_TOPICS = [
   { label: "Seller Not Sending 2FA Codes", query: "What should I do if the seller delivered credentials but is not sending the 2-step OTP verification code in chat?" },
   { label: "Post-Release Dispute", query: "How does raising a dispute after funds are released work, and how does the seller payout freeze?" },
   { label: "Bargaining & Make Offer", query: "How do I bargain a price and make an offer to the seller?" },
-  { label: "Talk to Brian Okibo (CEO)", query: "How do I contact CEO Brian Okibo for urgent human assistance?" },
+  { label: "Contact Support", query: "How do I contact support for urgent order assistance?" },
 ];
 
 export function AiAssistantWidget() {
@@ -46,7 +46,7 @@ export function AiAssistantWidget() {
       id: "welcome",
       role: "assistant",
       content:
-        "Hello! I am your 24/7 eFootball AI Escrow Coach.\n\nI can assist you with:\n1. Safaricom M-Pesa Escrow (Till 1572931) safety.\n2. Verifying zero Google Play link (Anti-Googling rule).\n3. Step-by-step Konami ID email and 2FA transfer.\n4. Negotiating bargains and submitting offers.\n5. Handling disputes and freezing funds.\n\nTap a quick question below or type your inquiry in English or Swahili!",
+        "Hello! How can we help with your eFootball trade?\n\n1. Safaricom M-Pesa (Till 1572931) payment hold.\n2. Checking Google Play / Game Center Link Data.\n3. Changing Konami ID email and 2FA.\n4. Making offers or opening a dispute.\n\nChoose a topic or type your question below.",
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     },
   ]);
@@ -104,7 +104,7 @@ export function AiAssistantWidget() {
         id: `err-${Date.now()}`,
         role: "assistant",
         content:
-          "Network glitch occurred, but you can always reach CEO Brian Okibo directly on WhatsApp at +254 794 400 365 or browse verified accounts safely with Till 1572931 escrow.",
+          "Connection interrupted. You can message support directly on WhatsApp at +254 794 400 365.",
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, errorMsg]);
@@ -144,12 +144,12 @@ export function AiAssistantWidget() {
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <p className="text-xs font-bold text-white leading-tight">eFootball Escrow AI</p>
+                  <p className="text-xs font-bold text-white leading-tight">Support Assistant</p>
                   <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-[9px] font-bold text-emerald-300">
-                    Online 24/7
+                    Online
                   </span>
                 </div>
-                <p className="text-[10px] text-slate-400 mt-0.5">Automated Support & Escrow Coach</p>
+                <p className="text-[10px] text-slate-400 mt-0.5">Order & Handover Help</p>
               </div>
             </div>
 
@@ -226,7 +226,7 @@ export function AiAssistantWidget() {
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse delay-150" />
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse delay-300" />
-                  <span className="ml-1">AI Coach is typing...</span>
+                  <span className="ml-1">Typing...</span>
                 </div>
               </div>
             )}
@@ -245,16 +245,16 @@ export function AiAssistantWidget() {
             >
               <input
                 type="text"
-                placeholder="Ask about M-Pesa, Anti-Googling, Konami ID..."
+                placeholder="Ask about M-Pesa, Link Data, Konami ID..."
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 disabled={loading}
-                className="flex-1 bg-pitch-card border border-pitch-border rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-400"
+                className="flex-1 bg-pitch-card border border-pitch-border rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
               />
               <button
                 type="submit"
                 disabled={!inputMessage.trim() || loading}
-                className="p-2 rounded-xl bg-amber-500 hover:bg-amber-400 disabled:opacity-40 text-slate-950 font-bold transition-all shrink-0 cursor-pointer"
+                className="p-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 text-slate-950 font-bold transition-all shrink-0 cursor-pointer"
               >
                 <Send className="w-4 h-4" />
               </button>
@@ -269,7 +269,7 @@ export function AiAssistantWidget() {
                 className="text-emerald-400 hover:text-emerald-300 font-semibold inline-flex items-center gap-1"
               >
                 <MessageCircle className="w-3 h-3" />
-                <span>Talk to Brian Okibo (CEO)</span>
+                <span>WhatsApp Support</span>
               </a>
             </div>
           </div>
@@ -280,14 +280,10 @@ export function AiAssistantWidget() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3.5 py-2.5 sm:px-4 sm:py-2.5 rounded-full bg-gradient-to-r from-amber-500 via-amber-600 to-amber-500 hover:from-amber-400 hover:to-amber-500 text-slate-950 font-extrabold text-xs shadow-2xl shadow-amber-950/80 border border-amber-300/60 hover:scale-105 transition-all duration-200 group active:scale-95 cursor-pointer"
+        className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-[#11141B] hover:bg-[#171B24] text-slate-100 font-semibold text-xs border border-[#283040] shadow-lg transition-colors cursor-pointer"
       >
-        <span className="relative flex h-2.5 w-2.5">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-slate-950 opacity-75" />
-          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-slate-950" />
-        </span>
-        <Bot className="w-4 h-4 text-slate-950 group-hover:rotate-12 transition-transform" />
-        <span className="text-[11px] sm:text-xs">Ask AI Escrow Coach</span>
+        <HelpCircle className="w-4 h-4 text-emerald-400" />
+        <span className="text-xs">Support Chat</span>
       </button>
     </div>
   );

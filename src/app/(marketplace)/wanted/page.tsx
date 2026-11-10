@@ -324,8 +324,11 @@ export default function WantedBoardPage() {
         </Link>
       </div>
 
-      {/* Certified Partner Ad Slot */}
-      <AdBanner slot="wanted_bottom" format="horizontal" />
+      <AdBanner
+        slot="wanted_bottom"
+        format="horizontal"
+        hasContent={!loading && requests.length >= 3}
+      />
 
       {/* Post Wanted Request Modal */}
       {isModalOpen && (

@@ -3,10 +3,8 @@
 import React, { useState, useRef, useEffect } from "react";
 import { usePathname } from "next/navigation";
 import {
-  Bot,
   MessageCircle,
   X,
-  Sparkles,
   ShieldCheck,
   RotateCcw,
   Send,
@@ -37,71 +35,71 @@ interface QuickCard {
 const QUICK_CARDS: QuickCard[] = [
   {
     id: "escrow",
-    title: "M-Pesa Escrow (Till 1572931)",
-    description: "How money is secured in platform custody until you inspect the squad.",
+    title: "How M-Pesa Payment Hold Works",
+    description: "Till 1572931 deposit, 24h inspection, and seller payout.",
     icon: <ShieldCheck className="w-4 h-4 text-emerald-400" />,
     query: "How does the Safaricom M-Pesa Till 1572931 escrow process work from start to finish?",
   },
   {
     id: "antigoogle",
-    title: "Anti-Googling Rule (Must Read)",
-    description: "Why Google-linked accounts are strictly prohibited and how to check.",
+    title: "Check Google Play / Apple Link",
+    description: "Where to verify that only Konami ID is linked.",
     icon: <ShieldAlert className="w-4 h-4 text-amber-400" />,
     query: "Why is an account with Google Play linked prohibited, and how do I verify it in-game?",
   },
   {
     id: "konami",
     title: "Change Konami Email & 2FA",
-    description: "Step-by-step guide to secure the Konami ID on my.konami.net.",
-    icon: <KeyRound className="w-4 h-4 text-emerald-400" />,
+    description: "Steps to move the Konami ID to your own email.",
+    icon: <KeyRound className="w-4 h-4 text-slate-300" />,
     query: "How do I change the registered email and password on my.konami.net?",
   },
   {
     id: "otp",
-    title: "Seller Not Sending 2FA Code",
-    description: "What to do if the seller is slow or unresponsive in order chat.",
+    title: "Seller Slow to Send OTP",
+    description: "What to do if the seller hasn't sent the email code.",
     icon: <HelpCircle className="w-4 h-4 text-slate-300" />,
     query: "What should I do if the seller delivered credentials but is not sending the 2-step OTP verification code in chat?",
   },
   {
     id: "dispute",
-    title: "Raise Dispute After Release",
-    description: "How to freeze seller payout if you detect an issue even after release.",
+    title: "Opening an Order Dispute",
+    description: "How payout freezes while support checks evidence.",
     icon: <ShieldAlert className="w-4 h-4 text-rose-400" />,
-    query: "How does raising a dispute after funds are released work, and how does the seller payout freeze?",
+    query: "How does raising a dispute work and how do refunds get processed?",
   },
   {
     id: "bargain",
-    title: "How to Bargain & Offer",
-    description: "How to suggest discounts and agree on prices before payment.",
-    icon: <Coins className="w-4 h-4 text-amber-300" />,
+    title: "Making a Price Offer",
+    description: "How to negotiate with a seller before paying.",
+    icon: <Coins className="w-4 h-4 text-slate-300" />,
     query: "How do I bargain a price and make an offer to the seller?",
   },
 ];
 
 const WHATSAPP_TOPICS = [
   {
-    label: "M-Pesa STK Push / Payment Issue",
-    query: "Hello Brian Okibo, I need assistance verifying an M-Pesa STK push or payment to Till 1572931 on eFootballMarket.",
+    label: "M-Pesa Payment / STK Push Check",
+    query: "Hello eFootballMarket Support, I need help checking an M-Pesa payment to Till 1572931.",
   },
   {
-    label: "Konami ID & Escrow Handover Help",
-    query: "Hello eFootballMarket Support, I need help securing a Konami ID or completing the credentials transfer.",
+    label: "Konami ID Handover Assistance",
+    query: "Hello eFootballMarket Support, I need help completing a Konami ID email transfer.",
   },
   {
-    label: "Report a Seller or Raise Dispute",
-    query: "Hello Brian, I would like to report an issue with an order and request an escrow investigation.",
+    label: "Order Dispute or Seller Report",
+    query: "Hello Support, I need assistance reviewing an active order dispute on eFootballMarket.",
   },
   {
-    label: "Speak Directly to CEO Brian Okibo",
-    query: "Hello Brian Okibo (CEO), I am reaching out for direct VIP assistance on eFootballMarket.",
+    label: "General Marketplace Inquiry",
+    query: "Hello eFootballMarket Support, I have a question about using the marketplace.",
   },
 ];
 
 export function SupportHubWidget() {
   const pathname = usePathname() || "/";
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<"ai" | "whatsapp">("ai");
+  const [activeTab, setActiveTab] = useState<"help" | "whatsapp">("help");
   const [inputMessage, setInputMessage] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -112,18 +110,18 @@ export function SupportHubWidget() {
 
   const [messages, setMessages] = useState<ChatMessage[]>([
     {
-      id: "initial-coach",
+      id: "initial-help",
       role: "assistant",
       content:
-        "Hello! I am your 24/7 AI Escrow Coach.\n\nI can help you navigate safe account purchases, Konami ID transfers, Anti-Googling rules, bargaining, and payment verification.\n\nTap any topic card below or type your inquiry in English or Swahili!",
-      timestamp: "Online",
+        "Hi — need help with an M-Pesa order, checking Link Data, or changing a Konami ID email? Pick a common question below or type yours.",
+      timestamp: "Support",
     },
   ]);
 
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    if (isOpen && activeTab === "ai") {
+    if (isOpen && activeTab === "help") {
       messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
     }
   }, [messages, isOpen, activeTab]);
@@ -176,14 +174,14 @@ export function SupportHubWidget() {
       });
 
       if (!res.ok) {
-        throw new Error("Failed to receive AI response");
+        throw new Error("Failed to receive response");
       }
 
       const data = await res.json();
       const assistantMsg: ChatMessage = {
-        id: `ai-${Date.now()}`,
+        id: `reply-${Date.now()}`,
         role: "assistant",
-        content: data.reply || "I am here to guide you. Please choose a topic or contact CEO Brian Okibo on WhatsApp.",
+        content: data.reply || "Please select a topic or switch to the WhatsApp tab to message our support desk.",
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
 
@@ -193,7 +191,7 @@ export function SupportHubWidget() {
         id: `err-${Date.now()}`,
         role: "assistant",
         content:
-          "I am momentarily operating in offline mode. For immediate support, please switch to the WhatsApp tab above to speak directly with Brian Okibo (+254 794 400 365).",
+          "Automated help is temporarily unavailable. Switch to the WhatsApp tab above to message support directly (+254 794 400 365).",
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       };
       setMessages((prev) => [...prev, errorMsg]);
@@ -205,11 +203,11 @@ export function SupportHubWidget() {
   const handleResetChat = () => {
     setMessages([
       {
-        id: "reset-coach",
+        id: "reset-help",
         role: "assistant",
         content:
-          "Chat reset! Tap any topic card below or type your inquiry to get instant guidance on eFootball escrow, Konami IDs, and trading rules.",
-        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
+          "Select a question below or type your message regarding M-Pesa orders, Konami ID transfers, or seller rules.",
+        timestamp: "Support",
       },
     ]);
   };
@@ -225,76 +223,71 @@ export function SupportHubWidget() {
 
   return (
     <>
-      {/* Clean Institutional Floating Support Trigger */}
       <div
         className={`fixed ${
           isListingDetailPage ? "bottom-[4.5rem]" : "bottom-20"
-        } md:bottom-6 right-3 sm:right-6 z-40 select-none font-sans`}
+        } md:bottom-5 right-3 sm:right-5 z-40 select-none font-sans`}
       >
         <button
           type="button"
           onClick={() => setIsOpen((prev) => !prev)}
-          aria-label="Open eFootball Support and AI Coach"
-          className="group flex items-center justify-center w-11 h-11 sm:w-auto sm:px-4 sm:py-2.5 rounded-full bg-[#0B1424]/95 hover:bg-[#111F36] text-slate-100 font-semibold text-xs shadow-2xl shadow-black/60 hover:border-emerald-400/60 active:scale-95 transition-all duration-200 border border-emerald-500/35 backdrop-blur-md"
+          aria-label="Help and Support"
+          className="flex items-center justify-center w-10 h-10 sm:w-auto sm:px-3.5 sm:py-2 rounded-lg bg-[#11141B] hover:bg-[#171B24] text-slate-200 font-medium text-xs shadow-xl border border-[#283040] transition-colors"
         >
-          <MessageCircle className="w-4 h-4 text-emerald-400" />
-          <span className="hidden sm:inline font-display tracking-wide ml-2">Support Desk</span>
-          <span className="hidden sm:inline w-2 h-2 rounded-full bg-emerald-400 ml-2 shadow-[0_0_8px_rgba(16,185,129,0.7)]" />
+          <HelpCircle className="w-4 h-4 text-emerald-400" />
+          <span className="hidden sm:inline ml-2">Help &amp; Support</span>
         </button>
       </div>
 
-      {/* Backdrop for Mobile */}
       {isOpen && (
         <div
-          className="fixed inset-0 bg-black/65 backdrop-blur-sm z-40 sm:hidden animate-in fade-in"
+          className="fixed inset-0 bg-black/65 backdrop-blur-sm z-40 sm:hidden"
           onClick={() => setIsOpen(false)}
         />
       )}
 
-      {/* Main Support Hub Window */}
       {isOpen && (
         <div
           className={`fixed inset-x-3 ${
             isListingDetailPage ? "bottom-[4.5rem]" : "bottom-20"
-          } sm:inset-auto sm:bottom-20 sm:right-6 sm:w-[440px] h-[560px] max-h-[80vh] z-50 flex flex-col rounded-3xl bg-[#0B1424] border border-slate-800 shadow-2xl overflow-hidden animate-in fade-in slide-in-from-bottom-4 font-sans`}
+          } sm:inset-auto sm:bottom-16 sm:right-5 sm:w-[420px] h-[540px] max-h-[80vh] z-50 flex flex-col rounded-xl bg-[#11141B] border border-[#242A36] shadow-2xl overflow-hidden font-sans`}
         >
-          {/* Header */}
-          <div className="p-3.5 bg-[#070D18] border-b border-slate-800 flex items-center justify-between shrink-0">
-            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-[#0B1424] border border-slate-800">
+          <div className="p-3 bg-[#090B0E] border-b border-[#242A36] flex items-center justify-between shrink-0">
+            <div className="flex items-center gap-1 p-0.5 rounded-lg bg-[#141821] border border-[#242A36]">
               <button
                 type="button"
-                onClick={() => setActiveTab("ai")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
-                  activeTab === "ai"
-                    ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/35 shadow-sm"
+                onClick={() => setActiveTab("help")}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
+                  activeTab === "help"
+                    ? "bg-[#1E2430] text-white"
                     : "text-slate-400 hover:text-slate-200"
                 }`}
               >
-                <Bot className="w-3.5 h-3.5 text-emerald-400" />
-                <span>AI Escrow Coach</span>
+                <HelpCircle className="w-3.5 h-3.5 text-slate-300" />
+                <span>Quick Help</span>
               </button>
 
               <button
                 type="button"
                 onClick={() => setActiveTab("whatsapp")}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-md text-xs font-medium transition-colors ${
                   activeTab === "whatsapp"
-                    ? "bg-emerald-500/15 text-emerald-300 border border-emerald-500/35 shadow-sm"
+                    ? "bg-[#1E2430] text-white"
                     : "text-slate-400 hover:text-slate-200"
                 }`}
               >
                 <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
-                <span>WhatsApp Desk</span>
+                <span>WhatsApp</span>
               </button>
             </div>
 
-            <div className="flex items-center gap-1.5">
-              {activeTab === "ai" && (
+            <div className="flex items-center gap-1">
+              {activeTab === "help" && (
                 <button
                   type="button"
                   onClick={handleResetChat}
-                  title="Clear chat and restart"
-                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                  title="Reset chat"
+                  className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-[#171B24] transition-colors"
                 >
                   <RotateCcw className="w-4 h-4" />
                 </button>
@@ -302,52 +295,48 @@ export function SupportHubWidget() {
               <button
                 type="button"
                 onClick={() => setIsOpen(false)}
-                title="Close Support Hub"
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                title="Close"
+                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-[#171B24] transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
           </div>
 
-          {/* Body Content */}
-          {activeTab === "ai" ? (
-            <div className="flex-1 flex flex-col min-h-0 bg-[#060B14]/80">
-              <div className="flex-1 overflow-y-auto p-3.5 space-y-3.5 text-xs">
+          {activeTab === "help" ? (
+            <div className="flex-1 flex flex-col min-h-0 bg-[#090B0E]">
+              <div className="flex-1 overflow-y-auto p-3.5 space-y-3 text-xs">
                 {messages.map((msg) => (
                   <div
                     key={msg.id}
-                    className={`flex gap-2.5 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                    className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
                   >
-                    {msg.role === "assistant" && (
-                      <div className="w-7 h-7 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0 mt-0.5 shadow-sm">
-                        <Sparkles className="w-3.5 h-3.5" />
-                      </div>
-                    )}
-
                     <div
-                      className={`max-w-[85%] rounded-2xl p-3 shadow-sm ${
+                      className={`max-w-[85%] rounded-xl p-3 ${
                         msg.role === "user"
-                          ? "bg-emerald-600 text-white rounded-tr-none"
-                          : "bg-[#0B1424] border border-slate-800 text-slate-200 rounded-tl-none space-y-1.5"
+                          ? "bg-emerald-500 text-zinc-950 font-medium"
+                          : "bg-[#141821] border border-[#242A36] text-slate-200"
                       }`}
                     >
-                      <p className="whitespace-pre-wrap leading-relaxed text-[11px] sm:text-xs">
+                      <p className="whitespace-pre-wrap leading-relaxed text-xs">
                         {msg.content}
                       </p>
-                      <p className="text-[9px] text-slate-400 text-right mt-1">{msg.timestamp}</p>
+                      <p
+                        className={`text-[10px] text-right mt-1 ${
+                          msg.role === "user" ? "text-zinc-800" : "text-slate-500"
+                        }`}
+                      >
+                        {msg.timestamp}
+                      </p>
                     </div>
                   </div>
                 ))}
 
                 {messages.length <= 2 && (
-                  <div className="pt-2 space-y-2">
-                    <div className="flex items-center justify-between px-1">
-                      <span className="text-[10px] uppercase font-bold tracking-wider text-slate-400">
-                        Quick Answers:
-                      </span>
-                    </div>
-
+                  <div className="pt-1 space-y-2">
+                    <span className="text-[11px] font-medium text-slate-400 px-0.5 block">
+                      Common questions
+                    </span>
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                       {QUICK_CARDS.map((card) => (
                         <button
@@ -355,13 +344,11 @@ export function SupportHubWidget() {
                           type="button"
                           onClick={() => handleSendMessage(card.query)}
                           disabled={loading}
-                          className="flex items-start gap-2.5 p-2.5 rounded-xl bg-[#0B1424] hover:bg-slate-800/80 border border-slate-800 hover:border-emerald-500/40 text-left transition-all active:scale-95 group"
+                          className="flex items-start gap-2.5 p-2.5 rounded-lg bg-[#11141B] hover:bg-[#171B24] border border-[#242A36] text-left transition-colors"
                         >
-                          <div className="p-1.5 rounded-lg bg-[#060B14] border border-slate-800 shrink-0">
-                            {card.icon}
-                          </div>
+                          <div className="mt-0.5 shrink-0">{card.icon}</div>
                           <div className="min-w-0">
-                            <h4 className="text-[11px] font-bold text-white group-hover:text-emerald-300 transition-colors leading-tight">
+                            <h4 className="text-[11px] font-semibold text-white leading-tight">
                               {card.title}
                             </h4>
                             <p className="text-[10px] text-slate-400 leading-snug line-clamp-2 mt-0.5">
@@ -375,16 +362,13 @@ export function SupportHubWidget() {
                 )}
 
                 {loading && (
-                  <div className="flex items-center gap-2 p-2.5 rounded-xl bg-[#0B1424] border border-slate-800 text-slate-400 text-xs w-fit">
-                    <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                    <span>Preparing answer...</span>
-                  </div>
+                  <div className="text-slate-400 text-xs px-1">Checking...</div>
                 )}
 
                 <div ref={messagesEndRef} />
               </div>
 
-              <div className="p-3 bg-[#070D18] border-t border-slate-800 shrink-0">
+              <div className="p-3 bg-[#11141B] border-t border-[#242A36] shrink-0">
                 <form
                   onSubmit={(e) => {
                     e.preventDefault();
@@ -396,14 +380,14 @@ export function SupportHubWidget() {
                     type="text"
                     value={inputMessage}
                     onChange={(e) => setInputMessage(e.target.value)}
-                    placeholder="Ask about M-Pesa escrow, Konami ID, bargaining..."
+                    placeholder="Ask a question..."
                     disabled={loading}
-                    className="flex-1 bg-[#0B1424] border border-slate-800 rounded-xl px-3.5 py-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors"
+                    className="flex-1 bg-[#171B24] border border-[#283040] rounded-lg px-3 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500"
                   />
                   <button
                     type="submit"
                     disabled={!inputMessage.trim() || loading}
-                    className="p-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 disabled:hover:bg-emerald-500 text-slate-950 font-bold transition-all shadow-md active:scale-95 shrink-0"
+                    className="p-2 rounded-lg bg-emerald-500 hover:bg-emerald-400 disabled:opacity-40 text-zinc-950 font-semibold transition-colors shrink-0"
                   >
                     <Send className="w-4 h-4" />
                   </button>
@@ -411,32 +395,21 @@ export function SupportHubWidget() {
               </div>
             </div>
           ) : (
-            <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs bg-[#060B14]/80">
-              <div className="p-3.5 rounded-2xl bg-[#0B1424] border border-slate-800 flex items-center justify-between">
-                <div className="flex items-center gap-3">
-                  <div className="w-11 h-11 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                    <PhoneCall className="w-5 h-5" />
-                  </div>
-                  <div>
-                    <div className="flex items-center gap-1.5">
-                      <h3 className="text-xs font-bold text-white leading-tight">Brian Okibo</h3>
-                      <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/15 border border-emerald-500/35 text-[9px] font-bold text-emerald-300">
-                        CEO
-                      </span>
-                    </div>
-                    <p className="text-[10px] text-slate-400 mt-0.5">Platform Founder &amp; Escrow Administrator</p>
-                    <div className="flex items-center gap-1.5 mt-1">
-                      <span className="w-2 h-2 rounded-full bg-emerald-400" />
-                      <span className="text-[10px] text-emerald-300 font-semibold">+254 794 400 365 (Online)</span>
-                    </div>
-                  </div>
+            <div className="flex-1 overflow-y-auto p-4 space-y-4 text-xs bg-[#090B0E]">
+              <div className="p-3.5 rounded-xl bg-[#11141B] border border-[#242A36] flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-[#171B24] border border-[#283040] flex items-center justify-center text-emerald-400 shrink-0">
+                  <PhoneCall className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="text-xs font-semibold text-white">Support Desk (Brian Okibo)</h3>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
+                    WhatsApp &amp; Phone: +254 794 400 365
+                  </p>
                 </div>
               </div>
 
-              <div className="space-y-2">
-                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
-                  Select Assistance Topic:
-                </span>
+              <div className="space-y-1.5">
+                <span className="text-[11px] font-medium text-slate-400 block">Topic</span>
                 <div className="space-y-1.5">
                   {WHATSAPP_TOPICS.map((topic) => {
                     const isSelected = selectedWhatsAppTopic === topic.label;
@@ -448,18 +421,14 @@ export function SupportHubWidget() {
                           setSelectedWhatsAppTopic(topic.label);
                           setCustomWhatsAppText(topic.query);
                         }}
-                        className={`w-full p-2.5 rounded-xl border text-left transition-all flex items-center justify-between ${
+                        className={`w-full p-2.5 rounded-lg border text-left transition-colors flex items-center justify-between ${
                           isSelected
-                            ? "bg-emerald-500/15 border-emerald-500/50 text-white"
-                            : "bg-[#0B1424] border-slate-800 text-slate-300 hover:bg-slate-800/80"
+                            ? "bg-[#171B24] border-emerald-500/50 text-white"
+                            : "bg-[#11141B] border-[#242A36] text-slate-300 hover:bg-[#171B24]"
                         }`}
                       >
-                        <span className="font-semibold text-[11px] leading-tight">{topic.label}</span>
-                        <ChevronRight
-                          className={`w-3.5 h-3.5 shrink-0 transition-transform ${
-                            isSelected ? "text-emerald-400 rotate-90" : "text-slate-500"
-                          }`}
-                        />
+                        <span className="font-medium text-xs">{topic.label}</span>
+                        <ChevronRight className="w-3.5 h-3.5 text-slate-500 shrink-0" />
                       </button>
                     );
                   })}
@@ -467,31 +436,27 @@ export function SupportHubWidget() {
               </div>
 
               <div className="space-y-1.5">
-                <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
-                  Message Details (Optional Note):
+                <span className="text-[11px] font-medium text-slate-400 block">
+                  Note (include Order ID if applicable)
                 </span>
                 <textarea
                   rows={3}
                   value={customWhatsAppText}
                   onChange={(e) => setCustomWhatsAppText(e.target.value)}
-                  placeholder="Include your Order ID or phone number if you have an active transaction..."
-                  className="w-full bg-[#0B1424] border border-slate-800 rounded-xl p-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 transition-colors resize-none"
+                  placeholder="Write a brief message..."
+                  className="w-full bg-[#11141B] border border-[#242A36] rounded-lg p-2.5 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-emerald-500 resize-none"
                 />
               </div>
 
               <button
                 type="button"
                 onClick={handleLaunchWhatsApp}
-                className="w-full py-3.5 px-4 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-all shadow-lg shadow-emerald-950/60 flex items-center justify-center gap-2 active:scale-[0.98]"
+                className="w-full py-2.5 px-4 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-semibold text-xs transition-colors flex items-center justify-center gap-2"
               >
                 <MessageCircle className="w-4 h-4" />
-                <span>Launch WhatsApp (+254 794 400 365)</span>
-                <ArrowRight className="w-3.5 h-3.5 ml-1" />
+                <span>Open WhatsApp</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </button>
-
-              <p className="text-[10px] text-slate-400 text-center leading-normal">
-                Direct WhatsApp assistance is monitored by Brian Okibo for order mediation, payment issues, and account security.
-              </p>
             </div>
           )}
         </div>

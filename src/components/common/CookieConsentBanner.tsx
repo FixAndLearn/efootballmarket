@@ -1,23 +1,20 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { Cookie, X } from "lucide-react";
+import Link from "next/link";
 import { CookieConsentState, DEFAULT_CONSENT, updateGoogleConsent, trackEvent } from "@/lib/analytics";
 
 export function CookieConsentBanner() {
   const [isVisible, setIsVisible] = useState(false);
-  const [consent, setConsent] = useState<CookieConsentState>(DEFAULT_CONSENT);
 
   useEffect(() => {
     try {
       const saved = localStorage.getItem("efootball_cookie_consent");
       if (saved) {
         const parsed: CookieConsentState = JSON.parse(saved);
-        setConsent(parsed);
         updateGoogleConsent(parsed);
       } else {
-        // Show compact toast after brief 1.5s delay on first visit
-        const timer = setTimeout(() => setIsVisible(true), 1500);
+        const timer = setTimeout(() => setIsVisible(true), 1200);
         return () => clearTimeout(timer);
       }
     } catch {
@@ -26,7 +23,6 @@ export function CookieConsentBanner() {
   }, []);
 
   const saveConsent = (newConsent: CookieConsentState) => {
-    setConsent(newConsent);
     updateGoogleConsent(newConsent);
     try {
       localStorage.setItem("efootball_cookie_consent", JSON.stringify(newConsent));
@@ -41,7 +37,7 @@ export function CookieConsentBanner() {
     });
   };
 
-  const handleAccept = () => {
+  const handleAcceptAll = () => {
     saveConsent({
       necessary: true,
       analytics: true,
@@ -50,7 +46,7 @@ export function CookieConsentBanner() {
     });
   };
 
-  const handleDismiss = () => {
+  const handleEssentialOnly = () => {
     saveConsent({
       necessary: true,
       analytics: false,
@@ -64,35 +60,32 @@ export function CookieConsentBanner() {
   return (
     <aside
       role="region"
-      aria-label="Cookie consent banner"
-      className="fixed bottom-20 md:bottom-6 left-3 right-16 sm:left-6 sm:right-auto sm:max-w-md z-40 animate-in fade-in slide-in-from-bottom-3 duration-200 select-none"
+      aria-label="Cookie preferences"
+      className="fixed bottom-20 md:bottom-5 left-3 right-16 sm:left-5 sm:right-auto sm:max-w-md z-40 select-none"
     >
-      <div className="flex items-center justify-between gap-3 px-3.5 py-2.5 rounded-2xl bg-[#0B1424]/95 border border-slate-700/80 shadow-2xl backdrop-blur-md text-white">
-        <div className="flex items-center gap-2.5 min-w-0">
-          <div className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
-            <Cookie className="w-3.5 h-3.5" />
-          </div>
-          <p className="text-[11px] text-slate-300 leading-tight truncate">
-            We use essential cookies &amp; analytics for secure M-Pesa escrow.
-          </p>
-        </div>
+      <div className="p-4 rounded-xl bg-[#11141B] border border-[#262D3B] shadow-2xl text-slate-200 space-y-3">
+        <p className="text-xs text-slate-300 leading-relaxed">
+          We use cookies for login sessions, analytics, and Google AdSense advertising. Choose your preference below or read our{" "}
+          <Link href="/privacy" className="text-emerald-400 hover:underline font-medium">
+            Privacy Policy
+          </Link>
+          .
+        </p>
 
-        <div className="flex items-center gap-1.5 shrink-0">
+        <div className="flex items-center gap-2">
           <button
             type="button"
-            onClick={handleAccept}
-            className="px-3 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-[11px] shadow-sm transition-all active:scale-95"
+            onClick={handleAcceptAll}
+            className="px-3.5 py-1.5 rounded-lg bg-emerald-500 hover:bg-emerald-400 text-zinc-950 font-semibold text-xs transition-colors"
           >
-            Got it
+            Accept All
           </button>
           <button
             type="button"
-            onClick={handleDismiss}
-            className="p-1 rounded-md text-slate-400 hover:text-white transition-colors"
-            title="Dismiss"
-            aria-label="Dismiss cookie notice"
+            onClick={handleEssentialOnly}
+            className="px-3.5 py-1.5 rounded-lg bg-[#171B24] hover:bg-[#1E2430] border border-[#283040] text-slate-300 hover:text-white font-medium text-xs transition-colors"
           >
-            <X className="w-3.5 h-3.5" />
+            Essential Only
           </button>
         </div>
       </div>

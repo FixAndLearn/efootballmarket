@@ -3,16 +3,10 @@ import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { NewsService } from "@/services/newsService";
 import {
-  AlertTriangle,
   ArrowLeft,
   Calendar,
   Clock,
-  Eye,
-  Lock,
   MessageCircle,
-  Share2,
-  ShieldCheck,
-  User,
 } from "lucide-react";
 import { Metadata } from "next";
 import Link from "next/link";
@@ -37,12 +31,12 @@ export async function generateMetadata({ params }: NewsArticlePageProps): Promis
 
     if (!article) {
       return {
-        title: "Bulletin Not Found | eFootballMarket",
+        title: "Guide Not Found | eFootballMarket",
       };
     }
 
     return {
-      title: `${article.title} | eFootballMarket Intelligence`,
+      title: `${article.title} | eFootballMarket`,
       description: article.summary,
       openGraph: {
         title: article.title,
@@ -52,7 +46,7 @@ export async function generateMetadata({ params }: NewsArticlePageProps): Promis
     };
   } catch {
     return {
-      title: "eFootballMarket Bulletin",
+      title: "eFootballMarket Guide",
     };
   }
 }
@@ -69,7 +63,6 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
   const service = new NewsService(primaryClient);
   let article = await service.getArticleBySlug(decodedSlug);
 
-  // Resilient fallback with user client if admin client had an issue
   if (!article && primaryClient !== supabase) {
     const fallbackService = new NewsService(supabase);
     article = await fallbackService.getArticleBySlug(decodedSlug);
@@ -80,93 +73,70 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
   }
 
   const isScammerAlert = article.category === "scammer_alert";
-  const readMinutes = Math.max(1, Math.ceil((article.content || "").split(/\s+/).length / 180));
+  const readMinutes = Math.max(1, Math.ceil((article.content || "").split(/\s+/).length / 190));
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-8">
-      
-      {/* Navigation & WhatsApp Alert Bar */}
+    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-8">
       <div className="flex items-center justify-between gap-4">
         <Link
           href="/news"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-white transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-white transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
-          <span>Back to News & Alerts</span>
+          <span>All Guides</span>
         </Link>
 
         <a
           href={`https://api.whatsapp.com/send?text=${encodeURIComponent(
-            `📢 *${article.title}*\nRead verified eFootball advisory on eFootballMarket: https://www.efootballmarket.co.ke/news/${article.slug}`
+            `${article.title} - https://www.efootballmarket.co.ke/news/${article.slug}`
           )}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-950/80 hover:bg-emerald-900 border border-emerald-500/40 text-emerald-300 text-xs font-semibold transition-all shadow-sm"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#11141B] hover:bg-[#171B24] border border-[#242A36] text-slate-300 hover:text-white text-xs font-medium transition-colors"
         >
-          <MessageCircle className="w-3.5 h-3.5 fill-emerald-300" />
-          <span>Share Alert on WhatsApp</span>
+          <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
+          <span>Share</span>
         </a>
       </div>
 
-      {/* Article Header */}
-      <div className="space-y-4 border-b border-pitch-border/80 pb-6">
-        <div className="flex flex-wrap items-center gap-2.5">
+      <header className="space-y-4 border-b border-[#242A36] pb-6">
+        <div className="flex flex-wrap items-center gap-3 text-xs text-slate-400">
           <span
-            className={`px-3 py-1 rounded-full text-xs font-extrabold uppercase tracking-wider border ${
+            className={`px-2 py-0.5 rounded font-medium border ${
               isScammerAlert
-                ? "bg-rose-500/20 border-rose-500/40 text-rose-300"
-                : "bg-brand-500/20 border-brand-500/40 text-brand-300"
+                ? "bg-rose-950/60 border-rose-800/60 text-rose-300"
+                : "bg-[#171B24] border-[#283040] text-emerald-400"
             }`}
           >
-            {isScammerAlert ? "🚨 Security Advisory" : "Official Bulletin"}
+            {isScammerAlert ? "Safety Advisory" : "Guide"}
           </span>
 
-          <span className="text-xs text-slate-400 flex items-center gap-1">
+          <span className="flex items-center gap-1">
             <Calendar className="w-3.5 h-3.5" />
             {new Date(article.created_at).toLocaleDateString("en-US", {
               year: "numeric",
-              month: "long",
+              month: "short",
               day: "numeric",
             })}
           </span>
 
-          <span className="text-xs text-slate-400 flex items-center gap-1">
+          <span className="flex items-center gap-1">
             <Clock className="w-3.5 h-3.5" />
             {readMinutes} min read
           </span>
-
-          <span className="text-xs text-slate-400 flex items-center gap-1">
-            <Eye className="w-3.5 h-3.5" />
-            {article.views_count} views
-          </span>
         </div>
 
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-white font-display leading-tight">
+        <h1 className="text-2xl sm:text-3xl font-bold text-white font-display leading-tight">
           {article.title}
         </h1>
 
-        {/* Healthline-style Fact Check & Editorial Attribution */}
-        <div className="flex flex-wrap items-center justify-between gap-4 pt-2">
-          <div className="flex items-center gap-3 text-xs text-slate-400">
-            <div className="w-9 h-9 rounded-full bg-slate-800 border border-slate-700 flex items-center justify-center font-bold text-slate-200">
-              <User className="w-4 h-4" />
-            </div>
-            <div>
-              <p className="font-bold text-slate-200">{article.author_name || "Brian Okibo"}</p>
-              <p className="text-[11px] text-slate-400">Security Desk & Lead Escrow Officer</p>
-            </div>
-          </div>
+        <p className="text-sm text-slate-400 leading-relaxed">
+          {article.summary}
+        </p>
+      </header>
 
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 text-xs font-medium">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Fact-Checked & Escrow Verified</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Cover Image */}
       {article.cover_image_url && (
-        <div className="w-full h-72 sm:h-96 rounded-3xl overflow-hidden border border-pitch-border bg-pitch-surface shadow-2xl relative">
+        <div className="w-full h-64 sm:h-80 rounded-xl overflow-hidden border border-[#242A36] bg-[#11141B]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src={article.cover_image_url}
@@ -176,46 +146,29 @@ export default async function NewsArticlePage({ params }: NewsArticlePageProps) 
         </div>
       )}
 
-      {/* Security Banner if Scammer Alert */}
-      {isScammerAlert && (
-        <div className="p-5 rounded-2xl bg-rose-500/10 border border-rose-500/30 flex items-start gap-3.5 shadow-xl">
-          <AlertTriangle className="w-6 h-6 text-rose-400 shrink-0 mt-0.5" />
-          <div className="space-y-1">
-            <h3 className="text-sm font-bold text-rose-200">
-              Active Security Alert: Beware of Off-Platform Infiltration
-            </h3>
-            <p className="text-xs text-rose-300/90 leading-relaxed">
-              All eFootball trading must proceed exclusively through our automated M-Pesa STK Push escrow (Till 1572931). Never transfer credentials before payment lock confirmation.
-            </p>
-          </div>
-        </div>
-      )}
+      <article className="space-y-4 text-sm sm:text-[15px] text-slate-300 leading-relaxed whitespace-pre-line">
+        {article.content}
+      </article>
 
-      {/* Article Content */}
-      <div className="bg-pitch-surface border border-pitch-border rounded-3xl p-6 sm:p-10 shadow-xl space-y-6">
-        <div className="text-sm sm:text-base text-slate-200 leading-relaxed space-y-4 whitespace-pre-line font-sans">
-          {article.content}
+      <div className="pt-6 border-t border-[#242A36] flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h3 className="text-sm font-semibold text-white">
+            Ready to buy or sell an eFootball account?
+          </h3>
+          <p className="text-xs text-slate-400 mt-0.5">
+            Every order on eFootballMarket includes M-Pesa Till 1572931 payment hold and a 24-hour buyer check.
+          </p>
         </div>
 
-        {/* Platform Escrow Guarantee Box */}
-        <div className="mt-10 p-5 rounded-2xl bg-pitch-card border border-pitch-border/80 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-950 border border-emerald-800 flex items-center justify-center text-emerald-400 shrink-0">
-              <ShieldCheck className="w-5 h-5" />
-            </div>
-            <div>
-              <h4 className="text-xs font-bold text-white uppercase tracking-wider">
-                eFootballMarket Escrow Guarantee | Till 1572931
-              </h4>
-              <p className="text-[11px] text-slate-400">
-                Automated Lipa Na M-Pesa escrow protection with 24-hour inspection on all transactions.
-              </p>
-            </div>
-          </div>
-
+        <div className="flex items-center gap-2 shrink-0">
           <Link href="/browse">
-            <Button variant="gold" size="sm" className="font-bold text-xs shadow-md">
-              Browse Safe Squads
+            <Button variant="primary" size="sm">
+              Browse Listings
+            </Button>
+          </Link>
+          <Link href="/middleman">
+            <Button variant="secondary" size="sm">
+              Middleman
             </Button>
           </Link>
         </div>

@@ -943,13 +943,16 @@ export default function TournamentsPage() {
           </div>
           <div className="p-4 rounded-xl bg-pitch-card border border-pitch-border space-y-1.5">
             <strong className="text-amber-400 block font-bold">3. Verified Payouts</strong>
-            Winnings sent to Safaricom M-Pesa within 15 minutes of final whistle by Officer Brian Okibo (0794400365).
+            Winnings are sent to Safaricom M-Pesa after final score verification (Support: 0794 400 365).
           </div>
         </div>
       </div>
 
-      {/* Certified Partner Ad Slot */}
-      <AdBanner slot="tournaments_bottom" format="horizontal" />
+      <AdBanner
+        slot="tournaments_bottom"
+        format="horizontal"
+        hasContent={!loading && tournaments.length >= 2}
+      />
 
       {/* MODAL 0: Community Membership Required Guard Modal */}
       {isAuthRequiredOpen && (

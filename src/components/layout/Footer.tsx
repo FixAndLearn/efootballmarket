@@ -1,101 +1,150 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
-import { ShieldCheck, MessageCircle } from "lucide-react";
+import { Logo } from "@/components/brand/Logo";
 
 export function Footer() {
   return (
     <footer
       role="contentinfo"
       aria-label="Site Footer"
-      className="w-full border-t border-slate-800/80 bg-[#060B14] text-slate-400 text-xs mt-auto pt-8 pb-24 sm:pb-8 relative overflow-hidden"
+      className="w-full border-t border-[#242A36] bg-[#090B0E] text-slate-400 text-xs mt-auto pt-12 pb-24 md:pb-10"
     >
-      {/* Subtle top edge glow */}
-      <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-emerald-500/30 to-transparent pointer-events-none" />
-
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-        {/* Top Row: Brand Badge + Theme Toggle */}
-        <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-slate-950 font-black shadow-md shadow-emerald-500/20 shrink-0">
-              <ShieldCheck className="w-4 h-4 text-slate-950" />
-            </div>
-            <div>
-              <span className="font-extrabold text-white font-display text-base tracking-tight block">
-                eFootballMarket
-              </span>
-              <span className="text-[10px] text-slate-400 block">
-                Kenya&apos;s Escrow Squad Exchange
-              </span>
-            </div>
-            <span className="ml-1 inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-emerald-950/70 border border-emerald-500/30 text-emerald-300 text-[10px] font-semibold">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-              <span>Till 1572931</span>
-            </span>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
+        <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-5 gap-8">
+          {/* Brand Column */}
+          <div className="col-span-2 sm:col-span-4 lg:col-span-1 space-y-3">
+            <Logo clickable={true} size="sm" />
+            <p className="text-xs text-slate-400 leading-relaxed max-w-xs">
+              Peer-to-peer eFootball account marketplace in Kenya with M-Pesa payment hold protection (Till 1572931).
+            </p>
           </div>
 
-                  </div>
+          {/* Marketplace */}
+          <div className="space-y-2.5">
+            <h3 className="text-xs font-semibold text-white">Marketplace</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/browse" className="hover:text-white transition-colors">
+                  Browse Listings
+                </Link>
+              </li>
+              <li>
+                <Link href="/seller/create-listing" className="hover:text-white transition-colors">
+                  Sell an Account
+                </Link>
+              </li>
+              <li>
+                <Link href="/middleman" className="hover:text-white transition-colors">
+                  WhatsApp Middleman
+                </Link>
+              </li>
+              <li>
+                <Link href="/wanted" className="hover:text-white transition-colors">
+                  Wanted Board
+                </Link>
+              </li>
+              <li>
+                <Link href="/tournaments" className="hover:text-white transition-colors">
+                  Tournaments
+                </Link>
+              </li>
+            </ul>
+          </div>
 
-        {/* Middle Row: Curated Navigation Links */}
-        <nav role="navigation" aria-label="Footer Navigation" className="pt-2 border-t border-slate-800/60">
-          <ul className="flex flex-wrap items-center justify-center sm:justify-start gap-x-6 gap-y-2.5 text-xs font-medium text-slate-300">
-            <li>
-              <Link href="/browse" className="hover:text-emerald-400 transition-colors">
-                Browse Accounts
-              </Link>
-            </li>
-            <li>
-              <Link href="/seller/create-listing" className="hover:text-emerald-400 transition-colors text-emerald-400 font-bold">
-                + Sell Account
-              </Link>
-            </li>
-            <li>
-              <Link href="/escrow-guarantee" className="hover:text-emerald-400 transition-colors">
-                Escrow Guarantee
-              </Link>
-            </li>
-            <li>
-              <Link href="/middleman" className="hover:text-emerald-400 transition-colors">
-                Middleman Service
-              </Link>
-            </li>
-            <li>
-              <Link href="/tournaments" className="hover:text-emerald-400 transition-colors">
-                Tournaments
-              </Link>
-            </li>
-            <li>
-              <Link href="/terms" className="hover:text-emerald-400 transition-colors">
-                Terms
-              </Link>
-            </li>
-            <li>
-              <Link href="/privacy" className="hover:text-emerald-400 transition-colors">
-                Privacy Policy
-              </Link>
-            </li>
-            <li>
-              <a
-                href="https://wa.me/254794400365"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="inline-flex items-center gap-1.5 text-emerald-400 hover:text-emerald-300 transition-colors font-semibold"
-              >
-                <MessageCircle className="w-3.5 h-3.5" />
-                <span>Support: 0794400365</span>
-              </a>
-            </li>
-          </ul>
-        </nav>
+          {/* Safety & Guides */}
+          <div className="space-y-2.5">
+            <h3 className="text-xs font-semibold text-white">Safety &amp; Guides</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/escrow-guarantee" className="hover:text-white transition-colors">
+                  How Protection Works
+                </Link>
+              </li>
+              <li>
+                <Link href="/news" className="hover:text-white transition-colors">
+                  Trading Guides &amp; Alerts
+                </Link>
+              </li>
+              <li>
+                <Link href="/scammer-check" className="hover:text-white transition-colors">
+                  Scammer Check
+                </Link>
+              </li>
+              <li>
+                <Link href="/seller/guidelines" className="hover:text-white transition-colors">
+                  Seller Guidelines
+                </Link>
+              </li>
+              <li>
+                <Link href="/fraud-prevention" className="hover:text-white transition-colors">
+                  Anti-Fraud Policy
+                </Link>
+              </li>
+            </ul>
+          </div>
 
-        {/* Bottom Row: Copyright & Honest Non-Affiliation Disclaimer */}
-        <div className="pt-3 border-t border-slate-800/60 flex flex-col sm:flex-row items-center justify-between gap-2 text-[11px] text-slate-400 text-center sm:text-left">
-          <p>
-            &copy; {new Date().getFullYear()} eFootballMarket Inc. All rights reserved.
-          </p>
-          <p className="text-[10px] text-slate-400 max-w-xl">
-            Independent peer-to-peer eFootball trading platform. Not affiliated with Konami or Safaricom PLC.
+          {/* Company & Support */}
+          <div className="space-y-2.5">
+            <h3 className="text-xs font-semibold text-white">Support</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/about" className="hover:text-white transition-colors">
+                  About Us
+                </Link>
+              </li>
+              <li>
+                <Link href="/contact" className="hover:text-white transition-colors">
+                  Contact Support
+                </Link>
+              </li>
+              <li>
+                <a
+                  href="https://wa.me/254794400365"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors"
+                >
+                  WhatsApp: 0794 400 365
+                </a>
+              </li>
+              <li>
+                <a
+                  href="mailto:support@efootballmarket.co.ke"
+                  className="hover:text-white transition-colors"
+                >
+                  support@efootballmarket.co.ke
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          {/* Legal */}
+          <div className="space-y-2.5">
+            <h3 className="text-xs font-semibold text-white">Legal</h3>
+            <ul className="space-y-2">
+              <li>
+                <Link href="/terms" className="hover:text-white transition-colors">
+                  Terms of Service
+                </Link>
+              </li>
+              <li>
+                <Link href="/privacy" className="hover:text-white transition-colors">
+                  Privacy Policy
+                </Link>
+              </li>
+              <li>
+                <Link href="/dispute-policy" className="hover:text-white transition-colors">
+                  Dispute Policy
+                </Link>
+              </li>
+            </ul>
+          </div>
+        </div>
+
+        <div className="pt-6 border-t border-[#242A36] flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-slate-500 text-center sm:text-left">
+          <p>&copy; {new Date().getFullYear()} eFootballMarket. Operated in Kenya.</p>
+          <p className="max-w-xl">
+            Independent peer-to-peer platform. Not affiliated with Konami Digital Entertainment or Safaricom PLC.
           </p>
         </div>
       </div>

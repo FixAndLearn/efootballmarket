@@ -174,15 +174,15 @@ Once the buyer releases funds, your net payout reflects in your Available Balanc
   }
 
   if (query.includes("brian") || query.includes("contact") || query.includes("call") || query.includes("whatsapp") || query.includes("support") || query.includes("human")) {
-    return `Official Customer Care & Human Support:
+    return `Customer Support & Order Help:
 
-Chief Executive Officer (CEO): Brian Okibo
-Phone & WhatsApp: +254 794 400 365 / 0794400365
+Support Lead: Brian Okibo
+Phone & WhatsApp: +254 794 400 365 / 0794 400 365
 Safaricom Till: 1572931
 Email: brianokibo@gmail.com
 Location: Nairobi, Kenya
 
-Support hours are 24/7. Tap the WhatsApp icon on the screen to chat directly with Brian Okibo or click https://wa.me/254794400365`;
+Tap the Help button on the bottom-right or message https://wa.me/254794400365 directly.`;
   }
 
   // Default helpful response

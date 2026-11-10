@@ -52,8 +52,8 @@ export function EscrowSteps3D() {
             <ShieldCheck className="w-4 h-4 text-emerald-400" />
             <span>M-Pesa Escrow Protection</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-extrabold text-white font-display">
-            How <span className="bg-gradient-to-r from-emerald-400 via-sky-300 to-brand-400 bg-clip-text text-transparent">Escrow Protection</span> Secures Your Trade
+          <h2 className="text-3xl sm:text-4xl font-bold text-white font-display">
+            How M-Pesa Payment Protection Works
           </h2>
           <p className="mt-3 text-sm sm:text-base text-slate-300">
             Never send money directly to strangers. Your payment stays protected in escrow until you log into the Konami ID and bind your personal email.

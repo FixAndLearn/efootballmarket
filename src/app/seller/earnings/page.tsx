@@ -71,14 +71,6 @@ export default async function SellerEarningsPage() {
         </div>
       </div>
 
-      {/* Corporate Governance Notice */}
-      <div className="p-4 rounded-xl bg-pitch-surface border border-pitch-border flex items-center gap-3 text-xs text-slate-300">
-        <Building2 className="w-5 h-5 text-brand-400 shrink-0" />
-        <span>
-          Financial settlement infrastructure operated under the executive oversight of <strong>Brian Okibo, Chief Executive Officer (CEO)</strong> with automated ledger auditing and atomic balance deductions.
-        </span>
-      </div>
-
       {/* Prominent Active Withdrawal Banner & Action */}
       <EarningsWithdrawSection
         availableBalance={availableBalance}

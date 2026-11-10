@@ -1,98 +1,73 @@
 "use client";
 
 import React, { useState } from "react";
-import { ChevronDown, HelpCircle, ShieldCheck } from "lucide-react";
+import { ChevronDown } from "lucide-react";
 
 interface FaqItem {
   question: string;
   answer: string;
-  badge?: string;
 }
 
 const FAQS: FaqItem[] = [
   {
-    question: "How does Safaricom M-Pesa Escrow (Till 1572931) protect my money?",
+    question: "How does M-Pesa Till 1572931 protect my payment?",
     answer:
-      "When you purchase an account or hire our middleman service, your funds are deposited directly into our official Safaricom Lipa Na M-Pesa Till Number 1572931. The money is held securely in escrow and is NOT released to the seller until you receive the Konami ID credentials, log in on your device, and verify the squad during your mandatory 24-hour inspection window.",
-    badge: "Buyer Protection",
+      "When you buy a squad or start a Middleman contract, your payment goes into our Lipa Na M-Pesa Till 1572931 rather than directly to the seller. We hold the money while you receive the Konami ID login details, sign in on your phone, and verify the account during your 24-hour inspection period.",
   },
   {
-    question: "What happens during the mandatory 24-Hour Buyer Inspection Window?",
+    question: "What should I check during the 24-hour inspection window?",
     answer:
-      "Once the seller submits login credentials, your 24-hour countdown begins. You log in to eFootball Mobile, verify the team OVR, Epic booster players, coin/GP balance, and link your own email. If the squad does not match the listing or you encounter any security issues, you can click 'Open Dispute' to freeze funds instantly for manual administrator review.",
-    badge: "Security Standard",
+      "First, sign in from the eFootball title screen (Data Transfer) and check that the Starting XI, reserves, Collective Strength, and coin balance match the listing. Next, open Extras -> Support -> Link Data and verify that Google Play and Game Center both show 'Not Linked'. Finally, change the Konami ID email, password, and two-step verification at my.konami.net before clicking Release Funds.",
   },
   {
-    question: "What is Bring-Your-Own-Deal Middleman Escrow?",
+    question: "What if the login details don't work or Google Play is still linked?",
     answer:
-      "If you negotiate an eFootball trade outside on WhatsApp, TikTok, or Facebook groups, you can protect yourselves from getting scammed by bringing the deal to our Middleman desk. The buyer deposits the agreed price to Till 1572931, the seller hands over credentials through our secure portal, and payout is sent to the seller only after both parties confirm satisfaction.",
-    badge: "P2P Escrow",
+      "Click 'Raise Dispute' inside your order page before the 24-hour timer ends and attach a screenshot or screen recording. Seller payout freezes immediately while support verifies your evidence and processes a full M-Pesa refund.",
   },
   {
-    question: "How are eFootball tournament prizes disbursed?",
+    question: "Can I use eFootballMarket for a deal I found on WhatsApp or Facebook?",
     answer:
-      "All competitive knockout tournaments hosted on eFootballMarket have guaranteed prize pools. Once match brackets finish and scores are confirmed with match screenshots, winnings are sent directly to the champion's and runner-up's Safaricom M-Pesa numbers within 15 minutes by desk lead Brian Okibo (0794400365).",
-    badge: "Instant Payouts",
+      "Yes. Open the Middleman page, enter the agreed KES amount along with both phone numbers, and share the contract code with the other trader. The same Till 1572931 payment hold and 24-hour inspection window apply.",
   },
   {
-    question: "How do I list and sell my eFootball squad on the platform?",
+    question: "How fast do sellers get paid after a sale?",
     answer:
-      "Click '+ Sell Account' in the top header navigation. Enter your collective team strength, Epic card counts, coin balance, and upload screenshots of your Starting XI and substitute bench. Once submitted, your squad is listed live. When a buyer purchases, funds are deposited into Till 1572931 escrow before you provide account credentials.",
-    badge: "Seller Guide",
+      "As soon as the buyer clicks Release Funds—or automatically once 24 hours pass after credential delivery with no dispute—the net payout is credited to the seller's account for M-Pesa withdrawal.",
   },
 ];
 
 export function HomeFaqAccordion() {
-  const [openIndex, setOpenIndex] = useState<number | null>(0); // First item open by default
+  const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   const toggle = (idx: number) => {
     setOpenIndex(openIndex === idx ? null : idx);
   };
 
   return (
-    <div className="space-y-3">
+    <div className="divide-y divide-[#242A36] rounded-xl border border-[#242A36] bg-[#11141B] overflow-hidden">
       {FAQS.map((faq, idx) => {
         const isOpen = openIndex === idx;
         return (
-          <div
-            key={idx}
-            className={`rounded-2xl border transition-all ${
-              isOpen
-                ? "bg-[#0B1424] border-slate-700 shadow-xl"
-                : "bg-[#0B1424]/70 border-slate-800 hover:border-slate-700 hover:bg-[#0B1424]"
-            }`}
-          >
+          <div key={idx}>
             <button
               type="button"
               onClick={() => toggle(idx)}
-              className="w-full text-left p-5 sm:p-6 flex items-center justify-between gap-4 focus:outline-none"
+              className="w-full text-left px-5 py-4 flex items-center justify-between gap-4 hover:bg-[#141821] transition-colors focus:outline-none"
               aria-expanded={isOpen}
             >
-              <div className="flex items-center gap-3.5">
-                <span className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 flex items-center justify-center shrink-0 text-xs font-bold font-mono">
-                  0{idx + 1}
-                </span>
-                <div>
-                  <h4 className="text-sm sm:text-base font-bold text-[#F8FAFC]">
-                    {faq.question}
-                  </h4>
-                  {faq.badge && (
-                    <span className="inline-block text-[10px] uppercase font-semibold tracking-wider text-slate-400 mt-1">
-                      {faq.badge}
-                    </span>
-                  )}
-                </div>
-              </div>
+              <span className="text-sm font-medium text-white">
+                {faq.question}
+              </span>
               <ChevronDown
-                className={`w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200 ${
-                  isOpen ? "rotate-180 text-emerald-400" : ""
+                className={`w-4 h-4 text-slate-400 shrink-0 transition-transform duration-150 ${
+                  isOpen ? "rotate-180 text-white" : ""
                 }`}
               />
             </button>
 
             {isOpen && (
-              <div className="px-5 sm:px-6 pb-6 pt-2 text-xs sm:text-sm text-slate-300 leading-relaxed border-t border-slate-800/80 animate-in fade-in duration-200">
-                <p className="mt-1">{faq.answer}</p>
+              <div className="px-5 pb-4 text-xs sm:text-sm text-slate-400 leading-relaxed">
+                {faq.answer}
               </div>
             )}
           </div>

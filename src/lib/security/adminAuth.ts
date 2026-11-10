@@ -1,6 +1,6 @@
 /**
  * eFootballMarket Super Admin & Privilege Enforcement
- * Primary Super Administrator: brianokibo@gmail.com (Brian Okibo, Chief Executive Officer)
+ * Primary Super Administrator: brianokibo@gmail.com (Brian Okibo)
  */
 
 export const PRIMARY_SUPER_ADMIN_EMAIL = "brianokibo@gmail.com";

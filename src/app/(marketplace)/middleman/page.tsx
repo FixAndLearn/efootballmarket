@@ -804,8 +804,8 @@ function MiddlemanContent() {
         </div>
       )}
 
-      {/* AdSense / Escrow Sponsored Unit */}
-      <AdBanner slot="middleman_deal_bottom" format="horizontal" />
+      {/* Utility/contract screen — ads disabled per publisher content policy */}
+      <AdBanner slot="middleman_deal_bottom" format="horizontal" hasContent={false} />
     </div>
   );
 }

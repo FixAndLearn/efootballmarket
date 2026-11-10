@@ -1,190 +1,79 @@
-"use client";
-
 import React from "react";
 import Link from "next/link";
-import {
-  CreditCard,
-  KeyRound,
-  Smartphone,
-  CheckCircle2,
-  Lock,
-  ArrowRight,
-  Sparkles,
-} from "lucide-react";
+import { ArrowRight } from "lucide-react";
 
-interface Step {
-  num: string;
-  title: string;
-  subtitle: string;
-  tag: string;
-  icon: any;
-  details: string[];
-}
-
-const STEPS: Step[] = [
+const STEPS = [
   {
-    num: "01",
-    title: "Buyer Selects Squad",
-    subtitle: "Verified specs & screenshot proof",
-    tag: "Catalog",
-    icon: Sparkles,
-    details: [
-      "Check team collective strength (OVR)",
-      "Verify Epics, Big Time & coin balance",
-      "Confirm Google Play & Game Center unlinked",
-    ],
+    num: "1",
+    title: "Choose a Squad",
+    description:
+      "Review Starting XI screenshots, Collective Strength (OVR), Epic player counts, and confirm the account has no Google or Apple link.",
   },
   {
-    num: "02",
-    title: "M-Pesa Escrow Deposit",
-    subtitle: "Locked safely in Till 1572931",
-    tag: "STK Push",
-    icon: CreditCard,
-    details: [
-      "Instant STK push prompt to Safaricom phone",
-      "Funds held in segregated Till 1572931",
-      "Seller cannot touch funds before approval",
-    ],
+    num: "2",
+    title: "Pay via M-Pesa STK",
+    description:
+      "Approve the STK push to Till 1572931. Your payment is held by eFootballMarket while the listing locks automatically.",
   },
   {
-    num: "03",
-    title: "Credentials Handshake",
-    subtitle: "AES-256 encrypted vault delivery",
-    tag: "AES-256 Vault",
-    icon: KeyRound,
-    details: [
-      "Seller submits Konami ID & login password",
-      "Automated encryption with full audit trail",
-      "Credentials revealed exclusively to buyer",
-    ],
+    num: "3",
+    title: "Get Login Details",
+    description:
+      "The seller has up to 12 hours to submit encrypted Konami ID credentials and share the email verification code in order chat.",
   },
   {
-    num: "04",
-    title: "24-Hour Inspection & Bind",
-    subtitle: "Test on device & secure account",
-    tag: "24h Window",
-    icon: Smartphone,
-    details: [
-      "Log into eFootball Mobile on your device",
-      "Bind your personal email to Konami ID",
-      "Enable Konami Two-Factor Authentication",
-    ],
+    num: "4",
+    title: "24-Hour Check",
+    description:
+      "Log in on your phone, verify every player and coin balance, change the Konami ID email and password, and enable 2FA.",
   },
   {
-    num: "05",
-    title: "Release or Full Refund",
-    subtitle: "Payout disbursed only when satisfied",
-    tag: "Settlement",
-    icon: CheckCircle2,
-    details: [
-      "Click 'Release Funds' once satisfied",
-      "Seller receives instant M-Pesa payout",
-      "100% refund if credentials or specs fail",
-    ],
+    num: "5",
+    title: "Release or Refund",
+    description:
+      "Click Release Funds to pay the seller via M-Pesa—or open a dispute before 24 hours ends if anything doesn't match.",
   },
 ];
 
 export function EscrowStepsVisualizer() {
   return (
-    <section className="py-14 md:py-20 border-b border-slate-800/80 relative overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Header */}
-        <div className="text-center max-w-2xl mx-auto mb-10">
-          <span className="text-[11px] font-mono uppercase tracking-wider font-bold text-emerald-400">
-            How Escrow Works
-          </span>
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-extrabold text-white font-display tracking-tight mt-1">
-            The 5-Step Escrow Guarantee
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-400 mt-2 leading-relaxed">
-            Every trade follows a strict custody pipeline so neither buyer nor seller ever takes blind risk.
-          </p>
-        </div>
-
-        {/* 5-Step Timeline Cards */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
-          {STEPS.map((step) => {
-            const Icon = step.icon;
-            return (
-              <div
-                key={step.num}
-                className="p-5 rounded-2xl border border-slate-800 bg-[#0B1424] flex flex-col justify-between transition-colors hover:border-slate-700"
-              >
-                <div className="space-y-3">
-                  <div className="flex items-center justify-between">
-                    <span className="w-7 h-7 rounded-lg flex items-center justify-center font-mono font-bold text-xs bg-emerald-500/15 border border-emerald-500/30 text-emerald-300">
-                      {step.num}
-                    </span>
-                    <span className="text-[9px] font-mono font-semibold uppercase tracking-wider px-2 py-0.5 rounded-md bg-[#070D18] border border-slate-800 text-slate-400">
-                      {step.tag}
-                    </span>
-                  </div>
-
-                  <div className="flex items-center gap-2 pt-0.5">
-                    <Icon className="w-4 h-4 shrink-0 text-emerald-400" />
-                    <h3 className="font-bold text-white text-sm leading-tight">
-                      {step.title}
-                    </h3>
-                  </div>
-
-                  <p className="text-xs text-slate-400 leading-relaxed">
-                    {step.subtitle}
-                  </p>
-
-                  <div className="pt-3 border-t border-slate-800/90 space-y-1.5">
-                    {step.details.map((detail, dIdx) => (
-                      <div key={dIdx} className="flex items-start gap-1.5 text-[11px] text-slate-300 leading-snug">
-                        <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
-                        <span>{detail}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        {/* Clean Institutional Guarantee Callout */}
-        <div className="rounded-3xl bg-[#0B1424] border border-emerald-500/30 p-6 sm:p-8 shadow-xl relative overflow-hidden">
-          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 relative z-10">
-            <div className="flex items-start gap-4">
-              <div className="w-11 h-11 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 flex items-center justify-center shrink-0">
-                <Lock className="w-5 h-5" />
-              </div>
-              <div className="space-y-1">
-                <h4 className="text-base sm:text-lg font-extrabold text-white font-display flex items-center gap-2">
-                  <span>Zero Prepayment Risk</span>
-                  <span className="px-2 py-0.5 rounded-md bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 text-[10px] font-bold uppercase">
-                    Guaranteed
-                  </span>
-                </h4>
-                <p className="text-xs sm:text-sm text-slate-300 leading-relaxed max-w-3xl">
-                  The seller <strong className="text-white">never touches your money</strong> until you log in on your device, confirm the squad matches every screenshot, update the Konami ID email &amp; password, and click &apos;Release Funds&apos;.
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-3 shrink-0">
-              <Link href="/browse">
-                <button
-                  type="button"
-                  className="px-5 py-3 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-all active:scale-95 flex items-center gap-1.5"
-                >
-                  <span>Browse Squads</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </button>
-              </Link>
-              <Link href="/escrow-guarantee">
-                <button
-                  type="button"
-                  className="px-4 py-3 rounded-xl bg-[#070D18] hover:bg-slate-800 text-slate-200 hover:text-white font-semibold text-xs border border-slate-700 transition-colors"
-                >
-                  Read Rules
-                </button>
-              </Link>
-            </div>
+    <section className="py-14 border-b border-[#242A36]">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+          <div>
+            <h2 className="text-xl sm:text-2xl font-bold text-white font-display">
+              How Every Trade Works
+            </h2>
+            <p className="text-xs sm:text-sm text-slate-400 mt-1">
+              Five clear steps from M-Pesa payment to full Konami ID ownership.
+            </p>
           </div>
+          <Link
+            href="/escrow-guarantee"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 shrink-0"
+          >
+            <span>Read buyer protection rules</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
+          {STEPS.map((step) => (
+            <div
+              key={step.num}
+              className="p-5 rounded-xl border border-[#242A36] bg-[#11141B] space-y-2.5"
+            >
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded bg-[#171B24] border border-[#283040] font-mono font-semibold text-xs text-emerald-400">
+                {step.num}
+              </span>
+              <h3 className="font-semibold text-white text-sm">
+                {step.title}
+              </h3>
+              <p className="text-xs text-slate-400 leading-relaxed">
+                {step.description}
+              </p>
+            </div>
+          ))}
         </div>
       </div>
     </section>

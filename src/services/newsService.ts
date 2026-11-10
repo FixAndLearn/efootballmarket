@@ -129,7 +129,7 @@ export class NewsService {
         content: payload.content,
         cover_image_url: payload.cover_image_url || null,
         author_id: authorId || null,
-        author_name: payload.author_name || "Brian Okibo, Chief Executive Officer (CEO)",
+        author_name: payload.author_name || "eFootballMarket Support",
         is_pinned: Boolean(payload.is_pinned),
         is_published: true,
       })

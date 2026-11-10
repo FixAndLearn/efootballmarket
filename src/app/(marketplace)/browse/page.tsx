@@ -110,8 +110,8 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
                 </span>
               )}
               {searchParams.minStrength && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-amber-950/60 border border-amber-500/40 text-xs text-amber-300 font-bold">
-                  ⚡ {searchParams.minStrength}+ OVR
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-amber-950/60 border border-amber-800/60 text-xs text-amber-300 font-medium">
+                  {searchParams.minStrength}+ OVR
                 </span>
               )}
               {searchParams.platform && searchParams.platform !== "all" && (
@@ -120,8 +120,8 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
                 </span>
               )}
               {searchParams.minCoins && (
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-amber-500/10 border border-amber-500/30 text-xs text-amber-300 font-medium">
-                  🪙 {Number(searchParams.minCoins).toLocaleString()}+ Coins
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-md bg-amber-950/60 border border-amber-800/60 text-xs text-amber-300 font-medium">
+                  {Number(searchParams.minCoins).toLocaleString()}+ Coins
                 </span>
               )}
               {searchParams.manager && (
@@ -150,10 +150,12 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
 
           <ListingGrid listings={listings} filters={filters} />
 
-          {/* AdSense Certified Slot */}
-          <div className="pt-6">
-            <AdBanner slot="browse_bottom_feed" format="horizontal" />
-          </div>
+          {/* AdSense Slot (rendered strictly when catalog results exist) */}
+          <AdBanner
+            slot="browse_bottom_feed"
+            format="horizontal"
+            hasContent={listings.length >= 4 && !hasSearchError}
+          />
         </div>
       </div>
     </div>

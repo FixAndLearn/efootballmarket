@@ -20,7 +20,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             {label}
           </label>
         )}
-        <div className="relative rounded-lg shadow-sm">
+        <div className="relative rounded-lg">
           {leftIcon && (
             <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400">
               {leftIcon}
@@ -30,7 +30,7 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             id={inputId}
             ref={ref}
             className={cn(
-              "w-full rounded-lg bg-pitch-card border border-pitch-border px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 transition-colors focus:border-brand-500 focus:outline-none focus:ring-1 focus:ring-brand-500 disabled:opacity-50",
+              "w-full rounded-lg bg-[#141821] border border-[#262D3B] px-3 py-2 text-sm text-slate-100 placeholder:text-slate-500 transition-colors focus:border-emerald-500 focus:outline-none focus:ring-1 focus:ring-emerald-500 disabled:opacity-50",
               leftIcon && "pl-9",
               rightIcon && "pr-9",
               error && "border-rose-500 focus:border-rose-500 focus:ring-rose-500",

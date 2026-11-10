@@ -684,11 +684,11 @@ function AdminControlCenterContent() {
                 : "Platform Administrator Active"}
             </span>
           </div>
-          <h1 className="text-3xl font-extrabold text-white font-display">
-            Executive Admin Control Center
+          <h1 className="text-2xl sm:text-3xl font-bold text-white font-display">
+            Admin Console
           </h1>
           <p className="text-xs text-slate-400 mt-1">
-            Super Administrator: <strong className="text-slate-200">{PRIMARY_SUPER_ADMIN_EMAIL}</strong> (Brian Okibo, Chief Executive Officer)
+            Administrator: <strong className="text-slate-200">{PRIMARY_SUPER_ADMIN_EMAIL}</strong> (Brian Okibo)
           </p>
         </div>
 

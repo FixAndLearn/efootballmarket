@@ -1,16 +1,23 @@
 import { Resend } from "resend";
 
-if (!process.env.RESEND_API_KEY) {
-  console.warn("RESEND_API_KEY environment variable is not defined.");
-}
-
-export const resend = new Resend(process.env.RESEND_API_KEY);
-
 export const RESEND_CONFIG = {
-  fromAddress: process.env.RESEND_FROM_EMAIL || "eFootball Market <notifications@efootballmarket.co.ke>",
-  supportAddress: "support@efootballmarket.co.ke",
+  fromAddress: process.env.RESEND_FROM_EMAIL || "eFootballMarket <notifications@efootballmarket.co.ke>",
+  supportAddress: "brianokibo@gmail.com",
   domain: "efootballmarket.co.ke",
 };
+
+let cachedClient: Resend | null = null;
+
+function getResendClient(): Resend | null {
+  const apiKey = process.env.RESEND_API_KEY?.trim();
+  if (!apiKey) {
+    return null;
+  }
+  if (!cachedClient) {
+    cachedClient = new Resend(apiKey);
+  }
+  return cachedClient;
+}
 
 export interface SendEmailOptions {
   to: string | string[];
@@ -21,14 +28,16 @@ export interface SendEmailOptions {
   idempotencyKey?: string;
 }
 
-/**
- * Sends a transactional email using the official Resend SDK.
- * Respects strict { data, error } signature and idempotency safeguards.
- */
 export async function sendTransactionalEmail(options: SendEmailOptions) {
+  const client = getResendClient();
+  if (!client) {
+    console.warn("[Resend] RESEND_API_KEY not set; skipping transactional email.");
+    return { success: false, error: "RESEND_API_KEY environment variable is not configured." };
+  }
+
   const from = RESEND_CONFIG.fromAddress;
 
-  const { data, error } = await resend.emails.send({
+  const { data, error } = await client.emails.send({
     from,
     to: options.to,
     subject: options.subject,

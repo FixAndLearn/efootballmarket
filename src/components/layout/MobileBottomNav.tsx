@@ -3,12 +3,10 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Sparkles, ShieldCheck, ShieldAlert, PlusCircle } from "lucide-react";
-import { useLanguage } from "@/context/LanguageContext";
+import { Home, Search, BookOpen, ShieldAlert, Plus } from "lucide-react";
 
 export function MobileBottomNav() {
-  const pathname = usePathname();
-  const { t } = useLanguage();
+  const pathname = usePathname() || "/";
 
   const isAuthRoute =
     pathname === "/login" ||
@@ -28,49 +26,22 @@ export function MobileBottomNav() {
     pathname === "/seller/verification" ||
     pathname === "/profile";
 
-  // Hide on pay/checkout, escrow orders, detail routes, forms, and auth flows to prevent congestion
   if (isHighIntentRoute || isAuthRoute) {
     return null;
   }
 
   const navItems = [
-    {
-      label: "Home",
-      href: "/",
-      icon: Home,
-      isActive: pathname === "/",
-    },
-    {
-      label: "Browse",
-      href: "/browse",
-      icon: Sparkles,
-      isActive: pathname.startsWith("/browse"),
-    },
-    {
-      label: "Sell",
-      href: "/seller/create-listing",
-      icon: PlusCircle,
-      highlight: true,
-      isActive: pathname.startsWith("/seller"),
-    },
-    {
-      label: "Escrow",
-      href: "/escrow-guarantee",
-      icon: ShieldCheck,
-      isActive: pathname.startsWith("/escrow-guarantee"),
-    },
-    {
-      label: "Blacklist",
-      href: "/scammer-check",
-      icon: ShieldAlert,
-      isActive: pathname.startsWith("/scammer-check"),
-    },
+    { label: "Home", href: "/", icon: Home, isActive: pathname === "/" },
+    { label: "Browse", href: "/browse", icon: Search, isActive: pathname.startsWith("/browse") },
+    { label: "Sell", href: "/seller/create-listing", icon: Plus, highlight: true, isActive: pathname.startsWith("/seller") },
+    { label: "Guides", href: "/news", icon: BookOpen, isActive: pathname.startsWith("/news") },
+    { label: "Check", href: "/scammer-check", icon: ShieldAlert, isActive: pathname.startsWith("/scammer-check") },
   ];
 
   return (
     <nav
       aria-label="Mobile Bottom Navigation"
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#070D18]/95 backdrop-blur-xl border-t border-pitch-border px-2 py-1.5 shadow-[0_-4px_25px_rgba(0,0,0,0.6)] safe-area-pb"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#090B0E]/95 backdrop-blur-md border-t border-[#242A36] px-2 py-1"
     >
       <div className="grid grid-cols-5 gap-1 items-center max-w-md mx-auto">
         {navItems.map((item) => {
@@ -79,34 +50,18 @@ export function MobileBottomNav() {
             <Link
               key={item.label}
               href={item.href}
-              className={`flex flex-col items-center justify-center min-h-[48px] py-1 rounded-xl transition-all relative ${
-                item.highlight
-                  ? "text-slate-950 font-black"
-                  : item.isActive
-                  ? "text-emerald-400 bg-pitch-surface/80 font-semibold"
-                  : "text-slate-400 hover:text-white"
+              className={`flex flex-col items-center justify-center min-h-[46px] py-1 rounded-lg transition-colors ${
+                item.isActive ? "text-white font-medium" : "text-slate-400 hover:text-slate-200"
               }`}
             >
               {item.highlight ? (
-                <div className="w-8 h-8 rounded-full bg-gradient-to-r from-emerald-500 to-teal-400 flex items-center justify-center shadow-lg shadow-emerald-500/30 -mt-1">
-                  <Icon className="w-4 h-4 stroke-[2.5] text-slate-950" />
+                <div className="w-7 h-7 rounded-md bg-emerald-500 flex items-center justify-center text-zinc-950">
+                  <Icon className="w-4 h-4 stroke-[2.5]" />
                 </div>
               ) : (
-                <div className="relative">
-                  <Icon
-                    className={`w-5 h-5 transition-transform ${
-                      item.isActive ? "scale-105 stroke-[2.2]" : "stroke-[1.75]"
-                    }`}
-                  />
-                </div>
+                <Icon className="w-4 h-4 stroke-[2]" />
               )}
-              <span
-                className={`text-[10px] tracking-tight mt-1 truncate max-w-[60px] ${
-                  item.highlight ? "font-bold text-emerald-400" : ""
-                }`}
-              >
-                {item.label}
-              </span>
+              <span className="text-[10px] mt-1 truncate">{item.label}</span>
             </Link>
           );
         })}

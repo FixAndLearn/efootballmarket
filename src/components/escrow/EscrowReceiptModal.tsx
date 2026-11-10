@@ -198,13 +198,13 @@ export function EscrowReceiptModal({ order, isOpen, onClose }: EscrowReceiptModa
           <div className="pt-4 border-t border-slate-800 print:border-gray-300 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-3 text-xs">
             <div>
               <span className="block text-[10px] uppercase font-bold text-slate-400 print:text-gray-500">
-                Escrow Operations Authority
+                Issued By
               </span>
               <span className="font-bold text-white print:text-black block text-sm mt-0.5">
-                Brian Okibo
+                eFootballMarket Support
               </span>
               <span className="text-[11px] text-slate-400 print:text-gray-600">
-                Director & CEO, eFootballMarket Inc. (0794400365)
+                Nairobi, Kenya &middot; 0794 400 365
               </span>
             </div>
 

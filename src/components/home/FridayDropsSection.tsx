@@ -57,36 +57,28 @@ export function FridayDropsSection({ listings }: FridayDropsProps) {
 
   return (
     <section id="friday-drops" className="py-12 md:py-16 bg-pitch-dark border-b border-pitch-border relative overflow-hidden">
-      {/* Background ambient lighting */}
-      <div className="absolute top-0 right-1/4 w-96 h-96 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
-      <div className="absolute bottom-0 left-1/4 w-96 h-96 bg-emerald-500/10 rounded-full blur-3xl pointer-events-none" />
-
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-        {/* Module Header Container with uniform pitch design system */}
-        <div className="rounded-3xl p-6 sm:p-8 md:p-10 bg-pitch-surface border border-pitch-border shadow-2xl relative">
-          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-8 border-b border-pitch-border">
-            {/* Title & Badge */}
+        {/* Module Header Container */}
+        <div className="rounded-xl p-6 sm:p-8 bg-[#11141B] border border-[#242A36] relative">
+          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 pb-8 border-b border-[#242A36]">
+            {/* Title */}
             <div className="space-y-2">
-              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold font-mono uppercase tracking-wider">
-                <Flame className="w-3.5 h-3.5 text-amber-400 fill-amber-400" />
-                <span>Weekly Curated Vault</span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-white font-display tracking-tight">
-                Curated Squad Drops
+              <h1 className="text-2xl sm:text-3xl font-bold text-white font-display tracking-tight">
+                Friday Squad Drops
               </h1>
               <p className="text-xs sm:text-sm text-slate-400 max-w-xl leading-relaxed">
                 {isDropActive
-                  ? "Hand-curated, verified high-OVR accounts unlocked exclusively for 8 hours (2:00 PM – 10:00 PM EAT). Full Safaricom M-Pesa Till 1572931 escrow custody applies."
-                  : "Exclusive high-OVR accounts unlock every Friday for 8 hours only (2:00 PM – 10:00 PM EAT). Curated by Brian Okibo and secured in Till 1572931 escrow."}
+                  ? "Selected high-OVR accounts open for 8 hours (2:00 PM – 10:00 PM EAT). Standard M-Pesa Till 1572931 buyer protection applies."
+                  : "Selected high-OVR accounts open every Friday from 2:00 PM to 10:00 PM EAT with standard M-Pesa Till 1572931 buyer protection."}
               </p>
             </div>
 
             {/* Dynamic Countdown Timer */}
-            <div className="p-4 sm:p-5 rounded-2xl bg-pitch-card border border-pitch-border shadow-inner shrink-0">
+            <div className="p-4 sm:p-5 rounded-xl bg-[#171B24] border border-[#283040] shrink-0">
               <div className="flex items-center gap-2 mb-2.5">
-                <Clock className="w-4 h-4 text-amber-400" />
-                <span className="text-[11px] font-mono font-bold uppercase tracking-wider text-amber-300">
-                  {isDropActive ? "⚡ VAULT CLOSES IN:" : "NEXT VAULT UNLOCKS IN:"}
+                <Clock className="w-4 h-4 text-emerald-400" />
+                <span className="text-[11px] font-mono font-semibold uppercase tracking-wider text-slate-300">
+                  {isDropActive ? "CLOSES IN:" : "NEXT DROP IN:"}
                 </span>
                 {isDropActive && (
                   <span className="px-2 py-0.5 rounded-full bg-emerald-500 text-slate-950 font-black text-[9px] animate-pulse">

@@ -26,7 +26,7 @@ const siteUrl =
   process.env.NEXT_PUBLIC_APP_URL || "https://www.efootballmarket.co.ke";
 
 export const viewport: Viewport = {
-  themeColor: "#060B14",
+  themeColor: "#090B0E",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -39,28 +39,17 @@ export const metadata: Metadata = {
     template: "%s | eFootballMarket",
   },
   description:
-    "Buy & sell verified eFootball accounts in Kenya with automated Safaricom M-Pesa Till 1572931 escrow. 24h inspection window, zero Google-link guarantee & instant delivery.",
+    "Buy and sell verified eFootball accounts in Kenya with M-Pesa buyer protection (Till 1572931), 24-hour squad inspection, and clean Konami ID transfers.",
   applicationName: "eFootballMarket",
-  authors: [{ name: "Brian Okibo, Chief Executive Officer (CEO)" }],
+  authors: [{ name: "Brian Okibo" }],
   generator: "Next.js",
   keywords: [
     "buy eFootball account Kenya",
     "sell eFootball squad M-Pesa",
     "eFootball escrow Kenya",
-    "verified Konami ID accounts",
-    "eFootball accounts",
+    "Konami ID accounts Kenya",
     "eFootball market Kenya",
-    "buy eFootball account",
-    "sell PES account",
     "eFootball mobile accounts",
-    "M-Pesa gaming account",
-    "Konami ID accounts",
-    "eFootball 2026 accounts",
-    "3200 OVR eFootball account",
-    "Epic booster player account",
-    "buy PES mobile account M-Pesa",
-    "eFootball accounts Nairobi",
-    "scammer blacklist Kenya eFootball",
   ],
   creator: "Brian Okibo",
   publisher: "eFootballMarket",
@@ -79,19 +68,13 @@ export const metadata: Metadata = {
     siteName: "eFootballMarket",
     title: "eFootballMarket | Buy & Sell eFootball Accounts in Kenya",
     description:
-      "M-PESA NATIVE | 100% ESCROW PROTECTED | VERIFIED SELLERS. Buy and sell verified eFootball squads safely with M-Pesa Escrow (Till 1572931) and 24h buyer protection.",
+      "Peer-to-peer eFootball marketplace in Kenya with M-Pesa payment holds (Till 1572931) and a 24-hour buyer inspection window.",
     images: [
       {
         url: "/og-image.svg",
         width: 1200,
         height: 630,
-        alt: "eFootballMarket - Kenya's #1 Secure eFootball Account Trading Hub",
-      },
-      {
-        url: "/logo.png",
-        width: 512,
-        height: 512,
-        alt: "eFootballMarket Official Brand Shield Crest",
+        alt: "eFootballMarket Kenya",
       },
     ],
   },
@@ -99,9 +82,8 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "eFootballMarket | Buy & Sell eFootball Accounts in Kenya",
     description:
-      "M-PESA NATIVE | 100% ESCROW PROTECTED | VERIFIED SELLERS. Buy and sell verified eFootball squads safely with M-Pesa Escrow.",
+      "Peer-to-peer eFootball marketplace in Kenya with M-Pesa payment holds and 24-hour buyer verification.",
     images: ["/og-image.svg"],
-    creator: "@eFootballMarket",
   },
   robots: {
     index: true,
@@ -147,7 +129,6 @@ export default function RootLayout({
   return (
     <html lang="en" className={`dark ${inter.variable} ${outfit.variable}`}>
       <head>
-        {/* Google Consent Mode v2 Default (Must execute before any Google tags) */}
         <Script
           id="google-consent-mode"
           strategy="beforeInteractive"
@@ -166,7 +147,6 @@ export default function RootLayout({
           }}
         />
 
-        {/* Google Analytics 4 */}
         {gaId && (
           <>
             <Script
@@ -190,7 +170,7 @@ export default function RootLayout({
           </>
         )}
       </head>
-      <body className="bg-[#060B14] text-[#F8FAFC] min-h-screen flex flex-col antialiased selection:bg-[#10B981] selection:text-[#060B14] relative font-sans pb-16 md:pb-0">
+      <body className="bg-[#090B0E] text-[#F1F5F9] min-h-screen flex flex-col antialiased selection:bg-emerald-500 selection:text-zinc-950 relative font-sans pb-16 md:pb-0">
         <LanguageProvider>
           <Header />
           <main className="flex-1 flex flex-col relative z-10">{children}</main>
