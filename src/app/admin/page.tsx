@@ -54,39 +54,23 @@ function AdminControlCenterContent() {
   const searchParams = useSearchParams();
   const { user, profile, isAuthenticated, loading: authLoading } = useAuth();
   const tabParam = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState<"listings" | "disputes" | "users" | "news" | "withdrawals" | "telegram">(
-    tabParam === "whatsapp" || tabParam === "telegram" ? "telegram" : (tabParam as any) || "listings"
+  const [activeTab, setActiveTab] = useState<"listings" | "disputes" | "users" | "news" | "withdrawals">(
+    ["listings", "disputes", "users", "withdrawals", "news"].includes(tabParam || "")
+      ? (tabParam as any)
+      : "listings"
   );
 
   // Synchronize active tab whenever URL ?tab= updates from sidebar clicks
   useEffect(() => {
-    if (tabParam) {
-      const normalized = tabParam === "whatsapp" ? "telegram" : tabParam;
-      if (["listings", "disputes", "users", "withdrawals", "news", "telegram"].includes(normalized)) {
-        setActiveTab(normalized as any);
-      }
+    if (tabParam && ["listings", "disputes", "users", "withdrawals", "news"].includes(tabParam)) {
+      setActiveTab(tabParam as any);
     }
   }, [tabParam]);
 
-  const switchTab = (tab: "listings" | "disputes" | "users" | "news" | "withdrawals" | "telegram") => {
+  const switchTab = (tab: "listings" | "disputes" | "users" | "news" | "withdrawals") => {
     setActiveTab(tab);
     router.push(`/admin?tab=${tab}`, { scroll: false });
   };
-
-  // Telegram Integration State
-  const [telegramInfo, setTelegramInfo] = useState<any>(null);
-
-  // Telegram test state
-  const [testTgLoading, setTestTgLoading] = useState(false);
-  const [testTgResult, setTestTgResult] = useState<any>(null);
-  const [customTgChatId, setCustomTgChatId] = useState("");
-  const [customTgToken, setCustomTgToken] = useState("");
-  const [registeringWebhook, setRegisteringWebhook] = useState(false);
-  const [broadcastingListingId, setBroadcastingListingId] = useState<string | null>(null);
-  const [channelInput, setChannelInput] = useState("");
-  const [testChannelLoading, setTestChannelLoading] = useState(false);
-  const [testChannelResult, setTestChannelResult] = useState<any>(null);
-  const [selectedSquadToBroadcast, setSelectedSquadToBroadcast] = useState("");
 
   // Data states
   const [listings, setListings] = useState<any[]>([]);
@@ -247,185 +231,9 @@ function AdminControlCenterContent() {
   useEffect(() => {
     if (isAdmin) {
       loadAdminData();
-      loadTelegramStatus();
     }
   }, [isAdmin, loadAdminData]);
 
-  const loadTelegramStatus = async () => {
-    try {
-      const res = await fetch("/api/telegram/send-test");
-      if (res.ok) {
-        const data = await res.json();
-        setTelegramInfo(data);
-      }
-    } catch {
-      // non-blocking
-    }
-  };
-
-  const handleSendTestTelegram = async (testType: "standard" | "simulated_payment" = "standard") => {
-    setTestTgLoading(true);
-    setTestTgResult(null);
-    try {
-      const res = await fetch("/api/telegram/send-test", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chatId: customTgChatId.trim() || undefined,
-          token: customTgToken.trim() || undefined,
-          testType,
-        }),
-      });
-      const data = await res.json();
-      setTestTgResult(data);
-      if (data.success) {
-        setFeedback({
-          type: "success",
-          message: `Telegram alert delivered to chat ${data.chatId || "ID"}! Check your phone.`,
-        });
-        loadTelegramStatus();
-      } else {
-        setFeedback({
-          type: "error",
-          message: `Telegram dispatch failed: ${data.error || "Check bot token and chat ID"}`,
-        });
-      }
-    } catch (err: any) {
-      setTestTgResult({ error: err.message });
-      setFeedback({ type: "error", message: `Error sending Telegram test: ${err.message}` });
-    } finally {
-      setTestTgLoading(false);
-    }
-  };
-
-  const handleRegisterTelegramWebhook = async () => {
-    setRegisteringWebhook(true);
-    try {
-      const res = await fetch("/api/telegram/send-test", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "register_webhook",
-          token: customTgToken.trim() || undefined,
-        }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setFeedback({
-          type: "success",
-          message: data.message || "Telegram webhook activated! The bot will now auto-reply to messages in Telegram.",
-        });
-        loadTelegramStatus();
-      } else {
-        setFeedback({
-          type: "error",
-          message: `Webhook activation failed: ${data.error || data.message || "Check bot token"}`,
-        });
-      }
-    } catch (err: any) {
-      setFeedback({ type: "error", message: `Error registering webhook: ${err.message}` });
-    } finally {
-      setRegisteringWebhook(false);
-    }
-  };
-
-  const handleBroadcastListing = async (listing: any) => {
-    setBroadcastingListingId(listing.id);
-    try {
-      const res = await fetch("/api/telegram/send-test", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "broadcast_listing",
-          listingId: listing.id,
-        }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setFeedback({
-          type: "success",
-          message: `Listing "${listing.title}" broadcasted to Telegram Deals Channel! `,
-        });
-      } else {
-        setFeedback({
-          type: "error",
-          message: `Broadcast issue: ${data.error || "Check channel settings"}`,
-        });
-      }
-    } catch (err: any) {
-      setFeedback({ type: "error", message: `Broadcast error: ${err.message}` });
-    } finally {
-      setBroadcastingListingId(null);
-    }
-  };
-
-  const handleTestChannelBroadcast = async () => {
-    setTestChannelLoading(true);
-    setTestChannelResult(null);
-    try {
-      const res = await fetch("/api/telegram/send-test", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "test_deals_channel",
-          channel: channelInput.trim() || undefined,
-        }),
-      });
-      const data = await res.json();
-      setTestChannelResult(data);
-      if (data.success) {
-        setFeedback({
-          type: "success",
-          message: `Sample Deal Card sent to Telegram Deals Channel (${data.channelUsed || channelInput || "configured channel"})! Check your Telegram channel! `,
-        });
-      } else {
-        setFeedback({
-          type: "error",
-          message: `Channel Broadcast failed: ${data.error || "Make sure @efootballmaket_bot is added as Administrator with Post Messages permission."}`,
-        });
-      }
-    } catch (err: any) {
-      setTestChannelResult({ error: err.message });
-      setFeedback({ type: "error", message: `Broadcast error: ${err.message}` });
-    } finally {
-      setTestChannelLoading(false);
-    }
-  };
-
-  const handleBroadcastSelectedSquad = async () => {
-    if (!selectedSquadToBroadcast) return;
-    const targetListing = listings.find((l) => l.id === selectedSquadToBroadcast);
-    if (!targetListing) return;
-
-    setBroadcastingListingId(targetListing.id);
-    try {
-      const res = await fetch("/api/telegram/send-test", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          action: "broadcast_listing",
-          listingId: targetListing.id,
-          channel: channelInput.trim() || undefined,
-        }),
-      });
-      const data = await res.json();
-      if (data.success) {
-        setFeedback({
-          type: "success",
-          message: `"${targetListing.title}" broadcasted to Telegram Deals Channel (${data.channelUsed || channelInput || "channel"})! `,
-        });
-      } else {
-        setFeedback({
-          type: "error",
-          message: `Broadcast failed: ${data.error || "Check channel permissions"}`,
-        });
-      }
-    } catch (err: any) {
-      setFeedback({ type: "error", message: `Error: ${err.message}` });
-    } finally {
-      setBroadcastingListingId(null);
-    }
-  };
   const handleModerateListing = async (listingId: string, action: "take_down" | "reinstate", reason?: string) => {
     setActionLoading(true);
     setFeedback(null);
@@ -857,7 +665,7 @@ function AdminControlCenterContent() {
                 </span>
               </h2>
               <p className="text-xs text-sx-muted mt-0.5">
-                Bring down any squad listing that violates marketplace rules or broadcast verified accounts to Telegram.
+                Moderate active squad listings and enforce Clean Konami ID marketplace rules.
               </p>
             </div>
             <div className="relative min-w-[260px]">
@@ -929,17 +737,6 @@ function AdminControlCenterContent() {
                         </td>
                         <td className="p-3.5 text-right">
                           <div className="flex items-center justify-end gap-2">
-                            <Button
-                              type="button"
-                              variant="outline"
-                              size="sm"
-                              onClick={() => handleBroadcastListing(l)}
-                              isLoading={broadcastingListingId === l.id}
-                              className="text-xs py-1 px-2.5 border-sx-info-border text-sx-info-text hover:bg-sx-info-tint"
-                            >
-                              <Send className="w-3.5 h-3.5 mr-1" />
-                              Broadcast
-                            </Button>
                             {l.status === "active" ? (
                               <Button
                                 type="button"
@@ -1971,254 +1768,6 @@ function AdminControlCenterContent() {
               </div>
             </div>
           )}
-        </div>
-      )}
-
-      {/* TAB 5: TELEGRAM EXECUTIVE COMMAND & ALERT HUB */}
-      {activeTab === "telegram" && (
-        <div className="space-y-6 animate-in fade-in">
-          {/* PRIMARY HERO: TELEGRAM SMARTPHONE PUSH NOTIFICATIONS */}
-          <div className="p-6 rounded-3xl bg-pitch-surface border border-indigo-500/50 shadow-2xl relative overflow-hidden">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-              <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sx-info-tint border border-sx-info-border text-sx-info-text text-xs font-bold mb-2">
-                  <Bot className="w-3.5 h-3.5 text-sx-info-text" />
-                  <span>Primary Admin Notification Channel</span>
-                </div>
-                <h2 className="text-2xl font-bold text-sx-ink font-display flex flex-wrap items-center gap-2">
-                  <span>Telegram Smartphone Bot Alerts</span>
-                  {telegramInfo?.isConfigured ? (
-                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-sx-green-tint text-sx-green-text border border-sx-green-border font-mono font-bold">
-                      ACTIVE &amp; READY </span>
-                  ) : (
-                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-sx-amber-tint text-sx-amber-text border border-sx-amber-border font-mono font-bold">
-                      AWAITING BOT TOKEN
-                    </span>
-                  )}
-                </h2>
-                <p className="text-xs text-sx-ink-soft mt-1 max-w-2xl leading-relaxed">
-                  Directly buzzes Brian Okibo&apos;s phone (+254 794 400 365) the second an M-Pesa Till 1572931 payment arrives, a new account is listed, Konami credentials are submitted, or a withdrawal is requested. Instant sound/banner notifications with zero Meta approvals.
-                </p>
-              </div>
-
-              <div className="p-3.5 rounded-2xl bg-pitch-card border border-pitch-border space-y-1 shrink-0 text-right">
-                <span className="text-[10px] text-sx-muted uppercase font-bold block">Status</span>
-                <span className={`text-sm font-bold ${telegramInfo?.isConfigured ? "text-sx-green-text" : "text-sx-amber-text"}`}>
-                  {telegramInfo?.isConfigured ? "Connected" : "Not Configured"}
-                </span>
-                <span className="text-[10px] text-sx-muted block font-mono">
-                  {telegramInfo?.maskedChatId ? `Chat: ${telegramInfo.maskedChatId}` : "Escrow Till: 1572931"}
-                </span>
-              </div>
-            </div>
-
-            {/* Telegram Live Testing & Dispatch */}
-            <div className="mt-6 pt-6 border-t border-pitch-border space-y-4">
-              <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-                <div>
-                  <h3 className="text-sm font-bold text-sx-ink flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-sx-amber-text" />
-                    <span>Send Live Push Alert to Brian&apos;s Phone</span>
-                  </h3>
-                  <p className="text-xs text-sx-muted mt-0.5">
-                    Test your Telegram bot connection immediately or simulate a live M-Pesa transaction alert.
-                  </p>
-                </div>
-                <div className="flex flex-wrap items-center gap-2 w-full sm:w-auto">
-                  <Button
-                    variant="gold"
-                    size="md"
-                    onClick={() => handleSendTestTelegram("standard")}
-                    isLoading={testTgLoading}
-                    className="flex-1 sm:flex-initial text-xs font-bold"
-                  >
-                    <Send className="w-4 h-4 mr-1.5" />
-                    Send Test Ping
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="md"
-                    onClick={() => handleSendTestTelegram("simulated_payment")}
-                    isLoading={testTgLoading}
-                    className="flex-1 sm:flex-initial text-xs font-bold border-sx-info-border text-sx-info-text hover:bg-sx-info-tint"
-                  >
-                    <Banknote className="w-4 h-4 mr-1.5" />
-                    Simulate Payment Alert
-                  </Button>
-                  <Button
-                    variant="outline"
-                    size="md"
-                    onClick={handleRegisterTelegramWebhook}
-                    isLoading={registeringWebhook}
-                    className="flex-1 sm:flex-initial text-xs font-bold border-sx-green-border text-sx-green-text hover:bg-sx-green-tint"
-                  >
-                    <Bot className="w-4 h-4 mr-1.5" />
-                    {telegramInfo?.webhook?.url ? "Re-sync Webhook" : "Activate Auto-Replies"}
-                  </Button>
-                </div>
-              </div>
-
-              {testTgResult && (
-                <div
-                  className={`p-3.5 rounded-xl border text-xs font-mono space-y-1 ${
-                    testTgResult.success
-                      ? "bg-sx-green-tint border-sx-green-border text-sx-green-text"
-                      : "bg-sx-red-tint border-sx-red-border text-sx-red-text"
-                  }`}
-                >
-                  <div className="flex items-center justify-between">
-                    <span>
-                      <strong>Result:</strong> {testTgResult.success ? "DELIVERED TO PHONE " : "DISPATCH FAILED "}
-                    </span>
-                    {testTgResult.messageId && (
-                      <span className="text-[11px] text-sx-muted">Telegram msg_id: {testTgResult.messageId}</span>
-                    )}
-                  </div>
-                  {testTgResult.chatId && (
-                    <div><strong>Chat ID:</strong> {testTgResult.chatId}</div>
-                  )}
-                  {testTgResult.error && (
-                    <div><strong>Error:</strong> {testTgResult.error}</div>
-                  )}
-                </div>
-              )}
-            </div>
-          </div>
-
-          {/* TELEGRAM PUBLIC DEALS CHANNEL SUITE */}
-          <div className="p-6 rounded-3xl bg-pitch-surface border border-sx-info-border shadow-2xl space-y-5">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-pitch-border/80 pb-4">
-              <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sx-info-tint border border-sx-info-border text-sx-info-text text-xs font-bold mb-2">
-                  <Megaphone className="w-3.5 h-3.5 text-sx-info-text" />
-                  <span>Automated Community Growth &amp; Broadcasts</span>
-                </div>
-                <h3 className="text-xl font-bold text-sx-ink font-display flex flex-wrap items-center gap-2">
-                  <span>Telegram Deals Channel Auto-Broadcast</span>
-                  {telegramInfo?.channelConfigured ? (
-                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-sx-green-tint text-sx-green-text border border-sx-green-border font-mono font-bold">
-                      CHANNEL LINKED </span>
-                  ) : (
-                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-sx-amber-tint text-sx-amber-text border border-sx-amber-border font-mono font-bold">
-                      OPTIONAL BROADCAST
-                    </span>
-                  )}
-                </h3>
-                <p className="text-xs text-sx-ink-soft mt-1 max-w-2xl leading-relaxed">
-                  Automatically posts verified squad cards to your public Telegram gaming channel (e.g. <code>@efootballmarket_deals</code>). Every broadcast includes high-resolution squad screenshots, OVR rating, KES price, and a direct 1-tap Buy via Till 1572931 button!
-                </p>
-              </div>
-
-              <div className="p-3.5 rounded-2xl bg-pitch-card border border-pitch-border space-y-1 shrink-0 text-right">
-                <span className="text-[10px] text-sx-muted uppercase font-bold block">Target Channel</span>
-                <span className="text-sm font-bold text-sx-info-text font-mono">
-                  {channelInput.trim() || telegramInfo?.maskedChannel || "@efootballmarket_deals"}
-                </span>
-                <span className="text-[10px] text-sx-muted block font-mono">
-                  Bot: @efootballmaket_bot
-                </span>
-              </div>
-            </div>
-
-            {/* Channel Dispatch Actions Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-              {/* Left Column: Test Broadcast & Custom Target */}
-              <div className="p-4 rounded-2xl bg-pitch-card border border-pitch-border space-y-3">
-                <span className="text-xs font-bold text-sx-ink flex items-center gap-1.5">
-                  <Zap className="w-4 h-4 text-sx-amber-text" />
-                  <span>1. Test Channel Dispatch</span>
-                </span>
-                <p className="text-xs text-sx-muted">
-                  Enter your Telegram channel username or numeric ID to broadcast squad deals.
-                </p>
-
-                <div className="space-y-2">
-                  <label className="text-[11px] font-semibold text-sx-ink-soft block">
-                    Channel Username / ID (leave blank to use .env default):
-                  </label>
-                  <input
-                    type="text"
-                    value={channelInput}
-                    onChange={(e) => setChannelInput(e.target.value)}
-                    placeholder="e.g. @efootballmarket_deals or -100xxxxxxxxxx"
-                    className="w-full px-3.5 py-2 rounded-xl bg-pitch-surface border border-pitch-border text-xs text-sx-ink font-mono focus:outline-none focus:border-indigo-500"
-                  />
-                </div>
-
-                <Button
-                  variant="gold"
-                  size="sm"
-                  onClick={handleTestChannelBroadcast}
-                  isLoading={testChannelLoading}
-                  className="w-full font-bold text-xs"
-                >
-                  <Send className="w-3.5 h-3.5 mr-1.5" />
-                  Post Test Deal Card to Channel
-                </Button>
-
-                {testChannelResult && (
-                  <div
-                    className={`p-3 rounded-xl border text-xs font-mono space-y-0.5 ${
-                      testChannelResult.success
-                        ? "bg-sx-green-tint border-sx-green-border text-sx-green-text"
-                        : "bg-sx-red-tint border-sx-red-border text-sx-red-text"
-                    }`}
-                  >
-                    <div>
-                      <strong>Channel Post:</strong> {testChannelResult.success ? "POSTED TO CHANNEL " : "FAILED "}
-                    </div>
-                    {testChannelResult.messageId && (
-                      <div>Telegram msg_id: {testChannelResult.messageId}</div>
-                    )}
-                    {testChannelResult.error && (
-                      <div>Error: {testChannelResult.error}</div>
-                    )}
-                  </div>
-                )}
-              </div>
-
-              {/* Right Column: Broadcast Any Active Marketplace Squad */}
-              <div className="p-4 rounded-2xl bg-pitch-card border border-pitch-border space-y-3">
-                <span className="text-xs font-bold text-sx-ink flex items-center gap-1.5">
-                  <Share2 className="w-4 h-4 text-sx-green-text" />
-                  <span>2. Manually Broadcast Live Listing</span>
-                </span>
-                <p className="text-xs text-sx-muted">
-                  Select any approved marketplace squad to push to your channel subscribers.
-                </p>
-
-                <div className="space-y-2">
-                  <label className="text-[11px] font-semibold text-sx-ink-soft block">
-                    Select Active Squad to Push:
-                  </label>
-                  <select
-                    value={selectedSquadToBroadcast}
-                    onChange={(e) => setSelectedSquadToBroadcast(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-xl bg-pitch-surface border border-pitch-border text-xs text-sx-ink focus:outline-none focus:border-emerald-500"
-                  >
-                    <option value="">-- Choose squad from marketplace --</option>
-                    {listings.filter((l) => l.status === "published" || (l as any).status === "active").map((l) => (
-                      <option key={l.id} value={l.id}>
-                        {l.title} (KES {Number(l.price).toLocaleString()} / {l.overall_team_strength || (l as any).collective_strength || "Top"} OVR)
-                      </option>
-                    ))}
-                  </select>
-                </div>
-
-                <Button
-                  variant="primary"
-                  size="sm"
-                  onClick={handleBroadcastSelectedSquad}
-                  isLoading={Boolean(broadcastingListingId)}
-                  disabled={!selectedSquadToBroadcast}
-                  className="w-full font-bold text-xs bg-emerald-600 hover:bg-emerald-500 text-white"
-                >
-                  <Megaphone className="w-3.5 h-3.5 mr-1.5" />
-                  Broadcast Squad to Deals Channel Now
-                </Button>
-              </div>
-            </div>
-          </div>
         </div>
       )}
 

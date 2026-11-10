@@ -6,8 +6,7 @@
  * 2. UltraMsg (Scan QR Code from phone - Easiest 60-second setup, no Meta approval required)
  * 3. Wassenger (Scan QR Code from phone)
  * 4. Twilio WhatsApp (Production scale, Sandbox or approved sender)
- * 5. Telegram Bot (100% Free instant backup alert to your smartphone)
- * 6. Generic Webhook / Gateway (Zapier, Make, custom WhatsApp proxy)
+ * 5. Generic Webhook / Gateway (Zapier, Make, custom WhatsApp proxy)
  */
 
 import { formatWhatsAppPhone } from "@/lib/utils/phone";
@@ -33,7 +32,6 @@ export interface WhatsAppSendResult {
     | "ultramsg"
     | "wassenger"
     | "twilio"
-    | "telegram_fallback"
     | "whatsapp_gateway"
     | "callmebot"
     | "simulated_local"
@@ -78,13 +76,6 @@ export function isTwilioWhatsAppConfigured(): boolean {
 }
 
 /**
- * Checks if Telegram Bot alerts are configured.
- */
-export function isTelegramConfigured(): boolean {
-  return Boolean(process.env.TELEGRAM_BOT_TOKEN && process.env.TELEGRAM_CHAT_ID);
-}
-
-/**
  * Checks if any automated WhatsApp or real-time alert service is configured.
  */
 export function isWhatsAppConfigured(): boolean {
@@ -95,7 +86,6 @@ export function isWhatsAppConfigured(): boolean {
     isTwilioWhatsAppConfigured() ||
     process.env.WHATSAPP_GATEWAY_URL ||
     process.env.ADMIN_ALERT_WEBHOOK_URL ||
-    isTelegramConfigured() ||
     process.env.CALLMEBOT_API_KEY
   );
 }
@@ -109,7 +99,6 @@ export function getActiveWhatsAppProvider(): string {
   if (isWassengerConfigured()) return "Wassenger (QR Code WhatsApp)";
   if (isTwilioWhatsAppConfigured()) return "Twilio WhatsApp API";
   if (process.env.WHATSAPP_GATEWAY_URL) return "Custom WhatsApp Gateway";
-  if (isTelegramConfigured()) return "Telegram Bot Alert (Backup)";
   if (process.env.ADMIN_ALERT_WEBHOOK_URL) return "Webhook Hub";
   if (process.env.CALLMEBOT_API_KEY) return "CallMeBot Gateway";
   return "Simulated Local (Development)";
@@ -292,37 +281,7 @@ export async function sendWhatsAppMessage({
   }
 
   // ---------------------------------------------------------------------------
-  // 5. Telegram Bot Backup Alert (Free instant smartphone push notifications)
-  // ---------------------------------------------------------------------------
-  const telegramToken = process.env.TELEGRAM_BOT_TOKEN;
-  const telegramChatId = process.env.TELEGRAM_CHAT_ID;
-
-  if (telegramToken && telegramChatId) {
-    try {
-      const res = await fetch(`https://api.telegram.org/bot${telegramToken.trim()}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: telegramChatId.trim(),
-          text: message,
-        }),
-      });
-
-      if (res.ok) {
-        console.log(`[Telegram:Bot] Alert pushed to admin chat ${telegramChatId}`);
-        return {
-          success: true,
-          provider: "telegram_fallback",
-          recipient: cleanPhone,
-        };
-      }
-    } catch (err: any) {
-      console.warn("[Telegram:Bot] Error:", err.message);
-    }
-  }
-
-  // ---------------------------------------------------------------------------
-  // 6. Generic WhatsApp Gateway / Webhook
+  // 5. Generic WhatsApp Gateway / Webhook
   // ---------------------------------------------------------------------------
   const gatewayUrl = process.env.WHATSAPP_GATEWAY_URL;
   const gatewayApiKey = process.env.WHATSAPP_GATEWAY_KEY || process.env.WHATSAPP_BOT_API_KEY;

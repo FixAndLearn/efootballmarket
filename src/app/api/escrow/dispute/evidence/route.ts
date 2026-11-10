@@ -2,7 +2,6 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
-import { sendTelegramMessage } from "@/lib/notifications/telegramAlert";
 
 export const dynamic = "force-dynamic";
 
@@ -113,27 +112,6 @@ export async function POST(req: NextRequest) {
           message_type: "system",
         });
       }
-    } catch (e) {
-      // quiet fallback
-    }
-
-    // Alert admin via Telegram
-    try {
-      const appUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.efootballmarket.co.ke";
-      const rawListing = (order as any)?.listing;
-      const listingTitle = Array.isArray(rawListing)
-        ? rawListing[0]?.title
-        : rawListing?.title;
-
-      const tgMsg =
-        `<b>NEW EVIDENCE UPLOADED FOR DISPUTE</b>\n\n` +
-        `<b>Order #${order.order_number}</b>: ${listingTitle || "eFootball Squad"}\n` +
-        `<b>Uploader</b>: ${uploaderRole} (${user.id.slice(0, 8)})\n` +
-        `<b>Title</b>: ${title}\n` +
-        `<b>Evidence URL</b>: ${evidenceUrl}\n\n` +
-        `<a href="${appUrl}/admin?tab=disputes">Open Admin Dispute Locker</a>`;
-
-      await sendTelegramMessage(tgMsg);
     } catch (e) {
       // quiet fallback
     }

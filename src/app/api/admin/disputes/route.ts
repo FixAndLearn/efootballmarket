@@ -1,7 +1,6 @@
 import { isUserAdmin } from "@/lib/security/adminAuth";
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { sendTelegramMessage } from "@/lib/notifications/telegramAlert";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -194,21 +193,6 @@ export async function PATCH(req: NextRequest) {
           })
           .eq("id", sellerId);
       }
-    }
-
-    // 4. Send Telegram resolution notice
-    try {
-      const tgMsg =
-        `<b>DISPUTE ARBITRATION RESOLVED</b>\n\n` +
-        `<b>Order #${order.order_number}</b>\n` +
-        `‍<b>Arbitrator</b>: ${user.email} (Brian Okibo)\n` +
-        `<b>Verdict</b>: <b>${action.toUpperCase().replace(/_/g, " ")}</b>\n` +
-        `<b>Resolution Notes</b>: ${notes}\n` +
-        `<b>Amount</b>: KES ${order.total_amount}`;
-
-      await sendTelegramMessage(tgMsg);
-    } catch (e) {
-      // quiet fallback
     }
 
     return NextResponse.json({

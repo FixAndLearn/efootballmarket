@@ -24,7 +24,7 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
   const rawTab = searchParams.get("tab") || "listings";
-  const activeTab = rawTab === "whatsapp" ? "telegram" : rawTab;
+  const activeTab = rawTab;
 
   // Real-time badge counts
   const [counts, setCounts] = useState({
@@ -105,14 +105,6 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
       label: "Market Bulletins",
       icon: Newspaper,
       href: "/admin?tab=news",
-      badge: null,
-      badgeColor: "",
-    },
-    {
-      id: "telegram",
-      label: "Telegram Deals Feed",
-      icon: Send,
-      href: "/admin?tab=telegram",
       badge: null,
       badgeColor: "",
     },

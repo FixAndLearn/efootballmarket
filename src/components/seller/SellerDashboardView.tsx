@@ -24,7 +24,6 @@ import { WithdrawModal } from "@/components/seller/WithdrawModal";
 import { WhatsAppFlyerModal } from "@/components/seller/WhatsAppFlyerModal";
 import { FastBuyLinkButton } from "@/components/marketplace/FastBuyLinkButton";
 import { SellerListingOffersPanel } from "@/components/marketplace/SellerListingOffersPanel";
-import { SellerTelegramCard } from "@/components/seller/SellerTelegramCard";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -40,8 +39,6 @@ export interface SellerDashboardViewProps {
     completed_sales_count: number;
     seller_rating: number;
     is_verified_seller: boolean;
-    telegram_username?: string | null;
-    telegram_chat_id?: string | null;
   };
   listings: Listing[];
   pendingOrders: Order[];
@@ -275,7 +272,7 @@ export function SellerDashboardView({
               Your Squad Inventory ({listings.length})
             </h2>
             <p className="text-xs text-sx-muted">
-              Copy direct M-Pesa checkout links (<code className="font-mono">/pay/id</code>) to drop in WhatsApp or Telegram groups.
+              Copy direct M-Pesa checkout links (<code className="font-mono">/pay/id</code>) to share in WhatsApp groups or DMs.
             </p>
           </div>
           <Link href="/seller/create-listing" className="shrink-0">
@@ -434,76 +431,66 @@ export function SellerDashboardView({
         )}
       </div>
 
-      {/* 4. Seller Tier & Telegram Notifications */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-start">
-        <div className="rounded-xl bg-sx-canvas border border-sx-border p-5 sm:p-6 space-y-4">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div
-                className={`w-11 h-11 rounded-xl flex items-center justify-center border ${
-                  tier.level === "master"
-                    ? "bg-sx-amber-tint text-sx-amber-text border-sx-amber-border"
-                    : tier.level === "verified"
-                    ? "bg-sx-green-tint text-sx-green-text border-sx-green-border"
-                    : "bg-sx-stone text-sx-ink border-sx-border"
-                }`}
-              >
-                {tier.level === "master" ? (
-                  <Crown className="w-5 h-5" />
-                ) : tier.level === "verified" ? (
-                  <ShieldCheck className="w-5 h-5" />
-                ) : (
-                  <Trophy className="w-5 h-5" />
-                )}
-              </div>
-              <div>
-                <h3 className="text-sm font-bold text-sx-ink font-display">{tier.label}</h3>
-                <p className="text-xs text-sx-muted">{tier.description}</p>
-              </div>
+      {/* 4. Seller Reputation Tier */}
+      <div className="rounded-xl bg-sx-canvas border border-sx-border p-5 sm:p-6 space-y-4">
+        <div className="flex items-center justify-between gap-3">
+          <div className="flex items-center gap-3">
+            <div
+              className={`w-11 h-11 rounded-xl flex items-center justify-center border ${
+                tier.level === "master"
+                  ? "bg-sx-amber-tint text-sx-amber-text border-sx-amber-border"
+                  : tier.level === "verified"
+                  ? "bg-sx-green-tint text-sx-green-text border-sx-green-border"
+                  : "bg-sx-stone text-sx-ink border-sx-border"
+              }`}
+            >
+              {tier.level === "master" ? (
+                <Crown className="w-5 h-5" />
+              ) : tier.level === "verified" ? (
+                <ShieldCheck className="w-5 h-5" />
+              ) : (
+                <Trophy className="w-5 h-5" />
+              )}
             </div>
-            {tier.nextTierLabel && (
-              <span className="text-xs font-bold text-sx-green-text shrink-0">
-                {progressPercent}%
-              </span>
-            )}
+            <div>
+              <h3 className="text-sm font-bold text-sx-ink font-display">{tier.label}</h3>
+              <p className="text-xs text-sx-muted">{tier.description}</p>
+            </div>
           </div>
-
           {tier.nextTierLabel && (
-            <div className="space-y-1.5">
-              <div className="flex justify-between text-[11px] text-sx-muted">
-                <span>
-                  Progress to <strong className="text-sx-ink">{tier.nextTierLabel}</strong>
-                </span>
-                <span>
-                  {currentSales} / {targetSales} sales
-                </span>
-              </div>
-              <div className="w-full h-2 rounded-full bg-sx-stone overflow-hidden border border-sx-border">
-                <div
-                  className="h-full bg-sx-green transition-all duration-500 rounded-full"
-                  style={{ width: `${progressPercent}%` }}
-                />
-              </div>
-            </div>
+            <span className="text-xs font-bold text-sx-green-text shrink-0">
+              {progressPercent}%
+            </span>
           )}
-
-          <div className="pt-3 border-t border-sx-border grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs text-sx-ink-soft">
-            {tier.perks.map((perk, idx) => (
-              <div key={idx} className="flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-sx-green shrink-0" />
-                <span>{perk}</span>
-              </div>
-            ))}
-          </div>
         </div>
 
-        {userId && (
-          <SellerTelegramCard
-            userId={userId}
-            initialTelegramUsername={sellerProfile.telegram_username}
-            initialTelegramChatId={sellerProfile.telegram_chat_id}
-          />
+        {tier.nextTierLabel && (
+          <div className="space-y-1.5">
+            <div className="flex justify-between text-[11px] text-sx-muted">
+              <span>
+                Progress to <strong className="text-sx-ink">{tier.nextTierLabel}</strong>
+              </span>
+              <span>
+                {currentSales} / {targetSales} sales
+              </span>
+            </div>
+            <div className="w-full h-2 rounded-full bg-sx-stone overflow-hidden border border-sx-border">
+              <div
+                className="h-full bg-sx-green transition-all duration-500 rounded-full"
+                style={{ width: `${progressPercent}%` }}
+              />
+            </div>
+          </div>
         )}
+
+        <div className="pt-3 border-t border-sx-border grid grid-cols-1 sm:grid-cols-2 gap-1.5 text-xs text-sx-ink-soft">
+          {tier.perks.map((perk, idx) => (
+            <div key={idx} className="flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-sx-green shrink-0" />
+              <span>{perk}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
       <WithdrawModal

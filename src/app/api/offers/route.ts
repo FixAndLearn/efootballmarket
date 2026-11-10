@@ -5,7 +5,6 @@ import { ListingOffer } from "@/types/database";
 import { normalizePhoneNumber, formatWhatsAppPhone } from "@/lib/utils/phone";
 import { dispatchAdminWhatsAppAlert } from "@/lib/notifications/adminAlert";
 import { sendSellerOfferReceivedSms, sendBuyerOfferResponseSms } from "@/lib/notifications/smsAlert";
-import { notifySellerNewOfferViaTelegram } from "@/lib/notifications/telegramAlert";
 import { checkRateLimit } from "@/lib/security/rateLimiter";
 import { getClientIp, maskPhoneNumber } from "@/lib/security/guards";
 import { isUserAdmin } from "@/lib/security/adminAuth";
@@ -244,7 +243,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 4. Automated SMS & Telegram Alert to Seller
+    // 4. Automated SMS Alert to Seller
     const rawSellerPhone = (listing.seller as any)?.phone_number;
     if (rawSellerPhone) {
       sendSellerOfferReceivedSms(
@@ -255,19 +254,6 @@ export async function POST(req: NextRequest) {
         listing.title,
         listing.id
       ).catch((err) => console.warn("Seller offer SMS failed:", err));
-    }
-
-    if (listing.seller_id) {
-      notifySellerNewOfferViaTelegram({
-        sellerId: listing.seller_id,
-        offerId,
-        listingId: listing.id,
-        listingTitle: listing.title,
-        offerAmount: offerNum,
-        originalPrice,
-        buyerName: buyer_name.trim(),
-        note: note || undefined,
-      }).catch((err) => console.warn("Seller Telegram offer alert failed:", err));
     }
 
     // 5. Build optional WhatsApp link for buyer courtesy ping

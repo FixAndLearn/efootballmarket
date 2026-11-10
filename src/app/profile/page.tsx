@@ -26,11 +26,10 @@ import {
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Suspense, useEffect, useState } from "react";
-import { SellerTelegramCard } from "@/components/seller/SellerTelegramCard";
 
 function ProfileContent() {
   const router = useRouter();
-  const [activeTab, setActiveTab] = useState<"details" | "email" | "security" | "invites" | "telegram">("details");
+  const [activeTab, setActiveTab] = useState<"details" | "email" | "security" | "invites">("details");
   const [copiedLink, setCopiedLink] = useState(false);
   const [loadingUser, setLoadingUser] = useState(true);
   const [savingProfile, setSavingProfile] = useState(false);
@@ -44,8 +43,6 @@ function ProfileContent() {
   const [lastName, setLastName] = useState("");
   const [username, setUsername] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
-  const [telegramUsername, setTelegramUsername] = useState<string | null>(null);
-  const [telegramChatId, setTelegramChatId] = useState<string | null>(null);
   const [isVerifiedSeller, setIsVerifiedSeller] = useState(false);
   const [createdAt, setCreatedAt] = useState("");
 
@@ -94,8 +91,6 @@ function ProfileContent() {
           setUsername(profile.username || "");
           setPhoneNumber(profile.phone_number || "");
           setIsVerifiedSeller(profile.is_verified_seller || false);
-          setTelegramUsername(profile.telegram_username || null);
-          setTelegramChatId(profile.telegram_chat_id || null);
         } else {
           const meta = user.user_metadata || {};
           setFirstName(meta.first_name || "");
@@ -345,19 +340,6 @@ function ProfileContent() {
         >
           <Users className="w-4 h-4" />
           <span>Referrals &amp; Invites</span>
-        </button>
-
-        <button
-          type="button"
-          onClick={() => setActiveTab("telegram")}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
-            activeTab === "telegram"
-              ? "bg-pitch-surface text-sky-400 border border-sky-500/40 shadow-sm"
-              : "text-sx-muted hover:text-sx-ink hover:bg-sx-subtle"
-          }`}
-        >
-          <Send className="w-4 h-4" />
-          <span>Telegram Alerts</span>
         </button>
       </div>
 
@@ -613,17 +595,6 @@ function ProfileContent() {
               </Button>
             </Link>
           </div>
-        </div>
-      )}
-
-      {/* Tab 5: Telegram Instant Push Alerts */}
-      {activeTab === "telegram" && (
-        <div className="animate-in fade-in space-y-4">
-          <SellerTelegramCard
-            userId={userId}
-            initialTelegramUsername={telegramUsername}
-            initialTelegramChatId={telegramChatId}
-          />
         </div>
       )}
     </div>

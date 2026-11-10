@@ -6,7 +6,6 @@
 import { formatDisplayPhone, formatInternationalPhone } from "@/lib/utils/phone";
 import { isMetaCloudApiConfigured, sendWhatsAppMessage } from "@/lib/whatsapp/cloudApi";
 import { sendSmsAlert } from "./smsAlert";
-import { dispatchAdminTelegramAlert, isTelegramConfigured } from "./telegramAlert";
 
 export const ADMIN_PHONE_NUMBER = "0794400365";
 export const ADMIN_WHATSAPP_NUMBER = "254794400365";
@@ -233,21 +232,7 @@ export async function dispatchAdminWhatsAppAlert(payload: AdminAlertPayload): Pr
   const alertText = formatAdminWhatsAppMessage(payload);
   console.log(`[ADMIN NOTIFICATION -> ${ADMIN_INTERNATIONAL_PHONE}]`, alertText);
 
-  // 1. Instant Push Notification via Telegram Bot (Priority #1 - 100% Free, instant smartphone banner & sound)
-  if (isTelegramConfigured()) {
-    try {
-      const tgRes = await dispatchAdminTelegramAlert(payload);
-      if (tgRes.success) {
-        console.log(`[Telegram:Bot] Alert delivered successfully (msg_id=${tgRes.messageId})`);
-      } else {
-        console.warn(`[Telegram:Bot] Delivery note: ${tgRes.error}`);
-      }
-    } catch (err: any) {
-      console.warn("[Telegram:Bot] Dispatch error:", err.message);
-    }
-  }
-
-  // 2. Automated Meta WhatsApp Business Cloud API (Official Graph API v21.0)
+  // 1. Automated Meta WhatsApp Business Cloud API (Official Graph API v21.0)
   if (isMetaCloudApiConfigured()) {
     try {
       const res = await sendWhatsAppMessage({
@@ -302,7 +287,7 @@ export async function dispatchAdminWhatsAppAlert(payload: AdminAlertPayload): Pr
   // 5. Fallback High-Priority SMS to Brian Okibo for Financial Events (Payments / Disputes / Withdrawals)
   if (["PAYMENT_RECEIVED", "DISPUTE_OPENED", "POST_RELEASE_DISPUTE_OPENED", "WITHDRAWAL_REQUESTED"].includes(payload.eventType)) {
     try {
-      const smsSummary = `[eFootballMarket] ${payload.eventType}: ${payload.orderNumber || payload.listingTitle || ""} KES ${payload.amount || ""}. Check WhatsApp/Telegram/Admin.`;
+      const smsSummary = `[eFootballMarket] ${payload.eventType}: ${payload.orderNumber || payload.listingTitle || ""} KES ${payload.amount || ""}. Check WhatsApp/Admin.`;
       await sendSmsAlert({
         toPhone: ADMIN_INTERNATIONAL_PHONE,
         message: smsSummary,
@@ -314,7 +299,7 @@ export async function dispatchAdminWhatsAppAlert(payload: AdminAlertPayload): Pr
 }
 
 /**
- * Unified dispatch alias: routes to Telegram + WhatsApp + SMS.
+ * Unified dispatch alias: routes to WhatsApp + SMS.
  */
 export const dispatchAdminAlert = dispatchAdminWhatsAppAlert;
 
@@ -324,4 +309,3 @@ export const dispatchAdminAlert = dispatchAdminWhatsAppAlert;
 export async function dispatchAdminOrderAlert(payload: AdminAlertPayload): Promise<void> {
   return dispatchAdminWhatsAppAlert(payload);
 }
-export { isTelegramConfigured };

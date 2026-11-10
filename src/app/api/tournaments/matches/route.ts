@@ -1,6 +1,4 @@
 import { dispatchAdminWhatsAppAlert } from "@/lib/notifications/adminAlert";
-import { sendTelegramMessage } from "@/lib/notifications/telegramAlert";
-import { formatCurrency } from "@/lib/utils";
 import { TournamentService } from "@/services/tournamentService";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
@@ -92,16 +90,6 @@ export async function POST(req: NextRequest) {
         amount: tourney.first_place_kes,
         details: `Grand Final Champion: ${result.championName}! Total prize pool KES ${tourney.prize_pool_kes}. Disburse KES ${tourney.first_place_kes} to champion via Till 1572931.`,
       }).catch((e) => console.warn("WhatsApp champion alert error:", e));
-
-      // 2. Telegram Bot notification
-      const tgMsg = `<b>eFootball Kenya - TOURNAMENT CHAMPION CROWNED!</b>\n\n` +
-        `<b>Tournament:</b> ${tourney.title}\n` +
-        `<b>Champion:</b> <b>${result.championName}</b>\n` +
-        `<b>1st Place Cash Prize:</b> ${formatCurrency(tourney.first_place_kes, "KES")}\n` +
-        `<b>2nd Place Cash Prize:</b> ${formatCurrency(tourney.second_place_kes, "KES")}\n\n` +
-        `<b>Action Required:</b> Officer Brian Okibo disburse winnings via Safaricom Till 1572931 / M-Pesa.`;
-
-      await sendTelegramMessage(tgMsg).catch((e) => console.warn("Telegram alert error:", e));
     }
 
     return NextResponse.json({

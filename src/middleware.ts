@@ -4,7 +4,6 @@ import { PRIMARY_SUPER_ADMIN_EMAIL } from "./lib/security/adminAuth";
 
 const EXTERNAL_WEBHOOK_PATHS = [
   "/api/payments/mpesa/callback",
-  "/api/telegram/webhook",
   "/api/whatsapp/webhook",
 ];
 
