@@ -189,7 +189,7 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
             <button
               type="button"
               onClick={() => setIsChecklistModalOpen(true)}
-              className="text-xs text-emerald-400 hover:text-emerald-300 flex items-center gap-1.5 font-bold transition-colors cursor-pointer bg-emerald-950/60 border border-emerald-800/80 px-2.5 py-1.5 rounded-xl shadow-xs"
+              className="text-xs text-emerald-400 hover:text-emerald-300 flex items-center gap-1.5 font-bold transition-colors cursor-pointer bg-emerald-950/60 border border-emerald-800/80 px-2.5 py-1.5 rounded-xl shadow-sm"
             >
               <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
               <span>Handover Guide &amp; Rules</span>
@@ -208,7 +208,7 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
               <button
                 type="button"
                 onClick={() => setIsDisputeModalOpen(true)}
-                className="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1.5 font-bold transition-colors cursor-pointer bg-rose-950/60 border border-rose-800/80 px-2.5 py-1.5 rounded-xl shadow-xs"
+                className="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1.5 font-bold transition-colors cursor-pointer bg-rose-950/60 border border-rose-800/80 px-2.5 py-1.5 rounded-xl shadow-sm"
               >
                 <ShieldAlert className="w-3.5 h-3.5 text-rose-400 shrink-0" />
                 <span>{currentStatus === "completed" ? "Post-Release Dispute" : "Raise Dispute"}</span>

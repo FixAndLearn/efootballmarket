@@ -197,7 +197,7 @@ export default function EscrowGuaranteePage() {
 
         <div className="pt-4 flex justify-center">
           <Link href="/browse">
-            <Button variant="primary" size="lg" className="bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-sm px-6 py-3 rounded-xl shadow-xs">
+            <Button variant="primary" size="lg" className="bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-bold text-sm px-6 py-3 rounded-xl shadow-sm">
               Explore Escrow-Secured Accounts
             </Button>
           </Link>

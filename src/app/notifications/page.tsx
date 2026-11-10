@@ -374,7 +374,7 @@ function NotificationsContent() {
           >
             <span>Unread</span>
             {unreadCount > 0 && (
-              <span className="px-1.5 py-0.2 rounded-full bg-amber-400 text-slate-950 font-bold text-[10px]">
+              <span className="px-1.5 py-0.5 rounded-full bg-amber-400 text-slate-950 font-bold text-[10px]">
                 {unreadCount}
               </span>
             )}

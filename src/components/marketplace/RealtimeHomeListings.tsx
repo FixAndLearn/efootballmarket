@@ -76,7 +76,7 @@ export function RealtimeHomeListings({ initialListings }: RealtimeHomeListingsPr
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-2">
-                <span className="px-2 py-0.2 rounded-full bg-amber-500 text-slate-950 text-[10px] font-extrabold uppercase tracking-wider">
+                <span className="px-2 py-0.5 rounded-full bg-amber-500 text-slate-950 text-[10px] font-extrabold uppercase tracking-wider">
                   New Listing Just Published
                 </span>
                 <span className="text-[11px] text-slate-400 hidden sm:inline">Just now</span>

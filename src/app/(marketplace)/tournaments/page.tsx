@@ -623,7 +623,7 @@ export default function TournamentsPage() {
                         )}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl bg-emerald-950/60 hover:bg-emerald-900/60 border border-emerald-800/80 text-emerald-300 font-bold text-[11px] transition-all shadow-xs cursor-pointer"
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl bg-emerald-950/60 hover:bg-emerald-900/60 border border-emerald-800/80 text-emerald-300 font-bold text-[11px] transition-all shadow-sm cursor-pointer"
                       >
                         <MessageCircle className="w-3.5 h-3.5 text-emerald-400 fill-emerald-400" />
                         <span>Invite on WhatsApp</span>

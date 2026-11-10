@@ -168,7 +168,7 @@ export default function HostTournamentPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
           <Link
             href="/tournaments"
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-pitch-card hover:bg-slate-800 border border-pitch-border text-xs font-semibold text-slate-300 hover:text-white transition-all whitespace-nowrap group shadow-xs active:scale-95"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-pitch-card hover:bg-slate-800 border border-pitch-border text-xs font-semibold text-slate-300 hover:text-white transition-all whitespace-nowrap group shadow-sm active:scale-95"
           >
             <ArrowLeft className="w-3.5 h-3.5 text-slate-400 group-hover:-translate-x-0.5 transition-transform" />
             <span>Tournaments Arena</span>

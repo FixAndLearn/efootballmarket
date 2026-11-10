@@ -1778,7 +1778,7 @@ function AdminControlCenterContent() {
                   >
                     <span>{filter}</span>
                     <span
-                      className={`text-[10px] px-1.5 py-0.2 rounded-full ${
+                      className={`text-[10px] px-1.5 py-0.5 rounded-full ${
                         withdrawalFilter === filter
                           ? "bg-black/20 text-pitch-dark font-bold"
                           : "bg-pitch-card text-slate-400"

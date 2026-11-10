@@ -145,7 +145,7 @@ export function AiAssistantWidget() {
               <div>
                 <div className="flex items-center gap-1.5">
                   <p className="text-xs font-bold text-white leading-tight">eFootball Escrow AI</p>
-                  <span className="px-1.5 py-0.2 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-[9px] font-bold text-emerald-300">
+                  <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-[9px] font-bold text-emerald-300">
                     Online 24/7
                   </span>
                 </div>

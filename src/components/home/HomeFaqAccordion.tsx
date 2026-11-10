@@ -58,8 +58,8 @@ export function HomeFaqAccordion() {
             key={idx}
             className={`rounded-2xl border transition-all ${
               isOpen
-                ? "bg-[#111827] border-slate-700 shadow-xl"
-                : "bg-[#0F172A]/80 border-slate-800/80 hover:border-slate-700 hover:bg-[#111827]/60"
+                ? "bg-[#0B1424] border-slate-700 shadow-xl"
+                : "bg-[#0B1424]/70 border-slate-800 hover:border-slate-700 hover:bg-[#0B1424]"
             }`}
           >
             <button
@@ -68,8 +68,8 @@ export function HomeFaqAccordion() {
               className="w-full text-left p-5 sm:p-6 flex items-center justify-between gap-4 focus:outline-none"
               aria-expanded={isOpen}
             >
-              <div className="flex items-center gap-3">
-                <span className="w-8 h-8 rounded-xl bg-slate-800 border border-slate-700 text-[#22C55E] flex items-center justify-center shrink-0 text-xs font-bold font-mono">
+              <div className="flex items-center gap-3.5">
+                <span className="w-8 h-8 rounded-xl bg-emerald-500/10 border border-emerald-500/25 text-emerald-400 flex items-center justify-center shrink-0 text-xs font-bold font-mono">
                   0{idx + 1}
                 </span>
                 <div>
@@ -77,7 +77,7 @@ export function HomeFaqAccordion() {
                     {faq.question}
                   </h4>
                   {faq.badge && (
-                    <span className="inline-block text-[10px] uppercase font-bold text-slate-400 mt-1">
+                    <span className="inline-block text-[10px] uppercase font-semibold tracking-wider text-slate-400 mt-1">
                       {faq.badge}
                     </span>
                   )}
@@ -85,14 +85,14 @@ export function HomeFaqAccordion() {
               </div>
               <ChevronDown
                 className={`w-5 h-5 text-slate-400 shrink-0 transition-transform duration-200 ${
-                  isOpen ? "rotate-180 text-[#22C55E]" : ""
+                  isOpen ? "rotate-180 text-emerald-400" : ""
                 }`}
               />
             </button>
 
             {isOpen && (
-              <div className="px-5 sm:px-6 pb-6 pt-1 text-xs sm:text-sm text-slate-300 leading-relaxed border-t border-slate-800/80 animate-in fade-in duration-200">
-                <p className="mt-2">{faq.answer}</p>
+              <div className="px-5 sm:px-6 pb-6 pt-2 text-xs sm:text-sm text-slate-300 leading-relaxed border-t border-slate-800/80 animate-in fade-in duration-200">
+                <p className="mt-1">{faq.answer}</p>
               </div>
             )}
           </div>

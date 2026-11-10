@@ -151,7 +151,7 @@ export function BuyerDashboardView({ orders }: BuyerDashboardViewProps) {
             }`}
           >
             <span>All Purchases</span>
-            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-black/20 font-mono">
+            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-black/20 font-mono">
               {orders.length}
             </span>
           </button>
@@ -167,7 +167,7 @@ export function BuyerDashboardView({ orders }: BuyerDashboardViewProps) {
           >
             <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
             <span>Active in Escrow</span>
-            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-black/20 font-mono">
+            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-black/20 font-mono">
               {activeOrders.length}
             </span>
           </button>
@@ -183,7 +183,7 @@ export function BuyerDashboardView({ orders }: BuyerDashboardViewProps) {
           >
             <CheckCircle2 className="w-3.5 h-3.5" />
             <span>Completed</span>
-            <span className="px-1.5 py-0.2 rounded-full text-[10px] bg-black/20 font-mono">
+            <span className="px-1.5 py-0.5 rounded-full text-[10px] bg-black/20 font-mono">
               {completedOrders.length}
             </span>
           </button>
@@ -279,7 +279,7 @@ export function BuyerDashboardView({ orders }: BuyerDashboardViewProps) {
 
                       {/* OVR Pill Badge over image */}
                       {order.listing?.overall_team_strength && (
-                        <div className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded-md bg-black/80 backdrop-blur-xs border border-amber-400/50 text-amber-300 font-mono font-black text-[10px]">
+                        <div className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded-md bg-black/80 backdrop-blur-sm border border-amber-400/50 text-amber-300 font-mono font-black text-[10px]">
                           ⚡ {order.listing.overall_team_strength}
                         </div>
                       )}

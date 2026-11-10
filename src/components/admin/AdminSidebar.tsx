@@ -169,7 +169,7 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
                 <Icon className={`w-3.5 h-3.5 ${isSelected ? "text-emerald-400" : "text-slate-400"}`} />
                 <span>{item.label}</span>
                 {item.badge && (
-                  <span className={`text-[9px] px-1.5 py-0.2 rounded-full border ${item.badgeColor || "bg-slate-800 text-slate-300 border-slate-700"}`}>
+                  <span className={`text-[9px] px-1.5 py-0.5 rounded-full border ${item.badgeColor || "bg-slate-800 text-slate-300 border-slate-700"}`}>
                     {item.badge}
                   </span>
                 )}
