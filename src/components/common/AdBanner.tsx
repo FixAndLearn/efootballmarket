@@ -9,10 +9,12 @@ export interface AdBannerProps {
   hasContent?: boolean;
 }
 
+const DEFAULT_ADSENSE_CLIENT_ID = "ca-pub-5924764989915276";
+
 /**
  * Google AdSense compliant ad unit container.
  * - Renders ONLY when a valid numeric Google AdSense slot ID is configured AND `hasContent` is true.
- * - Never renders on empty states, zero-result pages, or loading screens.
+ * - Never renders empty placeholder frames, never renders on zero-result pages or loading screens.
  */
 export function AdBanner({
   slot = "",
@@ -21,7 +23,8 @@ export function AdBanner({
   hasContent = true,
 }: AdBannerProps) {
   const [adsenseReady, setAdsenseReady] = useState(false);
-  const adsenseClientId = process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || "";
+  const adsenseClientId =
+    process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || DEFAULT_ADSENSE_CLIENT_ID;
   const isNumericSlot = Boolean(slot && /^\d+$/.test(slot));
 
   useEffect(() => {
@@ -45,7 +48,7 @@ export function AdBanner({
       <span className="block text-[10px] uppercase tracking-wider text-slate-500 mb-2">
         Advertisement
       </span>
-      <div className="min-h-[90px] w-full flex items-center justify-center rounded-lg bg-[#11141B] border border-[#242A36] p-2">
+      <div className="min-h-[90px] w-full flex items-center justify-center rounded-lg bg-[#0D1117] border border-[#1E2636] p-2">
         <ins
           className="adsbygoogle block w-full overflow-hidden"
           style={{ display: "block" }}

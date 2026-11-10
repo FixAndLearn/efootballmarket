@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "About eFootballMarket | Kenyan eFootball Trading Platform",
   description:
     "Learn how eFootballMarket protects Kenyan buyers and sellers during peer-to-peer eFootball account transfers using M-Pesa payment holds and 24-hour buyer verification.",
+  alternates: {
+    canonical: "https://www.efootballmarket.co.ke/about",
+  },
 };
 
 export default function AboutPage() {

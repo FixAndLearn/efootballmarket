@@ -33,7 +33,7 @@ export default function HostTournamentPage() {
   const searchParams = useSearchParams();
   const { user, profile, loading: authLoading } = useAuth();
 
-  // Arena Mode: 1v1 Wager Match (2 Players) vs Knockout Cup (4, 8, 16 Players)
+  // Arena Mode: 1v1 Head-to-Head Match (2 Players) vs Knockout Cup (4, 8, 16 Players)
   const [arenaType, setArenaType] = useState<"1v1" | "tournament">("1v1");
   const [hostType, setHostType] = useState<"paid" | "free">("paid");
 
@@ -74,7 +74,7 @@ export default function HostTournamentPage() {
       setPayoutSplit("winner_takes_all");
       setFormat("Best of 3 Series (12-Minute Matches)");
       if (!title || title.includes("Cup") || title.includes("Tournament")) {
-        setTitle("1v1 Wager Duel");
+        setTitle("1v1 Friendly Match");
       }
     } else {
       setMaxPlayers("8");
@@ -122,7 +122,7 @@ export default function HostTournamentPage() {
         subtitle:
           subtitle.trim() ||
           (arenaType === "1v1"
-            ? `1v1 Head-to-Head Wager Duel | KES ${netPrizePool.toLocaleString()} Winner Prize`
+            ? `1v1 Head-to-Head Match | KES ${netPrizePool.toLocaleString()} Champion Reward`
             : `${numPlayers}-Player Knockout Tournament | KES ${netPrizePool.toLocaleString()} Prize Pool`),
         platform,
         tournament_type: arenaType,
@@ -200,7 +200,7 @@ export default function HostTournamentPage() {
               <span>You Become Tournament Moderator</span>
             </div>
             <h1 className="text-2xl sm:text-3xl font-black text-white font-display tracking-tight">
-              Host a Tournament or 1v1 Wager Duel
+              Host a Community Tournament or 1v1 Match
             </h1>
             <p className="text-xs sm:text-sm text-slate-300 max-w-xl leading-relaxed">
               Create your match, invite friends via WhatsApp, and manage brackets. All entry funds are protected by Safaricom Till <strong>1572931</strong> escrow with instant M-Pesa winner payout!
@@ -263,14 +263,14 @@ export default function HostTournamentPage() {
                     <Swords className="w-5 h-5" />
                   </div>
                   <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300">
-                    2 Players | Winner Takes All
+                    2 Players | Best of 3
                   </span>
                 </div>
                 <h3 className="text-sm font-bold text-white font-display">
-                  ⚔️ 1v1 Head-to-Head Duel
+                  1v1 Head-to-Head Match
                 </h3>
                 <p className="text-xs text-slate-400 mt-1 leading-relaxed">
-                  Direct match between 2 players. Standard Best of 3 (or 12-min game). The winner takes 100% of the prize pot!
+                  Direct match between 2 players in a tracked Konami Match Room (Best of 3 or single 12-minute fixture).
                 </p>
               </button>
 
@@ -346,7 +346,7 @@ export default function HostTournamentPage() {
               label="Match / Tournament Title"
               placeholder={
                 arenaType === "1v1"
-                  ? "e.g. Nairobi eFootball 1v1 Wager Duel #1"
+                  ? "e.g. Nairobi eFootball 1v1 Friendly #1"
                   : "e.g. Weekend Champions Knockout Cup"
               }
               value={title}
@@ -564,9 +564,9 @@ export default function HostTournamentPage() {
                     : "bg-pitch-card border-pitch-border text-slate-400 hover:border-slate-700"
                 }`}
               >
-                <span className="font-bold text-white block text-xs">⭐ 12-Min Best of 3</span>
+                <span className="font-bold text-white block text-xs">12-Min Best of 3</span>
                 <span className="text-[10px] text-slate-400 block mt-0.5">
-                  Standard for 1v1 wagers (first to 2 wins)
+                  Standard for 1v1 matches (first to 2 wins)
                 </span>
               </button>
 

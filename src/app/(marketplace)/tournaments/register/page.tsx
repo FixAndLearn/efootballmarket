@@ -635,7 +635,7 @@ export default function RegisterTournamentPage() {
                   {selectedTourney?.tournament_type === "1v1" ? (
                     <span className="text-[10px] font-extrabold text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-full border border-amber-500/30 flex items-center gap-1">
                       <Swords className="w-3 h-3 text-amber-400" />
-                      <span>1v1 WAGER DUEL</span>
+                      <span>1v1 SHOWMATCH</span>
                     </span>
                   ) : (
                     <span className="text-[10px] font-bold text-indigo-300 bg-indigo-500/15 px-2 py-0.5 rounded-full border border-indigo-500/30 flex items-center gap-1">

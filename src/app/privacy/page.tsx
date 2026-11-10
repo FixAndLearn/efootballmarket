@@ -5,6 +5,9 @@ export const metadata: Metadata = {
   title: "Privacy Policy | eFootballMarket",
   description:
     "How eFootballMarket collects, uses, and protects personal data, M-Pesa transaction records, cookies, and Google AdSense advertising data in Kenya.",
+  alternates: {
+    canonical: "https://www.efootballmarket.co.ke/privacy",
+  },
 };
 
 export default function PrivacyPolicyPage() {

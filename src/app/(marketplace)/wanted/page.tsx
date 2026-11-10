@@ -329,10 +329,11 @@ export default function WantedBoardPage() {
         </Link>
       </div>
 
+      {/* Buyer request board utility screen — ads disabled */}
       <AdBanner
         slot="wanted_bottom"
         format="horizontal"
-        hasContent={!loading && requests.length >= 3}
+        hasContent={false}
       />
 
       {/* Post Wanted Request Modal */}

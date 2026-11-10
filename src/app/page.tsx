@@ -97,7 +97,7 @@ export default async function HomePage() {
     listings = listingsResult.listings || [];
     metrics = metricsResult;
     tournaments = tourneysResult || [];
-    articles = (articlesResult || []).slice(0, 3);
+    articles = (articlesResult || []).slice(0, 6);
   } catch (err) {
     console.error("HomePage query error:", err);
   }
@@ -532,7 +532,7 @@ export default async function HomePage() {
                   },
                   {
                     feature: "Google Play / Apple Link",
-                    bad: "Hidden backdoor",
+                    bad: "Still linked to seller",
                     good: "Unlinked or full refund",
                   },
                   {
@@ -672,24 +672,24 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* 6. VISUAL TRADING GUIDES & SECURITY BRIEFINGS */}
+      {/* 6. VISUAL TRADING GUIDES & TACTICAL BRIEFINGS */}
       {articles.length > 0 && (
         <section className="py-12 border-t border-[#181F2C]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
             <div className="flex items-end justify-between gap-4">
               <div>
                 <h2 className="text-xl sm:text-2xl font-bold text-white font-display">
-                  Trading Guides &amp; Security Briefings
+                  eFootball 2026 Guides, Tactics &amp; Trading Safety
                 </h2>
                 <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                  Essential walkthroughs for Konami ID transfers, Link Data checks, and M-Pesa escrow safety.
+                  Team playstyles, 88+ manager stat breakpoints, custom progression builds, 60 FPS tuning, and Konami ID escrow guides.
                 </p>
               </div>
               <Link
                 href="/news"
                 className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 shrink-0"
               >
-                <span>All Guides</span>
+                <span>All 12+ Guides</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
@@ -697,6 +697,7 @@ export default async function HomePage() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {articles.map((article) => {
                 const isAlert = article.category === "scammer_alert";
+                const isMeta = article.category === "efootball_news";
                 return (
                   <Link
                     key={article.id}
@@ -720,10 +721,12 @@ export default async function HomePage() {
                           className={`absolute top-3 left-3 px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider border backdrop-blur-sm ${
                             isAlert
                               ? "bg-rose-950/80 text-rose-300 border-rose-700/60"
+                              : isMeta
+                              ? "bg-[#0D1117]/85 text-sky-300 border-sky-500/35"
                               : "bg-[#0D1117]/85 text-emerald-300 border-emerald-500/35"
                           }`}
                         >
-                          {isAlert ? "Safety Advisory" : "Handover Guide"}
+                          {isAlert ? "Safety Advisory" : isMeta ? "Meta & Tactics" : "Handover Guide"}
                         </span>
                       </div>
 

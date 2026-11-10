@@ -448,7 +448,7 @@ export default function TournamentsPage() {
                         {t.tournament_type === "1v1" || t.max_players <= 2 ? (
                           <span className="text-[10px] font-extrabold text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-full border border-amber-500/30 flex items-center gap-1">
                             <Swords className="w-3 h-3 text-amber-400" />
-                            <span>1v1 WAGER DUEL</span>
+                            <span>1v1 SHOWMATCH</span>
                           </span>
                         ) : (
                           <span className="text-[10px] font-bold text-indigo-300 bg-indigo-500/15 px-2 py-0.5 rounded-full border border-indigo-500/30 flex items-center gap-1">
@@ -716,7 +716,7 @@ export default function TournamentsPage() {
                       {selectedTourney.winner_name}
                     </h4>
                     <p className="text-xs font-bold text-black/80 mt-1">
-                      Awarded 1st Place Cash Prize of {formatCurrency(selectedTourney.first_place_kes, "KES")} via M-Pesa Escrow Till 1572931!
+                      Awarded 1st Place Champion Reward of {formatCurrency(selectedTourney.first_place_kes, "KES")} via Till 1572931!
                     </p>
                   </div>
                 </div>
@@ -927,10 +927,11 @@ export default function TournamentsPage() {
         </div>
       </div>
 
+      {/* Tournament bracket utility screen — ads disabled */}
       <AdBanner
         slot="tournaments_bottom"
         format="horizontal"
-        hasContent={!loading && tournaments.length >= 2}
+        hasContent={false}
       />
 
       {/* MODAL 0: Community Membership Required Guard Modal */}
@@ -1041,7 +1042,7 @@ export default function TournamentsPage() {
                 </div>
                 <div>
                   <h3 className="text-base font-bold text-white">
-                    {selectedTourney.tournament_type === "1v1" ? "Join 1v1 Wager Duel" : "Join Tournament"}
+                    {selectedTourney.tournament_type === "1v1" ? "Join 1v1 Match" : "Join Tournament"}
                   </h3>
                   <p className="text-xs text-slate-400">{selectedTourney.title}</p>
                 </div>

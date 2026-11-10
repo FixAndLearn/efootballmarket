@@ -9,17 +9,19 @@ interface AdSenseScriptProps {
 
 /**
  * Strictly enforces Google AdSense Publisher Policies:
- * Only loads AdSense on public pages containing substantial editorial/informational content.
- * Never loads on authentication, checkout, escrow rooms, dashboards, forms, or utility-only screens.
+ * - Site ownership verification is always present in SSR <head> via <meta name="google-adsense-account">.
+ * - The AdSense ad-serving script (`adsbygoogle.js`) loads ONLY on public pages containing
+ *   substantial publisher/editorial content.
+ * - Strictly blocked on authentication, checkout, escrow rooms, dashboards, tournaments,
+ *   utility-only lookup/contract forms, and error/admin routes.
  */
 const CONTENT_ELIGIBLE_PREFIXES = [
   "/news",
+  "/about",
   "/escrow-guarantee",
   "/fraud-prevention",
   "/dispute-policy",
   "/seller/guidelines",
-  "/scammer-check",
-  "/about",
 ];
 
 export function AdSenseScript({ clientId }: AdSenseScriptProps) {
@@ -40,7 +42,7 @@ export function AdSenseScript({ clientId }: AdSenseScriptProps) {
   return (
     <Script
       id="google-adsense"
-      strategy="lazyOnload"
+      strategy="afterInteractive"
       src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${clientId}`}
       crossOrigin="anonymous"
     />

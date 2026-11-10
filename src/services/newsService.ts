@@ -1,98 +1,138 @@
+import { EDITORIAL_GUIDES } from "@/lib/data/editorialGuides";
 import { NewsArticle, NewsCategory } from "@/types/database";
 import { SupabaseClient } from "@supabase/supabase-js";
+
+function hasLiveSupabaseConfig(): boolean {
+  const url = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  return Boolean(url && !url.includes("placeholder"));
+}
 
 export class NewsService {
   constructor(private supabase: SupabaseClient) {}
 
   /**
-   * Fetch all published news articles directly from the live database.
-   * Returns an empty array if no articles exist. Never returns demo or mock seeds.
+   * Fetch all published news & editorial guides, merging live database bulletins
+   * with evergreen platform & eFootball reference guides (deduplicated by slug).
    */
   async getPublishedArticles(category?: string): Promise<NewsArticle[]> {
-    try {
-      let query = this.supabase
-        .from("news_articles")
-        .select("*")
-        .eq("is_published", true)
-        .order("is_pinned", { ascending: false })
-        .order("created_at", { ascending: false });
+    let dbArticles: NewsArticle[] = [];
 
-      if (category && category !== "all") {
-        query = query.eq("category", category);
+    if (hasLiveSupabaseConfig()) {
+      try {
+        let query = this.supabase
+          .from("news_articles")
+          .select("*")
+          .eq("is_published", true)
+          .order("is_pinned", { ascending: false })
+          .order("created_at", { ascending: false });
+
+        if (category && category !== "all") {
+          query = query.eq("category", category);
+        }
+
+        const { data, error } = await query;
+
+        if (!error && Array.isArray(data)) {
+          dbArticles = data as NewsArticle[];
+        }
+      } catch (err) {
+        console.warn("News query fallback to editorial guides:", err);
       }
-
-      const { data, error } = await query;
-
-      if (!error && data) {
-        return data as NewsArticle[];
-      }
-      return [];
-    } catch (err) {
-      console.warn("News query error:", err);
-      return [];
     }
+
+    const seenSlugs = new Set(dbArticles.map((a) => a.slug.toLowerCase()));
+    const staticGuides = EDITORIAL_GUIDES.filter((g) => {
+      if (!g.is_published) return false;
+      if (seenSlugs.has(g.slug.toLowerCase())) return false;
+      if (category && category !== "all" && g.category !== category) return false;
+      return true;
+    });
+
+    const combined = [...dbArticles, ...staticGuides];
+    combined.sort((a, b) => {
+      if (Boolean(a.is_pinned) !== Boolean(b.is_pinned)) {
+        return a.is_pinned ? -1 : 1;
+      }
+      return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+    });
+
+    return combined;
   }
 
   /**
-   * Fetch article by slug or ID directly from the database.
-   * Returns null if not found.
+   * Fetch article by slug or ID from the live database, falling back cleanly
+   * to the evergreen EDITORIAL_GUIDES catalog so sitemap & internal links never 404.
    */
   async getArticleBySlug(identifier: string): Promise<NewsArticle | null> {
-    try {
-      if (!identifier) return null;
-      const clean = decodeURIComponent(identifier).trim();
-      const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(clean);
+    if (!identifier) return null;
+    const clean = decodeURIComponent(identifier).trim();
+    const cleanLower = clean.toLowerCase();
 
-      let query = this.supabase.from("news_articles").select("*");
+    if (hasLiveSupabaseConfig()) {
+      try {
+        const isUuid =
+          /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(clean);
 
-      if (isUuid) {
-        query = query.or(`id.eq.${clean},slug.eq.${clean}`);
-      } else {
-        query = query.eq("slug", clean);
-      }
+        let query = this.supabase.from("news_articles").select("*");
 
-      let { data, error } = await query.maybeSingle();
-
-      // Fallback: If not found and not a UUID, try case-insensitive slug match
-      if (!data && !isUuid) {
-        const fallback = await this.supabase
-          .from("news_articles")
-          .select("*")
-          .ilike("slug", clean)
-          .maybeSingle();
-        if (fallback.data) {
-          data = fallback.data;
-          error = null;
-        }
-      }
-
-      if (error) {
-        console.warn("getArticleBySlug query error:", error);
-        return null;
-      }
-
-      if (data) {
-        // Increment views count non-blockingly
-        try {
-          this.supabase
-            .from("news_articles")
-            .update({ views_count: (data.views_count || 0) + 1 })
-            .eq("id", data.id)
-            .then(
-              () => {},
-              () => {}
-            );
-        } catch {
-          // Non-blocking view increment
+        if (isUuid) {
+          query = query.or(`id.eq.${clean},slug.eq.${clean}`);
+        } else {
+          query = query.ilike("slug", clean);
         }
 
-        return data as NewsArticle;
+        const { data, error } = await query.limit(1).maybeSingle();
+
+        if (!error && data) {
+          try {
+            this.supabase
+              .from("news_articles")
+              .update({ views_count: (data.views_count || 0) + 1 })
+              .eq("id", data.id)
+              .then(
+                () => {},
+                () => {}
+              );
+          } catch {
+            // Non-blocking view increment
+          }
+
+          return data as NewsArticle;
+        }
+      } catch (err) {
+        console.warn("getArticleBySlug DB lookup fallback:", err);
       }
-      return null;
-    } catch (err) {
-      console.warn("getArticleBySlug exception:", err);
-      return null;
     }
+
+    const staticMatch = EDITORIAL_GUIDES.find(
+      (g) =>
+        g.is_published &&
+        (g.slug.toLowerCase() === cleanLower || g.id.toLowerCase() === cleanLower)
+    );
+
+    return staticMatch || null;
+  }
+
+  /**
+   * Fetch related guides for internal linking on article detail pages.
+   */
+  async getRelatedArticles(
+    excludeSlug: string,
+    preferredCategory?: string,
+    limit = 3
+  ): Promise<NewsArticle[]> {
+    const all = await this.getPublishedArticles();
+    const candidates = all.filter(
+      (a) => a.slug.toLowerCase() !== excludeSlug.toLowerCase()
+    );
+    const sameCategory = preferredCategory
+      ? candidates.filter((a) => a.category === preferredCategory)
+      : [];
+    const others = preferredCategory
+      ? candidates.filter((a) => a.category !== preferredCategory)
+      : candidates;
+
+    return [...sameCategory, ...others].slice(0, limit);
   }
 
   /**
@@ -140,7 +180,6 @@ export class NewsService {
       throw new Error(`Failed to create news article: ${error?.message}`);
     }
 
-    // Broadcast push notification to all users if requested
     if (payload.broadcastNotification) {
       try {
         const { data: allProfiles } = await this.supabase
@@ -150,17 +189,19 @@ export class NewsService {
         if (allProfiles && allProfiles.length > 0) {
           const notifications = allProfiles.map((p: any) => ({
             recipient_id: p.id,
-            type: payload.category === "scammer_alert" ? "scammer_alert" : "news_broadcast",
+            type:
+              payload.category === "scammer_alert"
+                ? "scammer_alert"
+                : "news_broadcast",
             title:
               payload.category === "scammer_alert"
-                ? `🚨 SCAMMER ALERT: ${payload.title}`
-                : `📢 NEW BULLETIN: ${payload.title}`,
+                ? `SCAMMER ALERT: ${payload.title}`
+                : `NEW GUIDE: ${payload.title}`,
             message: payload.summary.slice(0, 110),
             action_url: `/news/${slug}`,
             is_read: false,
           }));
 
-          // Batch insert notifications
           await this.supabase.from("notifications").insert(notifications);
         }
       } catch (broadcastErr) {
@@ -179,7 +220,8 @@ export class NewsService {
     payload: Partial<Omit<NewsArticle, "id" | "created_at">>
   ): Promise<NewsArticle> {
     const clean = decodeURIComponent(idOrSlug).trim();
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(clean);
+    const isUuid =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(clean);
 
     let query = this.supabase.from("news_articles").update({
       ...payload,
@@ -206,7 +248,8 @@ export class NewsService {
    */
   async deleteArticle(idOrSlug: string): Promise<void> {
     const clean = decodeURIComponent(idOrSlug).trim();
-    const isUuid = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(clean);
+    const isUuid =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(clean);
 
     let query = this.supabase.from("news_articles").delete();
 

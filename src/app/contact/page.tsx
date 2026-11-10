@@ -6,6 +6,9 @@ export const metadata: Metadata = {
   title: "Contact & Support | eFootballMarket Kenya",
   description:
     "Get help with an active eFootballMarket order, M-Pesa Till 1572931 payment verification, Konami ID transfer, or scammer report.",
+  alternates: {
+    canonical: "https://www.efootballmarket.co.ke/contact",
+  },
 };
 
 export default function ContactPage() {

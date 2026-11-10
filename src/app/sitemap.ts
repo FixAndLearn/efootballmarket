@@ -6,20 +6,18 @@ import { EDITORIAL_GUIDES } from "@/lib/data/editorialGuides";
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = "https://www.efootballmarket.co.ke";
 
+  // Strictly include substantial publisher & catalog pages (excluding thin form-only screens)
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${siteUrl}`, lastModified: new Date(), changeFrequency: "daily", priority: 1.0 },
-    { url: `${siteUrl}/browse`, lastModified: new Date(), changeFrequency: "hourly", priority: 0.9 },
-    { url: `${siteUrl}/news`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
-    { url: `${siteUrl}/middleman`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.85 },
-    { url: `${siteUrl}/scammer-check`, lastModified: new Date(), changeFrequency: "daily", priority: 0.85 },
-    { url: `${siteUrl}/tournaments`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
-    { url: `${siteUrl}/wanted`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
+    { url: `${siteUrl}/news`, lastModified: new Date(), changeFrequency: "daily", priority: 0.95 },
+    { url: `${siteUrl}/browse`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
+    { url: `${siteUrl}/friday-drops`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
     { url: `${siteUrl}/escrow-guarantee`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
-    { url: `${siteUrl}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.75 },
+    { url: `${siteUrl}/about`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.8 },
     { url: `${siteUrl}/contact`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.75 },
-    { url: `${siteUrl}/fraud-prevention`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
-    { url: `${siteUrl}/seller/guidelines`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.65 },
-    { url: `${siteUrl}/dispute-policy`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.6 },
+    { url: `${siteUrl}/fraud-prevention`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.75 },
+    { url: `${siteUrl}/seller/guidelines`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.7 },
+    { url: `${siteUrl}/dispute-policy`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.65 },
     { url: `${siteUrl}/terms`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
     { url: `${siteUrl}/privacy`, lastModified: new Date(), changeFrequency: "monthly", priority: 0.5 },
   ];
@@ -28,8 +26,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     url: `${siteUrl}/news/${g.slug}`,
     lastModified: new Date(g.updated_at || g.created_at),
     changeFrequency: "monthly",
-    priority: 0.8,
+    priority: 0.85,
   }));
+
+  const supaUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  if (!supaUrl || supaUrl.includes("placeholder")) {
+    return [...staticRoutes, ...guideRoutes];
+  }
 
   try {
     const supabase = hasServiceRoleKey() ? createAdminClient() : createServerSupabaseClient();
@@ -53,7 +56,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
         url: `${siteUrl}/news/${article.slug}`,
         lastModified: new Date(article.updated_at || Date.now()),
         changeFrequency: "weekly",
-        priority: 0.8,
+        priority: 0.85,
       }));
 
     return [...staticRoutes, ...guideRoutes, ...listingRoutes, ...dbNewsRoutes];
