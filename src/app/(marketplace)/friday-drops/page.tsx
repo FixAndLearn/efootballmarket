@@ -4,12 +4,10 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ListingService } from "@/services/listingService";
 import { FridayDropsSection } from "@/components/home/FridayDropsSection";
 import { Listing } from "@/types/database";
-import { Button } from "@/components/ui/Button";
 import {
   ShieldCheck,
   Clock,
   ArrowLeft,
-  ArrowRight,
   CheckCircle2,
   Lock,
 } from "lucide-react";
@@ -50,9 +48,9 @@ export default async function FridayDropsPage() {
             <span>Back to Marketplace</span>
           </Link>
 
-          <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-sx-stone border border-sx-border text-sx-amber-text text-[11px] font-mono font-bold">
-            <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
-            FRIDAYS 14:00 – 22:00 EAT
+          <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-sx-stone border border-sx-border text-sx-ink text-[11px] font-mono font-semibold">
+            <span className="w-1.5 h-1.5 rounded-full bg-sx-green" />
+            WEEKLY RELEASE · FRIDAYS 2PM EAT
           </span>
         </div>
       </div>
@@ -60,60 +58,58 @@ export default async function FridayDropsPage() {
       <main className="flex-1">
         <FridayDropsSection listings={listings} />
 
-        <section className="py-12 border-t border-sx-border">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-            <div className="space-y-1.5">
-              <h2 className="text-xl sm:text-2xl font-bold text-sx-ink font-display">
-                How Friday Drops Work
+        <section className="py-12 border-t border-sx-border bg-sx-subtle">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+            <div className="space-y-1">
+              <h2 className="text-lg sm:text-xl font-extrabold text-sx-ink font-display">
+                How The Friday Release Works
               </h2>
               <p className="text-xs sm:text-sm text-sx-muted max-w-2xl">
-                Fixed-price weekly drops for high-OVR squads with the same Safaricom Till 1572931 payment hold and 24-hour buyer check.
+                Curated collector accounts sold at fixed ask prices with Safaricom Till 1572931 escrow custody and 24-hour login inspection.
               </p>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               {[
                 {
                   icon: Clock,
-                  title: "8-Hour Weekly Window",
-                  desc: "Drops open every Friday at 2:00 PM (14:00 EAT) and close at 10:00 PM (22:00 EAT). Unsold drop slots return to standard marketplace rotation afterward.",
+                  title: "2:00 PM – 10:00 PM EAT",
+                  desc: "Selected collector rosters group into one weekly Friday release window. Unsold accounts roll into standard catalog rotation.",
                 },
                 {
                   icon: Lock,
-                  title: "Unlinked Konami ID Only",
-                  desc: "Submitted drop accounts must have zero Google Play or Apple Game Center links and clear Starting XI + Reserve screenshots.",
+                  title: "Clean Konami ID Only",
+                  desc: "Every featured roster is verified free of Google Play and Apple Game Center links before entering the lineup.",
                 },
                 {
                   icon: ShieldCheck,
-                  title: "Till 1572931 Payment Hold",
-                  desc: "Checkout triggers a standard M-Pesa STK prompt to Till 1572931. Funds stay locked while you test login and rebind your email.",
+                  title: "Till 1572931 Custody",
+                  desc: "Checkout locks M-Pesa funds in escrow while you complete Data Transfer and rebind your personal email and 2FA.",
                 },
                 {
                   icon: CheckCircle2,
-                  title: "Fixed Drop Pricing",
-                  desc: "During the 8-hour window, custom offer bargaining is paused so the first buyer to complete STK checkout locks the squad.",
+                  title: "Fixed Ask, Zero Bidding",
+                  desc: "No DM haggling — the first buyer to lock escrow claims the squad immediately.",
                 },
               ].map((rule) => {
                 const Icon = rule.icon;
                 return (
-                  <div key={rule.title} className="store-panel rounded-xl p-5 space-y-2.5">
+                  <div
+                    key={rule.title}
+                    className="rounded-xl bg-sx-canvas border border-sx-border p-5 space-y-2.5"
+                  >
                     <div className="w-8 h-8 rounded-lg bg-sx-stone border border-sx-border text-sx-green-text flex items-center justify-center">
                       <Icon className="w-4 h-4" />
                     </div>
-                    <h3 className="text-sm font-bold text-sx-ink font-display">{rule.title}</h3>
-                    <p className="text-xs text-sx-muted leading-relaxed">{rule.desc}</p>
+                    <h3 className="text-sm font-bold text-sx-ink font-display">
+                      {rule.title}
+                    </h3>
+                    <p className="text-xs text-sx-muted leading-relaxed">
+                      {rule.desc}
+                    </p>
                   </div>
                 );
               })}
-            </div>
-
-            <div>
-              <Link href="/browse">
-                <Button variant="secondary" size="md">
-                  <span>Browse All Marketplace Squads</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
             </div>
           </div>
         </section>

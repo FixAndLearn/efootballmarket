@@ -35,7 +35,7 @@ export function Header() {
 
   const categoryStrip = [
     { name: "All Squads", href: "/browse" },
-    { name: "3150+ Epics", href: "/browse?minStrength=3150" },
+    { name: "Epic Rosters", href: "/browse?minStrength=3150" },
     { name: "Android", href: "/browse?platform=android" },
     { name: "iOS", href: "/browse?platform=ios" },
     { name: "PS5 & PC", href: "/browse?platform=playstation_5" },

@@ -28,8 +28,8 @@ export const revalidate = 0;
 
 const STOCKX_CATEGORIES = [
   {
-    title: "Epic & Booster (3150+)",
-    subtitle: "Division 1 meta squads",
+    title: "Double-Booster Epics",
+    subtitle: "Show Time, Big Time & 88 Managers",
     image: "/images/sx-cat-epic.jpg",
     href: "/browse?minStrength=3150",
   },

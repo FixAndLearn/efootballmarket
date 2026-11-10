@@ -28,11 +28,11 @@ export function Footer() {
                   All Verified Squads
                 </Link>
               </li>
-              <li>
-                <Link href="/browse?minStrength=3150" className="hover:text-sx-ink transition-colors">
-                  Epic &amp; Booster (3150+)
-                </Link>
-              </li>
+                <li>
+                  <Link href="/browse?minStrength=3150" className="hover:text-sx-ink transition-colors">
+                    Double-Booster Epics
+                  </Link>
+                </li>
               <li>
                 <Link href="/seller/create-listing" className="hover:text-sx-ink transition-colors">
                   Sell Your Squad
