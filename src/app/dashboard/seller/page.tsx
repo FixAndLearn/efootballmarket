@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { redirect } from "next/navigation";
-import { PlusCircle } from "lucide-react";
+import { ExternalLink, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { SellerDashboardView } from "@/components/seller/SellerDashboardView";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -22,7 +22,7 @@ export default async function SellerDashboardPage() {
   const { data: profile } = await supabase
     .from("profiles")
     .select(
-      "available_balance, escrow_balance, completed_sales_count, seller_rating, is_verified_seller"
+      "username, available_balance, escrow_balance, completed_sales_count, seller_rating, is_verified_seller"
     )
     .eq("id", user.id)
     .single();
@@ -73,12 +73,22 @@ export default async function SellerDashboardPage() {
           </p>
         </div>
 
-        <Link href="/seller/create-listing" className="shrink-0">
-          <Button variant="primary" size="md">
-            <PlusCircle className="w-4 h-4" />
-            <span>List Squad</span>
-          </Button>
-        </Link>
+        <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+          {profile?.username && (
+            <Link href={`/u/${encodeURIComponent(profile.username)}`}>
+              <Button variant="secondary" size="md">
+                <ExternalLink className="w-4 h-4" />
+                <span>Public Storefront</span>
+              </Button>
+            </Link>
+          )}
+          <Link href="/seller/create-listing">
+            <Button variant="primary" size="md">
+              <PlusCircle className="w-4 h-4" />
+              <span>List Squad</span>
+            </Button>
+          </Link>
+        </div>
       </div>
 
       <SellerDashboardView

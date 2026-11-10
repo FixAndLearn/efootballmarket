@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { createClient } from "@/lib/supabase/client";
-import { Lock, Mail, ShieldCheck, AlertCircle, KeyRound, CheckCircle2, Sparkles, Wand2 } from "lucide-react";
+import { Lock, Mail, AlertCircle, KeyRound, CheckCircle2, Wand2 } from "lucide-react";
 import { OtpCodeInput } from "@/components/auth/OtpCodeInput";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import Link from "next/link";
@@ -28,7 +28,6 @@ function LoginForm() {
       : ""
   );
 
-  // OTP & Magic Link State
   const [otpSent, setOtpSent] = useState(false);
   const [otpCode, setOtpCode] = useState("");
   const [verifying, setVerifying] = useState(false);
@@ -60,7 +59,6 @@ function LoginForm() {
           authError.message.toLowerCase().includes("email not confirmed") ||
           authError.message.toLowerCase().includes("unconfirmed")
         ) {
-          // Auto-trigger 8-digit code dispatch and transition to OTP verification tab
           try {
             const canonicalAppUrl =
               process.env.NEXT_PUBLIC_APP_URL || window.location.origin || "https://www.efootballmarket.co.ke";
@@ -77,7 +75,7 @@ function LoginForm() {
           setAuthMethod("otp");
           setOtpSent(true);
           setResendCooldown(45);
-          setInfoMessage("Your email is not verified yet. We dispatched a fresh 8-digit code to your email. Enter it below to activate your account.");
+          setInfoMessage("Your email is not verified yet. Enter the 8-digit code dispatched to your inbox below.");
           return;
         }
         throw new Error(authError.message);
@@ -129,7 +127,7 @@ function LoginForm() {
 
       setOtpSent(true);
       setResendCooldown(45);
-      setInfoMessage("Magic link & code dispatched! Tap the 1-click link in your Gmail or enter the 8-digit code below.");
+      setInfoMessage("Magic link & 8-digit code sent! Tap the link in your inbox or enter the code below.");
     } catch (err: any) {
       setError(err.message || "Could not dispatch magic link. Please try again.");
     } finally {
@@ -172,7 +170,7 @@ function LoginForm() {
 
       setOtpSent(true);
       setResendCooldown(45);
-      setInfoMessage("An 8-digit login code has been dispatched to your email!");
+      setInfoMessage("An 8-digit login code has been sent to your email!");
     } catch (err: any) {
       setError(err.message || "Could not dispatch code. Please try again.");
     } finally {
@@ -192,14 +190,13 @@ function LoginForm() {
 
     try {
       const supabase = createClient();
-      let { data, error: verifyErr } = await supabase.auth.verifyOtp({
+      let { error: verifyErr } = await supabase.auth.verifyOtp({
         email: email.trim(),
         token,
         type: "email",
       });
 
       if (verifyErr) {
-        // Fallback to signup type in case user account was awaiting confirmation
         const signupFallback = await supabase.auth.verifyOtp({
           email: email.trim(),
           token,
@@ -207,7 +204,6 @@ function LoginForm() {
         });
 
         if (!signupFallback.error) {
-          data = signupFallback.data;
           verifyErr = null;
         }
       }
@@ -247,7 +243,7 @@ function LoginForm() {
         throw new Error(resendErr.message);
       }
 
-      setInfoMessage("A fresh code and login link have been dispatched to your email!");
+      setInfoMessage("A fresh code and login link have been sent to your email!");
       setResendCooldown(45);
     } catch (err: any) {
       setError(err.message || "Failed to resend code.");
@@ -275,39 +271,41 @@ function LoginForm() {
   };
 
   return (
-    <div className="w-full max-w-md store-panel rounded-2xl p-6 sm:p-8 space-y-6">
+    <div className="w-full max-w-md bg-sx-canvas border border-sx-border rounded-2xl p-6 sm:p-8 shadow-sx-elevated space-y-5">
       <div className="space-y-1">
         <span className="text-[11px] font-mono uppercase tracking-wider text-sx-green-text font-bold">
           Trader Sign In
         </span>
-        <h1 className="text-2xl font-bold text-sx-ink font-display">Sign in to eFootballMarket</h1>
+        <h1 className="text-2xl font-extrabold text-sx-ink font-display tracking-tight">
+          Sign in to eFootballMarket
+        </h1>
         <p className="text-xs text-sx-muted">
-          Manage your active orders, squad listings, and M-Pesa payouts.
+          Access your escrow orders, watchlist, and M-Pesa payouts.
         </p>
       </div>
 
       {/* 1-Tap Google Sign-In */}
       <GoogleSignInButton redirect={redirect} label="Continue with Google" />
 
-      <div className="relative flex items-center justify-center my-4">
-        <div className="border-t border-pitch-border/80 w-full" />
-        <span className="bg-pitch-surface px-3 text-[11px] font-semibold text-sx-muted uppercase tracking-wider shrink-0">
-          Or sign in with email
+      <div className="relative flex items-center justify-center">
+        <div className="border-t border-sx-border w-full" />
+        <span className="bg-sx-canvas px-3 text-[11px] font-semibold text-sx-muted uppercase tracking-wider shrink-0">
+          Or email
         </span>
-        <div className="border-t border-pitch-border/80 w-full" />
+        <div className="border-t border-sx-border w-full" />
       </div>
 
       {/* Auth Method Selector Tabs */}
-      <div className="grid grid-cols-3 p-1 bg-pitch-card rounded-xl border border-pitch-border/80 text-xs">
+      <div className="grid grid-cols-3 p-1 bg-sx-stone rounded-xl border border-sx-border text-xs">
         <button
           type="button"
           onClick={() => {
             setAuthMethod("password");
             setError("");
           }}
-          className={`flex items-center justify-center gap-1.5 py-2 font-semibold rounded-lg transition-all ${
+          className={`flex items-center justify-center gap-1.5 py-2 font-bold rounded-lg transition-all ${
             authMethod === "password"
-              ? "bg-pitch-surface text-sx-ink shadow-sm border border-pitch-border/80"
+              ? "bg-sx-canvas text-sx-ink shadow-sx-card border border-sx-border"
               : "text-sx-muted hover:text-sx-ink"
           }`}
         >
@@ -320,9 +318,9 @@ function LoginForm() {
             setAuthMethod("magic-link");
             setError("");
           }}
-          className={`flex items-center justify-center gap-1.5 py-2 font-semibold rounded-lg transition-all ${
+          className={`flex items-center justify-center gap-1.5 py-2 font-bold rounded-lg transition-all ${
             authMethod === "magic-link"
-              ? "bg-pitch-surface text-sx-green-text shadow-sm border border-brand-500/30"
+              ? "bg-sx-canvas text-sx-green-text shadow-sx-card border border-sx-green-border"
               : "text-sx-muted hover:text-sx-ink"
           }`}
         >
@@ -335,9 +333,9 @@ function LoginForm() {
             setAuthMethod("otp");
             setError("");
           }}
-          className={`flex items-center justify-center gap-1.5 py-2 font-semibold rounded-lg transition-all ${
+          className={`flex items-center justify-center gap-1.5 py-2 font-bold rounded-lg transition-all ${
             authMethod === "otp"
-              ? "bg-pitch-surface text-sx-amber-text shadow-sm border border-sx-amber-border"
+              ? "bg-sx-canvas text-sx-amber-text shadow-sx-card border border-sx-amber-border"
               : "text-sx-muted hover:text-sx-ink"
           }`}
         >
@@ -361,7 +359,6 @@ function LoginForm() {
       )}
 
       {authMethod === "password" ? (
-        /* Password Login Form */
         <form onSubmit={handlePasswordLogin} className="space-y-4">
           <Input
             label="Email Address"
@@ -377,10 +374,10 @@ function LoginForm() {
 
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-semibold text-sx-ink-soft">Password</label>
+              <label className="text-xs font-semibold text-sx-ink">Password</label>
               <Link
                 href={`/forgot-password?redirect=${encodeURIComponent(redirect)}`}
-                className="text-xs text-sx-amber-text hover:text-sx-amber-text hover:underline"
+                className="text-xs font-semibold text-sx-green-text hover:underline"
               >
                 Forgot password?
               </Link>
@@ -396,27 +393,24 @@ function LoginForm() {
             />
           </div>
 
-          <div className="flex items-center justify-between text-xs pt-1">
-            <label className="flex items-center gap-2 cursor-pointer text-sx-ink-soft">
-              <input
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 rounded border-sx-border-strong bg-sx-subtle text-brand-500 focus:ring-brand-500 focus:ring-offset-0"
-              />
-              <span>Remember me on this device</span>
-            </label>
-          </div>
+          <label className="flex items-center gap-2 cursor-pointer text-xs text-sx-ink-soft">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="w-4 h-4 rounded border-sx-border-strong bg-sx-canvas text-sx-green focus:ring-sx-green"
+            />
+            <span>Stay signed in on this device</span>
+          </label>
 
-          <Button type="submit" variant="primary" size="lg" className="w-full font-semibold" isLoading={loading}>
-            Sign In with Password
+          <Button type="submit" variant="primary" size="lg" className="w-full font-bold" isLoading={loading}>
+            Sign In
           </Button>
         </form>
       ) : authMethod === "magic-link" && !otpSent ? (
-        /* Magic Link Request Form */
         <form onSubmit={handleSendMagicLink} className="space-y-4">
-          <div className="p-3.5 rounded-xl bg-brand-500/10 border border-brand-500/20 text-xs text-brand-200 leading-relaxed">
-            No password required. Enter your email and we will dispatch a secure 1-click magic link directly to your Gmail inbox.
+          <div className="p-3 rounded-xl bg-sx-green-tint border border-sx-green-border text-xs text-sx-green-text leading-relaxed">
+            No password required. Enter your email and we will send a 1-click sign-in link directly to your inbox.
           </div>
 
           <Input
@@ -431,15 +425,14 @@ function LoginForm() {
             required
           />
 
-          <Button type="submit" variant="primary" size="lg" className="w-full font-semibold" isLoading={loading}>
+          <Button type="submit" variant="primary" size="lg" className="w-full font-bold" isLoading={loading}>
             Send 1-Click Magic Link
           </Button>
         </form>
       ) : authMethod === "otp" && !otpSent ? (
-        /* OTP Request Form */
         <form onSubmit={handleSendOtp} className="space-y-4">
-          <div className="p-3.5 rounded-xl bg-sx-amber-tint border border-sx-amber-border text-xs text-sx-amber-text/90 leading-relaxed">
-            We will dispatch an 8-digit numeric verification code to your email. Enter it to sign in without entering a password.
+          <div className="p-3 rounded-xl bg-sx-amber-tint border border-sx-amber-border text-xs text-sx-amber-text leading-relaxed">
+            We will send an 8-digit numeric verification code to your email so you can sign in without a password.
           </div>
 
           <Input
@@ -454,22 +447,21 @@ function LoginForm() {
             required
           />
 
-          <Button type="submit" variant="primary" size="lg" className="w-full font-semibold" isLoading={loading}>
+          <Button type="submit" variant="primary" size="lg" className="w-full font-bold" isLoading={loading}>
             Send 8-Digit Code
           </Button>
         </form>
       ) : (
-        /* OTP / Magic Link Verification Step */
         <div className="space-y-5">
-          <div className="p-3.5 rounded-xl bg-sx-subtle border border-pitch-border text-xs text-sx-ink-soft space-y-2">
-            <p className="font-semibold text-sx-ink">Email Dispatched</p>
+          <div className="p-3.5 rounded-xl bg-sx-stone border border-sx-border text-xs text-sx-ink-soft space-y-1.5">
+            <p className="font-bold text-sx-ink">Check Your Inbox</p>
             <p className="text-sx-muted">
-              We sent a message to <span className="text-sx-amber-text font-mono">{email}</span>. You can either tap the 1-click magic link in the email or enter the 8-digit code below:
+              Sent to <span className="text-sx-ink font-mono font-semibold">{email}</span>. Tap the link or enter the 8-digit code below:
             </p>
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-sx-ink-soft block text-center">
+            <label className="text-xs font-semibold text-sx-ink block text-center">
               Enter 8-Digit Code
             </label>
             <OtpCodeInput
@@ -496,28 +488,28 @@ function LoginForm() {
             Verify &amp; Sign In
           </Button>
 
-          <div className="space-y-3 pt-2 text-xs">
+          <div className="space-y-2.5 pt-1 text-xs">
             <div className="flex items-center justify-between">
               <span className="text-sx-muted">Didn&apos;t receive it?</span>
               <button
                 type="button"
                 onClick={handleResendOtp}
                 disabled={resendCooldown > 0 || resending}
-                className={`font-medium ${
+                className={`font-semibold ${
                   resendCooldown > 0 || resending
                     ? "text-sx-muted cursor-not-allowed"
-                    : "text-sx-amber-text hover:text-sx-amber-text hover:underline"
+                    : "text-sx-green-text hover:underline"
                 }`}
               >
                 {resending
                   ? "Sending..."
                   : resendCooldown > 0
                   ? `Resend in ${resendCooldown}s`
-                  : "Resend Code / Link"}
+                  : "Resend Code"}
               </button>
             </div>
 
-            <div className="flex items-center justify-between pt-1">
+            <div className="flex items-center justify-between">
               <button
                 type="button"
                 onClick={handleOpenEmailApp}
@@ -542,10 +534,10 @@ function LoginForm() {
         </div>
       )}
 
-      <div className="text-center text-xs text-sx-muted border-t border-pitch-border/60 pt-4">
-        Don&apos;t have an account yet?{" "}
-        <Link href={`/register?redirect=${encodeURIComponent(redirect)}`} className="text-sx-green-text hover:underline font-semibold">
-          Create an Account
+      <div className="text-center text-xs text-sx-muted border-t border-sx-border pt-4">
+        New to eFootballMarket?{" "}
+        <Link href={`/register?redirect=${encodeURIComponent(redirect)}`} className="text-sx-green-text hover:underline font-bold">
+          Create Account
         </Link>
       </div>
     </div>
@@ -554,8 +546,8 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="flex-1 flex items-center justify-center p-4 py-12">
-      <Suspense fallback={<div className="text-sx-muted text-sm">Loading login...</div>}>
+    <div className="flex-1 flex items-center justify-center p-4 py-10">
+      <Suspense fallback={<div className="text-sx-muted text-sm">Loading sign in...</div>}>
         <LoginForm />
       </Suspense>
     </div>

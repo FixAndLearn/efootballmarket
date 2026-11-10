@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { Lock, ShieldCheck, CheckCircle2, AlertCircle, ArrowRight } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Suspense, useState, useEffect } from "react";
+import { Suspense, useState } from "react";
 
 function ResetPasswordForm() {
   const router = useRouter();
@@ -17,7 +17,6 @@ function ResetPasswordForm() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState(false);
 
-  // Strength checks
   const hasMinLength = password.length >= 8;
   const hasNumber = /\d/.test(password);
   const passwordsMatch = password.length > 0 && password === confirmPassword;
@@ -59,22 +58,19 @@ function ResetPasswordForm() {
 
   if (success) {
     return (
-      <div className="w-full max-w-md bg-pitch-surface border border-sx-green-border rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6 text-center animate-in fade-in zoom-in-95">
-        <div className="w-16 h-16 rounded-full bg-sx-green-tint border border-sx-green-border flex items-center justify-center text-sx-green-text mx-auto shadow-inner">
-          <CheckCircle2 className="w-8 h-8" />
+      <div className="w-full max-w-md bg-sx-canvas border border-sx-green-border rounded-2xl p-6 sm:p-8 shadow-sx-elevated space-y-5 text-center">
+        <div className="w-14 h-14 rounded-full bg-sx-green-tint border border-sx-green-border flex items-center justify-center text-sx-green-text mx-auto">
+          <CheckCircle2 className="w-7 h-7" />
         </div>
         <div>
-          <h2 className="text-2xl font-bold text-sx-ink font-display">Password Updated!</h2>
-          <p className="text-xs text-sx-muted mt-2 leading-relaxed">
-            Your account password has been safely changed. Your eFootballMarket account and escrow balance are secure.
+          <h2 className="text-2xl font-extrabold text-sx-ink font-display">Password Updated!</h2>
+          <p className="text-xs text-sx-muted mt-1.5 leading-relaxed">
+            Your account password has been updated. Redirecting you to sign in...
           </p>
-        </div>
-        <div className="p-3 bg-sx-green-tint border border-sx-green-border rounded-xl text-sx-green-text text-xs">
-          Redirecting you to sign in automatically...
         </div>
         <Link href="/login">
           <Button variant="primary" size="lg" className="w-full font-bold">
-            Sign In with New Password
+            Sign In Now
             <ArrowRight className="w-4 h-4 ml-1.5" />
           </Button>
         </Link>
@@ -83,14 +79,14 @@ function ResetPasswordForm() {
   }
 
   return (
-    <div className="w-full max-w-md bg-pitch-surface border border-pitch-border rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+    <div className="w-full max-w-md bg-sx-canvas border border-sx-border rounded-2xl p-6 sm:p-8 shadow-sx-elevated space-y-5">
       <div className="text-center">
-        <div className="w-12 h-12 rounded-2xl bg-brand-600/20 border border-brand-500/30 flex items-center justify-center text-sx-green-text mx-auto mb-3 shadow-inner">
+        <div className="w-12 h-12 rounded-2xl bg-sx-green-tint border border-sx-green-border flex items-center justify-center text-sx-green-text mx-auto mb-3">
           <ShieldCheck className="w-6 h-6" />
         </div>
-        <h1 className="text-2xl font-bold text-sx-ink font-display">Set New Password</h1>
+        <h1 className="text-2xl font-extrabold text-sx-ink font-display">Set New Password</h1>
         <p className="text-xs text-sx-muted mt-1">
-          Choose a strong password to protect your eFootballMarket account
+          Choose a strong password to protect your eFootballMarket account.
         </p>
       </div>
 
@@ -124,22 +120,19 @@ function ResetPasswordForm() {
           required
         />
 
-        {/* Security Checklist */}
-        <div className="p-3.5 rounded-xl bg-sx-subtle border border-pitch-border/80 text-xs space-y-2">
-          <p className="font-semibold text-sx-ink-soft">Password Requirements:</p>
-          <div className="space-y-1.5 text-xs">
-            <div className={`flex items-center gap-2 ${hasMinLength ? "text-sx-green-text" : "text-sx-muted"}`}>
-              <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-              <span>At least 8 characters</span>
-            </div>
-            <div className={`flex items-center gap-2 ${hasNumber ? "text-sx-green-text" : "text-sx-muted"}`}>
-              <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-              <span>Contains at least one number</span>
-            </div>
-            <div className={`flex items-center gap-2 ${passwordsMatch ? "text-sx-green-text" : "text-sx-muted"}`}>
-              <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
-              <span>Passwords match</span>
-            </div>
+        <div className="p-3.5 rounded-xl bg-sx-stone border border-sx-border text-xs space-y-1.5">
+          <p className="font-bold text-sx-ink">Password Requirements:</p>
+          <div className={`flex items-center gap-2 ${hasMinLength ? "text-sx-green-text" : "text-sx-muted"}`}>
+            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+            <span>At least 8 characters</span>
+          </div>
+          <div className={`flex items-center gap-2 ${hasNumber ? "text-sx-green-text" : "text-sx-muted"}`}>
+            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+            <span>Contains at least one number</span>
+          </div>
+          <div className={`flex items-center gap-2 ${passwordsMatch ? "text-sx-green-text" : "text-sx-muted"}`}>
+            <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+            <span>Passwords match</span>
           </div>
         </div>
 
@@ -154,8 +147,8 @@ function ResetPasswordForm() {
           Save New Password
         </Button>
 
-        <div className="text-center pt-2">
-          <Link href="/login" className="text-xs text-sx-muted hover:text-sx-ink transition-colors">
+        <div className="text-center pt-1">
+          <Link href="/login" className="text-xs font-semibold text-sx-muted hover:text-sx-ink transition-colors">
             Cancel &amp; Return to Sign In
           </Link>
         </div>
@@ -166,7 +159,7 @@ function ResetPasswordForm() {
 
 export default function ResetPasswordPage() {
   return (
-    <div className="flex-1 flex items-center justify-center p-4 py-12">
+    <div className="flex-1 flex items-center justify-center p-4 py-10">
       <Suspense fallback={<div className="text-sx-muted text-sm">Loading security...</div>}>
         <ResetPasswordForm />
       </Suspense>

@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Listing } from "@/types/database";
 import { VerifiedSellerBadge } from "@/components/marketplace/VerifiedSellerBadge";
+import { FavoriteButton } from "@/components/marketplace/FavoriteButton";
 import { formatCompactNumber, formatCurrency, getPlatformLabel } from "@/lib/utils";
 import { isListingOnFlashSale } from "@/lib/utils/flashSale";
 import { CheckCircle2, Lock } from "lucide-react";
@@ -112,6 +113,16 @@ export function ListingCard({ listing }: ListingCardProps) {
           <span className="absolute bottom-2.5 left-2.5 px-2 py-0.5 rounded bg-sx-green text-white text-[10px] font-bold uppercase tracking-wider z-20">
             Drop
           </span>
+        )}
+
+        {isAvailable && (
+          <div className="absolute bottom-2.5 right-2.5 z-20">
+            <FavoriteButton
+              listingId={listing.id}
+              initialCount={listing.favorites_count || 0}
+              variant="icon"
+            />
+          </div>
         )}
       </Link>
 

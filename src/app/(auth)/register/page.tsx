@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { createClient } from "@/lib/supabase/client";
-import { Lock, Mail, Phone, ShieldCheck, User, AlertCircle, KeyRound, CheckCircle2, Sparkles } from "lucide-react";
+import { Lock, Mail, Phone, User, AlertCircle, KeyRound, CheckCircle2, Eye, EyeOff } from "lucide-react";
 import { OtpCodeInput } from "@/components/auth/OtpCodeInput";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import { normalizePhoneNumber } from "@/lib/utils/phone";
@@ -17,13 +17,12 @@ function RegisterForm() {
   const redirect = searchParams.get("redirect") || "/dashboard/buyer";
   const refParam = searchParams.get("ref");
 
-  const [firstName, setFirstName] = useState("");
-  const [lastName, setLastName] = useState("");
+  const [fullName, setFullName] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [phoneNumber, setPhoneNumber] = useState("");
   const [password, setPassword] = useState("");
-  const [confirmPassword, setConfirmPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -48,22 +47,32 @@ function RegisterForm() {
     setLoading(true);
     setError("");
 
-    if (password !== confirmPassword) {
-      setError("Passwords do not match.");
+    if (password.length < 8) {
+      setError("Password must be at least 8 characters.");
       setLoading(false);
       return;
     }
 
     if (!termsAccepted) {
-      setError("You must accept the terms of service and escrow rules.");
+      setError("Please accept the Terms of Service and Escrow Rules.");
       setLoading(false);
       return;
     }
 
-    // Normalize phone number to strict international E.164 format (+254XXXXXXXXX)
     const normalized = normalizePhoneNumber(phoneNumber);
     if (!normalized.isValid) {
-      setError("Please enter a valid phone number (e.g., 0794400365 or +254794400365).");
+      setError("Please enter a valid Safaricom/Kenyan number (e.g. 0794400365).");
+      setLoading(false);
+      return;
+    }
+
+    const nameParts = fullName.trim().split(/\s+/);
+    const firstName = nameParts[0] || "Trader";
+    const lastName = nameParts.slice(1).join(" ") || "";
+    const cleanUsername = username.toLowerCase().trim().replace(/[^a-z0-9_]/g, "");
+
+    if (cleanUsername.length < 3) {
+      setError("Username must be at least 3 characters (letters, numbers, underscores).");
       setLoading(false);
       return;
     }
@@ -71,20 +80,19 @@ function RegisterForm() {
     const internationalPhone = normalized.international;
 
     try {
-      // Always enforce the canonical custom domain for email redirects (never vercel.app)
       const canonicalAppUrl = process.env.NEXT_PUBLIC_APP_URL || "https://www.efootballmarket.co.ke";
       const emailRedirectTo = `${canonicalAppUrl}/auth/callback?redirect=${encodeURIComponent(redirect)}`;
 
       const supabase = createClient();
       const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
+        email: email.trim(),
         password,
         options: {
           emailRedirectTo,
           data: {
             first_name: firstName,
             last_name: lastName,
-            username: username.toLowerCase().trim(),
+            username: cleanUsername,
             phone_number: internationalPhone,
           },
         },
@@ -95,10 +103,9 @@ function RegisterForm() {
       }
 
       if (authData.user) {
-        // Insert profile row with international phone
         await supabase.from("profiles").upsert({
           id: authData.user.id,
-          username: username.toLowerCase().trim(),
+          username: cleanUsername,
           first_name: firstName,
           last_name: lastName,
           phone_number: internationalPhone,
@@ -108,20 +115,18 @@ function RegisterForm() {
           escrow_balance: 0.0,
         });
 
-        // Assign default buyer role
         await supabase.from("user_roles").upsert({
           user_id: authData.user.id,
           role_id: "buyer",
         });
 
-        // Dispatch instant automated WhatsApp notification to Brian Okibo (+254794400365)
         try {
           fetch("/api/auth/register-alert", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({
-              username: username.toLowerCase().trim(),
-              email,
+              username: cleanUsername,
+              email: email.trim(),
               phoneNumber: internationalPhone,
             }),
           }).catch(() => {});
@@ -130,7 +135,6 @@ function RegisterForm() {
         }
       }
 
-      // Mandate 6-digit email OTP verification before dashboard access (scam prevention)
       setEmailConfirmationSent(true);
       setLoading(false);
       return;
@@ -154,15 +158,14 @@ function RegisterForm() {
     try {
       const supabase = createClient();
       let { data, error: verifyErr } = await supabase.auth.verifyOtp({
-        email,
+        email: email.trim(),
         token,
         type: "signup",
       });
 
       if (verifyErr) {
-        // Fallback to email OTP type
         const fallback = await supabase.auth.verifyOtp({
-          email,
+          email: email.trim(),
           token,
           type: "email",
         });
@@ -171,14 +174,14 @@ function RegisterForm() {
       }
 
       if (verifyErr) {
-        throw new Error(verifyErr.message || "Invalid or expired verification code. Please check and try again.");
+        throw new Error(verifyErr.message || "Invalid or expired verification code.");
       }
 
       if (data?.session) {
         router.push(redirect);
         router.refresh();
       } else {
-        await supabase.auth.signInWithPassword({ email, password });
+        await supabase.auth.signInWithPassword({ email: email.trim(), password });
         router.push(redirect);
         router.refresh();
       }
@@ -199,7 +202,7 @@ function RegisterForm() {
       const supabase = createClient();
       const { error: resendErr } = await supabase.auth.resend({
         type: "signup",
-        email,
+        email: email.trim(),
         options: {
           emailRedirectTo: "https://www.efootballmarket.co.ke/auth/callback",
         },
@@ -209,7 +212,7 @@ function RegisterForm() {
         throw new Error(resendErr.message);
       }
 
-      setResendMessage("A new verification code has been dispatched to your email!");
+      setResendMessage("A fresh verification code has been sent to your email!");
       setResendCooldown(45);
     } catch (err: any) {
       setError(err.message || "Failed to resend code.");
@@ -238,14 +241,14 @@ function RegisterForm() {
 
   if (emailConfirmationSent) {
     return (
-      <div className="w-full max-w-md bg-pitch-surface border border-pitch-border rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6 text-center animate-in fade-in">
-        <div className="w-14 h-14 rounded-2xl bg-sx-amber-tint border border-sx-amber-border flex items-center justify-center text-sx-amber-text mx-auto shadow-inner">
-          <KeyRound className="w-7 h-7" />
+      <div className="w-full max-w-md bg-sx-canvas border border-sx-border rounded-2xl p-6 sm:p-8 shadow-sx-elevated space-y-6 text-center">
+        <div className="w-12 h-12 rounded-2xl bg-sx-green-tint border border-sx-green-border flex items-center justify-center text-sx-green-text mx-auto">
+          <KeyRound className="w-6 h-6" />
         </div>
-        <div className="space-y-1.5">
-          <h2 className="text-2xl font-bold text-sx-ink font-display">Enter Verification Code</h2>
-          <p className="text-xs text-sx-ink-soft leading-relaxed">
-            Enter the verification code sent to <strong className="text-sx-amber-text font-mono font-semibold">{email}</strong>.
+        <div className="space-y-1">
+          <h2 className="text-2xl font-extrabold text-sx-ink font-display">Verify Your Email</h2>
+          <p className="text-xs text-sx-muted leading-relaxed">
+            Enter the 8-digit code sent to <strong className="text-sx-ink font-mono">{email}</strong>
           </p>
         </div>
 
@@ -263,8 +266,7 @@ function RegisterForm() {
           </div>
         )}
 
-        {/* Dynamic 8-Digit OTP Box Input */}
-        <div className="py-2">
+        <div className="py-1">
           <OtpCodeInput
             value={code}
             length={8}
@@ -280,25 +282,24 @@ function RegisterForm() {
 
         <Button
           type="button"
-          variant="gold"
+          variant="primary"
           size="lg"
           onClick={() => handleVerifyCode()}
           isLoading={verifying}
           disabled={code.length < 6 || verifying}
-          className="w-full font-bold shadow-lg"
+          className="w-full font-bold"
         >
-          Verify Code &amp; Start Trading
+          Verify &amp; Start Trading
         </Button>
 
-        {/* Resend & App Launcher Controls */}
-        <div className="flex flex-col gap-3 pt-2 text-xs border-t border-pitch-border/60">
+        <div className="flex flex-col gap-2.5 pt-2 text-xs border-t border-sx-border">
           <div className="flex items-center justify-between text-sx-muted">
             <span>Didn&apos;t get the code?</span>
             <button
               type="button"
               onClick={handleResendCode}
               disabled={resendCooldown > 0 || resending}
-              className="text-sx-amber-text hover:text-sx-amber-text font-semibold disabled:text-sx-muted disabled:cursor-not-allowed transition-colors"
+              className="text-sx-green-text hover:underline font-bold disabled:text-sx-muted disabled:cursor-not-allowed"
             >
               {resending
                 ? "Sending..."
@@ -308,7 +309,7 @@ function RegisterForm() {
             </button>
           </div>
 
-          <div className="flex items-center justify-between pt-1">
+          <div className="flex items-center justify-between">
             <button
               type="button"
               onClick={handleOpenEmailApp}
@@ -335,14 +336,16 @@ function RegisterForm() {
   }
 
   return (
-    <div className="w-full max-w-lg store-panel rounded-2xl p-6 sm:p-8 space-y-6">
+    <div className="w-full max-w-md bg-sx-canvas border border-sx-border rounded-2xl p-6 sm:p-8 shadow-sx-elevated space-y-5">
       <div className="space-y-1">
         <span className="text-[11px] font-mono uppercase tracking-wider text-sx-green-text font-bold">
           New Trader Account
         </span>
-        <h1 className="text-2xl font-bold text-sx-ink font-display">Create Your Account</h1>
+        <h1 className="text-2xl font-extrabold text-sx-ink font-display tracking-tight">
+          Create Your Account
+        </h1>
         <p className="text-xs text-sx-muted">
-          Buy and sell unlinked eFootball squads in Kenya with M-Pesa Till 1572931 protection.
+          Trade verified Konami eFootball squads with Safaricom M-Pesa Escrow (Till 1572931).
         </p>
       </div>
 
@@ -354,51 +357,42 @@ function RegisterForm() {
       )}
 
       {refParam && (
-        <div className="p-3 rounded-xl bg-sx-stone border border-sx-border text-xs text-sx-ink-soft">
-          Invited by <strong className="text-sx-green-text font-semibold">@{refParam}</strong>
+        <div className="p-3 rounded-xl bg-sx-green-tint border border-sx-green-border text-xs text-sx-green-text">
+          Invited by verified trader <strong className="font-bold">@{refParam}</strong>
         </div>
       )}
 
       {/* 1-Tap Google Registration */}
       <GoogleSignInButton redirect={redirect} label="Sign up with Google" />
 
-      <div className="relative flex items-center justify-center my-4">
-        <div className="border-t border-pitch-border/80 w-full" />
-        <span className="bg-pitch-surface px-3 text-[11px] font-semibold text-sx-muted uppercase tracking-wider shrink-0">
+      <div className="relative flex items-center justify-center">
+        <div className="border-t border-sx-border w-full" />
+        <span className="bg-sx-canvas px-3 text-[11px] font-semibold text-sx-muted uppercase tracking-wider shrink-0">
           Or register with email
         </span>
-        <div className="border-t border-pitch-border/80 w-full" />
+        <div className="border-t border-sx-border w-full" />
       </div>
 
-      <form onSubmit={handleRegister} className="space-y-4">
-        <div className="grid grid-cols-2 gap-4">
+      <form onSubmit={handleRegister} className="space-y-3.5">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <Input
-            label="First Name"
-            autoComplete="given-name"
-            placeholder="e.g. John"
-            value={firstName}
-            onChange={(e) => setFirstName(e.target.value)}
+            label="Full Name"
+            autoComplete="name"
+            placeholder="e.g. Brian Otieno"
+            value={fullName}
+            onChange={(e) => setFullName(e.target.value)}
             required
           />
           <Input
-            label="Last Name"
-            autoComplete="family-name"
-            placeholder="e.g. Doe"
-            value={lastName}
-            onChange={(e) => setLastName(e.target.value)}
+            label="Username"
+            autoComplete="username"
+            placeholder="e.g. pesmaster254"
+            value={username}
+            onChange={(e) => setUsername(e.target.value)}
+            leftIcon={<User className="w-4 h-4" />}
             required
           />
         </div>
-
-        <Input
-          label="Username"
-          autoComplete="username"
-          placeholder="e.g. pesmaster254"
-          value={username}
-          onChange={(e) => setUsername(e.target.value)}
-          leftIcon={<User className="w-4 h-4" />}
-          required
-        />
 
         <Input
           label="Email Address"
@@ -413,62 +407,69 @@ function RegisterForm() {
         />
 
         <Input
-          label="Phone Number (WhatsApp & M-Pesa Escrow)"
+          label="M-Pesa / WhatsApp Phone Number"
           type="tel"
           inputMode="tel"
           autoComplete="tel"
-          placeholder="0794400365 or +254 794 400 365"
+          placeholder="0794400365"
           value={phoneNumber}
           onChange={(e) => setPhoneNumber(e.target.value)}
           leftIcon={<Phone className="w-4 h-4 text-sx-green-text" />}
-          helperText="Auto-formats to international standard (+254) for WhatsApp & Lipa Na M-Pesa"
           required
         />
 
-        <div className="grid grid-cols-2 gap-4">
+        <div>
+          <div className="flex items-center justify-between mb-1.5">
+            <label className="text-xs font-semibold text-sx-ink">Password (8+ characters)</label>
+            <button
+              type="button"
+              onClick={() => setShowPassword((prev) => !prev)}
+              className="inline-flex items-center gap-1 text-[11px] font-semibold text-sx-muted hover:text-sx-ink"
+            >
+              {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+              <span>{showPassword ? "Hide" : "Show"}</span>
+            </button>
+          </div>
           <Input
-            label="Password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             autoComplete="new-password"
-            placeholder="Create password"
+            placeholder="Create strong password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
             leftIcon={<Lock className="w-4 h-4" />}
             required
           />
-          <Input
-            label="Confirm Password"
-            type="password"
-            autoComplete="new-password"
-            placeholder="Repeat password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
-            leftIcon={<Lock className="w-4 h-4" />}
-            required
-          />
         </div>
 
-        <label className="flex items-start gap-2 pt-2 cursor-pointer">
+        <label className="flex items-start gap-2 pt-1 cursor-pointer">
           <input
             type="checkbox"
             checked={termsAccepted}
             onChange={(e) => setTermsAccepted(e.target.checked)}
-            className="mt-1 rounded bg-pitch-card border-pitch-border text-brand-600 focus:ring-brand-500"
+            className="mt-0.5 w-4 h-4 rounded bg-sx-canvas border-sx-border-strong text-sx-green focus:ring-sx-green"
           />
-          <span className="text-xs text-sx-muted">
-            I agree to the <Link href="/terms" className="text-sx-green-text hover:underline">Terms of Service</Link>, <Link href="/escrow-guarantee" className="text-sx-green-text hover:underline">Escrow Rules</Link>, and acknowledge that all transactions are permanently audited.
+          <span className="text-xs text-sx-muted leading-relaxed">
+            I agree to the{" "}
+            <Link href="/terms" className="text-sx-green-text font-semibold hover:underline">
+              Terms of Service
+            </Link>{" "}
+            and{" "}
+            <Link href="/escrow-guarantee" className="text-sx-green-text font-semibold hover:underline">
+              Escrow Rules
+            </Link>
+            .
           </span>
         </label>
 
-        <Button type="submit" variant="primary" size="lg" className="w-full font-semibold" isLoading={loading}>
-          Create Production Account
+        <Button type="submit" variant="primary" size="lg" className="w-full font-bold" isLoading={loading}>
+          Create Account
         </Button>
       </form>
 
-      <div className="text-center text-xs text-sx-muted border-t border-pitch-border/60 pt-4">
+      <div className="text-center text-xs text-sx-muted border-t border-sx-border pt-4">
         Already have an account?{" "}
-        <Link href={`/login?redirect=${encodeURIComponent(redirect)}`} className="text-sx-green-text hover:underline font-semibold">
-          Log In
+        <Link href={`/login?redirect=${encodeURIComponent(redirect)}`} className="text-sx-green-text hover:underline font-bold">
+          Sign In
         </Link>
       </div>
     </div>
@@ -477,7 +478,7 @@ function RegisterForm() {
 
 export default function RegisterPage() {
   return (
-    <div className="flex-1 flex items-center justify-center p-4 py-12">
+    <div className="flex-1 flex items-center justify-center p-4 py-10">
       <Suspense fallback={<div className="text-sx-muted text-sm">Loading registration...</div>}>
         <RegisterForm />
       </Suspense>

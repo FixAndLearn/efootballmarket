@@ -9,7 +9,7 @@ import {
   Banknote,
   Users,
   Newspaper,
-  Send,
+  Smartphone,
   Crown,
   ShieldCheck,
   ArrowLeft,
@@ -83,6 +83,14 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
       href: "/admin?tab=disputes",
       badge: counts.openDisputes > 0 ? `${counts.openDisputes} open` : null,
       badgeColor: "bg-sx-red-tint text-sx-red-text border-sx-red-border animate-pulse",
+    },
+    {
+      id: "payments",
+      label: "Till 1572931 & Middleman",
+      icon: Smartphone,
+      href: "/admin?tab=payments",
+      badge: null,
+      badgeColor: "",
     },
     {
       id: "withdrawals",

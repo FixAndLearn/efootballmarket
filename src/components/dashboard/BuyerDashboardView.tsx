@@ -14,10 +14,12 @@ import {
   KeyRound,
   CheckCircle2,
   ShieldAlert,
+  Heart,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
+import { ListingCard } from "@/components/marketplace/ListingCard";
 import { formatCurrency, getPlatformLabel } from "@/lib/utils";
-import { Order } from "@/types/database";
+import { Listing, Order } from "@/types/database";
 
 interface BuyerOfferItem {
   id: string;
@@ -39,6 +41,7 @@ interface BuyerOfferItem {
 interface BuyerDashboardViewProps {
   orders: Order[];
   myOffers?: BuyerOfferItem[];
+  savedListings?: Listing[];
 }
 
 type StatusFilter = "all" | "action_needed" | "active" | "completed" | "cancelled";
@@ -46,6 +49,7 @@ type StatusFilter = "all" | "action_needed" | "active" | "completed" | "cancelle
 export const BuyerDashboardView: React.FC<BuyerDashboardViewProps> = ({
   orders,
   myOffers = [],
+  savedListings = [],
 }) => {
   const [filter, setFilter] = useState<StatusFilter>("all");
   const [searchQuery, setSearchQuery] = useState("");
@@ -414,6 +418,34 @@ export const BuyerDashboardView: React.FC<BuyerDashboardViewProps> = ({
           </div>
         </div>
       )}
+
+      {/* Saved Squads Watchlist Section */}
+      <div className="rounded-xl bg-sx-canvas border border-sx-border overflow-hidden">
+        <div className="px-5 py-4 border-b border-sx-border flex items-center justify-between">
+          <h2 className="text-sm font-bold text-sx-ink font-display flex items-center gap-2">
+            <Heart className="w-4 h-4 text-sx-red-text fill-current" />
+            <span>Saved Squads Watchlist ({savedListings.length})</span>
+          </h2>
+          <Link
+            href="/browse"
+            className="text-xs font-semibold text-sx-green-text hover:underline"
+          >
+            Browse More &rarr;
+          </Link>
+        </div>
+
+        {savedListings.length === 0 ? (
+          <div className="p-8 text-center text-xs text-sx-muted">
+            Tap the heart icon on any squad in the marketplace to bookmark it here for payday or Friday Drops.
+          </div>
+        ) : (
+          <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+            {savedListings.map((item) => (
+              <ListingCard key={item.id} listing={item} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 };

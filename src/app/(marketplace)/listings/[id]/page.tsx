@@ -10,6 +10,7 @@ import { MakeOfferButton } from "@/components/marketplace/MakeOfferButton";
 import { ChatSellerWhatsAppButton } from "@/components/marketplace/ChatSellerWhatsAppButton";
 import { SellerListingOffersPanel } from "@/components/marketplace/SellerListingOffersPanel";
 import { ListingCard } from "@/components/marketplace/ListingCard";
+import { FavoriteButton } from "@/components/marketplace/FavoriteButton";
 import { AdBanner } from "@/components/common/AdBanner";
 import { Button } from "@/components/ui/Button";
 import {
@@ -128,7 +129,12 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
           </span>
         </nav>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <FavoriteButton
+            listingId={listing.id}
+            initialCount={listing.favorites_count || 0}
+            variant="pill"
+          />
           <Link
             href="/browse"
             className="inline-flex items-center gap-1.5 text-xs font-medium text-sx-muted hover:text-sx-ink transition-colors"
@@ -492,9 +498,16 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="text-sm font-semibold text-sx-ink">
-                      {listing.seller?.username || "Seller"}
-                    </span>
+                    {listing.seller?.username ? (
+                      <Link
+                        href={`/u/${encodeURIComponent(listing.seller.username)}`}
+                        className="text-sm font-semibold text-sx-ink hover:text-sx-green-text hover:underline transition-colors"
+                      >
+                        @{listing.seller.username}
+                      </Link>
+                    ) : (
+                      <span className="text-sm font-semibold text-sx-ink">Seller</span>
+                    )}
                     <VerifiedSellerBadge seller={listing.seller} size="sm" showPopover={true} />
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-sx-muted mt-0.5">

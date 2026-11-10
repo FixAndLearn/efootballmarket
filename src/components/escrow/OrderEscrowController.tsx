@@ -7,6 +7,7 @@ import { EscrowStatusStepper } from "@/components/escrow/EscrowStatusStepper";
 import { EscrowReceiptModal } from "@/components/escrow/EscrowReceiptModal";
 import { DisputeEvidenceLocker } from "@/components/escrow/DisputeEvidenceLocker";
 import { KonamiTransferChecklistModal } from "@/components/escrow/KonamiTransferChecklistModal";
+import { SellerRatingBox } from "@/components/escrow/SellerRatingBox";
 import { MpesaPaymentModal } from "@/components/payments/MpesaPaymentModal";
 import { Button } from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/utils";
@@ -657,6 +658,12 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
               ? "Account access confirmed. Enjoy your new eFootball squad!"
               : `Net payout of ${formatCurrency(order.seller_net_amount, order.currency)} has been credited to your available balance.`}
           </p>
+
+          <SellerRatingBox
+            orderId={order.id}
+            sellerName={order.seller?.username}
+            isBuyer={isBuyer}
+          />
 
           {/* Post-Release Dispute Guarantee Box */}
           <div className="p-4 rounded-xl bg-pitch-card/80 border border-sx-amber-border space-y-3">

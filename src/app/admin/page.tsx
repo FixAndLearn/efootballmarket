@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
+import { AdminPaymentsAndMiddlemanTab } from "@/components/admin/AdminPaymentsAndMiddlemanTab";
 import { useAuth } from "@/hooks/useAuth";
 import { isSuperAdminEmail, isUserAdmin, PRIMARY_SUPER_ADMIN_EMAIL } from "@/lib/security/adminAuth";
 import { formatCurrency } from "@/lib/utils";
@@ -54,20 +55,20 @@ function AdminControlCenterContent() {
   const searchParams = useSearchParams();
   const { user, profile, isAuthenticated, loading: authLoading } = useAuth();
   const tabParam = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState<"listings" | "disputes" | "users" | "news" | "withdrawals">(
-    ["listings", "disputes", "users", "withdrawals", "news"].includes(tabParam || "")
+  const [activeTab, setActiveTab] = useState<"listings" | "disputes" | "users" | "news" | "withdrawals" | "payments">(
+    ["listings", "disputes", "users", "withdrawals", "news", "payments"].includes(tabParam || "")
       ? (tabParam as any)
       : "listings"
   );
 
   // Synchronize active tab whenever URL ?tab= updates from sidebar clicks
   useEffect(() => {
-    if (tabParam && ["listings", "disputes", "users", "withdrawals", "news"].includes(tabParam)) {
+    if (tabParam && ["listings", "disputes", "users", "withdrawals", "news", "payments"].includes(tabParam)) {
       setActiveTab(tabParam as any);
     }
   }, [tabParam]);
 
-  const switchTab = (tab: "listings" | "disputes" | "users" | "news" | "withdrawals") => {
+  const switchTab = (tab: "listings" | "disputes" | "users" | "news" | "withdrawals" | "payments") => {
     setActiveTab(tab);
     router.push(`/admin?tab=${tab}`, { scroll: false });
   };
@@ -1769,6 +1770,11 @@ function AdminControlCenterContent() {
             </div>
           )}
         </div>
+      )}
+
+      {/* TAB: TILL 1572931 RECEIPTS & MIDDLEMAN DESK */}
+      {activeTab === "payments" && (
+        <AdminPaymentsAndMiddlemanTab onFeedback={setFeedback} />
       )}
 
       {/* Modal: Takedown Listing with Reason */}

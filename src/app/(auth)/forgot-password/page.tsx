@@ -3,7 +3,7 @@
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { createClient } from "@/lib/supabase/client";
-import { Mail, KeyRound, ArrowLeft, CheckCircle2, AlertCircle, ShieldCheck } from "lucide-react";
+import { Mail, KeyRound, ArrowLeft, CheckCircle2, AlertCircle } from "lucide-react";
 import { OtpCodeInput } from "@/components/auth/OtpCodeInput";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -59,9 +59,9 @@ function ForgotPasswordForm() {
 
       setCodeSent(true);
       setResendCooldown(45);
-      setInfoMessage("A password reset link and recovery code have been dispatched to your email!");
+      setInfoMessage("A password reset link and recovery code have been sent to your email!");
     } catch (err: any) {
-      setError(err.message || "Failed to dispatch recovery email. Please check the email address.");
+      setError(err.message || "Failed to dispatch recovery email.");
     } finally {
       setLoading(false);
     }
@@ -70,7 +70,7 @@ function ForgotPasswordForm() {
   const handleVerifyRecoveryCode = async (codeToVerify?: string) => {
     const token = (codeToVerify || recoveryCode).trim();
     if (token.length < 6 || token.length > 8) {
-      setError("Please enter the complete 6 to 8-digit recovery code from your email.");
+      setError("Please enter the complete recovery code from your email.");
       return;
     }
 
@@ -86,10 +86,9 @@ function ForgotPasswordForm() {
       });
 
       if (verifyErr) {
-        throw new Error(verifyErr.message || "Invalid or expired recovery code. Please try again.");
+        throw new Error(verifyErr.message || "Invalid or expired recovery code.");
       }
 
-      // Successfully verified recovery code - redirect to password reset page
       router.push("/reset-password");
       router.refresh();
     } catch (err: any) {
@@ -119,7 +118,7 @@ function ForgotPasswordForm() {
         throw new Error(resendErr.message);
       }
 
-      setInfoMessage("A fresh recovery code has been dispatched to your email!");
+      setInfoMessage("A fresh recovery code has been sent to your email!");
       setResendCooldown(45);
     } catch (err: any) {
       setError(err.message || "Failed to resend code.");
@@ -128,33 +127,15 @@ function ForgotPasswordForm() {
     }
   };
 
-  const handleOpenEmailApp = () => {
-    if (typeof window === "undefined") return;
-    const ua = navigator.userAgent || "";
-    const isAndroid = /Android/i.test(ua);
-    const isIOS = /iPhone|iPad|iPod/i.test(ua);
-
-    if (isAndroid) {
-      window.location.href = "intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.APP_EMAIL;end";
-    } else if (isIOS) {
-      window.location.href = "message://";
-      setTimeout(() => {
-        window.location.href = "https://mail.google.com";
-      }, 1000);
-    } else {
-      window.open("https://mail.google.com", "_blank", "noopener,noreferrer");
-    }
-  };
-
   return (
-    <div className="w-full max-w-md bg-pitch-surface border border-pitch-border rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
+    <div className="w-full max-w-md bg-sx-canvas border border-sx-border rounded-2xl p-6 sm:p-8 shadow-sx-elevated space-y-5">
       <div className="text-center">
-        <div className="w-12 h-12 rounded-2xl bg-sx-amber-tint border border-sx-amber-border flex items-center justify-center text-sx-amber-text mx-auto mb-3 shadow-inner">
+        <div className="w-12 h-12 rounded-2xl bg-sx-amber-tint border border-sx-amber-border flex items-center justify-center text-sx-amber-text mx-auto mb-3">
           <KeyRound className="w-6 h-6" />
         </div>
-        <h1 className="text-2xl font-bold text-sx-ink font-display">Reset Your Password</h1>
+        <h1 className="text-2xl font-extrabold text-sx-ink font-display">Reset Your Password</h1>
         <p className="text-xs text-sx-muted mt-1">
-          Enter your registered Gmail to receive a password recovery link or code
+          Enter your registered email to receive a recovery link or code.
         </p>
       </div>
 
@@ -173,12 +154,7 @@ function ForgotPasswordForm() {
       )}
 
       {!codeSent ? (
-        /* Step 1: Request Email */
         <form onSubmit={handleSendResetEmail} className="space-y-4">
-          <div className="p-3 rounded-xl bg-sx-subtle border border-pitch-border/80 text-xs text-sx-ink-soft leading-relaxed">
-            We will send a secure password reset link and code to your email. You can either tap the link in your email or enter the code below.
-          </div>
-
           <Input
             label="Registered Email Address"
             type="email"
@@ -191,14 +167,14 @@ function ForgotPasswordForm() {
             required
           />
 
-          <Button type="submit" variant="primary" size="lg" className="w-full font-semibold" isLoading={loading}>
-            Send Password Recovery Link
+          <Button type="submit" variant="primary" size="lg" className="w-full font-bold" isLoading={loading}>
+            Send Recovery Link
           </Button>
 
-          <div className="text-center pt-2">
+          <div className="text-center pt-1">
             <Link
               href={`/login?redirect=${encodeURIComponent(redirect)}`}
-              className="inline-flex items-center gap-1.5 text-xs text-sx-muted hover:text-sx-ink transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs font-semibold text-sx-muted hover:text-sx-ink transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to Sign In</span>
@@ -206,17 +182,16 @@ function ForgotPasswordForm() {
           </div>
         </form>
       ) : (
-        /* Step 2: Code Verification or Direct Email Link */
         <div className="space-y-5">
-          <div className="p-3.5 rounded-xl bg-sx-subtle border border-pitch-border text-xs text-sx-ink-soft space-y-2">
-            <p className="font-semibold text-sx-ink">Check your Gmail inbox</p>
+          <div className="p-3.5 rounded-xl bg-sx-stone border border-sx-border text-xs text-sx-ink-soft space-y-1">
+            <p className="font-bold text-sx-ink">Check Your Inbox</p>
             <p className="text-sx-muted">
-              We sent a password reset message to <span className="text-sx-amber-text font-mono">{email}</span>. You can either tap the link in the email or type the code below:
+              Sent to <span className="text-sx-ink font-mono font-semibold">{email}</span>. Tap the link or enter the code below:
             </p>
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-sx-ink-soft block text-center">
+            <label className="text-xs font-semibold text-sx-ink block text-center">
               Enter Recovery Code
             </label>
             <OtpCodeInput
@@ -243,34 +218,7 @@ function ForgotPasswordForm() {
             Verify Code &amp; Change Password
           </Button>
 
-          <div className="flex items-center justify-between text-xs pt-1">
-            <button
-              type="button"
-              onClick={handleOpenEmailApp}
-              className="text-sx-muted hover:text-sx-ink flex items-center gap-1.5 transition-colors"
-            >
-              <Mail className="w-3.5 h-3.5" />
-              <span>Launch Mail App</span>
-            </button>
-            <button
-              type="button"
-              onClick={handleResendCode}
-              disabled={resendCooldown > 0 || resending}
-              className={`font-medium ${
-                resendCooldown > 0 || resending
-                  ? "text-sx-muted cursor-not-allowed"
-                  : "text-sx-amber-text hover:text-sx-amber-text hover:underline"
-              }`}
-            >
-              {resending
-                ? "Sending..."
-                : resendCooldown > 0
-                ? `Resend in ${resendCooldown}s`
-                : "Resend Code"}
-            </button>
-          </div>
-
-          <div className="text-center pt-2 border-t border-pitch-border/60">
+          <div className="flex items-center justify-between text-xs pt-1 border-t border-sx-border">
             <button
               type="button"
               onClick={() => {
@@ -278,9 +226,25 @@ function ForgotPasswordForm() {
                 setRecoveryCode("");
                 setError("");
               }}
-              className="text-xs text-sx-muted hover:text-sx-ink"
+              className="text-sx-muted hover:text-sx-ink"
             >
-              Change Email Address
+              Change Email
+            </button>
+            <button
+              type="button"
+              onClick={handleResendCode}
+              disabled={resendCooldown > 0 || resending}
+              className={`font-bold ${
+                resendCooldown > 0 || resending
+                  ? "text-sx-muted cursor-not-allowed"
+                  : "text-sx-green-text hover:underline"
+              }`}
+            >
+              {resending
+                ? "Sending..."
+                : resendCooldown > 0
+                ? `Resend in ${resendCooldown}s`
+                : "Resend Code"}
             </button>
           </div>
         </div>
@@ -291,7 +255,7 @@ function ForgotPasswordForm() {
 
 export default function ForgotPasswordPage() {
   return (
-    <div className="flex-1 flex items-center justify-center p-4 py-12">
+    <div className="flex-1 flex items-center justify-center p-4 py-10">
       <Suspense fallback={<div className="text-sx-muted text-sm">Loading recovery...</div>}>
         <ForgotPasswordForm />
       </Suspense>

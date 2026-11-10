@@ -58,6 +58,27 @@ export default async function BuyerDashboardPage() {
     listing: Array.isArray(o.listing) ? o.listing[0] : o.listing,
   }));
 
+  const { data: favoritesRaw } = await supabase
+    .from("favorites")
+    .select(
+      `
+      id,
+      created_at,
+      listing:listings!listing_id(
+        *,
+        images:listing_images(*),
+        seller:profiles!listings_seller_id_fkey(id, username, is_verified_seller, seller_rating, completed_sales_count)
+      )
+    `
+    )
+    .eq("user_id", user.id)
+    .order("created_at", { ascending: false })
+    .limit(24);
+
+  const savedListings = (favoritesRaw || [])
+    .map((f: any) => (Array.isArray(f.listing) ? f.listing[0] : f.listing))
+    .filter((l: any) => l && !l.deleted_at);
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-6">
       {/* Header */}
@@ -126,8 +147,12 @@ export default async function BuyerDashboardPage() {
         </div>
       </div>
 
-      {/* Main Orders & Offers Interactive View */}
-      <BuyerDashboardView orders={orders} myOffers={myOffers} />
+      {/* Main Orders, Offers & Watchlist Interactive View */}
+      <BuyerDashboardView
+        orders={orders}
+        myOffers={myOffers}
+        savedListings={savedListings}
+      />
 
       {/* Need Escrow Help Bar */}
       <div className="rounded-xl bg-sx-stone border border-sx-border p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
