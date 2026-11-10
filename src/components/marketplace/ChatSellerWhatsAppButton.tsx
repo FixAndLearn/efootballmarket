@@ -105,7 +105,7 @@ export function ChatSellerWhatsAppButton({
         target="_blank"
         rel="noopener noreferrer"
         onClick={(e) => e.stopPropagation()}
-        className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-slate-900 border border-[#25D366]/40 hover:border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10 font-bold text-xs transition-all shadow-sm active:scale-95 ${className}`}
+        className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#F9F9F8] border border-[#25D366]/40 hover:border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10 font-bold text-xs transition-all shadow-sm active:scale-95 ${className}`}
       >
         <WhatsAppIcon className="w-4 h-4 fill-[#25D366] shrink-0" />
         <span>{label || `Chat ${sellerDisplayName} on WhatsApp`}</span>

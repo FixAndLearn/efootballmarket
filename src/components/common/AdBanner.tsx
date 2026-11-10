@@ -45,10 +45,10 @@ export function AdBanner({
 
   return (
     <div className={`w-full text-center overflow-hidden my-6 ${className}`}>
-      <span className="block text-[10px] uppercase tracking-wider text-slate-500 mb-2">
+      <span className="block text-[10px] uppercase tracking-wider text-[#767676] mb-2">
         Advertisement
       </span>
-      <div className="min-h-[90px] w-full flex items-center justify-center rounded-lg bg-[#0D1117] border border-[#1E2636] p-2">
+      <div className="min-h-[90px] w-full flex items-center justify-center rounded-lg bg-[#F9F9F8] border border-[#E2E2E0] p-2">
         <ins
           className="adsbygoogle block w-full overflow-hidden"
           style={{ display: "block" }}

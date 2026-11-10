@@ -210,7 +210,7 @@ export function OrderChatBox({
               isPendingPayment ? "bg-amber-500" : "bg-emerald-500 animate-pulse"
             }`}
           />
-          <h3 className="text-xs uppercase font-bold text-slate-200 tracking-wider">
+          <h3 className="text-xs uppercase font-bold text-[#1F1F1F] tracking-wider">
             {isPendingPayment ? "Order Chat (Locked)" : "Order Secure Messaging"}
           </h3>
         </div>
@@ -218,23 +218,23 @@ export function OrderChatBox({
           <button
             type="button"
             onClick={() => setIsGuideOpen(true)}
-            className="text-[11px] text-emerald-300 hover:text-emerald-200 flex items-center gap-1 font-bold bg-emerald-950/70 border border-emerald-800/80 px-2 py-0.5 rounded-lg transition-all"
+            className="text-[11px] text-[#006340] hover:text-emerald-200 flex items-center gap-1 font-bold bg-[#EBF5F0] border border-[#BFE0CE] px-2 py-0.5 rounded-lg transition-all"
           >
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+            <ShieldCheck className="w-3.5 h-3.5 text-[#006340]" />
             <span>Handover Guide &amp; Rules</span>
           </button>
-          <span className="text-[11px] text-slate-400 hidden sm:flex items-center gap-1">
-            <Shield className="w-3.5 h-3.5 text-emerald-400" />
+          <span className="text-[11px] text-[#5F5F5F] hidden sm:flex items-center gap-1">
+            <Shield className="w-3.5 h-3.5 text-[#006340]" />
             Anti-Fraud Audited
           </span>
         </div>
       </div>
 
       {/* Permanent Anti-Googling & Handover Security Banner */}
-      <div className="px-4 py-2 bg-rose-500/10 border-b border-rose-500/25 flex items-center gap-2 text-[11px] text-rose-200">
-        <AlertTriangle className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+      <div className="px-4 py-2 bg-[#FEE2E2] border-b border-rose-500/25 flex items-center gap-2 text-[11px] text-[#B91C1C]">
+        <AlertTriangle className="w-3.5 h-3.5 text-[#C92A2A] shrink-0" />
         <span className="leading-tight">
-          <strong className="text-rose-300">CRITICAL RULE:</strong> Never accept an account linked to Google Play (&quot;Googling&quot;). Check Support &gt; Link Data.
+          <strong className="text-[#B91C1C]">CRITICAL RULE:</strong> Never accept an account linked to Google Play (&quot;Googling&quot;). Check Support &gt; Link Data.
         </span>
       </div>
 
@@ -247,7 +247,7 @@ export function OrderChatBox({
           if (isSystem) {
             return (
               <div key={msg.id} className="text-center my-2">
-                <span className="inline-block text-[11px] text-slate-400 bg-pitch-card/90 border border-pitch-border px-3.5 py-1.5 rounded-full shadow-sm leading-relaxed max-w-sm">
+                <span className="inline-block text-[11px] text-[#5F5F5F] bg-pitch-card/90 border border-pitch-border px-3.5 py-1.5 rounded-full shadow-sm leading-relaxed max-w-sm">
                   {msg.content}
                 </span>
               </div>
@@ -260,12 +260,12 @@ export function OrderChatBox({
                 className={`max-w-[80%] rounded-2xl px-4 py-2.5 text-xs sm:text-sm shadow-sm ${
                   isMe
                     ? "bg-brand-600 text-white rounded-br-none"
-                    : "bg-pitch-card border border-pitch-border text-slate-200 rounded-bl-none"
+                    : "bg-pitch-card border border-pitch-border text-[#1F1F1F] rounded-bl-none"
                 }`}
               >
                 <p className="whitespace-pre-line leading-relaxed">{msg.content}</p>
               </div>
-              <span className="text-[10px] text-slate-500 mt-1 px-1">
+              <span className="text-[10px] text-[#767676] mt-1 px-1">
                 {new Date(msg.created_at).toLocaleTimeString([], {
                   hour: "2-digit",
                   minute: "2-digit",
@@ -279,12 +279,12 @@ export function OrderChatBox({
 
       {/* Anti-Circumvention / Payment Warning Banner */}
       {securityAlert && (
-        <div className="mx-3 my-2 p-3 rounded-xl bg-rose-500/15 border border-rose-500/40 text-rose-200 text-xs flex items-start justify-between gap-2 animate-in fade-in slide-in-from-bottom-2">
+        <div className="mx-3 my-2 p-3 rounded-xl bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs flex items-start justify-between gap-2 animate-in fade-in slide-in-from-bottom-2">
           <div className="flex items-start gap-2">
-            <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+            <AlertTriangle className="w-4 h-4 text-[#C92A2A] shrink-0 mt-0.5" />
             <div>
-              <p className="font-bold text-rose-300">Security Warning: Prohibited Activity</p>
-              <p className="text-[11px] text-rose-200/95 leading-relaxed mt-0.5">
+              <p className="font-bold text-[#B91C1C]">Security Warning: Prohibited Activity</p>
+              <p className="text-[11px] text-[#B91C1C]/95 leading-relaxed mt-0.5">
                 {securityAlert.message}
               </p>
             </div>
@@ -292,7 +292,7 @@ export function OrderChatBox({
           <button
             type="button"
             onClick={() => setSecurityAlert(null)}
-            className="text-rose-400 hover:text-white p-1 rounded-lg shrink-0"
+            className="text-[#C92A2A] hover:text-[#0F0F0F] p-1 rounded-lg shrink-0"
             aria-label="Dismiss warning"
           >
             <X className="w-3.5 h-3.5" />
@@ -304,14 +304,14 @@ export function OrderChatBox({
       {isPendingPayment ? (
         <div className="p-4 border-t border-pitch-border bg-pitch-card/90 space-y-3">
           <div className="flex items-start gap-3">
-            <div className="w-8 h-8 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0 mt-0.5">
+            <div className="w-8 h-8 rounded-xl bg-[#FEF3C7] border border-[#FDE68A] flex items-center justify-center text-[#B45309] shrink-0 mt-0.5">
               <Lock className="w-4 h-4" />
             </div>
             <div className="space-y-0.5">
-              <p className="text-xs font-bold text-amber-200">
+              <p className="text-xs font-bold text-[#92400E]">
                 {isBuyer ? "Payment Required Before Messaging" : "Buyer Payment Pending"}
               </p>
-              <p className="text-[11px] text-slate-400 leading-relaxed">
+              <p className="text-[11px] text-[#5F5F5F] leading-relaxed">
                 {isBuyer
                   ? "You must trigger and complete the Lipa Na M-Pesa STK Push payment before messaging the seller."
                   : "Messaging will unlock automatically once the buyer completes the Lipa Na M-Pesa STK Push into escrow."}
@@ -341,28 +341,28 @@ export function OrderChatBox({
                 <button
                   type="button"
                   onClick={() => setInputContent("Please send the Konami login verification code")}
-                  className="whitespace-nowrap px-2 py-0.5 rounded-md bg-pitch border border-pitch-border text-slate-300 hover:text-white hover:border-brand-500/50 transition-colors"
+                  className="whitespace-nowrap px-2 py-0.5 rounded-md bg-pitch border border-pitch-border text-[#3D3D3D] hover:text-[#0F0F0F] hover:border-brand-500/50 transition-colors"
                 >
                   🔑 Request Login Code
                 </button>
                 <button
                   type="button"
                   onClick={() => setInputContent("I requested email change, please send the confirmation code")}
-                  className="whitespace-nowrap px-2 py-0.5 rounded-md bg-pitch border border-pitch-border text-slate-300 hover:text-white hover:border-brand-500/50 transition-colors"
+                  className="whitespace-nowrap px-2 py-0.5 rounded-md bg-pitch border border-pitch-border text-[#3D3D3D] hover:text-[#0F0F0F] hover:border-brand-500/50 transition-colors"
                 >
                   📧 Request Email Change Code
                 </button>
                 <button
                   type="button"
                   onClick={() => setInputContent("I have updated both password and email to my own!")}
-                  className="whitespace-nowrap px-2 py-0.5 rounded-md bg-pitch border border-pitch-border text-slate-300 hover:text-white hover:border-brand-500/50 transition-colors"
+                  className="whitespace-nowrap px-2 py-0.5 rounded-md bg-pitch border border-pitch-border text-[#3D3D3D] hover:text-[#0F0F0F] hover:border-brand-500/50 transition-colors"
                 >
                   ✅ Updated Both!
                 </button>
                 <button
                   type="button"
                   onClick={() => setInputContent("Please confirm that Google Play is NOT linked to this account ('Googling')")}
-                  className="whitespace-nowrap px-2 py-0.5 rounded-md bg-rose-950/60 border border-rose-800/80 text-rose-300 hover:text-white hover:border-rose-600 transition-colors"
+                  className="whitespace-nowrap px-2 py-0.5 rounded-md bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] hover:text-[#0F0F0F] hover:border-rose-600 transition-colors"
                 >
                   🚫 Verify No Google Link
                 </button>
@@ -372,28 +372,28 @@ export function OrderChatBox({
                 <button
                   type="button"
                   onClick={() => setInputContent("Checking my email for the Konami code now...")}
-                  className="whitespace-nowrap px-2 py-0.5 rounded-md bg-pitch border border-pitch-border text-slate-300 hover:text-white hover:border-brand-500/50 transition-colors"
+                  className="whitespace-nowrap px-2 py-0.5 rounded-md bg-pitch border border-pitch-border text-[#3D3D3D] hover:text-[#0F0F0F] hover:border-brand-500/50 transition-colors"
                 >
                   ⏳ Checking Email for Code...
                 </button>
                 <button
                   type="button"
                   onClick={() => setInputContent("Your Konami verification code is: ")}
-                  className="whitespace-nowrap px-2 py-0.5 rounded-md bg-pitch border border-pitch-border text-slate-300 hover:text-white hover:border-brand-500/50 transition-colors"
+                  className="whitespace-nowrap px-2 py-0.5 rounded-md bg-pitch border border-pitch-border text-[#3D3D3D] hover:text-[#0F0F0F] hover:border-brand-500/50 transition-colors"
                 >
                   🔢 Send Code
                 </button>
                 <button
                   type="button"
                   onClick={() => setInputContent("Please link your email in Konami settings and let me know")}
-                  className="whitespace-nowrap px-2 py-0.5 rounded-md bg-pitch border border-pitch-border text-slate-300 hover:text-white hover:border-brand-500/50 transition-colors"
+                  className="whitespace-nowrap px-2 py-0.5 rounded-md bg-pitch border border-pitch-border text-[#3D3D3D] hover:text-[#0F0F0F] hover:border-brand-500/50 transition-colors"
                 >
                   📩 Link Your Email
                 </button>
                 <button
                   type="button"
                   onClick={() => setInputContent("I certify this account is purely Konami ID linked and NOT linked to Google Play")}
-                  className="whitespace-nowrap px-2 py-0.5 rounded-md bg-emerald-950/60 border border-emerald-800/80 text-emerald-300 hover:text-white hover:border-emerald-600 transition-colors"
+                  className="whitespace-nowrap px-2 py-0.5 rounded-md bg-[#EBF5F0] border border-[#BFE0CE] text-[#006340] hover:text-[#0F0F0F] hover:border-emerald-600 transition-colors"
                 >
                   🛡️ Pure Konami ID (No Google)
                 </button>
@@ -413,7 +413,7 @@ export function OrderChatBox({
                 if (securityAlert) setSecurityAlert(null);
               }}
               placeholder="Type message or 2FA verification code..."
-              className="flex-1 rounded-xl bg-pitch border border-pitch-border px-3.5 py-2 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-brand-500"
+              className="flex-1 rounded-xl bg-pitch border border-pitch-border px-3.5 py-2 text-xs text-[#0F0F0F] placeholder:text-[#767676] focus:outline-none focus:border-brand-500"
             />
             <Button
               type="submit"

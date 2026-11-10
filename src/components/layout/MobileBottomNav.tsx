@@ -41,7 +41,7 @@ export function MobileBottomNav() {
   return (
     <nav
       aria-label="Mobile Bottom Navigation"
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-[#090B0E]/95 backdrop-blur-md border-t border-[#242A36] px-2 py-1"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-[#E2E2E0] px-2 py-1"
     >
       <div className="grid grid-cols-5 gap-1 items-center max-w-md mx-auto">
         {navItems.map((item) => {
@@ -51,11 +51,13 @@ export function MobileBottomNav() {
               key={item.label}
               href={item.href}
               className={`flex flex-col items-center justify-center min-h-[46px] py-1 rounded-lg transition-colors ${
-                item.isActive ? "text-white font-medium" : "text-slate-400 hover:text-slate-200"
+                item.isActive
+                  ? "text-[#006340] font-semibold"
+                  : "text-[#5F5F5F] hover:text-[#0F0F0F]"
               }`}
             >
               {item.highlight ? (
-                <div className="w-7 h-7 rounded-md bg-emerald-500 flex items-center justify-center text-zinc-950">
+                <div className="w-7 h-7 rounded-full bg-[#006340] flex items-center justify-center text-white">
                   <Icon className="w-4 h-4 stroke-[2.5]" />
                 </div>
               ) : (

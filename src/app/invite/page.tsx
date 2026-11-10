@@ -95,33 +95,33 @@ function InviteContent() {
     return (
       <div className="w-full max-w-lg bg-pitch-surface border border-pitch-border rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6 animate-in fade-in">
         <div className="text-center">
-          <div className="w-14 h-14 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 mx-auto mb-3 shadow-inner">
+          <div className="w-14 h-14 rounded-2xl bg-[#FEF3C7] border border-[#FDE68A] flex items-center justify-center text-[#B45309] mx-auto mb-3 shadow-inner">
             <Sparkles className="w-7 h-7" />
           </div>
-          <span className="px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-[11px] font-bold text-amber-300 uppercase tracking-wider">
+          <span className="px-3 py-1 rounded-full bg-[#FEF3C7] border border-[#FDE68A] text-[11px] font-bold text-[#92400E] uppercase tracking-wider">
             VIP Invitation
           </span>
-          <h1 className="text-2xl font-bold text-white font-display mt-2">
+          <h1 className="text-2xl font-bold text-[#0F0F0F] font-display mt-2">
             You&apos;re Invited to eFootballMarket
           </h1>
-          <p className="text-xs text-slate-300 mt-1">
-            Invited by <strong className="text-amber-400 font-mono">@{refCode}</strong>
+          <p className="text-xs text-[#3D3D3D] mt-1">
+            Invited by <strong className="text-[#B45309] font-mono">@{refCode}</strong>
           </p>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900 border border-pitch-border/80 space-y-3">
-          <p className="text-xs font-semibold text-slate-200">
+        <div className="p-4 rounded-xl bg-[#F9F9F8] border border-pitch-border/80 space-y-3">
+          <p className="text-xs font-semibold text-[#1F1F1F]">
             Why join Kenya&apos;s #1 Escrow Gaming Network?
           </p>
-          <div className="space-y-2 text-xs text-slate-300">
+          <div className="space-y-2 text-xs text-[#3D3D3D]">
             <div className="flex items-start gap-2">
-              <BadgeCheck className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <BadgeCheck className="w-4 h-4 text-[#006340] shrink-0 mt-0.5" />
               <span>
                 <strong>Safaricom Till 1572931:</strong> Funds stay protected until you verify Konami ID credentials.
               </span>
             </div>
             <div className="flex items-start gap-2">
-              <Clock className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+              <Clock className="w-4 h-4 text-[#B45309] shrink-0 mt-0.5" />
               <span>
                 <strong>24H Inspection Window:</strong> Full money-back guarantee if the squad does not match.
               </span>
@@ -144,7 +144,7 @@ function InviteContent() {
           </Link>
 
           <Link href={`/login?redirect=/browse`}>
-            <Button variant="secondary" size="lg" className="w-full font-semibold bg-slate-900 border-pitch-border text-slate-300 hover:text-white">
+            <Button variant="secondary" size="lg" className="w-full font-semibold bg-[#F9F9F8] border-pitch-border text-[#3D3D3D] hover:text-[#0F0F0F]">
               Already have an account? Sign In
             </Button>
           </Link>
@@ -157,11 +157,11 @@ function InviteContent() {
   return (
     <div className="w-full max-w-xl bg-pitch-surface border border-pitch-border rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6 animate-in fade-in">
       <div className="text-center">
-        <div className="w-14 h-14 rounded-2xl bg-brand-600/20 border border-brand-500/30 flex items-center justify-center text-brand-400 mx-auto mb-3 shadow-inner">
+        <div className="w-14 h-14 rounded-2xl bg-brand-600/20 border border-brand-500/30 flex items-center justify-center text-[#006340] mx-auto mb-3 shadow-inner">
           <Users className="w-7 h-7" />
         </div>
-        <h1 className="text-2xl font-bold text-white font-display">Invite Friends &amp; Traders</h1>
-        <p className="text-xs text-slate-400 mt-1">
+        <h1 className="text-2xl font-bold text-[#0F0F0F] font-display">Invite Friends &amp; Traders</h1>
+        <p className="text-xs text-[#5F5F5F] mt-1">
           Bring trusted buyers and sellers to eFootballMarket and trade with 100% escrow protection
         </p>
       </div>
@@ -170,8 +170,8 @@ function InviteContent() {
         <div
           className={`p-3.5 rounded-xl border text-xs flex items-center gap-2.5 ${
             statusMessage.type === "success"
-              ? "bg-emerald-950/60 border-emerald-800 text-emerald-300"
-              : "bg-rose-950/60 border-rose-800 text-rose-300"
+              ? "bg-[#EBF5F0] border-[#BFE0CE] text-[#006340]"
+              : "bg-[#FEE2E2] border-[#FECACA] text-[#B91C1C]"
           }`}
         >
           {statusMessage.type === "success" ? (
@@ -184,8 +184,8 @@ function InviteContent() {
       )}
 
       {/* Shareable Link Box */}
-      <div className="p-4 rounded-xl bg-slate-900 border border-pitch-border/80 space-y-3">
-        <label className="text-xs font-semibold text-slate-200 block">
+      <div className="p-4 rounded-xl bg-[#F9F9F8] border border-pitch-border/80 space-y-3">
+        <label className="text-xs font-semibold text-[#1F1F1F] block">
           Your Personal Invitation Link
         </label>
         <div className="flex items-center gap-2">
@@ -193,16 +193,16 @@ function InviteContent() {
             type="text"
             readOnly
             value={shareLink}
-            className="flex-1 bg-pitch-card border border-pitch-border rounded-xl px-3 py-2 text-xs text-slate-200 font-mono select-all focus:outline-none"
+            className="flex-1 bg-pitch-card border border-pitch-border rounded-xl px-3 py-2 text-xs text-[#1F1F1F] font-mono select-all focus:outline-none"
           />
           <Button
             type="button"
             variant="secondary"
             size="sm"
             onClick={handleCopy}
-            className="bg-slate-800 border-pitch-border text-slate-200 hover:text-white px-3 py-2 text-xs shrink-0 flex items-center gap-1.5"
+            className="bg-[#F4F3F1] border-pitch-border text-[#1F1F1F] hover:text-[#0F0F0F] px-3 py-2 text-xs shrink-0 flex items-center gap-1.5"
           >
-            {copied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+            {copied ? <Check className="w-3.5 h-3.5 text-[#006340]" /> : <Copy className="w-3.5 h-3.5" />}
             <span>{copied ? "Copied!" : "Copy"}</span>
           </Button>
         </div>
@@ -224,11 +224,11 @@ function InviteContent() {
       {/* Send Email Invitation Form */}
       <form onSubmit={handleSendEmailInvite} className="p-4 rounded-xl bg-pitch-card border border-pitch-border/80 space-y-4">
         <div>
-          <h2 className="text-xs font-bold text-white uppercase tracking-wider flex items-center gap-1.5">
-            <Mail className="w-3.5 h-3.5 text-brand-400" />
+          <h2 className="text-xs font-bold text-[#0F0F0F] uppercase tracking-wider flex items-center gap-1.5">
+            <Mail className="w-3.5 h-3.5 text-[#006340]" />
             <span>Send Branded Email Invitation</span>
           </h2>
-          <p className="text-[11px] text-slate-400 mt-0.5">
+          <p className="text-[11px] text-[#5F5F5F] mt-0.5">
             We will dispatch an official eFootballMarket invitation with your username &amp; verified escrow badge.
           </p>
         </div>
@@ -244,7 +244,7 @@ function InviteContent() {
         />
 
         <div>
-          <label className="text-xs font-semibold text-slate-300 block mb-1">
+          <label className="text-xs font-semibold text-[#3D3D3D] block mb-1">
             Personal Note (Optional)
           </label>
           <textarea
@@ -252,7 +252,7 @@ function InviteContent() {
             placeholder="Hey bro, check out this verified eFootball account marketplace..."
             value={personalMessage}
             onChange={(e) => setPersonalMessage(e.target.value)}
-            className="w-full bg-slate-900 border border-pitch-border rounded-xl px-3 py-2 text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-brand-500"
+            className="w-full bg-[#F9F9F8] border border-pitch-border rounded-xl px-3 py-2 text-xs text-[#1F1F1F] placeholder:text-[#767676] focus:outline-none focus:border-brand-500"
           />
         </div>
 
@@ -269,15 +269,15 @@ function InviteContent() {
       </form>
 
       {/* Benefits info */}
-      <div className="p-3.5 rounded-xl bg-slate-900/60 border border-pitch-border text-xs text-slate-400 space-y-1.5">
-        <p className="font-semibold text-slate-300">Invite Benefits:</p>
+      <div className="p-3.5 rounded-xl bg-[#F9F9F8] border border-pitch-border text-xs text-[#5F5F5F] space-y-1.5">
+        <p className="font-semibold text-[#3D3D3D]">Invite Benefits:</p>
         <p>1. Strengthen your trader reputation score across the platform.</p>
         <p>2. Safeguard your gaming friends from Telegram and Facebook scammers.</p>
         <p>3. Every trade made by your invites is backed by Safaricom Till 1572931 escrow.</p>
       </div>
 
       <div className="text-center pt-1">
-        <Link href="/" className="text-xs text-slate-400 hover:text-white transition-colors">
+        <Link href="/" className="text-xs text-[#5F5F5F] hover:text-[#0F0F0F] transition-colors">
           Return to Marketplace
         </Link>
       </div>
@@ -288,7 +288,7 @@ function InviteContent() {
 export default function InvitePage() {
   return (
     <div className="flex-1 flex items-center justify-center p-4 py-12">
-      <Suspense fallback={<div className="text-slate-400 text-sm">Loading invitation...</div>}>
+      <Suspense fallback={<div className="text-[#5F5F5F] text-sm">Loading invitation...</div>}>
         <InviteContent />
       </Suspense>
     </div>

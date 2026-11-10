@@ -96,65 +96,65 @@ export function ListingFilters() {
     applyFilters({ [key]: currentVal === value ? "" : value });
   };
 
-  const ovrPresets = ["3150", "3200", "3250", "3300"];
+  const ovrPresets = ["3100", "3150", "3200", "3250"];
   const metaCoaches = ["Xabi Alonso", "Pep Guardiola", "Luis Enrique", "Fabio Capello"];
 
   const filterFormFields = (
-    <div className="space-y-4 text-xs">
+    <div className="space-y-5 text-xs">
       {/* Keyword */}
       <div>
-        <label className="block text-[11px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">
-          Player / Keyword
+        <label className="block text-[11px] font-bold uppercase tracking-wider text-[#0F0F0F] mb-2">
+          Keyword / Player
         </label>
         <div className="relative">
-          <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Search className="w-3.5 h-3.5 text-[#5F5F5F] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             placeholder="Gullit, Vieira, Maldini..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && applyFilters()}
-            className="w-full pl-8 pr-3 py-2 bg-[#131923] border border-[#242E42] rounded-lg text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
+            className="w-full pl-8 pr-3 py-2 bg-[#F4F3F1] border border-transparent focus:bg-white focus:border-[#0F0F0F] rounded-md text-xs text-[#0F0F0F] placeholder:text-[#6B6B6B] focus:outline-none"
           />
         </div>
       </div>
 
       {/* Team Strength */}
-      <div>
-        <label className="block text-[11px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">
-          Min Strength (OVR)
+      <div className="pt-3 border-t border-[#E2E2E0]">
+        <label className="block text-[11px] font-bold uppercase tracking-wider text-[#0F0F0F] mb-2">
+          Collective Strength
         </label>
-        <div className="grid grid-cols-4 gap-1.5">
+        <div className="grid grid-cols-2 gap-1.5">
           {ovrPresets.map((ovr) => (
             <button
               key={ovr}
               type="button"
               onClick={() => setMinStrength(minStrength === ovr ? "" : ovr)}
-              className={`py-1.5 rounded-lg text-[11px] font-mono font-bold border transition-colors ${
+              className={`py-2 rounded-md text-xs font-semibold border transition-colors cursor-pointer ${
                 minStrength === ovr
-                  ? "bg-emerald-500 text-zinc-950 border-emerald-400"
-                  : "bg-[#131923] border-[#242E42] text-slate-300 hover:border-slate-500"
+                  ? "bg-[#0F0F0F] text-white border-[#0F0F0F]"
+                  : "bg-white border-[#C8C8C4] text-[#0F0F0F] hover:border-[#0F0F0F]"
               }`}
             >
-              {ovr}+
+              {ovr}+ OVR
             </button>
           ))}
         </div>
       </div>
 
       {/* Platform */}
-      <div>
-        <label className="block text-[11px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">
+      <div className="pt-3 border-t border-[#E2E2E0]">
+        <label className="block text-[11px] font-bold uppercase tracking-wider text-[#0F0F0F] mb-2">
           Platform
         </label>
         <select
           value={platform}
           onChange={(e) => setPlatform(e.target.value)}
-          className="w-full bg-[#131923] border border-[#242E42] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
+          className="w-full bg-white border border-[#C8C8C4] rounded-md px-3 py-2 text-xs font-medium text-[#0F0F0F] focus:outline-none focus:border-[#0F0F0F]"
         >
           <option value="all">All Platforms</option>
-          <option value="android">Android</option>
-          <option value="ios">iOS</option>
+          <option value="android">Android Mobile</option>
+          <option value="ios">iOS Mobile</option>
           <option value="playstation_5">PlayStation 5</option>
           <option value="playstation_4">PlayStation 4</option>
           <option value="pc_steam">PC / Steam</option>
@@ -163,14 +163,14 @@ export function ListingFilters() {
       </div>
 
       {/* Coins */}
-      <div>
-        <label className="block text-[11px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">
-          Min eFootball Coins
+      <div className="pt-3 border-t border-[#E2E2E0]">
+        <label className="block text-[11px] font-bold uppercase tracking-wider text-[#0F0F0F] mb-2">
+          eFootball Coins
         </label>
         <select
           value={minCoins}
           onChange={(e) => setMinCoins(e.target.value)}
-          className="w-full bg-[#131923] border border-[#242E42] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
+          className="w-full bg-white border border-[#C8C8C4] rounded-md px-3 py-2 text-xs font-medium text-[#0F0F0F] focus:outline-none focus:border-[#0F0F0F]"
         >
           <option value="">Any Balance</option>
           <option value="500">500+ Coins</option>
@@ -181,27 +181,27 @@ export function ListingFilters() {
       </div>
 
       {/* Manager */}
-      <div>
-        <label className="block text-[11px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">
-          Manager / Booster Coach
+      <div className="pt-3 border-t border-[#E2E2E0]">
+        <label className="block text-[11px] font-bold uppercase tracking-wider text-[#0F0F0F] mb-2">
+          Booster Manager
         </label>
         <input
           type="text"
           placeholder="e.g. Xabi Alonso, Guardiola..."
           value={manager}
           onChange={(e) => setManager(e.target.value)}
-          className="w-full px-3 py-2 bg-[#131923] border border-[#242E42] rounded-lg text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 mb-1.5"
+          className="w-full px-3 py-2 bg-white border border-[#C8C8C4] rounded-md text-xs text-[#0F0F0F] placeholder:text-[#6B6B6B] focus:outline-none focus:border-[#0F0F0F] mb-2"
         />
-        <div className="flex flex-wrap gap-1">
+        <div className="flex flex-wrap gap-1.5">
           {metaCoaches.map((c) => (
             <button
               key={c}
               type="button"
               onClick={() => setManager(manager === c ? "" : c)}
-              className={`text-[10px] px-2 py-0.5 rounded border transition-colors ${
+              className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors cursor-pointer ${
                 manager === c
-                  ? "bg-emerald-500/20 border-emerald-500/50 text-emerald-300 font-semibold"
-                  : "bg-[#131923] border-[#242E42] text-slate-400 hover:text-slate-200"
+                  ? "bg-[#0F0F0F] border-[#0F0F0F] text-white font-semibold"
+                  : "bg-[#F4F3F1] border-transparent text-[#0F0F0F] hover:border-[#C8C8C4]"
               }`}
             >
               {c.split(" ").pop()}
@@ -211,9 +211,9 @@ export function ListingFilters() {
       </div>
 
       {/* Price Range */}
-      <div>
-        <label className="block text-[11px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">
-          Price Range (KES)
+      <div className="pt-3 border-t border-[#E2E2E0]">
+        <label className="block text-[11px] font-bold uppercase tracking-wider text-[#0F0F0F] mb-2">
+          Ask Price (KES)
         </label>
         <div className="grid grid-cols-2 gap-2">
           <input
@@ -221,33 +221,33 @@ export function ListingFilters() {
             placeholder="Min"
             value={minPrice}
             onChange={(e) => setMinPrice(e.target.value)}
-            className="w-full bg-[#131923] border border-[#242E42] rounded-lg px-2.5 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 font-mono"
+            className="w-full bg-white border border-[#C8C8C4] rounded-md px-2.5 py-2 text-xs text-[#0F0F0F] placeholder:text-[#6B6B6B] focus:outline-none focus:border-[#0F0F0F] font-mono"
           />
           <input
             type="number"
             placeholder="Max"
             value={maxPrice}
             onChange={(e) => setMaxPrice(e.target.value)}
-            className="w-full bg-[#131923] border border-[#242E42] rounded-lg px-2.5 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500 font-mono"
+            className="w-full bg-white border border-[#C8C8C4] rounded-md px-2.5 py-2 text-xs text-[#0F0F0F] placeholder:text-[#6B6B6B] focus:outline-none focus:border-[#0F0F0F] font-mono"
           />
         </div>
       </div>
 
       {/* Sort */}
-      <div>
-        <label className="block text-[11px] font-mono uppercase tracking-wider text-slate-400 mb-1.5">
+      <div className="pt-3 border-t border-[#E2E2E0]">
+        <label className="block text-[11px] font-bold uppercase tracking-wider text-[#0F0F0F] mb-2">
           Sort By
         </label>
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value)}
-          className="w-full bg-[#131923] border border-[#242E42] rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-emerald-500"
+          className="w-full bg-white border border-[#C8C8C4] rounded-md px-3 py-2 text-xs font-medium text-[#0F0F0F] focus:outline-none focus:border-[#0F0F0F]"
         >
-          <option value="newest">Newest Listed</option>
-          <option value="strength_desc">Highest OVR</option>
-          <option value="price_asc">Price: Low to High</option>
-          <option value="price_desc">Price: High to Low</option>
-          <option value="coins_desc">Most Coins</option>
+          <option value="newest">Recently Listed</option>
+          <option value="price_asc">Lowest Ask</option>
+          <option value="price_desc">Highest Ask</option>
+          <option value="strength_desc">Highest Strength (OVR)</option>
+          <option value="coins_desc">Most eFootball Coins</option>
         </select>
       </div>
     </div>
@@ -259,14 +259,14 @@ export function ListingFilters() {
       <div className="lg:hidden space-y-2.5">
         <div className="flex items-center gap-2">
           <div className="relative flex-1">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <Search className="w-4 h-4 text-[#5F5F5F] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
               type="text"
               placeholder="Search players, coaches, OVR..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               onKeyDown={(e) => e.key === "Enter" && applyFilters()}
-              className="w-full h-10 pl-9 pr-8 bg-[#0D1117] border border-[#1E2636] rounded-lg text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
+              className="w-full h-10 pl-9 pr-8 bg-[#F4F3F1] border border-[#E2E2E0] rounded-md text-xs text-[#0F0F0F] placeholder:text-[#6B6B6B] focus:outline-none focus:border-[#0F0F0F]"
             />
             {search && (
               <button
@@ -275,38 +275,33 @@ export function ListingFilters() {
                   setSearch("");
                   applyFilters({ search: "" });
                 }}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-white"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-[#5F5F5F] hover:text-[#0F0F0F]"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
             )}
           </div>
 
-          <Button type="button" variant="primary" size="sm" className="h-10 px-3.5" onClick={() => applyFilters()}>
-            Search
-          </Button>
-
           <button
             type="button"
             onClick={() => setIsMobileDrawerOpen(true)}
-            className={`h-10 px-3 rounded-lg border flex items-center gap-1.5 text-xs font-medium shrink-0 ${
+            className={`h-10 px-3.5 rounded-full border flex items-center gap-1.5 text-xs font-semibold shrink-0 cursor-pointer ${
               activeFiltersCount > 0
-                ? "bg-emerald-500/15 border-emerald-500/40 text-emerald-300"
-                : "bg-[#0D1117] border-[#1E2636] text-slate-300"
+                ? "bg-[#0F0F0F] border-[#0F0F0F] text-white"
+                : "bg-white border-[#C8C8C4] text-[#0F0F0F]"
             }`}
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
-            <span>{activeFiltersCount > 0 ? activeFiltersCount : "Filter"}</span>
+            <span>Filter {activeFiltersCount > 0 ? `(${activeFiltersCount})` : ""}</span>
           </button>
         </div>
 
         <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs">
           {[
             { key: "minStrength", val: "3150", label: "3150+ OVR" },
-            { key: "minStrength", val: "3200", label: "3200+ OVR" },
             { key: "platform", val: "android", label: "Android" },
             { key: "platform", val: "ios", label: "iOS" },
-            { key: "minCoins", val: "1000", label: "1,000+ Coins" },
+            { key: "platform", val: "playstation_5", label: "PS5" },
             { key: "maxPrice", val: "5000", label: "Under KES 5K" },
           ].map((chip) => {
             const active = searchParams.get(chip.key) === chip.val;
@@ -315,10 +310,10 @@ export function ListingFilters() {
                 key={`${chip.key}-${chip.val}`}
                 type="button"
                 onClick={() => toggleQuickFilter(chip.key, chip.val)}
-                className={`px-2.5 py-1.5 rounded-lg text-[11px] font-mono font-medium shrink-0 border transition-colors ${
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold shrink-0 border transition-colors cursor-pointer ${
                   active
-                    ? "bg-emerald-500 text-zinc-950 border-emerald-400 font-bold"
-                    : "bg-[#0D1117] border-[#1E2636] text-slate-300"
+                    ? "bg-[#0F0F0F] text-white border-[#0F0F0F]"
+                    : "bg-[#F4F3F1] border-transparent text-[#0F0F0F]"
                 }`}
               >
                 {chip.label}
@@ -328,21 +323,20 @@ export function ListingFilters() {
         </div>
       </div>
 
-      {/* Desktop Filter Sidebar */}
-      <div className="hidden lg:block store-panel rounded-2xl p-5 space-y-5">
-        <div className="flex items-center justify-between border-b border-[#1E2636] pb-3">
-          <div className="flex items-center gap-2 text-white font-display font-bold text-sm">
-            <SlidersHorizontal className="w-4 h-4 text-emerald-400" />
-            <span>Filters</span>
-          </div>
+      {/* Desktop StockX Left Rail */}
+      <div className="hidden lg:block pr-2 space-y-5">
+        <div className="flex items-center justify-between border-b border-[#E2E2E0] pb-3">
+          <span className="text-sm font-bold text-[#0F0F0F] uppercase tracking-wider">
+            Filter
+          </span>
           {activeFiltersCount > 0 && (
             <button
               type="button"
               onClick={resetFilters}
-              className="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1 font-medium"
+              className="text-xs text-[#006340] hover:underline flex items-center gap-1 font-semibold cursor-pointer"
             >
               <RotateCcw className="w-3 h-3" />
-              <span>Reset</span>
+              <span>Clear ({activeFiltersCount})</span>
             </button>
           )}
         </div>
@@ -350,7 +344,7 @@ export function ListingFilters() {
         {filterFormFields}
 
         <Button
-          variant="primary"
+          variant="secondary"
           size="md"
           className="w-full"
           onClick={() => applyFilters()}
@@ -361,14 +355,14 @@ export function ListingFilters() {
 
       {/* Mobile Filter Drawer */}
       {isMobileDrawerOpen && (
-        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/80 backdrop-blur-sm">
-          <div className="w-full max-w-lg bg-[#0D1117] border-t sm:border border-[#1E2636] rounded-t-2xl sm:rounded-2xl overflow-hidden flex flex-col max-h-[85vh]">
-            <div className="p-4 border-b border-[#1E2636] flex items-center justify-between">
-              <h3 className="text-sm font-bold text-white font-display">Filter Squads</h3>
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-xs">
+          <div className="w-full max-w-lg bg-white border-t sm:border border-[#E2E2E0] rounded-t-2xl sm:rounded-xl overflow-hidden flex flex-col max-h-[85vh]">
+            <div className="p-4 border-b border-[#E2E2E0] flex items-center justify-between">
+              <h3 className="text-sm font-bold text-[#0F0F0F]">Filter Squads</h3>
               <button
                 type="button"
                 onClick={() => setIsMobileDrawerOpen(false)}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white"
+                className="p-1.5 rounded-md text-[#5F5F5F] hover:text-[#0F0F0F]"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -376,12 +370,12 @@ export function ListingFilters() {
 
             <div className="p-5 overflow-y-auto">{filterFormFields}</div>
 
-            <div className="p-4 border-t border-[#1E2636] bg-[#07090D] flex items-center gap-3">
-              <Button variant="secondary" size="md" onClick={resetFilters} className="flex-1">
+            <div className="p-4 border-t border-[#E2E2E0] bg-[#F9F9F8] flex items-center gap-3">
+              <Button variant="outline" size="md" onClick={resetFilters} className="flex-1">
                 Reset
               </Button>
               <Button variant="primary" size="md" onClick={() => applyFilters()} className="flex-1">
-                Show Squads
+                View Results
               </Button>
             </div>
           </div>

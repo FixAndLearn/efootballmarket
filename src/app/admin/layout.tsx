@@ -65,7 +65,7 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   }
 
   return (
-    <div className="min-h-screen bg-[#070D18] text-slate-100 flex flex-col lg:flex-row">
+    <div className="min-h-screen bg-[#070D18] text-[#0F0F0F] flex flex-col lg:flex-row">
       {/* Interactive Admin Sidebar */}
       <AdminSidebar userEmail={user.email!} />
 

@@ -52,7 +52,7 @@ export function GoogleSignInButton({
   return (
     <div className="w-full space-y-2">
       {error && (
-        <div className="p-2.5 rounded-lg bg-rose-950/60 border border-rose-800 text-rose-300 text-xs text-center">
+        <div className="p-2.5 rounded-lg bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs text-center">
           {error}
         </div>
       )}

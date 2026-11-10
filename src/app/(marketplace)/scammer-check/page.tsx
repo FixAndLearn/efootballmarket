@@ -15,28 +15,28 @@ export default function ScammerCheckPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 w-full space-y-10">
       {/* Header */}
-      <div className="space-y-2 border-b border-[#1E2636] pb-6">
-        <span className="inline-block text-[11px] font-mono uppercase tracking-wider text-rose-400 font-bold">
+      <div className="space-y-2 border-b border-[#E2E2E0] pb-6">
+        <span className="inline-block text-[11px] font-mono uppercase tracking-wider text-[#C92A2A] font-bold">
           Fraud Incident Lookup
         </span>
-        <h1 className="text-2xl sm:text-4xl font-bold text-white font-display tracking-tight">
+        <h1 className="text-2xl sm:text-4xl font-bold text-[#0F0F0F] font-display tracking-tight">
           Check a Phone Number or Handle Before You Pay
         </h1>
-        <p className="text-xs sm:text-sm text-slate-400 max-w-2xl leading-relaxed">
+        <p className="text-xs sm:text-sm text-[#5F5F5F] max-w-2xl leading-relaxed">
           Search any Kenyan `07...` / `01...` phone number or social handle against confirmed escrow dispute bans and community fraud reports.
         </p>
       </div>
 
       {/* Lookup Panel */}
       <div className="store-panel rounded-2xl p-6 sm:p-8 space-y-5">
-        <Suspense fallback={<div className="h-14 rounded-xl bg-[#131923] animate-pulse" />}>
+        <Suspense fallback={<div className="h-14 rounded-xl bg-[#F4F3F1] animate-pulse" />}>
           <ScammerLookupTool />
         </Suspense>
       </div>
 
       {/* 3 Most Common Scams */}
       <div className="space-y-4">
-        <h2 className="text-lg sm:text-xl font-bold text-white font-display">
+        <h2 className="text-lg sm:text-xl font-bold text-[#0F0F0F] font-display">
           Common Social Media Scams in Kenya
         </h2>
 
@@ -63,13 +63,13 @@ export default function ScammerCheckPage() {
           ].map((item) => (
             <div key={item.num} className="store-panel rounded-xl p-5 space-y-3 flex flex-col justify-between">
               <div className="space-y-2">
-                <span className="inline-block px-2 py-0.5 rounded bg-[#131923] border border-[#242E42] font-mono text-[11px] font-bold text-rose-400">
+                <span className="inline-block px-2 py-0.5 rounded bg-[#F4F3F1] border border-[#DCDCD8] font-mono text-[11px] font-bold text-[#C92A2A]">
                   {item.num}
                 </span>
-                <h3 className="text-sm font-bold text-white font-display">{item.title}</h3>
-                <p className="text-xs text-slate-400 leading-relaxed">{item.desc}</p>
+                <h3 className="text-sm font-bold text-[#0F0F0F] font-display">{item.title}</h3>
+                <p className="text-xs text-[#5F5F5F] leading-relaxed">{item.desc}</p>
               </div>
-              <div className="pt-3 border-t border-[#1E2636] text-xs text-emerald-400 font-medium flex items-center gap-1.5">
+              <div className="pt-3 border-t border-[#E2E2E0] text-xs text-[#006340] font-medium flex items-center gap-1.5">
                 <ShieldCheck className="w-3.5 h-3.5 shrink-0" />
                 <span>{item.fix}</span>
               </div>
@@ -81,10 +81,10 @@ export default function ScammerCheckPage() {
       {/* Report / Middleman Split */}
       <div className="store-panel rounded-2xl p-6 sm:p-7 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
         <div className="space-y-1">
-          <h3 className="text-base font-bold text-white font-display">
+          <h3 className="text-base font-bold text-[#0F0F0F] font-display">
             Report a Scammer or Open a Safe Middleman Contract
           </h3>
-          <p className="text-xs text-slate-400 max-w-xl leading-relaxed">
+          <p className="text-xs text-[#5F5F5F] max-w-xl leading-relaxed">
             Note: Even if a number has 0 prior reports, scammers switch SIM cards regularly. Always lock off-platform deals through Till 1572931 Middleman.
           </p>
         </div>
@@ -102,7 +102,7 @@ export default function ScammerCheckPage() {
             rel="noopener noreferrer"
           >
             <Button variant="secondary" size="sm">
-              <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
+              <MessageCircle className="w-3.5 h-3.5 text-[#006340]" />
               <span>Report Incident</span>
             </Button>
           </a>

@@ -80,21 +80,21 @@ export function WhatsAppShareButton({ listing, className = "" }: WhatsAppShareBu
       </button>
 
       {/* Copy Link Helper */}
-      <div className="flex items-center justify-between px-1 text-[11px] text-slate-400">
+      <div className="flex items-center justify-between px-1 text-[11px] text-[#5F5F5F]">
         <span className="truncate">Sellers: Share in groups to find buyers</span>
         <button
           type="button"
           onClick={handleCopyLink}
-          className="inline-flex items-center gap-1 text-slate-300 hover:text-white font-medium transition-colors ml-2 shrink-0"
+          className="inline-flex items-center gap-1 text-[#3D3D3D] hover:text-[#0F0F0F] font-medium transition-colors ml-2 shrink-0"
         >
           {copied ? (
             <>
-              <Check className="w-3.5 h-3.5 text-emerald-400" />
-              <span className="text-emerald-400 font-bold">Link Copied!</span>
+              <Check className="w-3.5 h-3.5 text-[#006340]" />
+              <span className="text-[#006340] font-bold">Link Copied!</span>
             </>
           ) : (
             <>
-              <Copy className="w-3.5 h-3.5 text-slate-400" />
+              <Copy className="w-3.5 h-3.5 text-[#5F5F5F]" />
               <span>Copy Direct Link</span>
             </>
           )}

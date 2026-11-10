@@ -50,21 +50,21 @@ function AuthConfirmContent() {
     <div className="w-full max-w-md bg-pitch-surface border border-pitch-border rounded-2xl p-8 shadow-2xl text-center space-y-4">
       {status === "verifying" ? (
         <>
-          <div className="w-12 h-12 rounded-2xl bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 mx-auto animate-pulse">
-            <Loader2 className="w-6 h-6 animate-spin text-amber-400" />
+          <div className="w-12 h-12 rounded-2xl bg-[#FEF3C7] border border-[#FDE68A] flex items-center justify-center text-[#B45309] mx-auto animate-pulse">
+            <Loader2 className="w-6 h-6 animate-spin text-[#B45309]" />
           </div>
-          <h2 className="text-xl font-bold text-white font-display">Verifying Your Email</h2>
-          <p className="text-xs text-slate-400">
+          <h2 className="text-xl font-bold text-[#0F0F0F] font-display">Verifying Your Email</h2>
+          <p className="text-xs text-[#5F5F5F]">
             Confirming your registration credentials. You will be redirected to your dashboard in a moment...
           </p>
         </>
       ) : (
         <>
-          <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto">
+          <div className="w-12 h-12 rounded-2xl bg-[#EBF5F0] border border-[#BFE0CE] flex items-center justify-center text-[#006340] mx-auto">
             <CheckCircle2 className="w-6 h-6" />
           </div>
-          <h2 className="text-xl font-bold text-white font-display">Email Verified!</h2>
-          <p className="text-xs text-slate-400">
+          <h2 className="text-xl font-bold text-[#0F0F0F] font-display">Email Verified!</h2>
+          <p className="text-xs text-[#5F5F5F]">
             Welcome to eFootballMarket! Redirecting you now...
           </p>
         </>
@@ -76,7 +76,7 @@ function AuthConfirmContent() {
 export default function AuthConfirmPage() {
   return (
     <div className="flex-1 flex items-center justify-center p-4">
-      <Suspense fallback={<div className="text-slate-400 text-sm">Verifying confirmation...</div>}>
+      <Suspense fallback={<div className="text-[#5F5F5F] text-sm">Verifying confirmation...</div>}>
         <AuthConfirmContent />
       </Suspense>
     </div>

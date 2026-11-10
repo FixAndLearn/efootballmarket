@@ -129,8 +129,8 @@ export function OtpCodeInput({
           onFocus={(e) => e.target.select()}
           className={`w-9 h-12 sm:w-11 sm:h-14 text-center text-lg sm:text-xl font-extrabold font-mono rounded-lg sm:rounded-xl bg-pitch-card border transition-all outline-none ${
             digit
-              ? "border-emerald-500 text-white bg-emerald-950/20 shadow-sm"
-              : "border-pitch-border text-slate-200 focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
+              ? "border-emerald-500 text-[#0F0F0F] bg-[#EBF5F0] shadow-sm"
+              : "border-pitch-border text-[#1F1F1F] focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
           } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
         />
       ))}

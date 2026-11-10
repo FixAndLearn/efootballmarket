@@ -375,29 +375,29 @@ export default function RegisterTournamentPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-[#070D18] flex flex-col items-center justify-center text-slate-400 gap-3">
-        <RotateCw className="w-8 h-8 animate-spin text-amber-400" />
+      <div className="min-h-screen bg-[#070D18] flex flex-col items-center justify-center text-[#5F5F5F] gap-3">
+        <RotateCw className="w-8 h-8 animate-spin text-[#B45309]" />
         <span className="text-sm">Loading tournament registration...</span>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#070D18] text-slate-100 pb-36">
+    <div className="min-h-screen bg-[#070D18] text-[#0F0F0F] pb-36">
       {/* Top Header Navigation */}
       <header className="sticky top-0 z-30 border-b border-pitch-border bg-[#070D18]/90 backdrop-blur-xl px-4 sm:px-8 py-3.5 shadow-xl">
         <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
           <Link
             href="/tournaments"
-            className="inline-flex items-center gap-2 text-xs font-bold text-slate-300 hover:text-white transition-colors p-1.5 -ml-1.5 rounded-lg hover:bg-slate-800/60"
+            className="inline-flex items-center gap-2 text-xs font-bold text-[#3D3D3D] hover:text-[#0F0F0F] transition-colors p-1.5 -ml-1.5 rounded-lg hover:bg-[#F4F3F1]"
           >
-            <ArrowLeft className="w-4 h-4 text-amber-400" />
+            <ArrowLeft className="w-4 h-4 text-[#B45309]" />
             <span>Tournaments Arena</span>
           </Link>
 
           <Link
             href="/"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-400 hover:text-emerald-400 transition-colors px-3 py-1.5 rounded-xl border border-pitch-border bg-pitch-card hover:border-emerald-500/40"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#5F5F5F] hover:text-[#006340] transition-colors px-3 py-1.5 rounded-xl border border-pitch-border bg-pitch-card hover:border-[#BFE0CE]"
           >
             <Home className="w-3.5 h-3.5" />
             <span>Marketplace</span>
@@ -407,31 +407,31 @@ export default function RegisterTournamentPage() {
 
       <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 space-y-6">
         {/* Banner */}
-        <div className="rounded-3xl bg-gradient-to-r from-amber-950/60 via-pitch-card to-slate-900 border border-amber-500/30 p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/10 rounded-full blur-3xl pointer-events-none" />
+        <div className="rounded-3xl bg-gradient-to-r from-amber-950/60 via-pitch-card to-slate-900 border border-[#FDE68A] p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#FEF3C7] rounded-full blur-3xl pointer-events-none" />
           <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="text-xs uppercase font-extrabold tracking-wider text-amber-400">
+                <span className="text-xs uppercase font-extrabold tracking-wider text-[#B45309]">
                   Player Registration
                 </span>
-                <span className="text-[10px] bg-emerald-500/20 text-emerald-300 font-bold px-2 py-0.5 rounded-full border border-emerald-500/30">
+                <span className="text-[10px] bg-[#EBF5F0] text-[#006340] font-bold px-2 py-0.5 rounded-full border border-[#BFE0CE]">
                   12-Minute Standard
                 </span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold text-white font-display">
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F0F0F] font-display">
                 Lock In Your Match Slot
               </h1>
-              <p className="text-xs text-slate-300 max-w-xl">
+              <p className="text-xs text-[#3D3D3D] max-w-xl">
                 Pay your entry fee securely via M-Pesa STK Push or Account Balance. Upfront confirmation guarantees verified brackets.
               </p>
             </div>
             <div className="shrink-0">
               <Link
                 href="/tournaments/host"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-pitch-card border border-pitch-border hover:border-amber-500/40 text-amber-300 text-xs font-bold transition-all shadow-md"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-pitch-card border border-pitch-border hover:border-[#FDE68A] text-[#92400E] text-xs font-bold transition-all shadow-md"
               >
-                <Swords className="w-4 h-4 text-amber-400" />
+                <Swords className="w-4 h-4 text-[#B45309]" />
                 <span>Host Your Own</span>
               </Link>
             </div>
@@ -440,16 +440,16 @@ export default function RegisterTournamentPage() {
 
         {/* Guest Warning */}
         {!authLoading && !user && (
-          <div className="p-5 rounded-3xl bg-amber-500/10 border border-amber-500/30 shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="p-5 rounded-3xl bg-[#FEF3C7] border border-[#FDE68A] shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-amber-500/20 border border-amber-500/40 text-amber-400 flex items-center justify-center shrink-0">
+              <div className="w-10 h-10 rounded-2xl bg-[#FEF3C7] border border-[#FDE68A] text-[#B45309] flex items-center justify-center shrink-0">
                 <Lock className="w-5 h-5" />
               </div>
               <div>
-                <h4 className="text-xs font-bold text-white uppercase tracking-wider">
+                <h4 className="text-xs font-bold text-[#0F0F0F] uppercase tracking-wider">
                   Registration Requires Community Membership
                 </h4>
-                <p className="text-xs text-slate-300 mt-0.5">
+                <p className="text-xs text-[#3D3D3D] mt-0.5">
                   Sign in or create an account to verify match bracket standings.
                 </p>
               </div>
@@ -464,7 +464,7 @@ export default function RegisterTournamentPage() {
               </Link>
               <Link
                 href="/login?redirect=/tournaments/register"
-                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-pitch-card hover:bg-slate-800 text-slate-200 border border-pitch-border text-xs font-bold"
+                className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-xl bg-pitch-card hover:bg-[#F4F3F1] text-[#1F1F1F] border border-pitch-border text-xs font-bold"
               >
                 <LogIn className="w-4 h-4" />
                 <span>Sign In</span>
@@ -475,7 +475,7 @@ export default function RegisterTournamentPage() {
 
         {/* VIEW 1: ACTIVE STK PUSH WAITING & VERIFICATION STATE */}
         {isStkWaiting && selectedTourney ? (
-          <div className="p-6 sm:p-8 rounded-3xl bg-pitch-surface border border-amber-500/50 shadow-2xl space-y-6 text-center animate-in fade-in">
+          <div className="p-6 sm:p-8 rounded-3xl bg-pitch-surface border border-[#FDE68A] shadow-2xl space-y-6 text-center animate-in fade-in">
             {/* Animated Pulsing Phone Icon */}
             <div className="relative mx-auto w-16 h-16 flex items-center justify-center">
               <div className="absolute inset-0 rounded-full bg-amber-500/25 animate-ping" />
@@ -485,26 +485,26 @@ export default function RegisterTournamentPage() {
             </div>
 
             <div className="space-y-1.5 max-w-lg mx-auto">
-              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-amber-500/15 border border-amber-500/30 text-amber-300 text-[11px] font-bold">
+              <div className="inline-flex items-center gap-1.5 px-3 py-0.5 rounded-full bg-[#FEF3C7] border border-[#FDE68A] text-[#92400E] text-[11px] font-bold">
                 <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
                 <span>STK Push Active on Your Phone</span>
               </div>
-              <h2 className="text-xl sm:text-2xl font-black text-white font-display">
+              <h2 className="text-xl sm:text-2xl font-black text-[#0F0F0F] font-display">
                 Enter Your M-Pesa PIN
               </h2>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                A prompt for <strong className="text-amber-300 font-mono">KES {selectedTourney.entry_fee_kes.toLocaleString()}</strong> has been dispatched to{" "}
+              <p className="text-xs text-[#3D3D3D] leading-relaxed">
+                A prompt for <strong className="text-[#92400E] font-mono">KES {selectedTourney.entry_fee_kes.toLocaleString()}</strong> has been dispatched to{" "}
                 <strong>{phone}</strong> for Safaricom Till{" "}
-                <strong className="text-amber-300 font-mono">1572931</strong> (EFootballMarket).
+                <strong className="text-[#92400E] font-mono">1572931</strong> (EFootballMarket).
               </p>
             </div>
 
             {/* Instant Detection Status Card with Clickable Check Button */}
             <div className="p-4 rounded-2xl bg-pitch-card border border-pitch-border space-y-3 max-w-md mx-auto">
               <div className="flex items-center justify-between text-xs">
-                <span className="flex items-center gap-2 text-amber-400 font-medium">
-                  <RotateCw className="w-3.5 h-3.5 animate-spin text-amber-400" />
-                  <span className="text-[11px] text-slate-300">{stkMessage}</span>
+                <span className="flex items-center gap-2 text-[#B45309] font-medium">
+                  <RotateCw className="w-3.5 h-3.5 animate-spin text-[#B45309]" />
+                  <span className="text-[11px] text-[#3D3D3D]">{stkMessage}</span>
                 </span>
               </div>
 
@@ -530,7 +530,7 @@ export default function RegisterTournamentPage() {
                   setIsStkWaiting(false);
                   setError("");
                 }}
-                className="text-xs text-slate-500 hover:text-slate-300 transition-colors"
+                className="text-xs text-[#767676] hover:text-[#3D3D3D] transition-colors"
               >
                 Modify registration details
               </button>
@@ -538,59 +538,59 @@ export default function RegisterTournamentPage() {
           </div>
         ) : regSuccess && selectedTourney ? (
           /* VIEW 2: CONFIRMED REGISTRATION SUCCESS VIEW */
-          <div className="p-8 sm:p-10 rounded-3xl bg-pitch-surface border border-emerald-500/50 shadow-2xl space-y-6 text-center animate-in fade-in">
-            <div className="w-16 h-16 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20">
-              <CheckCircle2 className="w-10 h-10 text-emerald-400" />
+          <div className="p-8 sm:p-10 rounded-3xl bg-pitch-surface border border-[#BFE0CE] shadow-2xl space-y-6 text-center animate-in fade-in">
+            <div className="w-16 h-16 rounded-full bg-[#EBF5F0] text-[#006340] border border-[#BFE0CE] flex items-center justify-center mx-auto shadow-lg shadow-emerald-500/20">
+              <CheckCircle2 className="w-10 h-10 text-[#006340]" />
             </div>
 
             <div className="space-y-2 max-w-lg mx-auto">
-              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-[11px] font-bold uppercase tracking-wider">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EBF5F0] border border-[#BFE0CE] text-[#006340] text-[11px] font-bold uppercase tracking-wider">
                 <Check className="w-3.5 h-3.5" />
                 <span>Payment Confirmed & Slot Locked In</span>
               </div>
-              <h2 className="text-2xl sm:text-3xl font-black text-white font-display">
+              <h2 className="text-2xl sm:text-3xl font-black text-[#0F0F0F] font-display">
                 Registration Confirmed!
               </h2>
-              <p className="text-xs text-slate-300">
+              <p className="text-xs text-[#3D3D3D]">
                 You are officially registered for <strong>{selectedTourney.title}</strong>. Your match room slot is guaranteed!
               </p>
             </div>
 
             {/* Receipt Summary Card */}
-            <div className="p-5 rounded-2xl bg-pitch-card border border-emerald-500/30 text-xs text-slate-200 space-y-2 max-w-md mx-auto text-left shadow-inner">
+            <div className="p-5 rounded-2xl bg-pitch-card border border-[#BFE0CE] text-xs text-[#1F1F1F] space-y-2 max-w-md mx-auto text-left shadow-inner">
               <div className="flex items-center justify-between border-b border-pitch-border/80 pb-2">
-                <span className="text-slate-400">Gamer Tag:</span>
-                <strong className="text-white font-mono">{gamerTag || profile?.username}</strong>
+                <span className="text-[#5F5F5F]">Gamer Tag:</span>
+                <strong className="text-[#0F0F0F] font-mono">{gamerTag || profile?.username}</strong>
               </div>
               <div className="flex items-center justify-between border-b border-pitch-border/80 pb-2">
-                <span className="text-slate-400">eFootball Friend ID:</span>
-                <strong className="text-white font-mono">{friendId}</strong>
+                <span className="text-[#5F5F5F]">eFootball Friend ID:</span>
+                <strong className="text-[#0F0F0F] font-mono">{friendId}</strong>
               </div>
               <div className="flex items-center justify-between border-b border-pitch-border/80 pb-2">
-                <span className="text-slate-400">Entry Fee:</span>
-                <strong className="text-emerald-400 font-mono">
+                <span className="text-[#5F5F5F]">Entry Fee:</span>
+                <strong className="text-[#006340] font-mono">
                   {selectedTourney.entry_fee_kes === 0 ? "FREE" : `KES ${selectedTourney.entry_fee_kes.toLocaleString()}`}
                 </strong>
               </div>
 
               {regResult?.receipt_number && (
                 <div className="flex items-center justify-between border-b border-pitch-border/80 pb-2">
-                  <span className="text-slate-400">M-Pesa Receipt:</span>
-                  <strong className="text-emerald-300 font-mono font-bold">{regResult.receipt_number}</strong>
+                  <span className="text-[#5F5F5F]">M-Pesa Receipt:</span>
+                  <strong className="text-[#006340] font-mono font-bold">{regResult.receipt_number}</strong>
                 </div>
               )}
 
               {regResult?.paid_via_wallet && (
                 <div className="flex items-center justify-between border-b border-pitch-border/80 pb-2">
-                  <span className="text-slate-400">Paid Via:</span>
-                  <strong className="text-emerald-300 font-semibold">Account Wallet Balance</strong>
+                  <span className="text-[#5F5F5F]">Paid Via:</span>
+                  <strong className="text-[#006340] font-semibold">Account Wallet Balance</strong>
                 </div>
               )}
 
               {regResult?.remaining_balance !== undefined && (
                 <div className="flex items-center justify-between pt-1">
-                  <span className="text-slate-400">Remaining Balance:</span>
-                  <strong className="text-slate-200 font-mono">
+                  <span className="text-[#5F5F5F]">Remaining Balance:</span>
+                  <strong className="text-[#1F1F1F] font-mono">
                     KES {regResult.remaining_balance.toLocaleString()}
                   </strong>
                 </div>
@@ -619,7 +619,7 @@ export default function RegisterTournamentPage() {
 
               <Link
                 href="/tournaments"
-                className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-pitch-card hover:bg-slate-800 border border-pitch-border text-slate-200 font-bold text-xs transition-all cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-pitch-card hover:bg-[#F4F3F1] border border-pitch-border text-[#1F1F1F] font-bold text-xs transition-all cursor-pointer"
               >
                 <span>Back to Tournaments</span>
               </Link>
@@ -633,44 +633,44 @@ export default function RegisterTournamentPage() {
               <div className="p-5 rounded-3xl bg-pitch-surface border border-pitch-border space-y-4 shadow-xl">
                 <div className="flex items-center gap-2 flex-wrap">
                   {selectedTourney?.tournament_type === "1v1" ? (
-                    <span className="text-[10px] font-extrabold text-amber-300 bg-amber-500/15 px-2 py-0.5 rounded-full border border-amber-500/30 flex items-center gap-1">
-                      <Swords className="w-3 h-3 text-amber-400" />
+                    <span className="text-[10px] font-extrabold text-[#92400E] bg-[#FEF3C7] px-2 py-0.5 rounded-full border border-[#FDE68A] flex items-center gap-1">
+                      <Swords className="w-3 h-3 text-[#B45309]" />
                       <span>1v1 SHOWMATCH</span>
                     </span>
                   ) : (
-                    <span className="text-[10px] font-bold text-indigo-300 bg-indigo-500/15 px-2 py-0.5 rounded-full border border-indigo-500/30 flex items-center gap-1">
-                      <Trophy className="w-3 h-3 text-indigo-400" />
+                    <span className="text-[10px] font-bold text-[#3730A3] bg-[#EEF2FF] px-2 py-0.5 rounded-full border border-[#C7D2FE] flex items-center gap-1">
+                      <Trophy className="w-3 h-3 text-[#4338CA]" />
                       <span>{selectedTourney?.max_players || 8}-PLAYER CUP</span>
                     </span>
                   )}
-                  <span className="text-[10px] font-mono text-emerald-400 font-bold">
+                  <span className="text-[10px] font-mono text-[#006340] font-bold">
                     {selectedTourney?.entry_fee_kes === 0 ? "FREE" : `KES ${selectedTourney?.entry_fee_kes}`}
                   </span>
                 </div>
 
                 <div>
-                  <h3 className="text-base font-bold text-white font-display">
+                  <h3 className="text-base font-bold text-[#0F0F0F] font-display">
                     {selectedTourney?.title}
                   </h3>
                   {selectedTourney?.subtitle && (
-                    <p className="text-xs text-slate-400 mt-1">{selectedTourney.subtitle}</p>
+                    <p className="text-xs text-[#5F5F5F] mt-1">{selectedTourney.subtitle}</p>
                   )}
                 </div>
 
                 <div className="p-3.5 rounded-2xl bg-pitch-card border border-pitch-border space-y-2 text-xs">
-                  <div className="flex items-center justify-between text-slate-300">
+                  <div className="flex items-center justify-between text-[#3D3D3D]">
                     <span>Prize Pool:</span>
-                    <strong className="text-emerald-400 font-mono font-bold">
+                    <strong className="text-[#006340] font-mono font-bold">
                       {formatCurrency(selectedTourney?.prize_pool_kes || 0, "KES")}
                     </strong>
                   </div>
-                  <div className="flex items-center justify-between text-slate-400 text-[11px] border-t border-pitch-border/60 pt-1.5">
+                  <div className="flex items-center justify-between text-[#5F5F5F] text-[11px] border-t border-pitch-border/60 pt-1.5">
                     <span>Format:</span>
-                    <strong className="text-slate-200">12-Min Matches</strong>
+                    <strong className="text-[#1F1F1F]">12-Min Matches</strong>
                   </div>
-                  <div className="flex items-center justify-between text-slate-400 text-[11px]">
+                  <div className="flex items-center justify-between text-[#5F5F5F] text-[11px]">
                     <span>Slots:</span>
-                    <strong className="text-slate-200">
+                    <strong className="text-[#1F1F1F]">
                       {selectedTourney?.registered_count || 0} / {selectedTourney?.max_players || 8}
                     </strong>
                   </div>
@@ -678,11 +678,11 @@ export default function RegisterTournamentPage() {
 
                 {tournaments.length > 1 && (
                   <div>
-                    <label className="block text-[11px] font-semibold text-slate-400 mb-1">
+                    <label className="block text-[11px] font-semibold text-[#5F5F5F] mb-1">
                       Switch Tournament:
                     </label>
                     <select
-                      className="w-full px-3 py-2 rounded-xl bg-pitch-card border border-pitch-border text-white text-xs focus:outline-none focus:border-amber-500"
+                      className="w-full px-3 py-2 rounded-xl bg-pitch-card border border-pitch-border text-[#0F0F0F] text-xs focus:outline-none focus:border-amber-500"
                       value={selectedTourney?.id}
                       onChange={(e) => {
                         const t = tournaments.find((item) => item.id === e.target.value);
@@ -707,17 +707,17 @@ export default function RegisterTournamentPage() {
                 className="p-6 sm:p-8 rounded-3xl bg-pitch-surface border border-pitch-border space-y-5 shadow-2xl"
               >
                 <div className="border-b border-pitch-border pb-4">
-                  <h3 className="text-lg font-bold text-white font-display">
+                  <h3 className="text-lg font-bold text-[#0F0F0F] font-display">
                     Player Registration Details
                   </h3>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-xs text-[#5F5F5F] mt-0.5">
                     Fill in your in-game details. Upfront payment confirmation is required for paid entry.
                   </p>
                 </div>
 
                 {error && (
-                  <div className="p-3.5 rounded-xl bg-rose-950/60 border border-rose-800 text-rose-300 text-xs flex items-start gap-2.5">
-                    <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                  <div className="p-3.5 rounded-xl bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs flex items-start gap-2.5">
+                    <AlertCircle className="w-4 h-4 text-[#C92A2A] shrink-0 mt-0.5" />
                     <span>{error}</span>
                   </div>
                 )}
@@ -750,10 +750,10 @@ export default function RegisterTournamentPage() {
                 {selectedTourney && selectedTourney.entry_fee_kes > 0 ? (
                   <div className="space-y-3 pt-1">
                     <div className="flex items-center justify-between">
-                      <label className="block text-xs font-semibold text-slate-300">
+                      <label className="block text-xs font-semibold text-[#3D3D3D]">
                         Choose Upfront Payment Method
                       </label>
-                      <span className="text-xs font-mono font-bold text-amber-400">
+                      <span className="text-xs font-mono font-bold text-[#B45309]">
                         Entry Fee: KES {selectedTourney.entry_fee_kes.toLocaleString()}
                       </span>
                     </div>
@@ -763,8 +763,8 @@ export default function RegisterTournamentPage() {
                       onClick={() => setPaymentMethod("mpesa_stk")}
                       className={`p-4 rounded-2xl border transition-all cursor-pointer ${
                         paymentMethod === "mpesa_stk"
-                          ? "bg-amber-950/40 border-amber-500 ring-1 ring-amber-500/40 shadow-md"
-                          : "bg-pitch-card border-pitch-border hover:border-slate-700"
+                          ? "bg-[#FEF3C7] border-amber-500 ring-1 ring-amber-500/40 shadow-md"
+                          : "bg-pitch-card border-pitch-border hover:border-[#C8C8C4]"
                       }`}
                     >
                       <div className="flex items-start gap-3">
@@ -772,7 +772,7 @@ export default function RegisterTournamentPage() {
                           className={`w-4 h-4 mt-0.5 rounded-full border flex items-center justify-center shrink-0 ${
                             paymentMethod === "mpesa_stk"
                               ? "border-amber-400 bg-amber-500"
-                              : "border-slate-600"
+                              : "border-[#9E9E99]"
                           }`}
                         >
                           {paymentMethod === "mpesa_stk" && (
@@ -781,15 +781,15 @@ export default function RegisterTournamentPage() {
                         </div>
                         <div className="flex-1">
                           <div className="flex items-center justify-between gap-2 flex-wrap">
-                            <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                              <Smartphone className="w-4 h-4 text-amber-400" />
+                            <span className="text-xs font-bold text-[#0F0F0F] flex items-center gap-1.5">
+                              <Smartphone className="w-4 h-4 text-[#B45309]" />
                               <span>M-Pesa STK Push Prompt (Till 1572931)</span>
                             </span>
-                            <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/30">
+                            <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]">
                               Instant PIN Prompt
                             </span>
                           </div>
-                          <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                          <p className="text-[11px] text-[#5F5F5F] mt-1 leading-relaxed">
                             A prompt will pop up on your phone ({phone || "Safaricom handset"}). Enter your PIN to pay KES {selectedTourney.entry_fee_kes.toLocaleString()}. Your slot locks in automatically upon backend confirmation.
                           </p>
                         </div>
@@ -808,10 +808,10 @@ export default function RegisterTournamentPage() {
                           }}
                           className={`p-4 rounded-2xl border transition-all ${
                             !hasEnough
-                              ? "bg-slate-900/50 border-slate-800/80 opacity-60 cursor-not-allowed"
+                              ? "bg-[#F9F9F8] border-[#E2E2E0] opacity-60 cursor-not-allowed"
                               : paymentMethod === "wallet"
-                              ? "bg-emerald-950/40 border-emerald-500 ring-1 ring-emerald-500/40 cursor-pointer shadow-md"
-                              : "bg-pitch-card border-pitch-border hover:border-slate-700 cursor-pointer"
+                              ? "bg-[#EBF5F0] border-emerald-500 ring-1 ring-emerald-500/40 cursor-pointer shadow-md"
+                              : "bg-pitch-card border-pitch-border hover:border-[#C8C8C4] cursor-pointer"
                           }`}
                         >
                           <div className="flex items-start gap-3">
@@ -819,7 +819,7 @@ export default function RegisterTournamentPage() {
                               className={`w-4 h-4 mt-0.5 rounded-full border flex items-center justify-center shrink-0 ${
                                 paymentMethod === "wallet" && hasEnough
                                   ? "border-emerald-400 bg-emerald-500"
-                                  : "border-slate-600"
+                                  : "border-[#9E9E99]"
                               }`}
                             >
                               {paymentMethod === "wallet" && hasEnough && (
@@ -828,21 +828,21 @@ export default function RegisterTournamentPage() {
                             </div>
                             <div className="flex-1">
                               <div className="flex items-center justify-between gap-2 flex-wrap">
-                                <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                                  <Wallet className="w-4 h-4 text-emerald-400" />
+                                <span className="text-xs font-bold text-[#0F0F0F] flex items-center gap-1.5">
+                                  <Wallet className="w-4 h-4 text-[#006340]" />
                                   <span>Pay with Account Balance</span>
                                 </span>
                                 <span
                                   className={`text-[10px] font-extrabold px-2 py-0.5 rounded-full ${
                                     hasEnough
-                                      ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                                      : "bg-rose-500/20 text-rose-300 border border-rose-500/30"
+                                      ? "bg-[#EBF5F0] text-[#006340] border border-[#BFE0CE]"
+                                      : "bg-[#FEE2E2] text-[#B91C1C] border border-[#FECACA]"
                                   }`}
                                 >
                                   KES {balance.toLocaleString()} Available
                                 </span>
                               </div>
-                              <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                              <p className="text-[11px] text-[#5F5F5F] mt-1 leading-relaxed">
                                 {hasEnough
                                   ? `Instant deduction of KES ${selectedTourney.entry_fee_kes.toLocaleString()} from your earnings balance. Zero SMS waiting.`
                                   : `Insufficient wallet balance (KES ${balance.toLocaleString()} available / KES ${selectedTourney.entry_fee_kes.toLocaleString()} required). Please choose M-Pesa STK Push above.`}
@@ -854,7 +854,7 @@ export default function RegisterTournamentPage() {
                     })()}
                   </div>
                 ) : (
-                  <div className="p-4 rounded-2xl bg-emerald-950/30 border border-emerald-500/30 text-xs text-emerald-300 flex items-center justify-between">
+                  <div className="p-4 rounded-2xl bg-[#EBF5F0] border border-[#BFE0CE] text-xs text-[#006340] flex items-center justify-between">
                     <span>Entry Fee:</span>
                     <strong className="font-bold">FREE ENTRY (Community Cup)</strong>
                   </div>

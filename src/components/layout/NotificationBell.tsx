@@ -41,26 +41,26 @@ function formatRelativeTime(dateString: string): string {
 function getNotificationIcon(type: string) {
   switch (type) {
     case "scammer_alert":
-      return <AlertTriangle className="w-4 h-4 text-rose-400" />;
+      return <AlertTriangle className="w-4 h-4 text-[#C92A2A]" />;
     case "news_broadcast":
     case "news_alert":
-      return <Newspaper className="w-4 h-4 text-amber-400" />;
+      return <Newspaper className="w-4 h-4 text-[#B45309]" />;
     case "funds_released":
     case "escrow_welcome":
     case "escrow":
-      return <ShieldCheck className="w-4 h-4 text-emerald-400" />;
+      return <ShieldCheck className="w-4 h-4 text-[#006340]" />;
     case "order":
     case "order_status":
-      return <ShoppingCart className="w-4 h-4 text-indigo-400" />;
+      return <ShoppingCart className="w-4 h-4 text-[#4338CA]" />;
     case "seller_verification":
-      return <Trophy className="w-4 h-4 text-amber-400" />;
+      return <Trophy className="w-4 h-4 text-[#B45309]" />;
     case "mpesa_payment":
-      return <Coins className="w-4 h-4 text-emerald-400" />;
+      return <Coins className="w-4 h-4 text-[#006340]" />;
     case "new_message":
     case "message":
       return <MessageSquare className="w-4 h-4 text-sky-400" />;
     default:
-      return <Sparkles className="w-4 h-4 text-brand-400" />;
+      return <Sparkles className="w-4 h-4 text-[#006340]" />;
   }
 }
 
@@ -205,7 +205,7 @@ export function NotificationBell() {
       <button
         type="button"
         onClick={handleToggle}
-        className="p-2 rounded-xl text-slate-300 hover:text-white hover:bg-pitch-surface transition-all relative"
+        className="p-2 rounded-xl text-[#3D3D3D] hover:text-[#0F0F0F] hover:bg-pitch-surface transition-all relative"
         aria-label="Notifications"
         title="View Notifications"
       >
@@ -213,7 +213,7 @@ export function NotificationBell() {
 
         {/* Unread Counter Badge */}
         {unreadCount > 0 && (
-          <span className="absolute top-1 right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-amber-500 text-slate-950 font-extrabold text-[10px] ring-2 ring-pitch-bg animate-pulse">
+          <span className="absolute top-1 right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-[#006340] hover:bg-[#004D32] text-[#0F0F0F] font-extrabold text-[10px] ring-2 ring-pitch-bg animate-pulse">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
@@ -225,11 +225,11 @@ export function NotificationBell() {
           {/* Header */}
           <div className="p-3.5 border-b border-pitch-border/80 flex items-center justify-between bg-pitch-card/60">
             <div className="flex items-center gap-2">
-              <span className="text-xs font-bold text-white uppercase tracking-wider font-display">
+              <span className="text-xs font-bold text-[#0F0F0F] uppercase tracking-wider font-display">
                 Notifications
               </span>
               {unreadCount > 0 && (
-                <span className="px-1.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 text-[10px] font-bold">
+                <span className="px-1.5 py-0.5 rounded-full bg-[#FEF3C7] border border-[#FDE68A] text-[#92400E] text-[10px] font-bold">
                   {unreadCount} new
                 </span>
               )}
@@ -240,7 +240,7 @@ export function NotificationBell() {
                 type="button"
                 onClick={handleMarkAllRead}
                 disabled={markingAll}
-                className="text-[11px] font-medium text-amber-400 hover:text-amber-300 flex items-center gap-1 transition-colors disabled:opacity-50"
+                className="text-[11px] font-medium text-[#B45309] hover:text-[#92400E] flex items-center gap-1 transition-colors disabled:opacity-50"
               >
                 <CheckCheck className="w-3.5 h-3.5" />
                 <span>Mark all read</span>
@@ -267,7 +267,7 @@ export function NotificationBell() {
                   {/* Content */}
                   <div className="flex-1 min-w-0 space-y-1">
                     <div className="flex items-center justify-between gap-2">
-                      <p className="text-xs font-bold text-slate-100 truncate">
+                      <p className="text-xs font-bold text-[#0F0F0F] truncate">
                         {item.title}
                       </p>
                       {!item.is_read && (
@@ -275,11 +275,11 @@ export function NotificationBell() {
                       )}
                     </div>
 
-                    <p className="text-[11px] text-slate-400 line-clamp-2 leading-relaxed">
+                    <p className="text-[11px] text-[#5F5F5F] line-clamp-2 leading-relaxed">
                       {item.message}
                     </p>
 
-                    <div className="flex items-center gap-1 text-[10px] text-slate-500 pt-0.5">
+                    <div className="flex items-center gap-1 text-[10px] text-[#767676] pt-0.5">
                       <Clock className="w-3 h-3" />
                       <span>{formatRelativeTime(item.created_at)}</span>
                     </div>
@@ -288,11 +288,11 @@ export function NotificationBell() {
               ))
             ) : (
               <div className="p-8 text-center space-y-2">
-                <div className="w-10 h-10 rounded-2xl bg-pitch-card border border-pitch-border flex items-center justify-center text-slate-500 mx-auto">
+                <div className="w-10 h-10 rounded-2xl bg-pitch-card border border-pitch-border flex items-center justify-center text-[#767676] mx-auto">
                   <Bell className="w-5 h-5 stroke-[1.5]" />
                 </div>
-                <p className="text-xs font-semibold text-slate-300">No notifications yet</p>
-                <p className="text-[11px] text-slate-500">
+                <p className="text-xs font-semibold text-[#3D3D3D]">No notifications yet</p>
+                <p className="text-[11px] text-[#767676]">
                   You&apos;ll be notified about escrow releases, order deliveries, and squad inquiries here.
                 </p>
               </div>
@@ -304,7 +304,7 @@ export function NotificationBell() {
             <Link
               href="/notifications"
               onClick={() => setIsOpen(false)}
-              className="inline-flex items-center justify-center gap-1 text-xs font-semibold text-brand-400 hover:text-brand-300 transition-colors w-full py-1"
+              className="inline-flex items-center justify-center gap-1 text-xs font-semibold text-[#006340] hover:text-[#006340] transition-colors w-full py-1"
             >
               <span>View All Notifications Center</span>
               <ChevronRight className="w-3.5 h-3.5" />

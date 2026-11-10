@@ -21,28 +21,28 @@ export function getCategoryLabel(category: NewsCategory | string) {
     case "scammer_alert":
       return {
         label: "Safety Advisory",
-        color: "bg-rose-950/70 border-rose-800/60 text-rose-300",
+        color: "bg-[#FEE2E2] border-[#FECACA] text-[#B91C1C]",
       };
     case "escrow_guide":
       return {
-        label: "Escrow & Security Guide",
-        color: "bg-[#142922] border-emerald-500/30 text-emerald-300",
+        label: "Verification & Escrow",
+        color: "bg-[#EBF5F0] border-[#BFE0CE] text-[#006340]",
       };
     case "efootball_news":
       return {
-        label: "eFootball Meta & Guides",
-        color: "bg-[#151D2E] border-sky-500/30 text-sky-300",
+        label: "Meta & Tactics",
+        color: "bg-[#F4F3F1] border-[#DCDCD8] text-[#0F0F0F]",
       };
     case "announcement":
     case "update":
       return {
         label: "Platform Update",
-        color: "bg-[#241E12] border-amber-500/30 text-amber-300",
+        color: "bg-[#FEF3C7] border-[#FDE68A] text-[#92400E]",
       };
     default:
       return {
         label: "Editorial Guide",
-        color: "bg-[#171B24] border-[#283040] text-slate-300",
+        color: "bg-[#F4F3F1] border-[#E2E2E0] text-[#0F0F0F]",
       };
   }
 }
@@ -81,17 +81,17 @@ export function NewsFeedClient({ initialArticles }: NewsFeedClientProps) {
 
   return (
     <div className="space-y-8">
-      {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#1E2636] pb-6">
+      {/* StockX Editorial Magazine Header */}
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-[#E2E2E0] pb-6">
         <div>
-          <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-[#00E676] mb-2">
+          <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-[#006340] mb-1.5">
             <BookOpen className="w-3.5 h-3.5" />
-            <span>eFootball 2026 Knowledge Base &amp; Trading Guides</span>
+            <span>eFootballMarket Editorial</span>
           </span>
-          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-white font-display tracking-tight">
-            eFootball Guides, Tactics &amp; Safety Advisories
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-[#0F0F0F] font-display tracking-tight">
+            eFootball 2026 Guides, Tactics &amp; Safety
           </h1>
-          <p className="text-sm text-slate-400 max-w-3xl mt-2 leading-relaxed">
+          <p className="text-sm text-[#5F5F5F] max-w-3xl mt-1.5 leading-relaxed">
             In-depth tactical breakdowns for Quick Counter and Long Ball Counter, 88+ manager stat breakpoints, custom progression builds, 60 FPS mobile tuning, Konami ID 2FA transfers, and M-Pesa escrow security in Kenya.
           </p>
         </div>
@@ -100,17 +100,17 @@ export function NewsFeedClient({ initialArticles }: NewsFeedClientProps) {
           <Link href="/admin?tab=news" className="shrink-0">
             <Button variant="secondary" size="sm">
               <PenSquare className="w-3.5 h-3.5" />
-              <span>New Article</span>
+              <span>Publish Guide</span>
             </Button>
           </Link>
         )}
       </div>
 
-      {/* Category Filter & Search */}
+      {/* Category Filter Pills & Search */}
       <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-        <div className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:pb-0">
+        <div className="flex items-center gap-2 overflow-x-auto pb-1 sm:pb-0">
           {[
-            { id: "all", label: `All Guides (${initialArticles.length})` },
+            { id: "all", label: `All (${initialArticles.length})` },
             { id: "efootball_news", label: "Gameplay & Meta" },
             { id: "escrow_guide", label: "Konami ID & Escrow" },
             { id: "scammer_alert", label: "Safety Advisories" },
@@ -119,10 +119,10 @@ export function NewsFeedClient({ initialArticles }: NewsFeedClientProps) {
               key={cat.id}
               type="button"
               onClick={() => setActiveCategory(cat.id)}
-              className={`px-3.5 py-2 rounded-lg text-xs font-semibold whitespace-nowrap transition-colors border cursor-pointer ${
+              className={`px-4 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-colors border cursor-pointer ${
                 activeCategory === cat.id
-                  ? "bg-[#00E676] text-[#07090D] border-[#00E676]"
-                  : "bg-[#0D1117] border-[#1E2636] text-slate-300 hover:text-white hover:border-[#2C374D]"
+                  ? "bg-[#0F0F0F] text-white border-[#0F0F0F]"
+                  : "bg-[#F4F3F1] border-transparent text-[#0F0F0F] hover:border-[#C8C8C4]"
               }`}
             >
               {cat.label}
@@ -131,26 +131,26 @@ export function NewsFeedClient({ initialArticles }: NewsFeedClientProps) {
         </div>
 
         <div className="relative w-full sm:w-72">
-          <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-4 h-4 text-[#5F5F5F] absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="text"
             placeholder="Search playstyles, boosters, Konami ID..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             aria-label="Search editorial guides"
-            className="w-full pl-9 pr-3 py-2 rounded-lg bg-[#0D1117] border border-[#1E2636] text-xs text-white placeholder-slate-500 focus:outline-none focus:border-[#00E676]/60"
+            className="w-full pl-9 pr-3 py-2 rounded-md bg-[#F4F3F1] border border-transparent focus:bg-white focus:border-[#0F0F0F] text-xs text-[#0F0F0F] placeholder-[#6B6B6B] focus:outline-none"
           />
         </div>
       </div>
 
       {filteredArticles.length === 0 ? (
-        <div className="p-10 rounded-xl bg-[#0D1117] border border-[#1E2636] text-center space-y-3">
-          <BookOpen className="w-8 h-8 text-slate-500 mx-auto" />
-          <h2 className="text-base font-semibold text-white font-display">
+        <div className="p-10 rounded-lg bg-[#F9F9F8] border border-[#E2E2E0] text-center space-y-3">
+          <BookOpen className="w-8 h-8 text-[#5F5F5F] mx-auto" />
+          <h2 className="text-base font-bold text-[#0F0F0F] font-display">
             No matching guides found
           </h2>
-          <p className="text-xs text-slate-400 max-w-md mx-auto">
-            Try clearing your search filter or switching back to All Guides to browse our complete eFootball 2026 library.
+          <p className="text-xs text-[#5F5F5F] max-w-md mx-auto">
+            Try clearing your search filter or switching back to All Guides to view our complete eFootball 2026 library.
           </p>
           <button
             type="button"
@@ -158,28 +158,27 @@ export function NewsFeedClient({ initialArticles }: NewsFeedClientProps) {
               setActiveCategory("all");
               setSearchQuery("");
             }}
-            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-[#151B26] border border-[#263042] text-xs font-semibold text-white hover:border-[#00E676]/50 cursor-pointer"
+            className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#0F0F0F] text-xs font-semibold text-white cursor-pointer"
           >
             Reset Filters
           </button>
         </div>
       ) : (
         <div className="space-y-8">
-          {/* Featured Lead Guide */}
+          {/* Featured Lead Story (StockX Editorial Split Card) */}
           {featuredArticle && (
             <Link
               href={`/news/${featuredArticle.slug}`}
-              className="block group rounded-2xl bg-[#0D1117] border border-[#1E2636] hover:border-[#00E676]/50 overflow-hidden transition-all shadow-lg"
+              className="block group rounded-lg bg-[#F4F3F1] border border-[#E2E2E0] hover:border-[#0F0F0F] overflow-hidden transition-colors"
             >
               <article className="grid grid-cols-1 lg:grid-cols-12">
                 {featuredArticle.cover_image_url && (
-                  <div className="lg:col-span-5 relative min-h-[220px] sm:min-h-[260px] bg-[#07090D] overflow-hidden">
+                  <div className="lg:col-span-5 relative min-h-[220px] sm:min-h-[270px] bg-[#EAE8E3] overflow-hidden">
                     <img
                       src={featuredArticle.cover_image_url}
                       alt={featuredArticle.title}
-                      className="w-full h-full object-cover opacity-85 group-hover:scale-[1.03] transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-[#0D1117] via-transparent to-transparent lg:bg-gradient-to-r lg:from-transparent lg:to-[#0D1117]" />
                   </div>
                 )}
                 <div
@@ -187,19 +186,19 @@ export function NewsFeedClient({ initialArticles }: NewsFeedClientProps) {
                     featuredArticle.cover_image_url
                       ? "lg:col-span-7"
                       : "lg:col-span-12"
-                  } p-6 sm:p-8 flex flex-col justify-between space-y-4`}
+                  } p-6 sm:p-9 flex flex-col justify-between space-y-4`}
                 >
                   <div className="space-y-3">
-                    <div className="flex flex-wrap items-center gap-2.5 text-xs text-slate-400">
+                    <div className="flex flex-wrap items-center gap-2.5 text-xs text-[#5F5F5F]">
                       <span
-                        className={`px-2.5 py-0.5 rounded-md font-semibold border ${
+                        className={`px-2.5 py-0.5 rounded font-semibold border ${
                           getCategoryLabel(featuredArticle.category).color
                         }`}
                       >
                         {getCategoryLabel(featuredArticle.category).label}
                       </span>
-                      <span className="px-2 py-0.5 rounded-md bg-[#00E676]/10 border border-[#00E676]/30 text-[#00E676] font-semibold">
-                        Featured Guide
+                      <span className="px-2 py-0.5 rounded bg-[#006340] text-white font-semibold">
+                        Featured
                       </span>
                       <span className="flex items-center gap-1">
                         <Clock className="w-3.5 h-3.5" />
@@ -214,18 +213,18 @@ export function NewsFeedClient({ initialArticles }: NewsFeedClientProps) {
                       </span>
                     </div>
 
-                    <h2 className="text-xl sm:text-2xl font-bold text-white group-hover:text-[#00E676] transition-colors font-display leading-snug">
+                    <h2 className="text-xl sm:text-2xl font-extrabold text-[#0F0F0F] group-hover:underline font-display leading-snug">
                       {featuredArticle.title}
                     </h2>
 
-                    <p className="text-sm text-slate-300 leading-relaxed max-w-3xl">
+                    <p className="text-sm text-[#4A4A4A] leading-relaxed max-w-3xl">
                       {featuredArticle.summary}
                     </p>
                   </div>
 
-                  <div className="flex items-center justify-between pt-3 border-t border-[#1E2636]/80 text-xs text-slate-400">
+                  <div className="flex items-center justify-between pt-3 border-t border-[#DCDCD8] text-xs text-[#5F5F5F]">
                     <span className="flex items-center gap-1.5">
-                      <Calendar className="w-3.5 h-3.5 text-slate-500" />
+                      <Calendar className="w-3.5 h-3.5" />
                       {new Date(featuredArticle.created_at).toLocaleDateString(
                         "en-US",
                         {
@@ -238,7 +237,7 @@ export function NewsFeedClient({ initialArticles }: NewsFeedClientProps) {
                         ? ` · ${featuredArticle.author_name}`
                         : ""}
                     </span>
-                    <span className="inline-flex items-center gap-1.5 font-semibold text-[#00E676] group-hover:translate-x-0.5 transition-transform">
+                    <span className="inline-flex items-center gap-1.5 font-bold text-[#006340]">
                       <span>Read Full Guide</span>
                       <ArrowRight className="w-4 h-4" />
                     </span>
@@ -250,7 +249,7 @@ export function NewsFeedClient({ initialArticles }: NewsFeedClientProps) {
 
           {/* Editorial Grid */}
           {standardArticles.length > 0 && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {standardArticles.map((article) => {
                 const badge = getCategoryLabel(article.category);
                 const readMin = Math.max(
@@ -261,22 +260,22 @@ export function NewsFeedClient({ initialArticles }: NewsFeedClientProps) {
                   <Link
                     key={article.id}
                     href={`/news/${article.slug}`}
-                    className="group rounded-xl bg-[#0D1117] border border-[#1E2636] hover:border-[#00E676]/45 overflow-hidden flex flex-col justify-between transition-all"
+                    className="group rounded-lg bg-white border border-[#E2E2E0] hover:border-[#0F0F0F] overflow-hidden flex flex-col justify-between transition-colors"
                   >
                     <article className="flex flex-col justify-between h-full">
                       <div>
                         {article.cover_image_url && (
-                          <div className="h-40 w-full bg-[#07090D] relative overflow-hidden border-b border-[#1E2636]">
+                          <div className="h-44 w-full bg-[#F4F3F1] relative overflow-hidden border-b border-[#E2E2E0]">
                             <img
                               src={article.cover_image_url}
                               alt={article.title}
                               loading="lazy"
-                              className="w-full h-full object-cover opacity-80 group-hover:scale-105 transition-transform duration-500"
+                              className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300"
                             />
                           </div>
                         )}
-                        <div className="p-5 space-y-3">
-                          <div className="flex items-center justify-between gap-2 text-[11px] text-slate-400">
+                        <div className="p-5 space-y-2.5">
+                          <div className="flex items-center justify-between gap-2 text-[11px] text-[#5F5F5F]">
                             <span
                               className={`px-2 py-0.5 rounded font-semibold border ${badge.color}`}
                             >
@@ -288,17 +287,17 @@ export function NewsFeedClient({ initialArticles }: NewsFeedClientProps) {
                             </span>
                           </div>
 
-                          <h2 className="text-base font-bold text-white group-hover:text-[#00E676] transition-colors font-display leading-snug line-clamp-2">
+                          <h2 className="text-base font-bold text-[#0F0F0F] group-hover:underline font-display leading-snug line-clamp-2">
                             {article.title}
                           </h2>
 
-                          <p className="text-xs text-slate-400 leading-relaxed line-clamp-3">
+                          <p className="text-xs text-[#5F5F5F] leading-relaxed line-clamp-3">
                             {article.summary}
                           </p>
                         </div>
                       </div>
 
-                      <div className="px-5 pb-5 pt-3 border-t border-[#1E2636]/60 flex items-center justify-between text-[11px] text-slate-500">
+                      <div className="px-5 pb-4 pt-3 border-t border-[#F0F0EE] flex items-center justify-between text-[11px] text-[#5F5F5F]">
                         <span>
                           {new Date(article.created_at).toLocaleDateString(
                             "en-US",
@@ -309,7 +308,7 @@ export function NewsFeedClient({ initialArticles }: NewsFeedClientProps) {
                             }
                           )}
                         </span>
-                        <span className="inline-flex items-center gap-1 text-[#00E676] font-semibold">
+                        <span className="inline-flex items-center gap-1 text-[#006340] font-bold">
                           <span>Read Guide</span>
                           <ArrowRight className="w-3.5 h-3.5" />
                         </span>
@@ -323,7 +322,6 @@ export function NewsFeedClient({ initialArticles }: NewsFeedClientProps) {
         </div>
       )}
 
-      {/* Gated Ad Unit — only renders when real numeric AdSense slot ID is configured and >= 4 articles are visible */}
       <AdBanner
         slot="news_feed_bottom"
         format="horizontal"

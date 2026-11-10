@@ -166,12 +166,12 @@ export function SellerVerificationFormPreserved() {
       {existingVerification && (
         <div className="p-5 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-xs uppercase font-bold text-slate-400">Current Status:</span>
-            <span className="text-xs font-bold uppercase px-2.5 py-1 rounded-full bg-amber-950 text-amber-400 border border-amber-800">
+            <span className="text-xs uppercase font-bold text-[#5F5F5F]">Current Status:</span>
+            <span className="text-xs font-bold uppercase px-2.5 py-1 rounded-full bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]">
               {existingVerification.status.replace("_", " ")}
             </span>
           </div>
-          <p className="text-xs text-slate-300">
+          <p className="text-xs text-[#3D3D3D]">
             {existingVerification.status === "approved"
               ? "Your seller identity has been verified. You now enjoy the verified seller badge."
               : existingVerification.status === "pending"
@@ -189,14 +189,14 @@ export function SellerVerificationFormPreserved() {
           className="bg-pitch-surface border border-pitch-border rounded-2xl p-6 shadow-xl space-y-6"
         >
           {error && (
-            <div className="p-3 rounded-lg bg-rose-950/60 border border-rose-800 text-rose-300 text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{error}</span>
             </div>
           )}
 
           {success && (
-            <div className="p-3 rounded-lg bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-[#EBF5F0] border border-[#BFE0CE] text-[#006340] text-xs flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 shrink-0" />
               <span>KYC documents submitted successfully. Verification takes up to 24 hours.</span>
             </div>
@@ -204,12 +204,12 @@ export function SellerVerificationFormPreserved() {
 
           {/* Document 1: Government ID Photo */}
           <div className="space-y-2">
-            <label className="block text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-              <Camera className="w-4 h-4 text-amber-400" />
+            <label className="block text-xs font-semibold text-[#1F1F1F] flex items-center gap-1.5">
+              <Camera className="w-4 h-4 text-[#B45309]" />
               <span>1. Government ID / Passport Photo</span>
-              <span className="text-rose-400">*</span>
+              <span className="text-[#C92A2A]">*</span>
             </label>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-[#5F5F5F]">
               Upload a clear photo of the front side of your national ID, passport, or driver&apos;s license.
             </p>
 
@@ -231,16 +231,16 @@ export function SellerVerificationFormPreserved() {
               >
                 {uploadingFront ? (
                   <div className="flex flex-col items-center justify-center py-2 space-y-2">
-                    <Loader2 className="w-7 h-7 text-amber-400 animate-spin" />
-                    <span className="text-xs text-slate-300">Uploading ID document...</span>
+                    <Loader2 className="w-7 h-7 text-[#B45309] animate-spin" />
+                    <span className="text-xs text-[#3D3D3D]">Uploading ID document...</span>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center space-y-2">
-                    <UploadCloud className="w-7 h-7 text-amber-400" />
-                    <p className="text-xs font-semibold text-slate-200">
+                    <UploadCloud className="w-7 h-7 text-[#B45309]" />
+                    <p className="text-xs font-semibold text-[#1F1F1F]">
                       Click to upload front of Government ID
                     </p>
-                    <span className="text-[10px] text-slate-400">PNG, JPG, or WebP up to 10MB</span>
+                    <span className="text-[10px] text-[#5F5F5F]">PNG, JPG, or WebP up to 10MB</span>
                   </div>
                 )}
               </div>
@@ -251,11 +251,11 @@ export function SellerVerificationFormPreserved() {
                   <img src={frontDocUrl} alt="ID Document Preview" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1 text-emerald-400 text-xs font-medium">
+                  <div className="flex items-center gap-1 text-[#006340] text-xs font-medium">
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     <span>ID Document Attached</span>
                   </div>
-                  <p className="text-[11px] text-slate-300 truncate">{frontDocName || "government_id.jpg"}</p>
+                  <p className="text-[11px] text-[#3D3D3D] truncate">{frontDocName || "government_id.jpg"}</p>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Button
@@ -278,7 +278,7 @@ export function SellerVerificationFormPreserved() {
                       if (frontDocInputRef.current) frontDocInputRef.current.value = "";
                     }}
                     disabled={uploadingFront}
-                    className="text-xs text-rose-400"
+                    className="text-xs text-[#C92A2A]"
                   >
                     <Trash2 className="w-3 h-3" />
                   </Button>
@@ -289,12 +289,12 @@ export function SellerVerificationFormPreserved() {
 
           {/* Document 2: Selfie Holding ID Photo */}
           <div className="space-y-2">
-            <label className="block text-xs font-semibold text-slate-200 flex items-center gap-1.5">
-              <Camera className="w-4 h-4 text-amber-400" />
+            <label className="block text-xs font-semibold text-[#1F1F1F] flex items-center gap-1.5">
+              <Camera className="w-4 h-4 text-[#B45309]" />
               <span>2. Selfie Photo with ID</span>
-              <span className="text-rose-400">*</span>
+              <span className="text-[#C92A2A]">*</span>
             </label>
-            <p className="text-[11px] text-slate-400">
+            <p className="text-[11px] text-[#5F5F5F]">
               Hold your ID card next to your face with all information and your facial features clearly visible.
             </p>
 
@@ -316,16 +316,16 @@ export function SellerVerificationFormPreserved() {
               >
                 {uploadingSelfie ? (
                   <div className="flex flex-col items-center justify-center py-2 space-y-2">
-                    <Loader2 className="w-7 h-7 text-amber-400 animate-spin" />
-                    <span className="text-xs text-slate-300">Uploading selfie photo...</span>
+                    <Loader2 className="w-7 h-7 text-[#B45309] animate-spin" />
+                    <span className="text-xs text-[#3D3D3D]">Uploading selfie photo...</span>
                   </div>
                 ) : (
                   <div className="flex flex-col items-center justify-center space-y-2">
-                    <UploadCloud className="w-7 h-7 text-amber-400" />
-                    <p className="text-xs font-semibold text-slate-200">
+                    <UploadCloud className="w-7 h-7 text-[#B45309]" />
+                    <p className="text-xs font-semibold text-[#1F1F1F]">
                       Click to upload selfie photograph with ID
                     </p>
-                    <span className="text-[10px] text-slate-400">PNG, JPG, or WebP up to 10MB</span>
+                    <span className="text-[10px] text-[#5F5F5F]">PNG, JPG, or WebP up to 10MB</span>
                   </div>
                 )}
               </div>
@@ -336,11 +336,11 @@ export function SellerVerificationFormPreserved() {
                   <img src={selfieUrl} alt="Selfie with ID Preview" className="w-full h-full object-cover" />
                 </div>
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-1 text-emerald-400 text-xs font-medium">
+                  <div className="flex items-center gap-1 text-[#006340] text-xs font-medium">
                     <CheckCircle2 className="w-3.5 h-3.5" />
                     <span>Selfie Photo Attached</span>
                   </div>
-                  <p className="text-[11px] text-slate-300 truncate">{selfieName || "selfie_with_id.jpg"}</p>
+                  <p className="text-[11px] text-[#3D3D3D] truncate">{selfieName || "selfie_with_id.jpg"}</p>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Button
@@ -363,7 +363,7 @@ export function SellerVerificationFormPreserved() {
                       if (selfieInputRef.current) selfieInputRef.current.value = "";
                     }}
                     disabled={uploadingSelfie}
-                    className="text-xs text-rose-400"
+                    className="text-xs text-[#C92A2A]"
                   >
                     <Trash2 className="w-3 h-3" />
                   </Button>

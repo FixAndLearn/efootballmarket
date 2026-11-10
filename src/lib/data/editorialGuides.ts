@@ -51,7 +51,7 @@ Out Wide stretches play to both touchlines, instructing opposite-side wingers an
 - Start matches in Quick Counter or Possession Game to press opponents early and test their composure under pressure.
 - Switch to your Sub-Tactic set to Long Ball Counter after taking a two-goal lead or entering the 70th minute, dropping your defensive line automatically while keeping full +3 manager stat boosts across your entire squad.`,
     author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/hero-stadium.jpg",
+    cover_image_url: "/images/sx-hero-banner.jpg",
     is_pinned: true,
     is_published: true,
     views_count: 0,
@@ -104,7 +104,7 @@ Before spending GP on progression resets (or during free progression reset campa
 3. Account for Epic Card Boosters first: On Epic and Show Time cards with active +2/+3 slot boosters, verify whether the card booster already lifts a stat from 83 to 85 before committing extra progression points.
 4. Keep both Main and Sub-Tactic at 88 if switching playstyles: If your manager has 88 Quick Counter and only 75 Long Ball Counter, switching to Long Ball Counter mid-match strips away your +3 squad boosts and tanks pass accuracy. Always pair dual-88 managers when running two playstyles.`,
     author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/cat-epic.jpg",
+    cover_image_url: "/images/sx-cat-epic.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
@@ -158,7 +158,7 @@ Auto-Allocate frequently dumps 14 to 16 levels into Defending while leaving cent
 2. Reallocate those saved 8–12 points into **Lower Body Strength (Speed 84–88)** and **Dexterity (Acceleration 78–83)**. A CB with 93 Defensive Awareness and 86 Speed recovers far more breakaways than a CB with 99 Defensive Awareness and 75 Speed.
 3. On Anchor Man DMFs, invest 4 levels into Passing and 4 levels into Dribbling so your pivot does not gift immediate turnovers when pressed after winning a header.`,
     author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/cat-starter.jpg",
+    cover_image_url: "/images/sx-cat-mobile.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
@@ -212,7 +212,7 @@ To bank every single Skill Training Program cleanly so zero tokens ever go to wa
 - **Aerial Superiority** (boosts jump duel win rates against tall Target Men and corner routines)
 - **One-Touch Pass** or **Weighted Pass** (cleans up first-time clearances and outlet balls under press)`,
     author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/cat-console.jpg",
+    cover_image_url: "/images/sx-cat-console.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
@@ -254,7 +254,7 @@ Every **Epic**, **Big Time**, and **Legendary** card—along with select **Show 
 
 In practical squad building, fielding 6 to 8 Permanent-B starters shrinks the number of bench slots you need for injury/arrow insurance. Instead of carrying three spare Centre-Backs in case C-rated defenders roll downward arrows, two Permanent-B Centre-Backs let you pack your bench with specialized **Super-Sub** wingers, physical target strikers, and tactical midfield closers.`,
     author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/cat-epic.jpg",
+    cover_image_url: "/images/sx-cat-epic.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
@@ -297,7 +297,7 @@ During kick-offs (0', 45', and immediately after scoring), AI defensive awarenes
 
 - Immediately flick **Attack/Defense Level down one notch (Blue 1)** before the opponent kicks off, manually select your **DMF or fastest CB**, and sprint straight back 10 yards toward your penalty spot to head away any lofted kick-off chip—then return to balanced level once play settles.`,
     author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/hero-stadium.jpg",
+    cover_image_url: "/images/sx-hero-banner.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
@@ -330,7 +330,7 @@ eFootball Mobile uses regional cloud relay servers (primarily nearest African/Mi
 2. **Safaricom 4G LTE vs 5G Stability Tip**: In areas where 5G signal sits at only 1–2 bars indoors, phones constantly hand over between 5G NSA and 4G LTE mid-match—creating a 1.5-second freeze right as an opponent enters your penalty box! Locking Preferred Network Type to **4G / LTE Only** during tournament games often delivers flatter, jitter-free frame pacing than weak indoor 5G.
 3. **Matchmaking Search Area Setting**: Inside **eFootball League -> Matchmaking Settings**, choose **Search Nearby Area Only**. Widening matchmaking searches pairs you onto distant overseas relay servers (130 ms+ round-trip latency) where One-Touch Passes register half a second late. Only accept **4-bar or 5-bar antenna** pre-match connections during ranked Division climbs.`,
     author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/cat-coins.jpg",
+    cover_image_url: "/images/sx-cat-middleman.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
@@ -375,7 +375,7 @@ Do **not** click Release Funds, do **not** link your own Google/Apple account ov
 
 Once our moderation desk confirms that a third-party Google Play or Game Center link is attached contrary to listing terms, the held M-Pesa escrow balance is refunded in full to your Safaricom number.`,
     author_name: "eFootballMarket Support",
-    cover_image_url: "/images/cat-budget.jpg",
+    cover_image_url: "/images/sx-cat-budget.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
@@ -421,7 +421,7 @@ Only after the squad passes inspection should you proceed to rebind the Konami I
 
 Once your new email, new password, and 2FA are live—and your device is signed into the squad—you can safely click **Confirm & Release Funds** inside the order room.`,
     author_name: "eFootballMarket Support",
-    cover_image_url: "/images/cat-starter.jpg",
+    cover_image_url: "/images/sx-cat-mobile.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
@@ -465,7 +465,7 @@ After credentials are delivered, the buyer enters the protected inspection windo
 - **Smooth Handover**: As soon as the buyer confirms ownership (or when valid delivery expires uncontested per dispute policy rules), eFootballMarket disburses the seller's net payout directly to their registered Safaricom M-Pesa number.
 - **Discrepancy Found**: If Google Play is linked, cards are missing, or the seller fails to provide valid credentials within the delivery SLA, the buyer clicks **Raise Dispute**, freezing payout while moderators inspect uncropped screenshots and refund the buyer's M-Pesa payment when listing rules were violated.`,
     author_name: "eFootballMarket Support",
-    cover_image_url: "/images/cat-coins.jpg",
+    cover_image_url: "/images/sx-cat-middleman.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
@@ -499,7 +499,7 @@ Because SIM cards, burner Facebook profiles, and Telegram handles take less than
 - Never share a **my.konami.net** 6-digit verification code until verified escrow payment is locked inside an active order room.
 - Insist on full-screen, uncropped Link Data proof on every Mobile transaction.`,
     author_name: "eFootballMarket Trust & Safety",
-    cover_image_url: "/images/cat-budget.jpg",
+    cover_image_url: "/images/sx-cat-budget.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
@@ -538,7 +538,7 @@ One of the biggest pricing mistakes first-time sellers make is pricing an accoun
 4. **Preserve Monthly Data Transfers**: Avoid hopping between multiple phones right before selling so the buyer has plenty of Konami's 10 monthly Data Transfers available.
 5. **Stay Reachable After Listing**: Sellers who respond rapidly when an M-Pesa escrow order locks earn 5-star verified seller ratings and faster repeat sales.`,
     author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/cat-console.jpg",
+    cover_image_url: "/images/sx-cat-console.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,

@@ -57,10 +57,10 @@ export default async function SellerDashboardPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
       <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-white font-display">
+        <h1 className="text-2xl sm:text-3xl font-bold text-[#0F0F0F] font-display">
           Seller Control Center
         </h1>
-        <p className="text-xs sm:text-sm text-slate-400 mt-1">
+        <p className="text-xs sm:text-sm text-[#5F5F5F] mt-1">
           Manage your account inventory, track escrow balances, and disburse M-Pesa earnings.
         </p>
       </div>

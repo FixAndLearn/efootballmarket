@@ -101,20 +101,20 @@ export function DisputeModal({
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-slate-200 transition-colors"
+          className="absolute top-4 right-4 text-[#5F5F5F] hover:text-[#1F1F1F] transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
         <div className="flex items-center gap-3 mb-5 border-b border-pitch-border/60 pb-4">
-          <div className="w-10 h-10 rounded-xl bg-rose-950/60 border border-rose-800/60 flex items-center justify-center text-rose-400 shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-[#FEE2E2] border border-[#FECACA] flex items-center justify-center text-[#C92A2A] shrink-0">
             <AlertTriangle className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-slate-100">
+            <h3 className="text-base font-bold text-[#0F0F0F]">
               {isCompleted ? "Raise Post-Release Dispute" : "Open Escrow Dispute"}
             </h3>
-            <p className="text-xs text-slate-400">
+            <p className="text-xs text-[#5F5F5F]">
               {isCompleted
                 ? "Seller Payout Frozen Pending Investigation"
                 : "Order Funds Frozen Until Resolution"}
@@ -123,30 +123,30 @@ export function DisputeModal({
         </div>
 
         {isCompleted && (
-          <div className="p-3 mb-4 rounded-xl bg-amber-950/40 border border-amber-800/60 text-amber-200 text-xs space-y-1">
-            <div className="flex items-center gap-1.5 font-bold text-amber-300">
-              <ShieldCheck className="w-4 h-4 shrink-0 text-amber-400" />
+          <div className="p-3 mb-4 rounded-xl bg-[#FEF3C7] border border-[#FDE68A] text-[#92400E] text-xs space-y-1">
+            <div className="flex items-center gap-1.5 font-bold text-[#92400E]">
+              <ShieldCheck className="w-4 h-4 shrink-0 text-[#B45309]" />
               <span>Post-Release Protection Guarantee</span>
             </div>
-            <p className="text-[11px] text-amber-200/90 leading-relaxed">
+            <p className="text-[11px] text-[#92400E]/90 leading-relaxed">
               If the seller attempted Konami ID recovery, linked an unmentioned Google Play Games ID, or caused coin deductions, submit your claim below. The seller wallet balance is frozen and administrators will arbitrate directly.
             </p>
           </div>
         )}
 
         {error && (
-          <div className="p-3 mb-4 rounded-lg bg-rose-950/60 border border-rose-800 text-rose-300 text-xs">
+          <div className="p-3 mb-4 rounded-lg bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs">
             {error}
           </div>
         )}
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5">Primary Reason</label>
+            <label className="block text-xs font-medium text-[#3D3D3D] mb-1.5">Primary Reason</label>
             <select
               value={reason}
               onChange={(e) => setReason(e.target.value)}
-              className="w-full bg-pitch-card border border-pitch-border rounded-lg px-3 py-2 text-xs text-slate-200 focus:outline-none focus:border-brand-500"
+              className="w-full bg-pitch-card border border-pitch-border rounded-lg px-3 py-2 text-xs text-[#1F1F1F] focus:outline-none focus:border-brand-500"
             >
               <option value="account_recovered_by_seller">Account Password Changed or Recovered by Seller</option>
               <option value="google_linked_breach">Google Play Link Found / Anti-Googling Policy Breach</option>
@@ -160,7 +160,7 @@ export function DisputeModal({
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5">Detailed Explanation</label>
+            <label className="block text-xs font-medium text-[#3D3D3D] mb-1.5">Detailed Explanation</label>
             <textarea
               rows={3}
               value={description}
@@ -170,20 +170,20 @@ export function DisputeModal({
                   ? "Detail how and when the account was compromised or what breach was discovered..."
                   : "Explain clearly what went wrong so platform moderators can review..."
               }
-              className="w-full rounded-lg bg-pitch-card border border-pitch-border p-3 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-brand-500"
+              className="w-full rounded-lg bg-pitch-card border border-pitch-border p-3 text-xs text-[#0F0F0F] placeholder:text-[#767676] focus:outline-none focus:border-brand-500"
               required
             />
           </div>
 
           <div>
-            <label className="block text-xs font-medium text-slate-300 mb-1.5">
+            <label className="block text-xs font-medium text-[#3D3D3D] mb-1.5">
               Attach Proof Screenshot (Konami error / Google Play link / In-game status)
             </label>
             <input
               type="file"
               accept="image/*"
               onChange={handleFileChange}
-              className="w-full text-xs text-slate-400 file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-slate-800 file:text-slate-200 hover:file:bg-slate-700"
+              className="w-full text-xs text-[#5F5F5F] file:mr-2 file:py-1 file:px-2.5 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#F4F3F1] file:text-[#1F1F1F] hover:file:bg-slate-700"
             />
             {previewUrl && (
               <div className="relative w-24 aspect-[4/3] rounded-lg overflow-hidden border border-pitch-border mt-2">
@@ -195,7 +195,7 @@ export function DisputeModal({
                     setSelectedFile(null);
                     setPreviewUrl(null);
                   }}
-                  className="absolute top-1 right-1 p-0.5 rounded bg-black/80 text-rose-400"
+                  className="absolute top-1 right-1 p-0.5 rounded bg-black/80 text-[#C92A2A]"
                 >
                   <X className="w-3 h-3" />
                 </button>

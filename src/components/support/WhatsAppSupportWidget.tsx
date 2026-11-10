@@ -34,21 +34,21 @@ export function WhatsAppSupportWidget() {
           {/* Header */}
           <div className="p-4 bg-gradient-to-r from-emerald-950 via-pitch-card to-slate-900 border-b border-pitch-border/60 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-emerald-500/20 border border-emerald-500/40 flex items-center justify-center text-emerald-400">
+              <div className="w-9 h-9 rounded-xl bg-[#EBF5F0] border border-[#BFE0CE] flex items-center justify-center text-[#006340]">
                 <ShieldCheck className="w-5 h-5" />
               </div>
               <div>
-                <p className="text-xs font-bold text-white leading-tight">eFootball Escrow Support</p>
+                <p className="text-xs font-bold text-[#0F0F0F] leading-tight">eFootball Escrow Support</p>
                 <div className="flex items-center gap-1.5 mt-0.5">
                   <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-                  <span className="text-[10px] text-emerald-300 font-semibold">Online (Replies in &lt;5 mins)</span>
+                  <span className="text-[10px] text-[#006340] font-semibold">Online (Replies in &lt;5 mins)</span>
                 </div>
               </div>
             </div>
             <button
               type="button"
               onClick={() => setIsOpen(false)}
-              className="p-1 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+              className="p-1 rounded-lg text-[#5F5F5F] hover:text-[#0F0F0F] hover:bg-[#F4F3F1] transition-colors"
             >
               <X className="w-4 h-4" />
             </button>
@@ -56,12 +56,12 @@ export function WhatsAppSupportWidget() {
 
           {/* Body */}
           <div className="p-4 space-y-3 text-xs">
-            <p className="text-slate-300 leading-relaxed text-[11px]">
+            <p className="text-[#3D3D3D] leading-relaxed text-[11px]">
               Need direct assistance with an M-Pesa transaction or Konami ID transfer? Our verified support team is available on WhatsApp.
             </p>
 
             <div className="space-y-1.5">
-              <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+              <span className="text-[10px] uppercase font-bold text-[#5F5F5F] tracking-wider">
                 Select Your Inquiry Topic:
               </span>
               {topics.map((item) => (
@@ -69,12 +69,12 @@ export function WhatsAppSupportWidget() {
                   key={item.label}
                   type="button"
                   onClick={() => handleLaunchWhatsApp(item.query)}
-                  className="w-full text-left p-2.5 rounded-xl bg-pitch-card border border-pitch-border hover:border-emerald-500/60 hover:bg-slate-800/80 transition-all flex items-center justify-between group"
+                  className="w-full text-left p-2.5 rounded-xl bg-pitch-card border border-pitch-border hover:border-emerald-500/60 hover:bg-[#F4F3F1] transition-all flex items-center justify-between group"
                 >
-                  <span className="text-slate-200 group-hover:text-emerald-300 transition-colors font-medium text-xs">
+                  <span className="text-[#1F1F1F] group-hover:text-[#006340] transition-colors font-medium text-xs">
                     {item.label}
                   </span>
-                  <ChevronRight className="w-3.5 h-3.5 text-slate-500 group-hover:text-emerald-400 transition-transform group-hover:translate-x-0.5" />
+                  <ChevronRight className="w-3.5 h-3.5 text-[#767676] group-hover:text-[#006340] transition-transform group-hover:translate-x-0.5" />
                 </button>
               ))}
             </div>
@@ -88,12 +88,12 @@ export function WhatsAppSupportWidget() {
                   value={customMessage}
                   onChange={(e) => setCustomMessage(e.target.value)}
                   onKeyDown={(e) => e.key === "Enter" && handleLaunchWhatsApp()}
-                  className="w-full bg-slate-900 border border-pitch-border rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 pr-9 focus:outline-none focus:border-emerald-400"
+                  className="w-full bg-[#F9F9F8] border border-pitch-border rounded-xl px-3 py-2 text-xs text-[#0F0F0F] placeholder:text-[#767676] pr-9 focus:outline-none focus:border-emerald-400"
                 />
                 <button
                   type="button"
                   onClick={() => handleLaunchWhatsApp()}
-                  className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 text-emerald-400 hover:text-emerald-300 transition-colors"
+                  className="absolute right-1.5 top-1/2 -translate-y-1/2 p-1.5 text-[#006340] hover:text-[#006340] transition-colors"
                 >
                   <Send className="w-3.5 h-3.5" />
                 </button>
@@ -102,8 +102,8 @@ export function WhatsAppSupportWidget() {
           </div>
 
           {/* Footer note */}
-          <div className="p-2.5 bg-slate-900/90 border-t border-pitch-border/60 text-center">
-            <span className="text-[10px] text-slate-400">
+          <div className="p-2.5 bg-[#F9F9F8] border-t border-pitch-border/60 text-center">
+            <span className="text-[10px] text-[#5F5F5F]">
               🔒 Official Escrow Hotline — Safaricom M-Pesa Integrated
             </span>
           </div>

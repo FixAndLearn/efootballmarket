@@ -37,20 +37,20 @@ const STEPS = [
 
 export function EscrowStepsVisualizer() {
   return (
-    <section className="py-14 border-b border-[#242A36]">
+    <section className="py-14 border-b border-[#E2E2E0]">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
         <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-white font-display">
+            <h2 className="text-xl sm:text-2xl font-bold text-[#0F0F0F] font-display">
               How Every Trade Works
             </h2>
-            <p className="text-xs sm:text-sm text-slate-400 mt-1">
+            <p className="text-xs sm:text-sm text-[#5F5F5F] mt-1">
               Five clear steps from M-Pesa payment to full Konami ID ownership.
             </p>
           </div>
           <Link
             href="/escrow-guarantee"
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 shrink-0"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#006340] hover:text-[#006340] shrink-0"
           >
             <span>Read buyer protection rules</span>
             <ArrowRight className="w-3.5 h-3.5" />
@@ -61,15 +61,15 @@ export function EscrowStepsVisualizer() {
           {STEPS.map((step) => (
             <div
               key={step.num}
-              className="p-5 rounded-xl border border-[#242A36] bg-[#11141B] space-y-2.5"
+              className="p-5 rounded-xl border border-[#E2E2E0] bg-white space-y-2.5"
             >
-              <span className="inline-flex items-center justify-center w-6 h-6 rounded bg-[#171B24] border border-[#283040] font-mono font-semibold text-xs text-emerald-400">
+              <span className="inline-flex items-center justify-center w-6 h-6 rounded bg-[#F4F3F1] border border-[#C8C8C4] font-mono font-semibold text-xs text-[#006340]">
                 {step.num}
               </span>
-              <h3 className="font-semibold text-white text-sm">
+              <h3 className="font-semibold text-[#0F0F0F] text-sm">
                 {step.title}
               </h3>
-              <p className="text-xs text-slate-400 leading-relaxed">
+              <p className="text-xs text-[#5F5F5F] leading-relaxed">
                 {step.description}
               </p>
             </div>

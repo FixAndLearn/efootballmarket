@@ -5,16 +5,19 @@ import { Button } from "@/components/ui/Button";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ListingService } from "@/services/listingService";
 import { Listing, Platform } from "@/types/database";
-import { Plus, ShieldCheck, X } from "lucide-react";
+import { CheckCircle2, X } from "lucide-react";
 import Link from "next/link";
 import { Metadata } from "next";
 
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "Marketplace — Browse Verified eFootball Squads",
+  title: "Browse Verified eFootball Squads | eFootballMarket Kenya",
   description:
-    "Browse unlinked Konami ID eFootball accounts in Kenya. Filter by Collective Strength (OVR), Epic legends, Coin balance, and KES price with M-Pesa Till 1572931 escrow.",
+    "Browse Clean Konami ID eFootball accounts in Kenya. Filter by Collective Strength (OVR), Epic legends, Coin balance, and Ask Price in KES with M-Pesa Till 1572931 verification.",
+  alternates: {
+    canonical: "https://www.efootballmarket.co.ke/browse",
+  },
 };
 
 interface BrowsePageProps {
@@ -71,93 +74,96 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-6">
-      {/* Storefront Header Bar */}
-      <div className="store-panel rounded-2xl p-5 sm:p-6 flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="space-y-1">
-          <div className="flex items-center gap-2.5">
-            <h1 className="text-2xl sm:text-3xl font-bold text-white font-display">
-              Squad Marketplace
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
+      {/* StockX Breadcrumb + Category Header */}
+      <div className="border-b border-[#E2E2E0] pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+        <div className="space-y-1.5">
+          <div className="text-xs text-[#5F5F5F] flex items-center gap-1.5">
+            <Link href="/" className="hover:text-[#0F0F0F]">
+              Home
+            </Link>
+            <span>/</span>
+            <span className="text-[#0F0F0F] font-medium">eFootball Squads</span>
+          </div>
+          <div className="flex items-center gap-3 flex-wrap">
+            <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F0F0F] font-display tracking-tight">
+              Verified eFootball Squads
             </h1>
             {totalCount > 0 && (
-              <span className="px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 font-mono text-xs font-bold text-emerald-300">
-                {totalCount} LIVE
+              <span className="px-2.5 py-0.5 rounded-full bg-[#EBF5F0] text-[#006340] text-xs font-bold">
+                {totalCount} Available
               </span>
             )}
           </div>
-          <p className="text-xs sm:text-sm text-slate-400 flex items-center gap-1.5">
-            <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-            <span>Unlinked Konami ID accounts protected via Safaricom Till 1572931 (24-hour buyer check).</span>
+          <p className="text-xs sm:text-sm text-[#5F5F5F] flex items-center gap-1.5">
+            <CheckCircle2 className="w-3.5 h-3.5 text-[#006340] shrink-0" />
+            <span>
+              Every squad requires Clean Konami ID status (zero Google Play / Apple links) and 24-hour M-Pesa Till 1572931 buyer inspection.
+            </span>
           </p>
         </div>
 
         <div className="flex items-center gap-2.5 shrink-0">
           <Link href="/wanted">
-            <Button variant="secondary" size="sm">
-              Wanted Board
+            <Button variant="outline" size="sm">
+              Buyer Requests
             </Button>
           </Link>
           <Link href="/seller/create-listing">
             <Button variant="primary" size="sm">
-              <Plus className="w-3.5 h-3.5" />
-              <span>Sell Squad</span>
+              Sell Squad
             </Button>
           </Link>
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-        {/* Left Filter Rail */}
-        <div className="lg:col-span-3 lg:sticky lg:top-28">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+        {/* Left StockX Filter Rail */}
+        <div className="lg:col-span-3 lg:sticky lg:top-32">
           <ListingFilters />
         </div>
 
-        {/* Right Listings Catalog */}
+        {/* Right StockX Product Grid */}
         <div className="lg:col-span-9 space-y-5">
           {hasActiveFilters && (
-            <div className="flex flex-wrap items-center gap-2 p-3 rounded-xl store-panel text-xs">
-              <span className="text-slate-400 font-medium mr-1">Filters:</span>
+            <div className="flex flex-wrap items-center gap-2 pb-3 border-b border-[#E2E2E0] text-xs">
+              <span className="text-[#5F5F5F] font-medium mr-1">Active:</span>
               {searchParams.search && (
-                <span className="px-2.5 py-1 rounded-md bg-[#131923] border border-[#242E42] text-slate-200 font-mono">
+                <span className="px-2.5 py-1 rounded-full bg-[#F4F3F1] text-[#0F0F0F] font-medium">
                   &ldquo;{searchParams.search}&rdquo;
                 </span>
               )}
               {searchParams.minStrength && (
-                <span className="px-2.5 py-1 rounded-md bg-amber-950/60 border border-amber-500/40 text-amber-300 font-mono font-semibold">
+                <span className="px-2.5 py-1 rounded-full bg-[#F4F3F1] text-[#0F0F0F] font-semibold">
                   {searchParams.minStrength}+ OVR
                 </span>
               )}
               {searchParams.platform && searchParams.platform !== "all" && (
-                <span className="px-2.5 py-1 rounded-md bg-[#131923] border border-[#242E42] text-slate-200 capitalize">
+                <span className="px-2.5 py-1 rounded-full bg-[#F4F3F1] text-[#0F0F0F] capitalize font-medium">
                   {searchParams.platform.replace(/_/g, " ")}
                 </span>
               )}
               {searchParams.minCoins && (
-                <span className="px-2.5 py-1 rounded-md bg-[#131923] border border-[#242E42] text-slate-200 font-mono">
+                <span className="px-2.5 py-1 rounded-full bg-[#F4F3F1] text-[#0F0F0F] font-medium">
                   {Number(searchParams.minCoins).toLocaleString()}+ Coins
                 </span>
               )}
               {searchParams.manager && (
-                <span className="px-2.5 py-1 rounded-md bg-[#131923] border border-[#242E42] text-slate-200">
-                  Coach: {searchParams.manager}
+                <span className="px-2.5 py-1 rounded-full bg-[#F4F3F1] text-[#0F0F0F] font-medium">
+                  {searchParams.manager}
                 </span>
               )}
               {(searchParams.minPrice || searchParams.maxPrice) && (
-                <span className="px-2.5 py-1 rounded-md bg-[#131923] border border-[#242E42] text-slate-200 font-mono">
+                <span className="px-2.5 py-1 rounded-full bg-[#F4F3F1] text-[#0F0F0F] font-mono font-medium">
                   KES {searchParams.minPrice || "0"} – {searchParams.maxPrice || "Any"}
-                </span>
-              )}
-              {searchParams.sortBy && searchParams.sortBy !== "newest" && (
-                <span className="px-2.5 py-1 rounded-md bg-emerald-950/60 border border-emerald-500/30 text-emerald-300 capitalize">
-                  {searchParams.sortBy.replace("_", " ")}
                 </span>
               )}
               <Link
                 href="/browse"
-                className="inline-flex items-center gap-1 text-xs text-rose-400 hover:text-rose-300 font-medium ml-auto"
+                className="inline-flex items-center gap-1 text-xs text-[#006340] hover:underline font-semibold ml-auto"
               >
                 <X className="w-3.5 h-3.5" />
-                <span>Clear all</span>
+                <span>Clear All</span>
               </Link>
             </div>
           )}

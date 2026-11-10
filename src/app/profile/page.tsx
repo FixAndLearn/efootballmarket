@@ -222,7 +222,7 @@ function ProfileContent() {
 
   if (loadingUser) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-16 text-center text-slate-400">
+      <div className="max-w-4xl mx-auto px-4 py-16 text-center text-[#5F5F5F]">
         <div className="w-8 h-8 border-2 border-brand-500 border-t-transparent rounded-full animate-spin mx-auto mb-3" />
         <p className="text-xs">Loading profile settings...</p>
       </div>
@@ -234,11 +234,11 @@ function ProfileContent() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-pitch-border/60 pb-6">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white font-display flex items-center gap-2.5">
-            <User className="w-7 h-7 text-brand-400" />
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#0F0F0F] font-display flex items-center gap-2.5">
+            <User className="w-7 h-7 text-[#006340]" />
             <span>Profile &amp; Account Settings</span>
           </h1>
-          <p className="text-xs sm:text-sm text-slate-400 mt-1">
+          <p className="text-xs sm:text-sm text-[#5F5F5F] mt-1">
             Manage your personal credentials, contact numbers, email, and security safeguards
           </p>
         </div>
@@ -260,14 +260,14 @@ function ProfileContent() {
       {/* Trust & Account Status Card */}
       <div className="p-5 rounded-2xl bg-pitch-card border border-pitch-border flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3.5">
-          <div className="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shrink-0">
+          <div className="w-11 h-11 rounded-xl bg-[#EBF5F0] border border-[#BFE0CE] flex items-center justify-center text-[#006340] shrink-0">
             <ShieldCheck className="w-6 h-6" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <span className="text-sm font-bold text-white">Escrow Trading Status</span>
+              <span className="text-sm font-bold text-[#0F0F0F]">Escrow Trading Status</span>
               {isVerifiedSeller ? (
-                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">
+                <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-[#EBF5F0] text-[#006340] border border-[#BFE0CE]">
                   Verified Seller
                 </span>
               ) : (
@@ -276,20 +276,20 @@ function ProfileContent() {
                 </span>
               )}
             </div>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-[#5F5F5F] mt-0.5">
               Account Protected under KDPA institutional escrow rules
             </p>
           </div>
         </div>
 
-        <div className="text-xs text-slate-400 sm:text-right shrink-0">
+        <div className="text-xs text-[#5F5F5F] sm:text-right shrink-0">
           <p>
             Member since:{" "}
-            <strong className="text-slate-200">
+            <strong className="text-[#1F1F1F]">
               {createdAt ? new Date(createdAt).toLocaleDateString() : "Active"}
             </strong>
           </p>
-          <p className="font-mono text-[11px] text-slate-500 mt-0.5">UID: {userId.slice(0, 13)}...</p>
+          <p className="font-mono text-[11px] text-[#767676] mt-0.5">UID: {userId.slice(0, 13)}...</p>
         </div>
       </div>
 
@@ -300,8 +300,8 @@ function ProfileContent() {
           onClick={() => setActiveTab("details")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
             activeTab === "details"
-              ? "bg-pitch-surface text-brand-400 border border-brand-500/40 shadow-sm"
-              : "text-slate-400 hover:text-white hover:bg-slate-900/60"
+              ? "bg-pitch-surface text-[#006340] border border-brand-500/40 shadow-sm"
+              : "text-[#5F5F5F] hover:text-[#0F0F0F] hover:bg-[#F9F9F8]"
           }`}
         >
           <User className="w-4 h-4" />
@@ -313,8 +313,8 @@ function ProfileContent() {
           onClick={() => setActiveTab("email")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
             activeTab === "email"
-              ? "bg-pitch-surface text-amber-400 border border-amber-500/40 shadow-sm"
-              : "text-slate-400 hover:text-white hover:bg-slate-900/60"
+              ? "bg-pitch-surface text-[#B45309] border border-[#FDE68A] shadow-sm"
+              : "text-[#5F5F5F] hover:text-[#0F0F0F] hover:bg-[#F9F9F8]"
           }`}
         >
           <Mail className="w-4 h-4" />
@@ -326,8 +326,8 @@ function ProfileContent() {
           onClick={() => setActiveTab("security")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
             activeTab === "security"
-              ? "bg-pitch-surface text-rose-400 border border-rose-500/40 shadow-sm"
-              : "text-slate-400 hover:text-white hover:bg-slate-900/60"
+              ? "bg-pitch-surface text-[#C92A2A] border border-[#FECACA] shadow-sm"
+              : "text-[#5F5F5F] hover:text-[#0F0F0F] hover:bg-[#F9F9F8]"
           }`}
         >
           <Lock className="w-4 h-4" />
@@ -339,8 +339,8 @@ function ProfileContent() {
           onClick={() => setActiveTab("invites")}
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
             activeTab === "invites"
-              ? "bg-pitch-surface text-emerald-400 border border-emerald-500/40 shadow-sm"
-              : "text-slate-400 hover:text-white hover:bg-slate-900/60"
+              ? "bg-pitch-surface text-[#006340] border border-[#BFE0CE] shadow-sm"
+              : "text-[#5F5F5F] hover:text-[#0F0F0F] hover:bg-[#F9F9F8]"
           }`}
         >
           <Users className="w-4 h-4" />
@@ -353,7 +353,7 @@ function ProfileContent() {
           className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
             activeTab === "telegram"
               ? "bg-pitch-surface text-sky-400 border border-sky-500/40 shadow-sm"
-              : "text-slate-400 hover:text-white hover:bg-slate-900/60"
+              : "text-[#5F5F5F] hover:text-[#0F0F0F] hover:bg-[#F9F9F8]"
           }`}
         >
           <Send className="w-4 h-4" />
@@ -365,24 +365,24 @@ function ProfileContent() {
       {activeTab === "details" && (
         <div className="p-6 sm:p-8 rounded-2xl bg-pitch-surface border border-pitch-border space-y-5 animate-in fade-in">
           <div className="flex items-center gap-2.5 border-b border-pitch-border/60 pb-3">
-            <User className="w-5 h-5 text-brand-400" />
+            <User className="w-5 h-5 text-[#006340]" />
             <div>
-              <h2 className="text-base font-bold text-white font-display">Personal Details</h2>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <h2 className="text-base font-bold text-[#0F0F0F] font-display">Personal Details</h2>
+              <p className="text-xs text-[#5F5F5F] mt-0.5">
                 Update your display name, username, and Safaricom M-Pesa payout phone number.
               </p>
             </div>
           </div>
 
           {profileError && (
-            <div className="p-3 rounded-lg bg-rose-950/60 border border-rose-800 text-rose-300 text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{profileError}</span>
             </div>
           )}
 
           {profileSuccess && (
-            <div className="p-3 rounded-lg bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-xs flex items-center gap-2">
+            <div className="p-3 rounded-lg bg-[#EBF5F0] border border-[#BFE0CE] text-[#006340] text-xs flex items-center gap-2">
               <CheckCircle2 className="w-4 h-4 shrink-0" />
               <span>{profileSuccess}</span>
             </div>
@@ -421,7 +421,7 @@ function ProfileContent() {
               placeholder="0794400365 or +254794400365"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
-              leftIcon={<Phone className="w-4 h-4 text-emerald-400" />}
+              leftIcon={<Phone className="w-4 h-4 text-[#006340]" />}
               helperText="Used for automated Lipa Na M-Pesa escrow transfers"
             />
 
@@ -437,34 +437,34 @@ function ProfileContent() {
       {activeTab === "email" && (
         <div className="p-6 sm:p-8 rounded-2xl bg-pitch-surface border border-pitch-border space-y-5 animate-in fade-in">
           <div className="flex items-center gap-2.5 border-b border-pitch-border/60 pb-3">
-            <Mail className="w-5 h-5 text-amber-400" />
+            <Mail className="w-5 h-5 text-[#B45309]" />
             <div>
-              <h2 className="text-base font-bold text-white font-display">Email Address Management</h2>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <h2 className="text-base font-bold text-[#0F0F0F] font-display">Email Address Management</h2>
+              <p className="text-xs text-[#5F5F5F] mt-0.5">
                 Manage your confirmed email address for escrow security receipts and notifications.
               </p>
             </div>
           </div>
 
           <div className="p-4 rounded-xl bg-pitch-card border border-pitch-border/80 max-w-xl">
-            <span className="text-[11px] text-slate-400 block font-semibold uppercase tracking-wider">Current Active Email:</span>
+            <span className="text-[11px] text-[#5F5F5F] block font-semibold uppercase tracking-wider">Current Active Email:</span>
             <div className="flex items-center gap-2 mt-1.5">
-              <strong className="text-white text-sm font-mono truncate">{currentEmail}</strong>
-              <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded font-bold shrink-0">
+              <strong className="text-[#0F0F0F] text-sm font-mono truncate">{currentEmail}</strong>
+              <span className="text-[10px] bg-[#EBF5F0] text-[#006340] border border-[#BFE0CE] px-2 py-0.5 rounded font-bold shrink-0">
                 Verified
               </span>
             </div>
           </div>
 
           {emailError && (
-            <div className="p-3 rounded-lg bg-rose-950/60 border border-rose-800 text-rose-300 text-xs flex items-center gap-2 max-w-xl">
+            <div className="p-3 rounded-lg bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs flex items-center gap-2 max-w-xl">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{emailError}</span>
             </div>
           )}
 
           {emailSuccess && (
-            <div className="p-3 rounded-lg bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-xs flex items-center gap-2 max-w-xl">
+            <div className="p-3 rounded-lg bg-[#EBF5F0] border border-[#BFE0CE] text-[#006340] text-xs flex items-center gap-2 max-w-xl">
               <CheckCircle2 className="w-4 h-4 shrink-0" />
               <span>{emailSuccess}</span>
             </div>
@@ -494,24 +494,24 @@ function ProfileContent() {
       {activeTab === "security" && (
         <div className="p-6 sm:p-8 rounded-2xl bg-pitch-surface border border-pitch-border space-y-5 animate-in fade-in">
           <div className="flex items-center gap-2.5 border-b border-pitch-border/60 pb-3">
-            <Lock className="w-5 h-5 text-rose-400" />
+            <Lock className="w-5 h-5 text-[#C92A2A]" />
             <div>
-              <h2 className="text-base font-bold text-white font-display">Change Password</h2>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <h2 className="text-base font-bold text-[#0F0F0F] font-display">Change Password</h2>
+              <p className="text-xs text-[#5F5F5F] mt-0.5">
                 If you suspect unauthorized access or feel your password might be compromised, update it immediately.
               </p>
             </div>
           </div>
 
           {passwordError && (
-            <div className="p-3 rounded-lg bg-rose-950/60 border border-rose-800 text-rose-300 text-xs flex items-center gap-2 max-w-xl">
+            <div className="p-3 rounded-lg bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs flex items-center gap-2 max-w-xl">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{passwordError}</span>
             </div>
           )}
 
           {passwordSuccess && (
-            <div className="p-3 rounded-lg bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-xs flex items-center gap-2 max-w-xl">
+            <div className="p-3 rounded-lg bg-[#EBF5F0] border border-[#BFE0CE] text-[#006340] text-xs flex items-center gap-2 max-w-xl">
               <CheckCircle2 className="w-4 h-4 shrink-0" />
               <span>{passwordSuccess}</span>
             </div>
@@ -552,17 +552,17 @@ function ProfileContent() {
       {activeTab === "invites" && (
         <div className="p-6 sm:p-8 rounded-2xl bg-pitch-surface border border-pitch-border space-y-5 animate-in fade-in">
           <div className="flex items-center gap-2.5 border-b border-pitch-border/60 pb-3">
-            <Users className="w-5 h-5 text-emerald-400" />
+            <Users className="w-5 h-5 text-[#006340]" />
             <div>
-              <h2 className="text-base font-bold text-white font-display">Invite Friends &amp; Traders</h2>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <h2 className="text-base font-bold text-[#0F0F0F] font-display">Invite Friends &amp; Traders</h2>
+              <p className="text-xs text-[#5F5F5F] mt-0.5">
                 Share your personal invitation code to help gaming friends trade safely with Safaricom Till 1572931 escrow.
               </p>
             </div>
           </div>
 
           <div className="p-4 rounded-xl bg-pitch-card border border-pitch-border/80 space-y-3 max-w-xl">
-            <label className="text-xs font-semibold text-slate-200 block">
+            <label className="text-xs font-semibold text-[#1F1F1F] block">
               Your Referral Link:
             </label>
             <div className="flex items-center gap-2">
@@ -570,7 +570,7 @@ function ProfileContent() {
                 type="text"
                 readOnly
                 value={`https://www.efootballmarket.co.ke/register?ref=${encodeURIComponent(username || "you")}`}
-                className="flex-1 bg-slate-900 border border-pitch-border rounded-xl px-3 py-2 text-xs text-slate-200 font-mono select-all focus:outline-none"
+                className="flex-1 bg-[#F9F9F8] border border-pitch-border rounded-xl px-3 py-2 text-xs text-[#1F1F1F] font-mono select-all focus:outline-none"
               />
               <Button
                 type="button"
@@ -581,9 +581,9 @@ function ProfileContent() {
                   setCopiedLink(true);
                   setTimeout(() => setCopiedLink(false), 2000);
                 }}
-                className="bg-slate-800 border-pitch-border text-slate-200 hover:text-white px-3 py-2 text-xs shrink-0 flex items-center gap-1.5"
+                className="bg-[#F4F3F1] border-pitch-border text-[#1F1F1F] hover:text-[#0F0F0F] px-3 py-2 text-xs shrink-0 flex items-center gap-1.5"
               >
-                {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                {copiedLink ? <Check className="w-3.5 h-3.5 text-[#006340]" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copiedLink ? "Copied!" : "Copy Link"}</span>
               </Button>
             </div>
@@ -632,7 +632,7 @@ function ProfileContent() {
 
 export default function ProfilePage() {
   return (
-    <Suspense fallback={<div className="p-8 text-center text-slate-400 text-sm">Loading profile...</div>}>
+    <Suspense fallback={<div className="p-8 text-center text-[#5F5F5F] text-sm">Loading profile...</div>}>
       <ProfileContent />
     </Suspense>
   );

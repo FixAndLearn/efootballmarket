@@ -139,17 +139,17 @@ export function AiAssistantWidget() {
           {/* Header */}
           <div className="p-4 bg-gradient-to-r from-slate-900 via-pitch-card to-amber-950/60 border-b border-pitch-border/60 flex items-center justify-between">
             <div className="flex items-center gap-2.5">
-              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500/20 to-emerald-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shadow-inner">
-                <Bot className="w-5 h-5 text-amber-300" />
+              <div className="w-9 h-9 rounded-xl bg-gradient-to-br from-amber-500/20 to-emerald-500/20 border border-[#FDE68A] flex items-center justify-center text-[#B45309] shadow-inner">
+                <Bot className="w-5 h-5 text-[#92400E]" />
               </div>
               <div>
                 <div className="flex items-center gap-1.5">
-                  <p className="text-xs font-bold text-white leading-tight">Support Assistant</p>
-                  <span className="px-1.5 py-0.5 rounded-full bg-emerald-500/20 border border-emerald-500/40 text-[9px] font-bold text-emerald-300">
+                  <p className="text-xs font-bold text-[#0F0F0F] leading-tight">Support Assistant</p>
+                  <span className="px-1.5 py-0.5 rounded-full bg-[#EBF5F0] border border-[#BFE0CE] text-[9px] font-bold text-[#006340]">
                     Online
                   </span>
                 </div>
-                <p className="text-[10px] text-slate-400 mt-0.5">Order & Handover Help</p>
+                <p className="text-[10px] text-[#5F5F5F] mt-0.5">Order & Handover Help</p>
               </div>
             </div>
 
@@ -158,7 +158,7 @@ export function AiAssistantWidget() {
                 type="button"
                 onClick={handleReset}
                 title="Reset conversation"
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-lg text-[#5F5F5F] hover:text-[#0F0F0F] hover:bg-[#F4F3F1] transition-colors"
               >
                 <RotateCcw className="w-3.5 h-3.5" />
               </button>
@@ -166,7 +166,7 @@ export function AiAssistantWidget() {
                 type="button"
                 onClick={() => setIsExpanded(!isExpanded)}
                 title={isExpanded ? "Collapse" : "Expand"}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors hidden sm:block"
+                className="p-1.5 rounded-lg text-[#5F5F5F] hover:text-[#0F0F0F] hover:bg-[#F4F3F1] transition-colors hidden sm:block"
               >
                 {isExpanded ? <Minimize2 className="w-3.5 h-3.5" /> : <Maximize2 className="w-3.5 h-3.5" />}
               </button>
@@ -174,7 +174,7 @@ export function AiAssistantWidget() {
                 type="button"
                 onClick={() => setIsOpen(false)}
                 title="Close"
-                className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+                className="p-1.5 rounded-lg text-[#5F5F5F] hover:text-[#0F0F0F] hover:bg-[#F4F3F1] transition-colors"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -191,7 +191,7 @@ export function AiAssistantWidget() {
                 className={`flex gap-2.5 ${msg.role === "user" ? "justify-end" : "justify-start"}`}
               >
                 {msg.role === "assistant" && (
-                  <div className="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0 mt-0.5">
+                  <div className="w-7 h-7 rounded-lg bg-[#FEF3C7] border border-[#FDE68A] flex items-center justify-center text-[#B45309] shrink-0 mt-0.5">
                     <Sparkles className="w-3.5 h-3.5" />
                   </div>
                 )}
@@ -200,7 +200,7 @@ export function AiAssistantWidget() {
                   className={`max-w-[85%] rounded-2xl p-3 shadow-sm ${
                     msg.role === "user"
                       ? "bg-brand-600 text-white rounded-tr-none"
-                      : "bg-pitch-card border border-pitch-border text-slate-200 rounded-tl-none space-y-1.5"
+                      : "bg-pitch-card border border-pitch-border text-[#1F1F1F] rounded-tl-none space-y-1.5"
                   }`}
                 >
                   <p className="whitespace-pre-wrap leading-relaxed text-[11px] sm:text-xs">
@@ -208,7 +208,7 @@ export function AiAssistantWidget() {
                   </p>
                   <span
                     className={`block text-[9px] ${
-                      msg.role === "user" ? "text-emerald-200/70 text-right" : "text-slate-500"
+                      msg.role === "user" ? "text-emerald-200/70 text-right" : "text-[#767676]"
                     }`}
                   >
                     {msg.timestamp}
@@ -218,11 +218,11 @@ export function AiAssistantWidget() {
             ))}
 
             {loading && (
-              <div className="flex gap-2.5 items-center text-slate-400 text-xs">
-                <div className="w-7 h-7 rounded-lg bg-amber-500/20 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+              <div className="flex gap-2.5 items-center text-[#5F5F5F] text-xs">
+                <div className="w-7 h-7 rounded-lg bg-[#FEF3C7] border border-[#FDE68A] flex items-center justify-center text-[#B45309] shrink-0">
                   <Sparkles className="w-3.5 h-3.5 animate-spin" />
                 </div>
-                <div className="p-2.5 rounded-2xl bg-pitch-card border border-pitch-border flex items-center gap-1.5 text-[11px] text-slate-400">
+                <div className="p-2.5 rounded-2xl bg-pitch-card border border-pitch-border flex items-center gap-1.5 text-[11px] text-[#5F5F5F]">
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse" />
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse delay-150" />
                   <span className="w-1.5 h-1.5 rounded-full bg-amber-400 animate-pulse delay-300" />
@@ -235,7 +235,7 @@ export function AiAssistantWidget() {
           </div>
 
           {/* Input & Escalation Footer */}
-          <div className="p-3 bg-slate-900/90 border-t border-pitch-border/60 space-y-2">
+          <div className="p-3 bg-[#F9F9F8] border-t border-pitch-border/60 space-y-2">
             <form
               onSubmit={(e) => {
                 e.preventDefault();
@@ -249,7 +249,7 @@ export function AiAssistantWidget() {
                 value={inputMessage}
                 onChange={(e) => setInputMessage(e.target.value)}
                 disabled={loading}
-                className="flex-1 bg-pitch-card border border-pitch-border rounded-xl px-3 py-2 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
+                className="flex-1 bg-pitch-card border border-pitch-border rounded-xl px-3 py-2 text-xs text-[#0F0F0F] placeholder:text-[#767676] focus:outline-none focus:border-emerald-500"
               />
               <button
                 type="submit"
@@ -260,13 +260,13 @@ export function AiAssistantWidget() {
               </button>
             </form>
 
-            <div className="flex items-center justify-between text-[10px] text-slate-400 pt-0.5">
+            <div className="flex items-center justify-between text-[10px] text-[#5F5F5F] pt-0.5">
               <span>Safaricom Till 1572931</span>
               <a
                 href="https://wa.me/254794400365"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-emerald-400 hover:text-emerald-300 font-semibold inline-flex items-center gap-1"
+                className="text-[#006340] hover:text-[#006340] font-semibold inline-flex items-center gap-1"
               >
                 <MessageCircle className="w-3 h-3" />
                 <span>WhatsApp Support</span>
@@ -280,9 +280,9 @@ export function AiAssistantWidget() {
       <button
         type="button"
         onClick={() => setIsOpen(!isOpen)}
-        className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-[#11141B] hover:bg-[#171B24] text-slate-100 font-semibold text-xs border border-[#283040] shadow-lg transition-colors cursor-pointer"
+        className="flex items-center gap-2 px-3.5 py-2.5 rounded-xl bg-white hover:bg-[#F4F3F1] text-[#0F0F0F] font-semibold text-xs border border-[#C8C8C4] shadow-lg transition-colors cursor-pointer"
       >
-        <HelpCircle className="w-4 h-4 text-emerald-400" />
+        <HelpCircle className="w-4 h-4 text-[#006340]" />
         <span className="text-xs">Support Chat</span>
       </button>
     </div>

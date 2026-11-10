@@ -239,25 +239,25 @@ function RegisterForm() {
   if (emailConfirmationSent) {
     return (
       <div className="w-full max-w-md bg-pitch-surface border border-pitch-border rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6 text-center animate-in fade-in">
-        <div className="w-14 h-14 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 mx-auto shadow-inner">
+        <div className="w-14 h-14 rounded-2xl bg-[#FEF3C7] border border-[#FDE68A] flex items-center justify-center text-[#B45309] mx-auto shadow-inner">
           <KeyRound className="w-7 h-7" />
         </div>
         <div className="space-y-1.5">
-          <h2 className="text-2xl font-bold text-white font-display">Enter Verification Code</h2>
-          <p className="text-xs text-slate-300 leading-relaxed">
-            Enter the verification code sent to <strong className="text-amber-400 font-mono font-semibold">{email}</strong>.
+          <h2 className="text-2xl font-bold text-[#0F0F0F] font-display">Enter Verification Code</h2>
+          <p className="text-xs text-[#3D3D3D] leading-relaxed">
+            Enter the verification code sent to <strong className="text-[#B45309] font-mono font-semibold">{email}</strong>.
           </p>
         </div>
 
         {error && (
-          <div className="p-3 rounded-lg bg-rose-950/60 border border-rose-800 text-rose-300 text-xs flex items-center gap-2 text-left">
+          <div className="p-3 rounded-lg bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs flex items-center gap-2 text-left">
             <AlertCircle className="w-4 h-4 shrink-0" />
             <span>{error}</span>
           </div>
         )}
 
         {resendMessage && (
-          <div className="p-3 rounded-lg bg-emerald-950/60 border border-emerald-800 text-emerald-300 text-xs flex items-center gap-2 text-left">
+          <div className="p-3 rounded-lg bg-[#EBF5F0] border border-[#BFE0CE] text-[#006340] text-xs flex items-center gap-2 text-left">
             <CheckCircle2 className="w-4 h-4 shrink-0" />
             <span>{resendMessage}</span>
           </div>
@@ -292,13 +292,13 @@ function RegisterForm() {
 
         {/* Resend & App Launcher Controls */}
         <div className="flex flex-col gap-3 pt-2 text-xs border-t border-pitch-border/60">
-          <div className="flex items-center justify-between text-slate-400">
+          <div className="flex items-center justify-between text-[#5F5F5F]">
             <span>Didn&apos;t get the code?</span>
             <button
               type="button"
               onClick={handleResendCode}
               disabled={resendCooldown > 0 || resending}
-              className="text-amber-400 hover:text-amber-300 font-semibold disabled:text-slate-600 disabled:cursor-not-allowed transition-colors"
+              className="text-[#B45309] hover:text-[#92400E] font-semibold disabled:text-slate-600 disabled:cursor-not-allowed transition-colors"
             >
               {resending
                 ? "Sending..."
@@ -312,7 +312,7 @@ function RegisterForm() {
             <button
               type="button"
               onClick={handleOpenEmailApp}
-              className="text-slate-400 hover:text-white flex items-center gap-1.5 transition-colors"
+              className="text-[#5F5F5F] hover:text-[#0F0F0F] flex items-center gap-1.5 transition-colors"
             >
               <Mail className="w-3.5 h-3.5" />
               <span>Launch Mail App</span>
@@ -324,7 +324,7 @@ function RegisterForm() {
                 setCode("");
                 setError("");
               }}
-              className="text-slate-400 hover:text-white transition-colors"
+              className="text-[#5F5F5F] hover:text-[#0F0F0F] transition-colors"
             >
               Edit Details
             </button>
@@ -337,25 +337,25 @@ function RegisterForm() {
   return (
     <div className="w-full max-w-lg store-panel rounded-2xl p-6 sm:p-8 space-y-6">
       <div className="space-y-1">
-        <span className="text-[11px] font-mono uppercase tracking-wider text-emerald-400 font-bold">
+        <span className="text-[11px] font-mono uppercase tracking-wider text-[#006340] font-bold">
           New Trader Account
         </span>
-        <h1 className="text-2xl font-bold text-white font-display">Create Your Account</h1>
-        <p className="text-xs text-slate-400">
+        <h1 className="text-2xl font-bold text-[#0F0F0F] font-display">Create Your Account</h1>
+        <p className="text-xs text-[#5F5F5F]">
           Buy and sell unlinked eFootball squads in Kenya with M-Pesa Till 1572931 protection.
         </p>
       </div>
 
       {error && (
-        <div className="p-3 rounded-lg bg-rose-950/60 border border-rose-800 text-rose-300 text-xs flex items-center gap-2">
+        <div className="p-3 rounded-lg bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {refParam && (
-        <div className="p-3 rounded-xl bg-[#131923] border border-[#242E42] text-xs text-slate-200">
-          Invited by <strong className="text-emerald-400 font-semibold">@{refParam}</strong>
+        <div className="p-3 rounded-xl bg-[#F4F3F1] border border-[#DCDCD8] text-xs text-[#1F1F1F]">
+          Invited by <strong className="text-[#006340] font-semibold">@{refParam}</strong>
         </div>
       )}
 
@@ -364,7 +364,7 @@ function RegisterForm() {
 
       <div className="relative flex items-center justify-center my-4">
         <div className="border-t border-pitch-border/80 w-full" />
-        <span className="bg-pitch-surface px-3 text-[11px] font-semibold text-slate-400 uppercase tracking-wider shrink-0">
+        <span className="bg-pitch-surface px-3 text-[11px] font-semibold text-[#5F5F5F] uppercase tracking-wider shrink-0">
           Or register with email
         </span>
         <div className="border-t border-pitch-border/80 w-full" />
@@ -420,7 +420,7 @@ function RegisterForm() {
           placeholder="0794400365 or +254 794 400 365"
           value={phoneNumber}
           onChange={(e) => setPhoneNumber(e.target.value)}
-          leftIcon={<Phone className="w-4 h-4 text-emerald-400" />}
+          leftIcon={<Phone className="w-4 h-4 text-[#006340]" />}
           helperText="Auto-formats to international standard (+254) for WhatsApp & Lipa Na M-Pesa"
           required
         />
@@ -455,8 +455,8 @@ function RegisterForm() {
             onChange={(e) => setTermsAccepted(e.target.checked)}
             className="mt-1 rounded bg-pitch-card border-pitch-border text-brand-600 focus:ring-brand-500"
           />
-          <span className="text-xs text-slate-400">
-            I agree to the <Link href="/terms" className="text-brand-400 hover:underline">Terms of Service</Link>, <Link href="/escrow-guarantee" className="text-brand-400 hover:underline">Escrow Rules</Link>, and acknowledge that all transactions are permanently audited.
+          <span className="text-xs text-[#5F5F5F]">
+            I agree to the <Link href="/terms" className="text-[#006340] hover:underline">Terms of Service</Link>, <Link href="/escrow-guarantee" className="text-[#006340] hover:underline">Escrow Rules</Link>, and acknowledge that all transactions are permanently audited.
           </span>
         </label>
 
@@ -465,9 +465,9 @@ function RegisterForm() {
         </Button>
       </form>
 
-      <div className="text-center text-xs text-slate-400 border-t border-pitch-border/60 pt-4">
+      <div className="text-center text-xs text-[#5F5F5F] border-t border-pitch-border/60 pt-4">
         Already have an account?{" "}
-        <Link href={`/login?redirect=${encodeURIComponent(redirect)}`} className="text-brand-400 hover:underline font-semibold">
+        <Link href={`/login?redirect=${encodeURIComponent(redirect)}`} className="text-[#006340] hover:underline font-semibold">
           Log In
         </Link>
       </div>
@@ -478,7 +478,7 @@ function RegisterForm() {
 export default function RegisterPage() {
   return (
     <div className="flex-1 flex items-center justify-center p-4 py-12">
-      <Suspense fallback={<div className="text-slate-400 text-sm">Loading registration...</div>}>
+      <Suspense fallback={<div className="text-[#5F5F5F] text-sm">Loading registration...</div>}>
         <RegisterForm />
       </Suspense>
     </div>

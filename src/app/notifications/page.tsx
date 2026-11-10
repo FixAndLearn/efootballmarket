@@ -56,42 +56,42 @@ function getNotificationBadge(type: string) {
   switch (type) {
     case "scammer_alert":
       return {
-        icon: <AlertTriangle className="w-5 h-5 text-rose-400" />,
-        color: "bg-rose-500/10 border-rose-500/30 text-rose-300",
+        icon: <AlertTriangle className="w-5 h-5 text-[#C92A2A]" />,
+        color: "bg-[#FEE2E2] border-[#FECACA] text-[#B91C1C]",
         label: "Security Alert",
       };
     case "news_broadcast":
     case "news_alert":
       return {
-        icon: <Newspaper className="w-5 h-5 text-amber-400" />,
-        color: "bg-amber-500/10 border-amber-500/30 text-amber-300",
+        icon: <Newspaper className="w-5 h-5 text-[#B45309]" />,
+        color: "bg-[#FEF3C7] border-[#FDE68A] text-[#92400E]",
         label: "Official Bulletin",
       };
     case "funds_released":
     case "escrow_welcome":
     case "escrow":
       return {
-        icon: <ShieldCheck className="w-5 h-5 text-emerald-400" />,
-        color: "bg-emerald-500/10 border-emerald-500/30 text-emerald-300",
+        icon: <ShieldCheck className="w-5 h-5 text-[#006340]" />,
+        color: "bg-[#EBF5F0] border-[#BFE0CE] text-[#006340]",
         label: "Escrow & Payout",
       };
     case "order":
     case "order_status":
       return {
-        icon: <ShoppingCart className="w-5 h-5 text-indigo-400" />,
-        color: "bg-indigo-500/10 border-indigo-500/30 text-indigo-300",
+        icon: <ShoppingCart className="w-5 h-5 text-[#4338CA]" />,
+        color: "bg-[#EEF2FF] border-[#C7D2FE] text-[#3730A3]",
         label: "Order Status",
       };
     case "seller_verification":
       return {
-        icon: <Trophy className="w-5 h-5 text-amber-400" />,
-        color: "bg-amber-500/10 border-amber-500/30 text-amber-300",
+        icon: <Trophy className="w-5 h-5 text-[#B45309]" />,
+        color: "bg-[#FEF3C7] border-[#FDE68A] text-[#92400E]",
         label: "Merchant Badge",
       };
     case "mpesa_payment":
       return {
-        icon: <Coins className="w-5 h-5 text-emerald-400" />,
-        color: "bg-emerald-500/10 border-emerald-500/30 text-emerald-300",
+        icon: <Coins className="w-5 h-5 text-[#006340]" />,
+        color: "bg-[#EBF5F0] border-[#BFE0CE] text-[#006340]",
         label: "M-Pesa Deposit",
       };
     case "new_message":
@@ -103,8 +103,8 @@ function getNotificationBadge(type: string) {
       };
     default:
       return {
-        icon: <Sparkles className="w-5 h-5 text-brand-400" />,
-        color: "bg-brand-500/10 border-brand-500/30 text-brand-300",
+        icon: <Sparkles className="w-5 h-5 text-[#006340]" />,
+        color: "bg-brand-500/10 border-brand-500/30 text-[#006340]",
         label: "System Alert",
       };
   }
@@ -267,12 +267,12 @@ function NotificationsContent() {
       {/* Header Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-pitch-border/60 pb-6">
         <div>
-          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/30 text-brand-300 text-xs font-semibold mb-2">
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-brand-500/10 border border-brand-500/30 text-[#006340] text-xs font-semibold mb-2">
             <Bell className="w-3.5 h-3.5" />
             <span>Activity & Escrow Alerts</span>
           </div>
-          <h1 className="text-3xl font-bold text-white font-display">Notifications Center</h1>
-          <p className="text-sm text-slate-400 mt-1">
+          <h1 className="text-3xl font-bold text-[#0F0F0F] font-display">Notifications Center</h1>
+          <p className="text-sm text-[#5F5F5F] mt-1">
             Real-time alerts for M-Pesa escrow transfers, buyer/seller messages, and security bulletins.
           </p>
         </div>
@@ -309,7 +309,7 @@ function NotificationsContent() {
               size="sm"
               onClick={handleClearRead}
               disabled={actionLoading}
-              className="text-xs text-slate-400 hover:text-slate-200"
+              className="text-xs text-[#5F5F5F] hover:text-[#1F1F1F]"
             >
               <Trash2 className="w-3.5 h-3.5 mr-1.5" />
               Clear read
@@ -320,16 +320,16 @@ function NotificationsContent() {
 
       {/* Guest Guidance Banner if unauthenticated */}
       {!isAuthenticated && !authLoading && (
-        <div className="p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+        <div className="p-5 rounded-2xl bg-[#FEF3C7] border border-[#FDE68A] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
           <div className="flex items-start gap-3">
-            <div className="w-10 h-10 rounded-xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0 mt-0.5">
+            <div className="w-10 h-10 rounded-xl bg-[#FEF3C7] border border-[#FDE68A] flex items-center justify-center text-[#B45309] shrink-0 mt-0.5">
               <ShieldCheck className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm font-bold text-amber-200">
+              <h3 className="text-sm font-bold text-[#92400E]">
                 Log in to View Your Personalized Account Notifications
               </h3>
-              <p className="text-xs text-slate-300 mt-0.5">
+              <p className="text-xs text-[#3D3D3D] mt-0.5">
                 Sign in to track real-time M-Pesa escrow confirmations, buyer messages, and order deliveries.
               </p>
             </div>
@@ -358,7 +358,7 @@ function NotificationsContent() {
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
               activeTab === "all"
                 ? "bg-brand-600 text-white shadow-md shadow-brand-900/50"
-                : "bg-pitch-surface text-slate-400 hover:text-slate-200 hover:bg-pitch-card"
+                : "bg-pitch-surface text-[#5F5F5F] hover:text-[#1F1F1F] hover:bg-pitch-card"
             }`}
           >
             All ({notifications.length})
@@ -369,7 +369,7 @@ function NotificationsContent() {
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
               activeTab === "unread"
                 ? "bg-brand-600 text-white shadow-md shadow-brand-900/50"
-                : "bg-pitch-surface text-slate-400 hover:text-slate-200 hover:bg-pitch-card"
+                : "bg-pitch-surface text-[#5F5F5F] hover:text-[#1F1F1F] hover:bg-pitch-card"
             }`}
           >
             <span>Unread</span>
@@ -385,7 +385,7 @@ function NotificationsContent() {
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
               activeTab === "messages"
                 ? "bg-brand-600 text-white shadow-md shadow-brand-900/50"
-                : "bg-pitch-surface text-slate-400 hover:text-slate-200 hover:bg-pitch-card"
+                : "bg-pitch-surface text-[#5F5F5F] hover:text-[#1F1F1F] hover:bg-pitch-card"
             }`}
           >
             Messages
@@ -396,7 +396,7 @@ function NotificationsContent() {
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
               activeTab === "escrow"
                 ? "bg-brand-600 text-white shadow-md shadow-brand-900/50"
-                : "bg-pitch-surface text-slate-400 hover:text-slate-200 hover:bg-pitch-card"
+                : "bg-pitch-surface text-[#5F5F5F] hover:text-[#1F1F1F] hover:bg-pitch-card"
             }`}
           >
             Escrow & Payouts
@@ -407,14 +407,14 @@ function NotificationsContent() {
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
               activeTab === "orders"
                 ? "bg-brand-600 text-white shadow-md shadow-brand-900/50"
-                : "bg-pitch-surface text-slate-400 hover:text-slate-200 hover:bg-pitch-card"
+                : "bg-pitch-surface text-[#5F5F5F] hover:text-[#1F1F1F] hover:bg-pitch-card"
             }`}
           >
             Orders & Purchases
           </button>
         </div>
 
-        <div className="hidden sm:flex items-center gap-1.5 text-xs text-emerald-400 font-medium bg-emerald-950/40 border border-emerald-800/40 px-3 py-1 rounded-full">
+        <div className="hidden sm:flex items-center gap-1.5 text-xs text-[#006340] font-medium bg-[#EBF5F0] border border-[#BFE0CE] px-3 py-1 rounded-full">
           <Shield className="w-3.5 h-3.5" />
           <span>M-Pesa Escrow Ledger Synced</span>
         </div>
@@ -423,8 +423,8 @@ function NotificationsContent() {
       {/* Notifications List */}
       {loading ? (
         <div className="py-20 flex flex-col items-center justify-center space-y-3">
-          <Loader2 className="w-8 h-8 text-brand-400 animate-spin" />
-          <p className="text-xs text-slate-400">Loading your notification activity...</p>
+          <Loader2 className="w-8 h-8 text-[#006340] animate-spin" />
+          <p className="text-xs text-[#5F5F5F]">Loading your notification activity...</p>
         </div>
       ) : filteredNotifications.length > 0 ? (
         <div className="space-y-3">
@@ -437,8 +437,8 @@ function NotificationsContent() {
                 onClick={() => handleOpenNotification(item)}
                 className={`p-4 sm:p-5 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col sm:flex-row items-start justify-between gap-4 ${
                   !item.is_read
-                    ? "bg-pitch-surface border-amber-500/40 shadow-lg shadow-amber-950/20 hover:border-amber-400/80"
-                    : "bg-pitch-surface/60 border-pitch-border/80 hover:bg-pitch-surface hover:border-slate-700"
+                    ? "bg-pitch-surface border-[#FDE68A] shadow-lg shadow-amber-950/20 hover:border-amber-400/80"
+                    : "bg-pitch-surface/60 border-pitch-border/80 hover:bg-pitch-surface hover:border-[#C8C8C4]"
                 }`}
               >
                 <div className="flex items-start gap-4 min-w-0">
@@ -453,23 +453,23 @@ function NotificationsContent() {
                       </span>
 
                       {!item.is_read && (
-                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-amber-400">
+                        <span className="inline-flex items-center gap-1 text-[11px] font-bold text-[#B45309]">
                           <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
                           New
                         </span>
                       )}
 
-                      <span className="text-[11px] text-slate-500 flex items-center gap-1">
+                      <span className="text-[11px] text-[#767676] flex items-center gap-1">
                         <Clock className="w-3 h-3" />
                         {formatRelativeTime(item.created_at)}
                       </span>
                     </div>
 
-                    <h3 className="text-sm font-bold text-white leading-snug">
+                    <h3 className="text-sm font-bold text-[#0F0F0F] leading-snug">
                       {item.title}
                     </h3>
 
-                    <p className="text-xs text-slate-300 leading-relaxed whitespace-pre-line line-clamp-2">
+                    <p className="text-xs text-[#3D3D3D] leading-relaxed whitespace-pre-line line-clamp-2">
                       {item.message}
                     </p>
                   </div>
@@ -494,7 +494,7 @@ function NotificationsContent() {
                   <button
                     type="button"
                     onClick={(e) => handleDeleteOne(item.id, e)}
-                    className="p-2 rounded-xl text-slate-500 hover:text-rose-400 hover:bg-rose-950/30 transition-colors"
+                    className="p-2 rounded-xl text-[#767676] hover:text-[#C92A2A] hover:bg-[#FEE2E2] transition-colors"
                     title="Delete notification"
                   >
                     <Trash2 className="w-4 h-4" />
@@ -507,12 +507,12 @@ function NotificationsContent() {
       ) : (
         /* Empty State */
         <div className="bg-pitch-surface border border-pitch-border rounded-2xl p-12 text-center space-y-4">
-          <div className="w-14 h-14 rounded-2xl bg-pitch-card border border-pitch-border flex items-center justify-center text-slate-500 mx-auto">
+          <div className="w-14 h-14 rounded-2xl bg-pitch-card border border-pitch-border flex items-center justify-center text-[#767676] mx-auto">
             <Inbox className="w-7 h-7 stroke-[1.5]" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-white">No notifications found</h3>
-            <p className="text-xs text-slate-400 max-w-sm mx-auto mt-1">
+            <h3 className="text-base font-bold text-[#0F0F0F]">No notifications found</h3>
+            <p className="text-xs text-[#5F5F5F] max-w-sm mx-auto mt-1">
               {activeTab === "unread"
                 ? "You're all caught up! There are no unread notifications right now."
                 : "You have no activity records under this filter yet. When an escrow trade executes or an order is created, updates will appear here."}
@@ -552,7 +552,7 @@ function NotificationsContent() {
                   >
                     {getNotificationBadge(readingNotification.type).label}
                   </span>
-                  <div className="flex items-center gap-1.5 text-xs text-slate-400">
+                  <div className="flex items-center gap-1.5 text-xs text-[#5F5F5F]">
                     <Clock className="w-3 h-3" />
                     <span>{formatRelativeTime(readingNotification.created_at)}</span>
                   </div>
@@ -562,7 +562,7 @@ function NotificationsContent() {
               <button
                 type="button"
                 onClick={() => setReadingNotification(null)}
-                className="p-2 rounded-xl text-slate-400 hover:text-white hover:bg-pitch-card transition-colors"
+                className="p-2 rounded-xl text-[#5F5F5F] hover:text-[#0F0F0F] hover:bg-pitch-card transition-colors"
                 aria-label="Close"
               >
                 <X className="w-5 h-5" />
@@ -571,11 +571,11 @@ function NotificationsContent() {
 
             {/* Notification Title & Full Body Message */}
             <div className="space-y-3">
-              <h2 className="text-lg font-bold text-white font-display">
+              <h2 className="text-lg font-bold text-[#0F0F0F] font-display">
                 {readingNotification.title}
               </h2>
 
-              <div className="p-4 rounded-2xl bg-pitch-card/70 border border-pitch-border/80 text-sm text-slate-200 leading-relaxed whitespace-pre-line font-sans">
+              <div className="p-4 rounded-2xl bg-pitch-card/70 border border-pitch-border/80 text-sm text-[#1F1F1F] leading-relaxed whitespace-pre-line font-sans">
                 {readingNotification.message}
               </div>
             </div>
@@ -626,8 +626,8 @@ export default function NotificationsPage() {
     <Suspense
       fallback={
         <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-3">
-          <Loader2 className="w-8 h-8 text-brand-400 animate-spin mx-auto" />
-          <p className="text-xs text-slate-400">Opening Notification Center...</p>
+          <Loader2 className="w-8 h-8 text-[#006340] animate-spin mx-auto" />
+          <p className="text-xs text-[#5F5F5F]">Opening Notification Center...</p>
         </div>
       }
     >

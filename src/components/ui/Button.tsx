@@ -11,27 +11,27 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "primary", size = "md", isLoading = false, children, disabled, ...props }, ref) => {
     const baseStyles =
-      "inline-flex items-center justify-center font-semibold rounded-lg transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-[#090B0E] disabled:opacity-50 disabled:cursor-not-allowed select-none";
+      "inline-flex items-center justify-center font-semibold rounded-full transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed select-none cursor-pointer";
 
     const sizeStyles = {
-      sm: "text-xs px-3 py-1.5 h-8 gap-1.5",
-      md: "text-sm px-4 py-2 h-10 gap-2",
-      lg: "text-sm px-5 py-2.5 h-11 gap-2",
+      sm: "text-xs px-4 py-1.5 h-8 gap-1.5",
+      md: "text-sm px-5 py-2 h-10 gap-2",
+      lg: "text-sm px-6 py-2.5 h-11 gap-2",
     };
 
     const variantStyles = {
       primary:
-        "bg-emerald-500 text-zinc-950 hover:bg-emerald-400 focus:ring-emerald-500",
+        "bg-[#006340] text-white hover:bg-[#004D32] focus:ring-[#006340]",
       secondary:
-        "bg-[#171B24] text-slate-100 hover:bg-[#1E2430] border border-[#283040] focus:ring-slate-500",
+        "bg-[#0F0F0F] text-white hover:bg-[#262626] focus:ring-[#0F0F0F]",
       outline:
-        "border border-[#283040] bg-transparent text-slate-200 hover:bg-[#171B24] hover:text-white focus:ring-slate-500",
+        "border border-[#0F0F0F] bg-white text-[#0F0F0F] hover:bg-[#F4F3F1] focus:ring-[#0F0F0F]",
       ghost:
-        "text-slate-300 hover:bg-[#171B24] hover:text-white focus:ring-slate-500",
+        "text-[#0F0F0F] hover:bg-[#F4F3F1] focus:ring-[#0F0F0F]",
       danger:
-        "bg-rose-600 text-white hover:bg-rose-500 focus:ring-rose-500",
+        "bg-[#C92A2A] text-white hover:bg-[#A61E1E] focus:ring-[#C92A2A]",
       gold:
-        "bg-amber-400 text-zinc-950 hover:bg-amber-300 focus:ring-amber-400",
+        "bg-[#006340] text-white hover:bg-[#004D32] focus:ring-[#006340]",
     };
 
     return (

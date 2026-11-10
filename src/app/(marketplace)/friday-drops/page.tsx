@@ -38,19 +38,19 @@ export default async function FridayDropsPage() {
   }
 
   return (
-    <div className="min-h-screen text-slate-100 flex flex-col">
+    <div className="min-h-screen text-[#0F0F0F] flex flex-col">
       {/* Subbar */}
-      <div className="border-b border-[#1E2636] bg-[#0A0D13]">
+      <div className="border-b border-[#E2E2E0] bg-[#F9F9F8]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-3">
           <Link
             href="/browse"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-white transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-[#5F5F5F] hover:text-[#0F0F0F] transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back to Marketplace</span>
           </Link>
 
-          <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-[#131923] border border-[#242E42] text-amber-300 text-[11px] font-mono font-bold">
+          <span className="inline-flex items-center gap-2 px-2.5 py-1 rounded-md bg-[#F4F3F1] border border-[#DCDCD8] text-[#92400E] text-[11px] font-mono font-bold">
             <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
             FRIDAYS 14:00 – 22:00 EAT
           </span>
@@ -60,13 +60,13 @@ export default async function FridayDropsPage() {
       <main className="flex-1">
         <FridayDropsSection listings={listings} />
 
-        <section className="py-12 border-t border-[#181F2C]">
+        <section className="py-12 border-t border-[#E2E2E0]">
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
             <div className="space-y-1.5">
-              <h2 className="text-xl sm:text-2xl font-bold text-white font-display">
+              <h2 className="text-xl sm:text-2xl font-bold text-[#0F0F0F] font-display">
                 How Friday Drops Work
               </h2>
-              <p className="text-xs sm:text-sm text-slate-400 max-w-2xl">
+              <p className="text-xs sm:text-sm text-[#5F5F5F] max-w-2xl">
                 Fixed-price weekly drops for high-OVR squads with the same Safaricom Till 1572931 payment hold and 24-hour buyer check.
               </p>
             </div>
@@ -97,11 +97,11 @@ export default async function FridayDropsPage() {
                 const Icon = rule.icon;
                 return (
                   <div key={rule.title} className="store-panel rounded-xl p-5 space-y-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-[#131923] border border-[#242E42] text-emerald-400 flex items-center justify-center">
+                    <div className="w-8 h-8 rounded-lg bg-[#F4F3F1] border border-[#DCDCD8] text-[#006340] flex items-center justify-center">
                       <Icon className="w-4 h-4" />
                     </div>
-                    <h3 className="text-sm font-bold text-white font-display">{rule.title}</h3>
-                    <p className="text-xs text-slate-400 leading-relaxed">{rule.desc}</p>
+                    <h3 className="text-sm font-bold text-[#0F0F0F] font-display">{rule.title}</h3>
+                    <p className="text-xs text-[#5F5F5F] leading-relaxed">{rule.desc}</p>
                   </div>
                 );
               })}

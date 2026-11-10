@@ -80,43 +80,43 @@ export function WithdrawModal({ availableBalance, escrowBalance = 0, isOpen, onC
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 text-slate-400 hover:text-slate-200 transition-colors"
+          className="absolute top-4 right-4 text-[#5F5F5F] hover:text-[#1F1F1F] transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
         <div className="flex items-center gap-3 mb-5 border-b border-pitch-border/60 pb-4">
-          <div className="w-10 h-10 rounded-xl bg-emerald-950/60 border border-emerald-800/60 flex items-center justify-center text-emerald-400 shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-[#EBF5F0] border border-[#BFE0CE] flex items-center justify-center text-[#006340] shrink-0">
             <ArrowUpRight className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-slate-100">Withdraw Earnings</h3>
-            <p className="text-xs text-slate-400">Direct Safaricom M-Pesa B2C Payout</p>
+            <h3 className="text-base font-bold text-[#0F0F0F]">Withdraw Earnings</h3>
+            <p className="text-xs text-[#5F5F5F]">Direct Safaricom M-Pesa B2C Payout</p>
           </div>
         </div>
 
         {success ? (
           <div className="text-center py-6 space-y-3">
-            <div className="w-12 h-12 rounded-full bg-emerald-950/80 border border-emerald-500 text-emerald-400 mx-auto flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-[#EBF5F0] border border-emerald-500 text-[#006340] mx-auto flex items-center justify-center">
               <CheckCircle2 className="w-6 h-6" />
             </div>
-            <h4 className="text-base font-bold text-slate-100">Withdrawal Submitted!</h4>
-            <p className="text-xs text-slate-300">
+            <h4 className="text-base font-bold text-[#0F0F0F]">Withdrawal Submitted!</h4>
+            <p className="text-xs text-[#3D3D3D]">
               Funds request has been queued and is being disbursed to your M-Pesa line.
             </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-4">
             <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border flex items-center justify-between text-xs">
-              <span className="text-slate-400">Withdrawable Balance:</span>
-              <span className="font-bold text-emerald-400 text-sm font-mono">
+              <span className="text-[#5F5F5F]">Withdrawable Balance:</span>
+              <span className="font-bold text-[#006340] text-sm font-mono">
                 {formatCurrency(availableBalance)}
               </span>
             </div>
 
             {escrowBalance > 0 && (
-              <div className="p-3 rounded-xl bg-amber-950/30 border border-amber-800/50 flex items-start gap-2.5 text-xs text-amber-300">
-                <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5 text-amber-400" />
+              <div className="p-3 rounded-xl bg-[#FEF3C7] border border-[#FDE68A] flex items-start gap-2.5 text-xs text-[#92400E]">
+                <ShieldAlert className="w-4 h-4 shrink-0 mt-0.5 text-[#B45309]" />
                 <span>
                   <strong>{formatCurrency(escrowBalance)}</strong> is currently in escrow. It will move to your Available Balance once the buyer confirms receipt of the account.
                 </span>
@@ -124,7 +124,7 @@ export function WithdrawModal({ availableBalance, escrowBalance = 0, isOpen, onC
             )}
 
             {error && (
-              <div className="p-3 rounded-lg bg-rose-950/60 border border-rose-800 text-rose-300 text-xs flex items-center gap-2">
+              <div className="p-3 rounded-lg bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs flex items-center gap-2">
                 <AlertCircle className="w-4 h-4 shrink-0" />
                 <span>{error}</span>
               </div>

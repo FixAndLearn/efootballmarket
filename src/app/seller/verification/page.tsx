@@ -19,7 +19,7 @@ function SellerVerificationContent() {
       {/* Back Link */}
       <Link
         href="/dashboard/seller"
-        className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-slate-200 transition-colors"
+        className="inline-flex items-center gap-1.5 text-xs font-medium text-[#5F5F5F] hover:text-[#1F1F1F] transition-colors"
       >
         <ArrowLeft className="w-4 h-4" />
         <span>Back to Seller Dashboard</span>
@@ -28,52 +28,52 @@ function SellerVerificationContent() {
       {/* Hero Badge & Heading */}
       <div className="text-center space-y-3">
 
-        <h1 className="text-3xl sm:text-4xl font-extrabold text-white font-display tracking-tight">
+        <h1 className="text-3xl sm:text-4xl font-extrabold text-[#0F0F0F] font-display tracking-tight">
           Seller Identity Verification (KYC)
         </h1>
-        <p className="text-sm text-slate-400 max-w-lg mx-auto leading-relaxed">
+        <p className="text-sm text-[#5F5F5F] max-w-lg mx-auto leading-relaxed">
           Official Government ID verification is coming soon as we finalize formal accreditation and compliance certifications.
         </p>
       </div>
 
       {/* Coming Soon Announcement Card */}
-      <div className="bg-gradient-to-b from-pitch-surface to-pitch-card border border-amber-500/30 rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden space-y-6">
+      <div className="bg-gradient-to-b from-pitch-surface to-pitch-card border border-[#FDE68A] rounded-3xl p-6 sm:p-8 shadow-2xl relative overflow-hidden space-y-6">
         <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl pointer-events-none" />
 
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 border-b border-pitch-border/80 pb-6">
-          <div className="w-14 h-14 rounded-2xl bg-amber-500/20 border border-amber-500/40 flex items-center justify-center text-amber-400 shrink-0 shadow-lg">
+          <div className="w-14 h-14 rounded-2xl bg-[#FEF3C7] border border-[#FDE68A] flex items-center justify-center text-[#B45309] shrink-0 shadow-lg">
             <Scale className="w-7 h-7" />
           </div>
           <div>
-            <h2 className="text-lg font-bold text-white">Why is KYC Scheduled for Coming Soon?</h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <h2 className="text-lg font-bold text-[#0F0F0F]">Why is KYC Scheduled for Coming Soon?</h2>
+            <p className="text-xs text-[#5F5F5F] mt-0.5">
               Information on identity verification policies and data minimization.
             </p>
           </div>
         </div>
 
-        <div className="space-y-4 text-xs text-slate-300 leading-relaxed">
+        <div className="space-y-4 text-xs text-[#3D3D3D] leading-relaxed">
           <p>
             To protect user privacy and minimize collection of sensitive personal data in line with the Kenya Data Protection Act, 2019, government identity card uploads are not active. Sellers can create listings and conduct trades without submitting identity documents.
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
             <div className="p-4 rounded-2xl bg-pitch-surface/90 border border-pitch-border space-y-2">
-              <div className="flex items-center gap-2 text-emerald-400 font-bold text-xs">
+              <div className="flex items-center gap-2 text-[#006340] font-bold text-xs">
                 <ShieldCheck className="w-4 h-4 shrink-0" />
                 <span>Zero Blockers for Sellers</span>
               </div>
-              <p className="text-[11px] text-slate-400 leading-relaxed">
+              <p className="text-[11px] text-[#5F5F5F] leading-relaxed">
                 You can create listings, publish your squads, and sell immediately. No waiting for KYC approval.
               </p>
             </div>
 
             <div className="p-4 rounded-2xl bg-pitch-surface/90 border border-pitch-border space-y-2">
-              <div className="flex items-center gap-2 text-indigo-400 font-bold text-xs">
+              <div className="flex items-center gap-2 text-[#4338CA] font-bold text-xs">
                 <Lock className="w-4 h-4 shrink-0" />
                 <span>M-Pesa Escrow Protected</span>
               </div>
-              <p className="text-[11px] text-slate-400 leading-relaxed">
+              <p className="text-[11px] text-[#5F5F5F] leading-relaxed">
                 All transactions are enforced by automated Safaricom M-Pesa escrow. Payouts are locked until the buyer inspects credentials.
               </p>
             </div>
@@ -82,8 +82,8 @@ function SellerVerificationContent() {
 
         {/* Action CTAs */}
         <div className="pt-4 border-t border-pitch-border/80 flex flex-col sm:flex-row items-center justify-between gap-4">
-          <div className="flex items-center gap-2 text-xs text-slate-400">
-            <Sparkles className="w-4 h-4 text-amber-400" />
+          <div className="flex items-center gap-2 text-xs text-[#5F5F5F]">
+            <Sparkles className="w-4 h-4 text-[#B45309]" />
             <span>Ready to trade? Start listing today without KYC delays.</span>
           </div>
 
@@ -105,7 +105,7 @@ export default function SellerVerificationPage() {
   return (
     <Suspense
       fallback={
-        <div className="py-24 text-center text-xs text-slate-400">
+        <div className="py-24 text-center text-xs text-[#5F5F5F]">
           Loading verification portal...
         </div>
       }

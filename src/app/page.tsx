@@ -1,64 +1,60 @@
+import React from "react";
+import Link from "next/link";
+import Image from "next/image";
+import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { ListingService } from "@/services/listingService";
+import { TournamentService } from "@/services/tournamentService";
+import { NewsService } from "@/services/newsService";
+import { Listing, NewsArticle, Tournament } from "@/types/database";
+import { ListingCard } from "@/components/marketplace/ListingCard";
+import { HomeFaqAccordion } from "@/components/home/HomeFaqAccordion";
 import { Button } from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/utils";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { AnalyticsService } from "@/services/analyticsService";
-import { ListingService } from "@/services/listingService";
-import { NewsService } from "@/services/newsService";
-import { TournamentService } from "@/services/tournamentService";
-import { Listing, NewsArticle, Tournament } from "@/types/database";
-import { ListingCard3D } from "@/components/marketplace/ListingCard3D";
-import { HomeFaqAccordion } from "@/components/home/HomeFaqAccordion";
 import {
   ArrowRight,
-  ArrowUpRight,
   Check,
+  CheckCircle2,
+  Clock,
   Handshake,
-  Lock,
-  Plus,
   Search,
   ShieldAlert,
   ShieldCheck,
   Smartphone,
-  Target,
   Trophy,
   X,
 } from "lucide-react";
-import Image from "next/image";
-import Link from "next/link";
 
 export const revalidate = 0;
 
-const STOREFRONT_CATEGORIES = [
+const STOCKX_CATEGORIES = [
   {
-    title: "3150+ Division 1 Squads",
-    subtitle: "High-strength meta lineups & booster managers",
-    tag: "3150+ OVR",
-    tagStyle: "bg-amber-500/20 border-amber-400/40 text-amber-300",
-    image: "/images/cat-elite.jpg",
+    title: "Epic & Booster (3150+)",
+    subtitle: "Division 1 meta squads",
+    image: "/images/sx-cat-epic.jpg",
     href: "/browse?minStrength=3150",
   },
   {
-    title: "Stacked Epic & Big Time",
-    subtitle: "Gullit, Vieira, Maldini & double-booster legends",
-    tag: "EPIC ROSTERS",
-    tagStyle: "bg-amber-500/20 border-amber-400/40 text-amber-300",
-    image: "/images/cat-epics.jpg",
-    href: "/browse?search=Epic",
+    title: "Mobile Squads",
+    subtitle: "Clean Konami ID Android & iOS",
+    image: "/images/sx-cat-mobile.jpg",
+    href: "/browse?platform=android",
   },
   {
-    title: "Starter & Budget Squads",
-    subtitle: "Unlinked Android & iOS accounts under KES 5,000",
-    tag: "UNDER KES 5K",
-    tagStyle: "bg-emerald-500/20 border-emerald-400/40 text-emerald-300",
-    image: "/images/cat-budget.jpg",
+    title: "PlayStation & PC",
+    subtitle: "PS5, PS4 & Steam rosters",
+    image: "/images/sx-cat-console.jpg",
+    href: "/browse?platform=playstation_5",
+  },
+  {
+    title: "Under KES 5,000",
+    subtitle: "Verified starter & budget squads",
+    image: "/images/sx-cat-budget.jpg",
     href: "/browse?maxPrice=5000",
   },
   {
-    title: "WhatsApp / FB Middleman",
-    subtitle: "Lock off-platform deals via M-Pesa Till 1572931",
-    tag: "TILL 1572931",
-    tagStyle: "bg-emerald-500/20 border-emerald-400/40 text-emerald-300",
-    image: "/images/cat-middleman.jpg",
+    title: "Middleman Escrow",
+    subtitle: "Verify WhatsApp & FB deals",
+    image: "/images/sx-cat-middleman.jpg",
     href: "/middleman",
   },
 ];
@@ -66,36 +62,20 @@ const STOREFRONT_CATEGORIES = [
 export default async function HomePage() {
   const supabase = createServerSupabaseClient();
   const listingService = new ListingService(supabase);
-  const analyticsService = new AnalyticsService(supabase);
   const newsService = new NewsService(supabase);
 
   let listings: Listing[] = [];
-  let metrics = {
-    totalListingsCount: 0,
-    activeListingsCount: 0,
-    completedOrdersCount: 0,
-    totalVolumeKes: 0,
-    verifiedSellersCount: 0,
-  };
   let tournaments: Tournament[] = [];
   let articles: NewsArticle[] = [];
 
   try {
-    const [listingsResult, metricsResult, tourneysResult, articlesResult] = await Promise.all([
+    const [listingsResult, tourneysResult, articlesResult] = await Promise.all([
       listingService.getListings({ limit: 8, sortBy: "newest" }).catch(() => ({ listings: [], totalCount: 0 })),
-      analyticsService.getPlatformOverview().catch(() => ({
-        totalListingsCount: 0,
-        activeListingsCount: 0,
-        completedOrdersCount: 0,
-        totalVolumeKes: 0,
-        verifiedSellersCount: 0,
-      })),
       TournamentService.getAllTournaments().catch(() => []),
       newsService.getPublishedArticles().catch(() => []),
     ]);
 
     listings = listingsResult.listings || [];
-    metrics = metricsResult;
     tournaments = tourneysResult || [];
     articles = (articlesResult || []).slice(0, 6);
   } catch (err) {
@@ -103,258 +83,113 @@ export default async function HomePage() {
   }
 
   return (
-    <div className="min-h-screen text-slate-100">
-      {/* 1. FRAMED PRO GAMING STADIUM HERO */}
+    <div className="min-h-screen bg-white text-[#0F0F0F]">
+      {/* 1. STOCKX SIGNATURE FRAMED SPLIT HERO BANNER */}
       <section className="pt-5 pb-8 sm:pt-7 sm:pb-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="relative rounded-2xl border border-[#1E2636] bg-[#0B0F16] overflow-hidden shadow-panel">
-            {/* Stadium Floodlight Backdrop */}
-            <div className="absolute inset-0 pointer-events-none select-none">
-              <Image
-                src="/images/hero-stadium.jpg"
-                alt=""
-                fill
-                priority
-                sizes="100vw"
-                className="object-cover object-center opacity-55"
-              />
-              <div className="absolute inset-0 bg-gradient-to-r from-[#07090D] via-[#07090D]/90 to-[#07090D]/45" />
-              <div className="absolute inset-0 bg-gradient-to-t from-[#07090D] via-transparent to-[#07090D]/40" />
-            </div>
-
-            <div className="relative z-10 p-6 sm:p-10 lg:p-12 grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-10 items-center">
-              {/* Left: Storefront Pitch & Search Dock */}
-              <div className="lg:col-span-7 space-y-6">
-                <div className="inline-flex flex-wrap items-center gap-2 text-[11px] font-mono text-slate-300">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-emerald-500/15 border border-emerald-500/35 text-emerald-300 font-semibold">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                    M-PESA TILL 1572931
-                  </span>
-                  <span className="px-2.5 py-1 rounded-md bg-[#131923]/90 border border-[#242E42] text-slate-300">
-                    24H BUYER CHECK
-                  </span>
-                  <span className="px-2.5 py-1 rounded-md bg-[#131923]/90 border border-[#242E42] text-slate-300">
-                    KONAMI ID ONLY
-                  </span>
+          <div className="rounded-lg bg-[#F4F3F1] border border-[#E2E2E0] overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-stretch">
+            {/* Left Editorial Pitch */}
+            <div className="lg:col-span-6 p-6 sm:p-10 lg:p-12 flex flex-col justify-between space-y-6">
+              <div className="space-y-4">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#006340] text-white text-[11px] font-bold uppercase tracking-wider">
+                  <CheckCircle2 className="w-3.5 h-3.5" />
+                  <span>eFootballMarket Verified</span>
                 </div>
 
-                <div className="space-y-3">
-                  <h1 className="text-3xl sm:text-5xl lg:text-[50px] font-bold font-display tracking-[-0.03em] text-white leading-[1.06]">
-                    Trade Verified eFootball Squads in Kenya.
-                  </h1>
-                  <p className="text-sm sm:text-base text-slate-300 max-w-xl leading-relaxed">
-                    Buy unlinked Android, iOS, and console accounts with automated M-Pesa payment hold—or list your squad and get paid once the buyer verifies in-game.
-                  </p>
-                </div>
+                <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-extrabold font-display tracking-[-0.035em] text-[#0F0F0F] leading-[1.08]">
+                  Buy &amp; Sell Verified eFootball Squads in Kenya.
+                </h1>
 
-                {/* High-Contrast Storefront Search Dock */}
-                <div className="max-w-xl space-y-3">
-                  <form
-                    action="/browse"
-                    method="GET"
-                    className="flex items-center p-1.5 rounded-xl bg-[#0D1117]/95 border border-[#283348] focus-within:border-emerald-500 shadow-2xl transition-colors"
-                  >
-                    <Search className="w-4 h-4 text-slate-400 ml-3 shrink-0" />
-                    <input
-                      type="text"
-                      name="search"
-                      placeholder="Search player, coach, or OVR (e.g. Gullit, Vieira, 3180)..."
-                      className="w-full px-3 py-2.5 bg-transparent text-sm text-white placeholder:text-slate-500 focus:outline-none"
-                    />
-                    <Button type="submit" variant="primary" size="md" className="shrink-0 px-5">
-                      Search
-                    </Button>
-                  </form>
+                <p className="text-sm sm:text-base text-[#4A4A4A] max-w-lg leading-relaxed">
+                  Every listed Mobile and Console squad is verified for Clean Konami ID ownership—no Google Play or Apple links—backed by 24-hour M-Pesa Till 1572931 escrow custody.
+                </p>
+              </div>
 
-                  {/* Popular Filter Tags */}
-                  <div className="flex flex-wrap items-center gap-1.5 text-xs">
-                    <span className="text-slate-400 font-medium mr-1">Popular:</span>
-                    {[
-                      { label: "3150+ OVR", href: "/browse?minStrength=3150" },
-                      { label: "Gullit", href: "/browse?search=Gullit" },
-                      { label: "Vieira", href: "/browse?search=Vieira" },
-                      { label: "Android", href: "/browse?platform=android" },
-                      { label: "iOS", href: "/browse?platform=ios" },
-                      { label: "Under KES 5K", href: "/browse?maxPrice=5000" },
-                    ].map((tag) => (
-                      <Link
-                        key={tag.label}
-                        href={tag.href}
-                        className="px-2.5 py-1 rounded-md bg-[#111620]/90 hover:bg-[#192130] border border-[#242E42] hover:border-slate-600 text-slate-300 hover:text-white transition-colors"
-                      >
-                        {tag.label}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Primary Storefront CTAs */}
-                <div className="flex flex-wrap items-center gap-3 pt-1">
+              <div className="space-y-4">
+                <div className="flex flex-wrap items-center gap-3">
                   <Link href="/browse">
                     <Button variant="primary" size="lg">
-                      <span>Explore Marketplace</span>
+                      <span>Browse Market</span>
                       <ArrowRight className="w-4 h-4" />
                     </Button>
                   </Link>
                   <Link href="/seller/create-listing">
-                    <Button variant="secondary" size="lg" className="bg-[#131923]/90 border-[#283348]">
-                      <Plus className="w-4 h-4 text-emerald-400" />
-                      <span>List Your Squad</span>
+                    <Button variant="outline" size="lg">
+                      <span>Sell Your Squad</span>
                     </Button>
                   </Link>
                 </div>
-              </div>
 
-              {/* Right: Machined Live M-Pesa Escrow HUD */}
-              <div className="lg:col-span-5">
-                <div className="rounded-xl bg-[#0D1117]/95 backdrop-blur-md border border-[#232D40] shadow-panel p-5 sm:p-6 space-y-4">
-                  <div className="flex items-center justify-between pb-3.5 border-b border-[#1E2636]">
-                    <div className="flex items-center gap-2">
-                      <div className="w-7 h-7 rounded-lg bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400">
-                        <ShieldCheck className="w-4 h-4" />
-                      </div>
-                      <div>
-                        <h2 className="text-xs font-bold uppercase tracking-wider text-white">
-                          Escrow Order Flow
-                        </h2>
-                        <p className="text-[11px] text-slate-400">Safaricom Lipa Na M-Pesa</p>
-                      </div>
-                    </div>
-                    <span className="px-2.5 py-1 rounded-md bg-[#131923] border border-[#253045] font-mono text-xs font-bold text-emerald-400">
-                      Till 1572931
-                    </span>
-                  </div>
-
-                  {/* 4-Stage Pipeline */}
-                  <div className="space-y-2.5">
-                    {[
-                      {
-                        step: "01",
-                        title: "Buyer Pays via STK Push",
-                        meta: "LOCKED",
-                        desc: "Payment is held on Till 1572931—never sent directly to the seller's personal line.",
-                      },
-                      {
-                        step: "02",
-                        title: "Encrypted Konami ID Delivery",
-                        meta: "≤ 12 HRS",
-                        desc: "Seller submits login credentials and shares the email change code in order chat.",
-                      },
-                      {
-                        step: "03",
-                        title: "In-Game & Link Data Check",
-                        meta: "24H WINDOW",
-                        desc: "Verify squad OVR, confirm Google Play & Apple show Not Linked, and bind your email.",
-                      },
-                      {
-                        step: "04",
-                        title: "Instant Payout or Refund",
-                        meta: "AUTOMATED",
-                        desc: "Confirm to release seller M-Pesa payout, or open a dispute for a 100% refund.",
-                      },
-                    ].map((item) => (
-                      <div
-                        key={item.step}
-                        className="p-3 rounded-lg bg-[#131923] border border-[#20293A] flex items-start gap-3"
-                      >
-                        <span className="px-1.5 py-0.5 rounded bg-[#0D1117] border border-[#273246] font-mono text-[11px] font-bold text-emerald-400 shrink-0 mt-0.5">
-                          {item.step}
-                        </span>
-                        <div className="min-w-0 flex-1">
-                          <div className="flex items-center justify-between gap-2">
-                            <span className="text-xs font-semibold text-white truncate">
-                              {item.title}
-                            </span>
-                            <span className="text-[10px] font-mono font-semibold text-slate-400 shrink-0">
-                              {item.meta}
-                            </span>
-                          </div>
-                          <p className="text-[11px] text-slate-400 mt-0.5 leading-snug">
-                            {item.desc}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-
-                  <div className="pt-2 flex items-center justify-between gap-3 text-xs border-t border-[#1E2636]">
+                {/* Popular StockX Trending Pills */}
+                <div className="flex items-center gap-2 flex-wrap text-xs pt-1">
+                  <span className="text-[#5F5F5F] font-medium">Trending:</span>
+                  {[
+                    { label: "3150+ OVR", href: "/browse?minStrength=3150" },
+                    { label: "Gullit", href: "/browse?search=Gullit" },
+                    { label: "Vieira", href: "/browse?search=Vieira" },
+                    { label: "Under KES 5K", href: "/browse?maxPrice=5000" },
+                    { label: "Meta Guides", href: "/news" },
+                  ].map((pill) => (
                     <Link
-                      href="/middleman"
-                      className="inline-flex items-center gap-1.5 text-slate-300 hover:text-white font-medium transition-colors"
+                      key={pill.label}
+                      href={pill.href}
+                      className="px-2.5 py-1 rounded-full bg-white border border-[#DCDCD8] hover:border-[#0F0F0F] text-[#0F0F0F] font-medium transition-colors"
                     >
-                      <Handshake className="w-3.5 h-3.5 text-emerald-400" />
-                      <span>Use for WhatsApp/FB deal</span>
+                      {pill.label}
                     </Link>
-                    <Link
-                      href="/escrow-guarantee"
-                      className="inline-flex items-center gap-1 text-emerald-400 hover:text-emerald-300 font-semibold"
-                    >
-                      <span>Protection rules</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </Link>
-                  </div>
+                  ))}
                 </div>
               </div>
+            </div>
+
+            {/* Right Studio Product Photograph */}
+            <div className="lg:col-span-6 relative min-h-[250px] sm:min-h-[340px] bg-[#EAE8E3]">
+              <Image
+                src="/images/sx-hero-banner.jpg"
+                alt="Verified eFootball Mobile and PlayStation squads"
+                fill
+                priority
+                sizes="(max-width: 1024px) 100vw, 50vw"
+                className="object-cover object-center"
+              />
             </div>
           </div>
         </div>
       </section>
 
-      {/* 2. STOREFRONT CATEGORY TILES (ELDORADO / EPIC STORE STYLE) */}
-      <section className="pb-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <h2 className="text-lg sm:text-xl font-bold text-white font-display">
-                Shop by Squad Tier
-              </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
-                Jump straight to Division 1 rosters, stacked Epic legends, or off-platform escrow.
-              </p>
-            </div>
+      {/* 2. STOCKX BROWSE BY CATEGORY SHELF */}
+      <section className="py-6 sm:py-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+          <div className="flex items-baseline justify-between">
+            <h2 className="text-lg sm:text-xl font-bold text-[#0F0F0F] font-display tracking-tight">
+              Browse by Category
+            </h2>
             <Link
-              href="/friday-drops"
-              className="inline-flex items-center gap-1.5 text-xs font-mono font-semibold text-amber-300 hover:text-amber-200 shrink-0"
+              href="/browse"
+              className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#006340] hover:underline"
             >
-              <span>Friday 8H Drops</span>
-              <ArrowUpRight className="w-3.5 h-3.5" />
+              <span>See All</span>
+              <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-            {STOREFRONT_CATEGORIES.map((cat) => (
-              <Link
-                key={cat.title}
-                href={cat.href}
-                className="group relative h-48 rounded-xl overflow-hidden border border-[#1E2636] hover:border-emerald-500/60 bg-[#0D1117] shadow-card flex flex-col justify-between p-4 transition-all"
-              >
-                <Image
-                  src={cat.image}
-                  alt={cat.title}
-                  fill
-                  sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 25vw"
-                  className="object-cover group-hover:scale-105 transition-transform duration-500 opacity-75"
-                />
-                <div className="absolute inset-0 bg-gradient-to-t from-[#07090D] via-[#07090D]/65 to-black/25" />
-
-                <div className="relative z-10 flex items-center justify-between">
-                  <span
-                    className={`px-2 py-0.5 rounded border text-[10px] font-mono font-bold uppercase tracking-wider backdrop-blur-sm ${cat.tagStyle}`}
-                  >
-                    {cat.tag}
-                  </span>
-                  <span className="w-7 h-7 rounded-lg bg-[#0D1117]/80 border border-[#253045] flex items-center justify-center text-slate-300 group-hover:text-emerald-400 group-hover:border-emerald-500/50 transition-colors">
-                    <ArrowUpRight className="w-4 h-4" />
-                  </span>
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
+            {STOCKX_CATEGORIES.map((cat) => (
+              <Link key={cat.title} href={cat.href} className="group block space-y-2.5">
+                <div className="relative aspect-square w-full rounded-md bg-[#F4F3F1] border border-[#EAE9E6] group-hover:border-[#0F0F0F] overflow-hidden transition-colors">
+                  <Image
+                    src={cat.image}
+                    alt={cat.title}
+                    fill
+                    sizes="(max-width: 640px) 50vw, 20vw"
+                    className="object-cover group-hover:scale-[1.04] transition-transform duration-300"
+                  />
                 </div>
-
-                <div className="relative z-10 space-y-1">
-                  <h3 className="text-base font-bold font-display text-white group-hover:text-emerald-300 transition-colors">
+                <div>
+                  <h3 className="text-sm font-bold text-[#0F0F0F] group-hover:text-[#006340] transition-colors">
                     {cat.title}
                   </h3>
-                  <p className="text-xs text-slate-300 line-clamp-1">
-                    {cat.subtitle}
-                  </p>
+                  <p className="text-xs text-[#5F5F5F]">{cat.subtitle}</p>
                 </div>
               </Link>
             ))}
@@ -362,173 +197,127 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 3. LIVE MARKETPLACE SQUADS GRID */}
-      <section className="py-12 border-t border-[#181F2C]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+      {/* 3. RECENTLY VERIFIED SQUADS SHELF (StockX Product Row) */}
+      <section className="py-8 sm:py-10 border-t border-[#E2E2E0]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
+          <div className="flex items-baseline justify-between gap-4">
             <div>
-              <div className="flex items-center gap-2.5">
-                <h2 className="text-xl sm:text-2xl font-bold text-white font-display">
-                  Available Squads
-                </h2>
-                {metrics.activeListingsCount > 0 && (
-                  <span className="px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-[11px] font-mono font-bold text-emerald-300">
-                    {metrics.activeListingsCount} LIVE
-                  </span>
-                )}
-              </div>
-              <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                Verified unlinked Konami ID accounts ready for immediate M-Pesa STK checkout.
+              <h2 className="text-lg sm:text-xl font-bold text-[#0F0F0F] font-display tracking-tight">
+                Recently Listed Squads
+              </h2>
+              <p className="text-xs text-[#5F5F5F] mt-0.5">
+                Live Ask Prices in Kenyan Shillings (KES) · Verified Clean Konami ID Required
               </p>
             </div>
-
-            <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar">
-              {[
-                { label: "All", href: "/browse", active: true },
-                { label: "3150+ OVR", href: "/browse?minStrength=3150" },
-                { label: "Android", href: "/browse?platform=android" },
-                { label: "iOS", href: "/browse?platform=ios" },
-                { label: "Under 5K", href: "/browse?maxPrice=5000" },
-              ].map((pill) => (
-                <Link
-                  key={pill.label}
-                  href={pill.href}
-                  className={`px-3 py-1.5 rounded-lg text-xs font-medium whitespace-nowrap border transition-colors ${
-                    pill.active
-                      ? "bg-[#131923] border-emerald-500/40 text-white"
-                      : "bg-[#0D1117] border-[#1E2636] text-slate-400 hover:text-white hover:border-slate-600"
-                  }`}
-                >
-                  {pill.label}
-                </Link>
-              ))}
-            </div>
+            <Link
+              href="/browse"
+              className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#006340] hover:underline shrink-0"
+            >
+              <span>Browse All</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
 
           {listings.length > 0 ? (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                {listings.map((item) => (
-                  <ListingCard3D key={item.id} listing={item} />
-                ))}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-8">
+              {listings.map((listing) => (
+                <ListingCard key={listing.id} listing={listing} />
+              ))}
+            </div>
+          ) : (
+            <div className="rounded-lg bg-[#F4F3F1] border border-[#E2E2E0] p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
+              <div className="space-y-1.5 max-w-xl">
+                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-[#006340] uppercase tracking-wider">
+                  <ShieldCheck className="w-4 h-4" />
+                  <span>Zero Synthetic Listings Policy</span>
+                </span>
+                <h3 className="text-lg font-bold text-[#0F0F0F] font-display">
+                  Have a Clean Konami ID Squad Ready to Sell?
+                </h3>
+                <p className="text-xs sm:text-sm text-[#5F5F5F] leading-relaxed">
+                  We never display fake stock—every card on our market is a real user-submitted squad. List your Android, iOS, or Console team for free and get paid via M-Pesa once the buyer verifies in-game.
+                </p>
               </div>
-              <div className="pt-2 flex justify-center">
-                <Link href="/browse">
-                  <Button variant="secondary" size="lg" className="px-8">
-                    <span>View All Marketplace Squads</span>
-                    <ArrowRight className="w-4 h-4" />
+              <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+                <Link href="/seller/create-listing">
+                  <Button variant="primary" size="md">
+                    Sell Your Squad
                   </Button>
                 </Link>
-              </div>
-            </>
-          ) : (
-            /* Rich 2-Column Storefront Action Split when catalog has 0 active rows */
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-              <div className="relative rounded-2xl overflow-hidden store-panel p-6 sm:p-8 flex flex-col justify-between min-h-[240px]">
-                <Image
-                  src="/images/cat-elite.jpg"
-                  alt=""
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover opacity-20 pointer-events-none"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#0D1117] via-[#0D1117]/90 to-[#0D1117]/60 pointer-events-none" />
-
-                <div className="relative z-10 space-y-2.5 max-w-md">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-[10px] font-mono font-bold text-emerald-300 uppercase">
-                    All Current Squads Sold / In Inspection
-                  </span>
-                  <h3 className="text-xl font-bold font-display text-white">
-                    Have a Clean Konami ID Squad to Sell?
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                    Publish your Starting XI screenshots and KES price in 2 minutes. Buyers pay upfront into Till 1572931 before you ever share credentials, and you withdraw straight to M-Pesa.
-                  </p>
-                </div>
-
-                <div className="relative z-10 pt-5 flex flex-wrap items-center gap-3">
-                  <Link href="/seller/create-listing">
-                    <Button variant="primary" size="md">
-                      <Plus className="w-4 h-4" />
-                      <span>List Squad for Sale</span>
-                    </Button>
-                  </Link>
-                  <Link href="/seller/guidelines">
-                    <Button variant="secondary" size="md">
-                      <span>Seller Rules</span>
-                    </Button>
-                  </Link>
-                </div>
-              </div>
-
-              <div className="relative rounded-2xl overflow-hidden store-panel p-6 sm:p-8 flex flex-col justify-between min-h-[240px]">
-                <Image
-                  src="/images/cat-budget.jpg"
-                  alt=""
-                  fill
-                  sizes="(max-width: 1024px) 100vw, 50vw"
-                  className="object-cover opacity-20 pointer-events-none"
-                />
-                <div className="absolute inset-0 bg-gradient-to-r from-[#0D1117] via-[#0D1117]/90 to-[#0D1117]/60 pointer-events-none" />
-
-                <div className="relative z-10 space-y-2.5 max-w-md">
-                  <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-amber-500/15 border border-amber-500/30 text-[10px] font-mono font-bold text-amber-300 uppercase">
-                    Buyer Request Board
-                  </span>
-                  <h3 className="text-xl font-bold font-display text-white">
-                    Hunting for a Specific Player or OVR?
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-300 leading-relaxed">
-                    Post your target OVR, desired Epic cards (Gullit, Vieira, Blitz Curler), and KES budget on the Wanted Board. Verified Kenyan sellers will send matching squads directly to you.
-                  </p>
-                </div>
-
-                <div className="relative z-10 pt-5 flex flex-wrap items-center gap-3">
-                  <Link href="/wanted">
-                    <Button variant="gold" size="md">
-                      <Target className="w-4 h-4" />
-                      <span>Post on Wanted Board</span>
-                    </Button>
-                  </Link>
-                  <Link href="/friday-drops">
-                    <Button variant="secondary" size="md">
-                      <span>Friday 8H Drops</span>
-                    </Button>
-                  </Link>
-                </div>
+                <Link href="/wanted">
+                  <Button variant="outline" size="md">
+                    View Buyer Requests
+                  </Button>
+                </Link>
               </div>
             </div>
           )}
         </div>
       </section>
 
-      {/* 4. SAFETY MATRIX + INSTANT TRADER BLACKLIST CHECK */}
-      <section className="py-12 border-t border-[#181F2C]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-            {/* Left (7 cols): Why Traders Use Till 1572931 Comparison */}
-            <div className="lg:col-span-7 store-panel rounded-2xl p-6 sm:p-7 flex flex-col justify-between space-y-5">
-              <div className="space-y-1">
-                <h2 className="text-lg sm:text-xl font-bold text-white font-display">
-                  Why Kenyan Players Trade Through Till 1572931
-                </h2>
-                <p className="text-xs sm:text-sm text-slate-400">
-                  Side-by-side comparison between unverified group chats and platform-held M-Pesa checkout.
+      {/* 4. STOCKX VERIFICATION STANDARD & TRADER CHECK */}
+      <section className="py-10 sm:py-12 border-t border-[#E2E2E0] bg-[#F9F9F8]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
+          {/* 3-Step Verification Bar */}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            {[
+              {
+                step: "01",
+                title: "Deposit to Safaricom Till 1572931",
+                desc: "Buyer funds are locked in platform escrow custody—never sent directly to a stranger's personal M-Pesa number.",
+              },
+              {
+                step: "02",
+                title: "Clean Konami ID Verification",
+                desc: "Buyer performs Data Transfer and checks Extras -> Support -> Link Data to confirm Google Play & Apple ID are Not Linked.",
+              },
+              {
+                step: "03",
+                title: "24-Hour Check & Instant Payout",
+                desc: "Once the buyer rebinds my.konami.net email & 2FA (or raises an evidence-backed dispute), settlement completes.",
+              },
+            ].map((item) => (
+              <div
+                key={item.step}
+                className="p-6 rounded-lg bg-white border border-[#E2E2E0] space-y-2"
+              >
+                <span className="inline-block px-2 py-0.5 rounded bg-[#EBF5F0] text-[#006340] font-mono text-xs font-bold">
+                  STEP {item.step}
+                </span>
+                <h3 className="text-base font-bold text-[#0F0F0F] font-display">
+                  {item.title}
+                </h3>
+                <p className="text-xs sm:text-sm text-[#5F5F5F] leading-relaxed">
+                  {item.desc}
                 </p>
               </div>
+            ))}
+          </div>
 
-              <div className="rounded-xl border border-[#1E2636] overflow-hidden text-xs">
-                <div className="grid grid-cols-12 bg-[#131923] border-b border-[#1E2636] px-4 py-2.5 font-mono font-semibold text-[11px] uppercase tracking-wider text-slate-400">
-                  <div className="col-span-5">Checkpoint</div>
-                  <div className="col-span-3 text-rose-400">Group DM</div>
-                  <div className="col-span-4 text-emerald-400">eFootballMarket</div>
+          {/* Comparison Table + Instant Scammer Check Split */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
+            {/* Left (7 cols): Comparison Table */}
+            <div className="lg:col-span-7 rounded-lg bg-white border border-[#E2E2E0] p-6 sm:p-7 flex flex-col justify-between space-y-5">
+              <div>
+                <span className="text-[11px] font-bold uppercase tracking-wider text-[#006340]">
+                  Buyer &amp; Seller Protection
+                </span>
+                <h2 className="text-xl font-bold text-[#0F0F0F] font-display mt-1">
+                  Why Kenyan Players Use Verified Escrow Instead of Group Chats
+                </h2>
+              </div>
+
+              <div className="rounded-md border border-[#E2E2E0] overflow-hidden text-xs">
+                <div className="grid grid-cols-12 bg-[#F4F3F1] px-4 py-2.5 font-bold uppercase tracking-wider text-[10px] text-[#5F5F5F] border-b border-[#E2E2E0]">
+                  <div className="col-span-5">Verification Point</div>
+                  <div className="col-span-3">Direct Chat</div>
+                  <div className="col-span-4 text-[#006340]">eFootballMarket</div>
                 </div>
-
                 {[
                   {
-                    feature: "M-Pesa Payment Custody",
-                    bad: "Sent to stranger",
-                    good: "Held on Till 1572931",
+                    feature: "Payment Custody",
+                    bad: "Personal phone",
+                    good: "Held via Till 1572931",
                   },
                   {
                     feature: "Google Play / Apple Link",
@@ -536,31 +325,31 @@ export default async function HomePage() {
                     good: "Unlinked or full refund",
                   },
                   {
-                    feature: "Fake M-Pesa SMS Risk",
-                    bad: "Edited screenshots",
-                    good: "Safaricom API callback",
+                    feature: "M-Pesa Receipt Check",
+                    bad: "Edited SMS risk",
+                    good: "Server-verified receipt",
                   },
                   {
-                    feature: "Inspection Window",
-                    bad: "Blocked after pay",
-                    good: "24-hour full squad check",
+                    feature: "Squad Inspection",
+                    bad: "Zero recourse",
+                    good: "24-hour full check",
                   },
                 ].map((row, idx) => (
                   <div
                     key={row.feature}
-                    className={`grid grid-cols-12 items-center px-4 py-3 ${
-                      idx !== 3 ? "border-b border-[#181F2C]" : ""
+                    className={`grid grid-cols-12 items-center px-4 py-3 bg-white ${
+                      idx !== 3 ? "border-b border-[#E2E2E0]" : ""
                     }`}
                   >
-                    <div className="col-span-5 font-medium text-slate-200 pr-2">
+                    <div className="col-span-5 font-semibold text-[#0F0F0F] pr-2">
                       {row.feature}
                     </div>
-                    <div className="col-span-3 text-slate-400 flex items-center gap-1.5 pr-2">
-                      <X className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                    <div className="col-span-3 text-[#5F5F5F] flex items-center gap-1.5 pr-2">
+                      <X className="w-3.5 h-3.5 text-[#C92A2A] shrink-0" />
                       <span className="truncate">{row.bad}</span>
                     </div>
-                    <div className="col-span-4 text-slate-100 font-medium flex items-center gap-1.5">
-                      <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+                    <div className="col-span-4 text-[#0F0F0F] font-semibold flex items-center gap-1.5">
+                      <Check className="w-3.5 h-3.5 text-[#006340] shrink-0" />
                       <span className="truncate">{row.good}</span>
                     </div>
                   </div>
@@ -568,41 +357,44 @@ export default async function HomePage() {
               </div>
             </div>
 
-            {/* Right (5 cols): Quick Blacklist Check + Middleman */}
-            <div className="lg:col-span-5 store-panel rounded-2xl p-6 sm:p-7 flex flex-col justify-between space-y-6">
+            {/* Right (5 cols): Trader Phone Check + Middleman */}
+            <div className="lg:col-span-5 rounded-lg bg-white border border-[#E2E2E0] p-6 sm:p-7 flex flex-col justify-between space-y-6">
               <div className="space-y-3">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-rose-500/15 border border-rose-500/30 text-[11px] font-mono font-bold text-rose-300">
+                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-[#FEE2E2] text-[#B91C1C] text-[11px] font-bold uppercase tracking-wider">
                   <ShieldAlert className="w-3.5 h-3.5" />
-                  <span>TRADER VERIFICATION</span>
+                  <span>Trader Verification</span>
                 </div>
-                <h3 className="text-lg sm:text-xl font-bold text-white font-display">
-                  Trading on WhatsApp or Facebook? Check Their Number First.
+                <h3 className="text-lg sm:text-xl font-bold text-[#0F0F0F] font-display">
+                  Trading Off-Platform? Check Their Number First.
                 </h3>
-                <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                  Run any Kenyan `07...` / `01...` mobile number or handle against reported scam incidents—or lock the deal inside a neutral Middleman contract.
+                <p className="text-xs sm:text-sm text-[#5F5F5F] leading-relaxed">
+                  Look up any Kenyan 07... or 01... phone number against community scam reports—or move your WhatsApp deal into a neutral Middleman contract.
                 </p>
 
                 <form action="/scammer-check" method="GET" className="pt-1 flex items-center gap-2">
-                  <input
-                    type="text"
-                    name="q"
-                    placeholder="Enter 07... number or handle"
-                    className="flex-1 h-10 px-3.5 rounded-lg bg-[#131923] border border-[#242E42] text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-rose-500"
-                  />
-                  <Button type="submit" variant="danger" size="md" className="h-10 shrink-0">
+                  <div className="relative flex-1">
+                    <Search className="w-3.5 h-3.5 text-[#5F5F5F] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="text"
+                      name="q"
+                      placeholder="Enter 07... number or handle"
+                      className="w-full h-10 pl-8 pr-3 rounded-md bg-[#F4F3F1] border border-[#C8C8C4] text-xs text-[#0F0F0F] placeholder:text-[#6B6B6B] focus:bg-white focus:outline-none focus:border-[#0F0F0F]"
+                    />
+                  </div>
+                  <Button type="submit" variant="secondary" size="md" className="h-10 shrink-0">
                     Check
                   </Button>
                 </form>
               </div>
 
-              <div className="pt-4 border-t border-[#1E2636] flex items-center justify-between gap-3">
-                <div className="text-xs text-slate-400">
+              <div className="pt-4 border-t border-[#E2E2E0] flex items-center justify-between gap-3">
+                <span className="text-xs text-[#5F5F5F] font-medium">
                   Agreed on a price already?
-                </div>
+                </span>
                 <Link href="/middleman">
-                  <Button variant="secondary" size="sm">
-                    <Handshake className="w-3.5 h-3.5 text-emerald-400" />
-                    <span>Open Middleman Contract</span>
+                  <Button variant="outline" size="sm">
+                    <Handshake className="w-3.5 h-3.5 text-[#006340]" />
+                    <span>Middleman Escrow</span>
                   </Button>
                 </Link>
               </div>
@@ -611,22 +403,22 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 5. TOURNAMENTS (When Active) */}
+      {/* 5. COMMUNITY TOURNAMENTS (When Active) */}
       {tournaments.length > 0 && (
-        <section className="py-12 border-t border-[#181F2C]">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            <div className="flex items-end justify-between gap-4">
+        <section className="py-10 border-t border-[#E2E2E0]">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
+            <div className="flex items-baseline justify-between gap-4">
               <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-white font-display">
-                  1v1 Community Tournaments
+                <h2 className="text-lg sm:text-xl font-bold text-[#0F0F0F] font-display">
+                  Community Tournaments
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                  Knockout eFootball brackets with verified M-Pesa prize pools.
+                <p className="text-xs text-[#5F5F5F] mt-0.5">
+                  Organized 1v1 and knockout eFootball cups in Kenya.
                 </p>
               </div>
               <Link
                 href="/tournaments"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 shrink-0"
+                className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#006340] hover:underline shrink-0"
               >
                 <span>All Brackets</span>
                 <ArrowRight className="w-3.5 h-3.5" />
@@ -637,30 +429,30 @@ export default async function HomePage() {
               {tournaments.map((t) => (
                 <div
                   key={t.id}
-                  className="store-panel rounded-xl p-5 flex flex-col justify-between"
+                  className="rounded-lg bg-white border border-[#E2E2E0] p-5 flex flex-col justify-between"
                 >
-                  <div className="space-y-2.5">
+                  <div className="space-y-2">
                     <div className="flex items-center justify-between text-xs">
-                      <span className="px-2 py-0.5 rounded bg-[#131923] border border-[#242E42] text-slate-300 capitalize">
+                      <span className="px-2 py-0.5 rounded bg-[#F4F3F1] text-[#0F0F0F] font-semibold capitalize">
                         {t.status?.replace("_", " ")}
                       </span>
-                      <span className="text-slate-400 font-mono">
+                      <span className="text-[#5F5F5F] font-mono">
                         {t.registered_count || 0}/{t.max_players} slots
                       </span>
                     </div>
-                    <h3 className="text-base font-bold text-white font-display">{t.title}</h3>
-                    <p className="text-xs text-slate-400 line-clamp-2">{t.subtitle}</p>
+                    <h3 className="text-base font-bold text-[#0F0F0F] font-display">{t.title}</h3>
+                    <p className="text-xs text-[#5F5F5F] line-clamp-2">{t.subtitle}</p>
                     <div className="pt-2 flex items-center justify-between text-xs">
-                      <span className="text-slate-400">Prize Pool</span>
-                      <strong className="text-emerald-400 font-mono text-sm">
+                      <span className="text-[#5F5F5F]">Champion Pool</span>
+                      <strong className="text-[#006340] font-mono text-sm">
                         {formatCurrency(t.prize_pool_kes, "KES")}
                       </strong>
                     </div>
                   </div>
-                  <div className="pt-4 mt-4 border-t border-[#1E2636]">
+                  <div className="pt-4 mt-4 border-t border-[#E2E2E0]">
                     <Link href="/tournaments">
-                      <Button variant="secondary" size="sm" className="w-full">
-                        <Trophy className="w-3.5 h-3.5 text-amber-400" />
+                      <Button variant="outline" size="sm" className="w-full">
+                        <Trophy className="w-3.5 h-3.5 text-[#006340]" />
                         <span>View Bracket</span>
                       </Button>
                     </Link>
@@ -672,40 +464,44 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* 6. VISUAL TRADING GUIDES & TACTICAL BRIEFINGS */}
+      {/* 6. STOCKX EDITORIAL & META GUIDES SHELF (6 SSR Articles) */}
       {articles.length > 0 && (
-        <section className="py-12 border-t border-[#181F2C]">
+        <section className="py-10 sm:py-12 border-t border-[#E2E2E0]">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            <div className="flex items-end justify-between gap-4">
+            <div className="flex items-baseline justify-between gap-4">
               <div>
-                <h2 className="text-xl sm:text-2xl font-bold text-white font-display">
-                  eFootball 2026 Guides, Tactics &amp; Trading Safety
+                <h2 className="text-lg sm:text-xl font-bold text-[#0F0F0F] font-display tracking-tight">
+                  Editorial: eFootball 2026 Tactics &amp; Trading Guides
                 </h2>
-                <p className="text-xs sm:text-sm text-slate-400 mt-1">
-                  Team playstyles, 88+ manager stat breakpoints, custom progression builds, 60 FPS tuning, and Konami ID escrow guides.
+                <p className="text-xs sm:text-sm text-[#5F5F5F] mt-0.5">
+                  Team playstyles, 88+ manager stat breakpoints, custom progression builds, 60 FPS mobile tuning &amp; Konami ID safety.
                 </p>
               </div>
               <Link
                 href="/news"
-                className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 shrink-0"
+                className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-[#006340] hover:underline shrink-0"
               >
-                <span>All 12+ Guides</span>
+                <span>Read All Guides</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {articles.map((article) => {
                 const isAlert = article.category === "scammer_alert";
                 const isMeta = article.category === "efootball_news";
+                const readMin = Math.max(
+                  3,
+                  Math.ceil((article.content || "").split(/\s+/).length / 195)
+                );
                 return (
                   <Link
                     key={article.id}
                     href={`/news/${article.slug}`}
-                    className="store-panel rounded-xl overflow-hidden hover:border-slate-600 flex flex-col justify-between transition-colors group"
+                    className="group flex flex-col justify-between rounded-lg border border-[#E2E2E0] hover:border-[#0F0F0F] bg-white overflow-hidden transition-colors"
                   >
                     <div>
-                      <div className="relative h-44 w-full bg-[#131923] overflow-hidden border-b border-[#1E2636]">
+                      <div className="relative h-44 w-full bg-[#F4F3F1] overflow-hidden border-b border-[#E2E2E0]">
                         {article.cover_image_url ? (
                           <Image
                             src={article.cover_image_url}
@@ -713,36 +509,44 @@ export default async function HomePage() {
                             fill
                             sizes="(max-width: 768px) 100vw, 33vw"
                             unoptimized={!article.cover_image_url.startsWith("/")}
-                            className="object-cover group-hover:scale-105 transition-transform duration-500"
+                            className="object-cover group-hover:scale-[1.03] transition-transform duration-300"
                           />
                         ) : null}
-                        <div className="absolute inset-0 bg-gradient-to-t from-[#0D1117] via-transparent to-black/30" />
-                        <span
-                          className={`absolute top-3 left-3 px-2.5 py-0.5 rounded text-[10px] font-mono font-bold uppercase tracking-wider border backdrop-blur-sm ${
-                            isAlert
-                              ? "bg-rose-950/80 text-rose-300 border-rose-700/60"
-                              : isMeta
-                              ? "bg-[#0D1117]/85 text-sky-300 border-sky-500/35"
-                              : "bg-[#0D1117]/85 text-emerald-300 border-emerald-500/35"
-                          }`}
-                        >
-                          {isAlert ? "Safety Advisory" : isMeta ? "Meta & Tactics" : "Handover Guide"}
-                        </span>
                       </div>
 
                       <div className="p-5 space-y-2">
-                        <h3 className="text-base font-bold font-display text-white group-hover:text-emerald-400 transition-colors line-clamp-2 leading-snug">
+                        <div className="flex items-center justify-between text-[11px] font-semibold">
+                          <span
+                            className={
+                              isAlert
+                                ? "text-[#B91C1C]"
+                                : "text-[#006340]"
+                            }
+                          >
+                            {isAlert
+                              ? "SAFETY ADVISORY"
+                              : isMeta
+                              ? "META & TACTICS"
+                              : "VERIFICATION GUIDE"}
+                          </span>
+                          <span className="text-[#5F5F5F] flex items-center gap-1 font-normal">
+                            <Clock className="w-3 h-3" />
+                            {readMin} min
+                          </span>
+                        </div>
+
+                        <h3 className="text-base font-bold font-display text-[#0F0F0F] group-hover:underline line-clamp-2 leading-snug">
                           {article.title}
                         </h3>
-                        <p className="text-xs text-slate-400 line-clamp-2 leading-relaxed">
+                        <p className="text-xs text-[#5F5F5F] line-clamp-2 leading-relaxed">
                           {article.summary}
                         </p>
                       </div>
                     </div>
 
-                    <div className="px-5 pb-4 pt-3 border-t border-[#181F2C] flex items-center justify-between text-xs font-medium text-slate-400 group-hover:text-white">
-                      <span>Read briefing</span>
-                      <ArrowRight className="w-3.5 h-3.5 text-emerald-400" />
+                    <div className="px-5 pb-4 pt-3 border-t border-[#F0F0EE] flex items-center justify-between text-xs font-semibold text-[#0F0F0F] group-hover:text-[#006340]">
+                      <span>Read Article</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
                     </div>
                   </Link>
                 );
@@ -752,27 +556,27 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* 7. FAQ & SUPPORT SPLIT */}
-      <section className="py-12 border-t border-[#181F2C]">
+      {/* 7. FAQ & NAIROBI SUPPORT DESK */}
+      <section className="py-10 sm:py-12 border-t border-[#E2E2E0]">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <div className="lg:col-span-4 space-y-4">
-              <h2 className="text-xl sm:text-2xl font-bold text-white font-display">
+              <h2 className="text-xl sm:text-2xl font-bold text-[#0F0F0F] font-display">
                 Frequently Asked Questions
               </h2>
-              <p className="text-xs sm:text-sm text-slate-400 leading-relaxed">
-                Everything you need to know about Safaricom Till 1572931 deposits, 24-hour squad verification, and seller payouts.
+              <p className="text-xs sm:text-sm text-[#5F5F5F] leading-relaxed">
+                How Safaricom Till 1572931 custody, Clean Konami ID checks, and seller M-Pesa payouts work.
               </p>
-              <div className="store-panel rounded-xl p-4 space-y-2 text-xs">
-                <div className="flex items-center gap-2 text-white font-semibold">
-                  <Smartphone className="w-4 h-4 text-emerald-400" />
+              <div className="rounded-lg bg-[#F4F3F1] border border-[#E2E2E0] p-5 space-y-2 text-xs">
+                <div className="flex items-center gap-2 text-[#0F0F0F] font-bold">
+                  <Smartphone className="w-4 h-4 text-[#006340]" />
                   <span>Direct Order Support</span>
                 </div>
-                <p className="text-slate-400 leading-relaxed">
-                  Need help with an active trade or M-Pesa confirmation? Reach our Nairobi desk on WhatsApp at <strong className="text-slate-200">0794 400 365</strong>.
+                <p className="text-[#5F5F5F] leading-relaxed">
+                  Need assistance with an active escrow order or M-Pesa confirmation? Reach our support desk on WhatsApp at <strong className="text-[#0F0F0F]">0794 400 365</strong>.
                 </p>
                 <div className="pt-1">
-                  <Link href="/contact" className="text-emerald-400 hover:text-emerald-300 font-semibold">
+                  <Link href="/contact" className="text-[#006340] hover:underline font-semibold">
                     Contact &amp; Support Hours &rarr;
                   </Link>
                 </div>

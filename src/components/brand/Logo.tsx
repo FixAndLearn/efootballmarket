@@ -17,45 +17,38 @@ export function Logo({
   clickable = true,
   href = "/",
 }: LogoProps) {
-  const iconDimensions = {
-    sm: "w-7 h-7",
-    md: "w-8 h-8",
-    lg: "w-10 h-10",
-  };
-
   const textSizes = {
-    sm: "text-base",
-    md: "text-[18px]",
+    sm: "text-lg",
+    md: "text-[21px]",
     lg: "text-2xl",
   };
 
+  const badgeSizes = {
+    sm: "w-5 h-5",
+    md: "w-6 h-6",
+    lg: "w-7 h-7",
+  };
+
   const content = (
-    <div className={cn("inline-flex items-center gap-2.5 group select-none shrink-0", className)}>
+    <div className={cn("inline-flex items-center gap-2 group select-none shrink-0", className)}>
+      {/* StockX-inspired Verified X-Check Emblem */}
       <div
         className={cn(
-          "relative flex items-center justify-center rounded-lg bg-[#111722] border border-emerald-500/35 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.08)] group-hover:border-emerald-400 transition-colors",
-          iconDimensions[size]
+          "relative flex items-center justify-center rounded-full bg-[#006340] text-white transition-transform group-hover:scale-105",
+          badgeSizes[size]
         )}
       >
         <svg
-          viewBox="0 0 28 28"
+          viewBox="0 0 24 24"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="w-5 h-5"
+          className="w-3.5 h-3.5"
           aria-hidden="true"
         >
           <path
-            d="M14 2.5L23.5 7.2V14.8C23.5 20.1 19.4 24.1 14 25.7C8.6 24.1 4.5 20.1 4.5 14.8V7.2L14 2.5Z"
-            fill="#10B981"
-            fillOpacity="0.16"
-            stroke="#10B981"
-            strokeWidth="1.8"
-            strokeLinejoin="round"
-          />
-          <path
-            d="M9.8 14.2L12.6 17L18.4 11.2"
-            stroke="#34D399"
-            strokeWidth="2.2"
+            d="M5.5 12.5L10 17L18.5 7.5"
+            stroke="#FFFFFF"
+            strokeWidth="2.8"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
@@ -63,17 +56,17 @@ export function Logo({
       </div>
 
       {showText && (
-        <div className="flex items-center gap-1.5 leading-none">
+        <div className="flex items-baseline gap-1 leading-none">
           <span
             className={cn(
-              "font-display font-bold tracking-[-0.03em] text-white",
+              "font-display font-extrabold tracking-[-0.045em] text-[#0F0F0F]",
               textSizes[size]
             )}
           >
-            eFootball<span className="text-emerald-400">Market</span>
+            eFootball<span className="text-[#006340]">X</span>
           </span>
-          <span className="hidden sm:inline-flex items-center px-1.5 py-0.5 rounded bg-[#131923] border border-[#232D3F] text-[9px] font-mono font-bold text-slate-400 uppercase">
-            KE
+          <span className="hidden sm:inline-block text-[10px] font-bold tracking-wider uppercase text-[#5F5F5F] ml-0.5">
+            Market
           </span>
         </div>
       )}
@@ -82,7 +75,7 @@ export function Logo({
 
   if (clickable && href) {
     return (
-      <Link href={href} className="focus:outline-none">
+      <Link href={href} className="focus:outline-none" aria-label="eFootballMarket Home">
         {content}
       </Link>
     );

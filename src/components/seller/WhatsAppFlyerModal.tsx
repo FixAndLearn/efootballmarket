@@ -200,18 +200,18 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
         {/* Header */}
         <div className="p-6 border-b border-pitch-border bg-pitch-card/60 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-[#FEF3C7] text-[#B45309] flex items-center justify-center">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-white">WhatsApp Group Promo Flyer</h3>
-              <p className="text-xs text-slate-400">Post into Kenyan eFootball WhatsApp groups to sell fast.</p>
+              <h3 className="text-base font-bold text-[#0F0F0F]">WhatsApp Group Promo Flyer</h3>
+              <p className="text-xs text-[#5F5F5F]">Post into Kenyan eFootball WhatsApp groups to sell fast.</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800"
+            className="p-1.5 rounded-lg text-[#5F5F5F] hover:text-[#0F0F0F] hover:bg-[#F4F3F1]"
           >
             <X className="w-4 h-4" />
           </button>
@@ -220,10 +220,10 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
         {/* Content */}
         <div className="p-6 overflow-y-auto space-y-6 flex-1">
           {/* Canvas Poster Preview */}
-          <div className="aspect-square max-w-[380px] mx-auto rounded-2xl overflow-hidden border border-pitch-border shadow-2xl bg-slate-950 relative">
+          <div className="aspect-square max-w-[380px] mx-auto rounded-2xl overflow-hidden border border-pitch-border shadow-2xl bg-white relative">
             <canvas ref={canvasRef} className="w-full h-full object-contain" />
             {generating && (
-              <div className="absolute inset-0 bg-slate-950/80 flex items-center justify-center text-xs text-amber-300">
+              <div className="absolute inset-0 bg-white flex items-center justify-center text-xs text-[#92400E]">
                 Generating High-Resolution Poster...
               </div>
             )}
@@ -232,16 +232,16 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
           {/* Viral WhatsApp Text Box */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-slate-300 flex items-center gap-1.5">
-                <MessageCircle className="w-3.5 h-3.5 text-emerald-400" />
+              <label className="text-xs font-bold text-[#3D3D3D] flex items-center gap-1.5">
+                <MessageCircle className="w-3.5 h-3.5 text-[#006340]" />
                 <span>Pre-formatted WhatsApp Pitch Text:</span>
               </label>
               <button
                 type="button"
                 onClick={handleCopyPitch}
-                className="text-xs text-amber-400 hover:text-amber-300 font-semibold flex items-center gap-1"
+                className="text-xs text-[#B45309] hover:text-[#92400E] font-semibold flex items-center gap-1"
               >
-                {copiedText ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                {copiedText ? <Check className="w-3.5 h-3.5 text-[#006340]" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copiedText ? "Copied!" : "Copy Text"}</span>
               </button>
             </div>
@@ -250,7 +250,7 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
               readOnly
               rows={5}
               value={viralText}
-              className="w-full p-3 rounded-xl bg-pitch-card border border-pitch-border text-xs text-slate-200 font-mono select-all"
+              className="w-full p-3 rounded-xl bg-pitch-card border border-pitch-border text-xs text-[#1F1F1F] font-mono select-all"
             />
           </div>
         </div>
@@ -261,7 +261,7 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
             <a
               href={downloadUrl}
               download={`efootball_squad_${listing.id.slice(0, 8)}.png`}
-              className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs shadow-lg transition-all"
+              className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#006340] hover:bg-[#004D32] text-[#0F0F0F] font-bold text-xs shadow-lg transition-all"
             >
               <Download className="w-4 h-4" />
               <span>Download Poster Image</span>

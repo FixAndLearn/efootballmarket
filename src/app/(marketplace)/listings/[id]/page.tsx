@@ -113,17 +113,17 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 lg:pb-12 w-full space-y-8">
       {/* Top Breadcrumb Bar */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#1E2636]">
-        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-slate-400 flex-wrap">
-          <Link href="/" className="hover:text-white transition-colors">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E2E2E0]">
+        <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-[#5F5F5F] flex-wrap">
+          <Link href="/" className="hover:text-[#0F0F0F] transition-colors">
             Home
           </Link>
           <span className="text-slate-600">/</span>
-          <Link href="/browse" className="hover:text-white transition-colors">
+          <Link href="/browse" className="hover:text-[#0F0F0F] transition-colors">
             Marketplace
           </Link>
           <span className="text-slate-600">/</span>
-          <span className="text-slate-200 font-medium truncate max-w-[260px] sm:max-w-md">
+          <span className="text-[#1F1F1F] font-medium truncate max-w-[260px] sm:max-w-md">
             {listing.title}
           </span>
         </nav>
@@ -131,7 +131,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
         <div className="flex items-center gap-3">
           <Link
             href="/browse"
-            className="inline-flex items-center gap-1.5 text-xs font-medium text-slate-400 hover:text-white transition-colors"
+            className="inline-flex items-center gap-1.5 text-xs font-medium text-[#5F5F5F] hover:text-[#0F0F0F] transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back to Marketplace</span>
@@ -159,51 +159,51 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
 
           {/* Main Squad Telemetry Sheet */}
           <div className="store-panel rounded-2xl p-6 sm:p-7 space-y-6">
-            <div className="space-y-2 border-b border-[#1E2636] pb-5">
-              <div className="flex items-center gap-2 text-[11px] font-mono text-slate-400 flex-wrap">
-                <span className="px-2 py-0.5 rounded bg-[#131923] border border-[#242E42] text-slate-200 uppercase">
+            <div className="space-y-2 border-b border-[#E2E2E0] pb-5">
+              <div className="flex items-center gap-2 text-[11px] font-mono text-[#5F5F5F] flex-wrap">
+                <span className="px-2 py-0.5 rounded bg-[#F4F3F1] border border-[#DCDCD8] text-[#1F1F1F] uppercase">
                   {getPlatformLabel(listing.platform)}
                 </span>
                 <span>ID: #{listing.id.slice(0, 8).toUpperCase()}</span>
                 <span>&middot;</span>
                 <span>Region: {listing.region || "Global"}</span>
               </div>
-              <h1 className="text-2xl sm:text-3xl font-bold text-white font-display">
+              <h1 className="text-2xl sm:text-3xl font-bold text-[#0F0F0F] font-display">
                 {listing.title}
               </h1>
             </div>
 
             {/* Primary Resource Telemetry */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <div className="p-3.5 rounded-xl bg-[#131923] border border-[#222B3C]">
-                <span className="block text-[10px] font-mono uppercase text-slate-400">
+              <div className="p-3.5 rounded-xl bg-[#F4F3F1] border border-[#E2E2E0]">
+                <span className="block text-[10px] font-mono uppercase text-[#5F5F5F]">
                   Team Strength
                 </span>
-                <span className="text-lg font-bold text-emerald-400 font-mono mt-0.5 block">
+                <span className="text-lg font-bold text-[#006340] font-mono mt-0.5 block">
                   {listing.overall_team_strength ? `${listing.overall_team_strength} OVR` : "Verified"}
                 </span>
               </div>
-              <div className="p-3.5 rounded-xl bg-[#131923] border border-[#222B3C]">
-                <span className="block text-[10px] font-mono uppercase text-slate-400">
+              <div className="p-3.5 rounded-xl bg-[#F4F3F1] border border-[#E2E2E0]">
+                <span className="block text-[10px] font-mono uppercase text-[#5F5F5F]">
                   eFootball Coins
                 </span>
-                <span className="text-lg font-bold text-amber-300 font-mono mt-0.5 block">
+                <span className="text-lg font-bold text-[#92400E] font-mono mt-0.5 block">
                   {formatCompactNumber(listing.coin_balance)}
                 </span>
               </div>
-              <div className="p-3.5 rounded-xl bg-[#131923] border border-[#222B3C]">
-                <span className="block text-[10px] font-mono uppercase text-slate-400">
+              <div className="p-3.5 rounded-xl bg-[#F4F3F1] border border-[#E2E2E0]">
+                <span className="block text-[10px] font-mono uppercase text-[#5F5F5F]">
                   Head Coach
                 </span>
-                <span className="text-sm font-bold text-white truncate mt-1 block">
+                <span className="text-sm font-bold text-[#0F0F0F] truncate mt-1 block">
                   {listing.manager_name || "Assigned"}
                 </span>
               </div>
-              <div className="p-3.5 rounded-xl bg-[#131923] border border-[#222B3C]">
-                <span className="block text-[10px] font-mono uppercase text-slate-400">
+              <div className="p-3.5 rounded-xl bg-[#F4F3F1] border border-[#E2E2E0]">
+                <span className="block text-[10px] font-mono uppercase text-[#5F5F5F]">
                   Division Peak
                 </span>
-                <span className="text-sm font-bold text-white font-mono mt-1 block">
+                <span className="text-sm font-bold text-[#0F0F0F] font-mono mt-1 block">
                   Div {listing.current_division} (Best: Div {listing.highest_division})
                 </span>
               </div>
@@ -216,23 +216,23 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
               (listing.featured_players_count || 0) +
               (listing.legend_players_count || 0) > 0 ||
               (listing.key_players_list && listing.key_players_list.length > 0)) && (
-              <div className="p-5 rounded-xl bg-[#131923] border border-[#222B3C] space-y-4">
-                <h2 className="text-xs font-mono uppercase font-bold text-slate-400 tracking-wider">
+              <div className="p-5 rounded-xl bg-[#F4F3F1] border border-[#E2E2E0] space-y-4">
+                <h2 className="text-xs font-mono uppercase font-bold text-[#5F5F5F] tracking-wider">
                   Card Breakdown
                 </h2>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-center">
                   {[
-                    { label: "Epics", value: listing.epic_players_count || 0, accent: "text-amber-300" },
-                    { label: "Big Time", value: listing.big_time_players_count || 0, accent: "text-amber-300" },
-                    { label: "Highlights", value: listing.highlight_players_count || 0, accent: "text-emerald-300" },
-                    { label: "Featured", value: listing.featured_players_count || 0, accent: "text-slate-100" },
-                    { label: "Legends", value: listing.legend_players_count || 0, accent: "text-slate-100" },
+                    { label: "Epics", value: listing.epic_players_count || 0, accent: "text-[#92400E]" },
+                    { label: "Big Time", value: listing.big_time_players_count || 0, accent: "text-[#92400E]" },
+                    { label: "Highlights", value: listing.highlight_players_count || 0, accent: "text-[#006340]" },
+                    { label: "Featured", value: listing.featured_players_count || 0, accent: "text-[#0F0F0F]" },
+                    { label: "Legends", value: listing.legend_players_count || 0, accent: "text-[#0F0F0F]" },
                   ].map((tier) => (
                     <div
                       key={tier.label}
-                      className="p-3 rounded-lg bg-[#0D1117] border border-[#1E2636]"
+                      className="p-3 rounded-lg bg-white border border-[#E2E2E0]"
                     >
-                      <span className="block text-[10px] font-mono uppercase text-slate-400">
+                      <span className="block text-[10px] font-mono uppercase text-[#5F5F5F]">
                         {tier.label}
                       </span>
                       <span className={`text-xl font-bold font-mono mt-0.5 block ${tier.accent}`}>
@@ -243,15 +243,15 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                 </div>
 
                 {listing.key_players_list && listing.key_players_list.length > 0 && (
-                  <div className="pt-3 border-t border-[#1E2636]">
-                    <span className="block text-[11px] font-mono uppercase text-slate-400 mb-2">
+                  <div className="pt-3 border-t border-[#E2E2E0]">
+                    <span className="block text-[11px] font-mono uppercase text-[#5F5F5F] mb-2">
                       Notable Squad Players ({listing.key_players_list.length})
                     </span>
                     <div className="flex flex-wrap gap-1.5">
                       {listing.key_players_list.map((player, idx) => (
                         <span
                           key={idx}
-                          className="px-2.5 py-1 rounded-md bg-[#0D1117] border border-[#263248] text-xs font-medium text-slate-200"
+                          className="px-2.5 py-1 rounded-md bg-white border border-[#263248] text-xs font-medium text-[#1F1F1F]"
                         >
                           {player}
                         </span>
@@ -264,24 +264,24 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
 
             {/* Seller Notes */}
             <div className="space-y-2">
-              <h2 className="text-xs font-mono uppercase font-bold text-slate-400 tracking-wider">
+              <h2 className="text-xs font-mono uppercase font-bold text-[#5F5F5F] tracking-wider">
                 Seller Notes &amp; Tactical Setup ({getPlaystyleLabel(listing.primary_playstyle)})
               </h2>
-              <div className="p-4 rounded-xl bg-[#131923] border border-[#222B3C] text-xs sm:text-sm text-slate-300 leading-relaxed whitespace-pre-line">
+              <div className="p-4 rounded-xl bg-[#F4F3F1] border border-[#E2E2E0] text-xs sm:text-sm text-[#3D3D3D] leading-relaxed whitespace-pre-line">
                 {listing.description || "No additional seller notes provided."}
               </div>
             </div>
 
             {/* 24-Hour Handover Checklist */}
-            <div className="pt-5 border-t border-[#1E2636] space-y-4">
+            <div className="pt-5 border-t border-[#E2E2E0] space-y-4">
               <div className="flex items-center justify-between gap-2">
                 <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400" />
-                  <h2 className="text-sm font-bold text-white font-display">
+                  <ShieldCheck className="w-4 h-4 text-[#006340]" />
+                  <h2 className="text-sm font-bold text-[#0F0F0F] font-display">
                     24-Hour Buyer Handover Checklist
                   </h2>
                 </div>
-                <Link href="/escrow-guarantee" className="text-xs font-medium text-emerald-400 hover:text-emerald-300">
+                <Link href="/escrow-guarantee" className="text-xs font-medium text-[#006340] hover:text-[#006340]">
                   Full terms &rarr;
                 </Link>
               </div>
@@ -311,15 +311,15 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                 ].map((item) => (
                   <div
                     key={item.step}
-                    className="p-3.5 rounded-xl bg-[#131923] border border-[#222B3C] space-y-1"
+                    className="p-3.5 rounded-xl bg-[#F4F3F1] border border-[#E2E2E0] space-y-1"
                   >
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-[10px] font-bold text-emerald-400 px-1.5 py-0.5 rounded bg-[#0D1117] border border-[#242E42]">
+                      <span className="font-mono text-[10px] font-bold text-[#006340] px-1.5 py-0.5 rounded bg-white border border-[#DCDCD8]">
                         {item.step}
                       </span>
-                      <span className="font-semibold text-white">{item.title}</span>
+                      <span className="font-semibold text-[#0F0F0F]">{item.title}</span>
                     </div>
-                    <p className="text-slate-400 text-[11px] leading-relaxed">{item.body}</p>
+                    <p className="text-[#5F5F5F] text-[11px] leading-relaxed">{item.body}</p>
                   </div>
                 ))}
               </div>
@@ -330,27 +330,27 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
         {/* Right Column: Sticky Checkout & Seller Box (4 cols) */}
         <div className="lg:col-span-4 space-y-5 lg:sticky lg:top-28">
           <div className="store-panel rounded-2xl p-6 space-y-5">
-            <div className="pb-4 border-b border-[#1E2636]">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-slate-400">
+            <div className="pb-4 border-b border-[#E2E2E0]">
+              <span className="text-[11px] font-mono uppercase tracking-wider text-[#5F5F5F]">
                 Purchase Price
               </span>
               <div className="flex items-baseline justify-between gap-2 mt-1">
-                <span className="text-3xl font-bold text-white font-mono">
+                <span className="text-3xl font-bold text-[#0F0F0F] font-mono">
                   {formatCurrency(listing.price, listing.currency)}
                 </span>
-                <span className="px-2 py-0.5 rounded bg-emerald-500/15 border border-emerald-500/30 text-[10px] font-mono font-bold text-emerald-300 uppercase">
+                <span className="px-2 py-0.5 rounded bg-[#EBF5F0] border border-[#BFE0CE] text-[10px] font-mono font-bold text-[#006340] uppercase">
                   Till 1572931
                 </span>
               </div>
             </div>
 
             {/* Konami Link Status */}
-            <div className="p-3.5 rounded-xl bg-[#131923] border border-[#222B3C] space-y-1">
+            <div className="p-3.5 rounded-xl bg-[#F4F3F1] border border-[#E2E2E0] space-y-1">
               <div className="flex items-center gap-2">
-                <Lock className="w-3.5 h-3.5 text-emerald-400" />
-                <span className="text-xs font-semibold text-white">{konamiStatus.label}</span>
+                <Lock className="w-3.5 h-3.5 text-[#006340]" />
+                <span className="text-xs font-semibold text-[#0F0F0F]">{konamiStatus.label}</span>
               </div>
-              <p className="text-[11px] text-slate-400 leading-relaxed">
+              <p className="text-[11px] text-[#5F5F5F] leading-relaxed">
                 {konamiStatus.description}
               </p>
             </div>
@@ -359,14 +359,14 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
             {isOwner ? (
               <div className="space-y-3">
                 {listing.status === "sold" ? (
-                  <div className="p-4 rounded-xl bg-[#131923] border border-[#222B3C] text-center space-y-1">
-                    <span className="text-xs font-bold text-slate-200 block">Sold &amp; Transferred</span>
-                    <p className="text-[11px] text-slate-400">Sold accounts cannot be edited.</p>
+                  <div className="p-4 rounded-xl bg-[#F4F3F1] border border-[#E2E2E0] text-center space-y-1">
+                    <span className="text-xs font-bold text-[#1F1F1F] block">Sold &amp; Transferred</span>
+                    <p className="text-[11px] text-[#5F5F5F]">Sold accounts cannot be edited.</p>
                   </div>
                 ) : listing.status === "in_escrow" ? (
-                  <div className="p-4 rounded-xl bg-amber-950/40 border border-amber-800/60 text-center space-y-1">
-                    <span className="text-xs font-bold text-amber-300 block">In Active Escrow</span>
-                    <p className="text-[11px] text-slate-400">Locked during buyer handover.</p>
+                  <div className="p-4 rounded-xl bg-[#FEF3C7] border border-[#FDE68A] text-center space-y-1">
+                    <span className="text-xs font-bold text-[#92400E] block">In Active Escrow</span>
+                    <p className="text-[11px] text-[#5F5F5F]">Locked during buyer handover.</p>
                   </div>
                 ) : (
                   <Link href={`/seller/edit-listing/${listing.id}`} className="block">
@@ -382,12 +382,12 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                 )}
               </div>
             ) : listing.status !== "published" ? (
-              <div className="p-4 rounded-xl bg-[#131923] border border-[#222B3C] text-center space-y-2">
-                <Lock className="w-5 h-5 text-amber-400 mx-auto" />
-                <h3 className="text-sm font-bold text-white">
+              <div className="p-4 rounded-xl bg-[#F4F3F1] border border-[#E2E2E0] text-center space-y-2">
+                <Lock className="w-5 h-5 text-[#B45309] mx-auto" />
+                <h3 className="text-sm font-bold text-[#0F0F0F]">
                   {listing.status === "sold" ? "Account Sold" : "Locked in Escrow"}
                 </h3>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[#5F5F5F]">
                   {listing.status === "sold"
                     ? "This squad has already been delivered to a buyer."
                     : "A buyer is currently completing their 24-hour inspection."}
@@ -400,9 +400,9 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
               </div>
             ) : isListingOnFlashSale(listing) ? (
               <div className="space-y-2.5">
-                <div className="p-3 rounded-xl bg-amber-950/40 border border-amber-500/35 text-xs text-amber-200">
-                  <strong className="text-white block">Friday Drop Fixed Price</strong>
-                  <span className="text-[11px] text-amber-200/80">
+                <div className="p-3 rounded-xl bg-[#FEF3C7] border border-amber-500/35 text-xs text-[#92400E]">
+                  <strong className="text-[#0F0F0F] block">Friday Drop Fixed Price</strong>
+                  <span className="text-[11px] text-[#92400E]/80">
                     Custom offers are paused during the 8-hour Friday Drop window.
                   </span>
                 </div>
@@ -441,13 +441,13 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
 
             {/* Swap Option */}
             {listing.allows_swap && !isOwner && !isListingOnFlashSale(listing) && listing.status === "published" && (
-              <div className="p-3.5 rounded-xl bg-emerald-950/35 border border-emerald-500/35 space-y-2">
-                <div className="flex items-center gap-1.5 text-xs font-semibold text-emerald-300">
+              <div className="p-3.5 rounded-xl bg-[#EBF5F0] border border-emerald-500/35 space-y-2">
+                <div className="flex items-center gap-1.5 text-xs font-semibold text-[#006340]">
                   <ArrowRightLeft className="w-3.5 h-3.5" />
                   <span>Open to Squad Swap + Cash</span>
                 </div>
                 {listing.swap_preferences && (
-                  <p className="text-[11px] text-slate-300 leading-relaxed">
+                  <p className="text-[11px] text-[#3D3D3D] leading-relaxed">
                     Preferences: &ldquo;{listing.swap_preferences}&rdquo;
                   </p>
                 )}
@@ -457,7 +457,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-zinc-950 font-bold text-xs transition-colors"
+                  className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-[#006340] hover:bg-[#004D32] text-white font-bold text-xs transition-colors"
                 >
                   <MessageCircle className="w-3.5 h-3.5" />
                   <span>Discuss Swap on WhatsApp</span>
@@ -466,41 +466,41 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
             )}
 
             {/* Protection Guarantees */}
-            <div className="border-t border-[#1E2636] pt-4 space-y-2 text-xs text-slate-300">
+            <div className="border-t border-[#E2E2E0] pt-4 space-y-2 text-xs text-[#3D3D3D]">
               <div className="flex items-start gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#006340] shrink-0 mt-0.5" />
                 <span>Payment held on Till 1572931 until login verified</span>
               </div>
               <div className="flex items-start gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#006340] shrink-0 mt-0.5" />
                 <span>12-hour seller credential delivery window</span>
               </div>
               <div className="flex items-start gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                <CheckCircle2 className="w-3.5 h-3.5 text-[#006340] shrink-0 mt-0.5" />
                 <span>24-hour dispute &amp; full M-Pesa refund guarantee</span>
               </div>
             </div>
 
             {/* Seller Card */}
-            <div className="border-t border-[#1E2636] pt-4 space-y-3">
-              <span className="block text-[10px] font-mono uppercase tracking-wider text-slate-400">
+            <div className="border-t border-[#E2E2E0] pt-4 space-y-3">
+              <span className="block text-[10px] font-mono uppercase tracking-wider text-[#5F5F5F]">
                 Listed By
               </span>
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-lg bg-[#131923] border border-[#242E42] flex items-center justify-center font-mono font-bold text-xs text-slate-200">
+                <div className="w-10 h-10 rounded-lg bg-[#F4F3F1] border border-[#DCDCD8] flex items-center justify-center font-mono font-bold text-xs text-[#1F1F1F]">
                   {listing.seller?.username ? listing.seller.username.slice(0, 2).toUpperCase() : <Users className="w-4 h-4" />}
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5 flex-wrap">
-                    <span className="text-sm font-semibold text-white">
+                    <span className="text-sm font-semibold text-[#0F0F0F]">
                       {listing.seller?.username || "Seller"}
                     </span>
                     <VerifiedSellerBadge seller={listing.seller} size="sm" showPopover={true} />
                   </div>
-                  <div className="flex items-center gap-1.5 text-xs text-slate-400 mt-0.5">
+                  <div className="flex items-center gap-1.5 text-xs text-[#5F5F5F] mt-0.5">
                     {(listing.seller?.completed_sales_count || 0) > 0 && listing.seller?.seller_rating ? (
                       <>
-                        <Star className="w-3 h-3 text-amber-400 fill-amber-400" />
+                        <Star className="w-3 h-3 text-[#B45309] fill-amber-400" />
                         <span>{Number(listing.seller.seller_rating).toFixed(1)}</span>
                         <span>&middot;</span>
                         <span>{listing.seller.completed_sales_count} completed</span>
@@ -524,14 +524,14 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
 
       {/* Related Squads */}
       {relatedListings.length > 0 && (
-        <section className="pt-6 border-t border-[#1E2636] space-y-5">
+        <section className="pt-6 border-t border-[#E2E2E0] space-y-5">
           <div className="flex items-center justify-between">
-            <h2 className="text-xl font-bold text-white font-display">
+            <h2 className="text-xl font-bold text-[#0F0F0F] font-display">
               More {getPlatformLabel(listing.platform)} Squads
             </h2>
             <Link
               href={`/browse?platform=${listing.platform}`}
-              className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-400 hover:text-emerald-300"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-[#006340] hover:text-[#006340]"
             >
               <span>View all</span>
               <ArrowRight className="w-3.5 h-3.5" />
@@ -547,10 +547,10 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
       )}
 
       {/* Mobile Sticky Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-[#07090D]/95 backdrop-blur-md border-t border-[#1E2636] px-4 py-2.5 lg:hidden flex items-center justify-between gap-2 safe-area-pb">
+      <div className="fixed bottom-0 left-0 right-0 z-40 bg-white backdrop-blur-md border-t border-[#E2E2E0] px-4 py-2.5 lg:hidden flex items-center justify-between gap-2 safe-area-pb">
         <div className="min-w-0 shrink-0">
-          <p className="text-[9px] font-mono uppercase text-slate-400 leading-tight">Price</p>
-          <p className="text-base font-bold font-mono text-white leading-tight whitespace-nowrap">
+          <p className="text-[9px] font-mono uppercase text-[#5F5F5F] leading-tight">Price</p>
+          <p className="text-base font-bold font-mono text-[#0F0F0F] leading-tight whitespace-nowrap">
             {formatCurrency(listing.price, listing.currency)}
           </p>
         </div>
@@ -563,12 +563,12 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                 </Button>
               </Link>
             ) : (
-              <span className="px-3 py-1.5 rounded-lg bg-[#131923] border border-[#242E42] text-xs font-mono text-slate-400">
+              <span className="px-3 py-1.5 rounded-lg bg-[#F4F3F1] border border-[#DCDCD8] text-xs font-mono text-[#5F5F5F]">
                 {listing.status === "sold" ? "Sold" : "In Escrow"}
               </span>
             )
           ) : listing.status !== "published" ? (
-            <span className="px-3 py-1.5 rounded-lg bg-[#131923] border border-[#242E42] text-xs font-mono text-slate-400">
+            <span className="px-3 py-1.5 rounded-lg bg-[#F4F3F1] border border-[#DCDCD8] text-xs font-mono text-[#5F5F5F]">
               {listing.status === "sold" ? "Sold" : "In Escrow"}
             </span>
           ) : isListingOnFlashSale(listing) ? (

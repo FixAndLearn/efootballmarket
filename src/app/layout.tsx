@@ -34,7 +34,7 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://www.efootballmarket.
 const DEFAULT_ADSENSE_CLIENT_ID = "ca-pub-5924764989915276";
 
 export const viewport: Viewport = {
-  themeColor: "#07090D",
+  themeColor: "#FFFFFF",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -220,7 +220,7 @@ export default function RootLayout({
           </>
         )}
       </head>
-      <body className="font-sans antialiased flex flex-col min-h-screen bg-[#07090D] text-slate-100 selection:bg-emerald-500/30 selection:text-emerald-200">
+      <body className="font-sans antialiased flex flex-col min-h-screen bg-white text-[#0F0F0F] selection:bg-[#006340] selection:text-white">
         <LanguageProvider>
           <Header />
           <main className="flex-1 flex flex-col pb-20 md:pb-0">{children}</main>

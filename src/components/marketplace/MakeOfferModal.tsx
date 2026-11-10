@@ -147,19 +147,19 @@ export function MakeOfferModal({
   };
 
   const modalContent = (
-    <div className="fixed inset-0 z-[9999] bg-slate-950/85 backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-hidden animate-in fade-in">
+    <div className="fixed inset-0 z-[9999] bg-white backdrop-blur-md flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-hidden animate-in fade-in">
       <div className="bg-pitch-surface border border-pitch-border rounded-t-3xl sm:rounded-2xl w-full max-w-lg shadow-2xl overflow-hidden relative flex flex-col max-h-[92vh] sm:max-h-[88vh]">
         {/* Sticky Header */}
         <div className="p-4 sm:p-5 border-b border-pitch-border flex items-center justify-between bg-pitch-card/80 shrink-0">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0">
+            <div className="w-9 h-9 rounded-xl bg-[#FEF3C7] border border-[#FDE68A] flex items-center justify-center text-[#B45309] shrink-0">
               <Handshake className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-sm sm:text-base font-bold text-slate-100 font-display">
+              <h3 className="text-sm sm:text-base font-bold text-[#0F0F0F] font-display">
                 Make an Offer / Bargain Price
               </h3>
-              <p className="text-[11px] text-slate-400">
+              <p className="text-[11px] text-[#5F5F5F]">
                 Direct price negotiation backed by Till 1572931 Escrow
               </p>
             </div>
@@ -167,7 +167,7 @@ export function MakeOfferModal({
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-pitch-surface transition-colors"
+            className="p-1.5 rounded-lg text-[#5F5F5F] hover:text-[#0F0F0F] hover:bg-pitch-surface transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
@@ -176,32 +176,32 @@ export function MakeOfferModal({
         {submittedData ? (
           /* Success Screen */
           <div className="p-6 space-y-5 text-center overflow-y-auto">
-            <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400 text-emerald-400 flex items-center justify-center mx-auto animate-in zoom-in-95">
+            <div className="w-16 h-16 rounded-full bg-[#EBF5F0] border-2 border-emerald-400 text-[#006340] flex items-center justify-center mx-auto animate-in zoom-in-95">
               <CheckCircle2 className="w-9 h-9" />
             </div>
 
             <div className="space-y-1">
-              <h4 className="text-lg font-bold text-slate-100 font-display">
+              <h4 className="text-lg font-bold text-[#0F0F0F] font-display">
                 Offer Automatically Sent to Seller!
               </h4>
-              <p className="text-xs text-slate-300">
-                You proposed <strong className="text-emerald-400 font-mono text-sm">KES {numericOffer.toLocaleString()}</strong> ({discountPercent}% discount).
+              <p className="text-xs text-[#3D3D3D]">
+                You proposed <strong className="text-[#006340] font-mono text-sm">KES {numericOffer.toLocaleString()}</strong> ({discountPercent}% discount).
               </p>
             </div>
 
-            <div className="p-4 rounded-xl bg-pitch-card border border-pitch-border text-xs text-left text-slate-300 space-y-2">
-              <span className="font-semibold text-emerald-300 block flex items-center gap-1.5">
-                <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <div className="p-4 rounded-xl bg-pitch-card border border-pitch-border text-xs text-left text-[#3D3D3D] space-y-2">
+              <span className="font-semibold text-[#006340] block flex items-center gap-1.5">
+                <ShieldCheck className="w-4 h-4 text-[#006340]" />
                 <span>Automatic Seller Alert Dispatched</span>
               </span>
-              <p className="text-[11px] text-slate-400 leading-relaxed">
+              <p className="text-[11px] text-[#5F5F5F] leading-relaxed">
                 The seller has been notified on their registered phone number and eFootballMarket account. Once the seller accepts or counters, you will receive an instant notification to complete checkout via Till 1572931.
               </p>
             </div>
 
             <div className="pt-2 space-y-2.5">
               <div className="text-left">
-                <span className="text-[11px] font-semibold text-slate-400 block mb-1">
+                <span className="text-[11px] font-semibold text-[#5F5F5F] block mb-1">
                   Optional Courtesy Action:
                 </span>
                 <a
@@ -227,18 +227,18 @@ export function MakeOfferModal({
               {/* Squad Overview */}
               <div className="p-3.5 rounded-xl bg-pitch-card border border-pitch-border/80 flex items-center justify-between">
                 <div>
-                  <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider">
+                  <span className="text-[10px] uppercase font-bold text-[#5F5F5F] tracking-wider">
                     Target Squad
                   </span>
-                  <p className="text-xs font-bold text-slate-200 mt-0.5 line-clamp-1">
+                  <p className="text-xs font-bold text-[#1F1F1F] mt-0.5 line-clamp-1">
                     {listing.title}
                   </p>
                 </div>
                 <div className="text-right shrink-0">
-                  <span className="text-[10px] uppercase font-bold text-slate-400 block">
+                  <span className="text-[10px] uppercase font-bold text-[#5F5F5F] block">
                     Original Price
                   </span>
-                  <span className="text-sm font-mono font-bold text-white">
+                  <span className="text-sm font-mono font-bold text-[#0F0F0F]">
                     {formatCurrency(originalPrice)}
                   </span>
                 </div>
@@ -246,7 +246,7 @@ export function MakeOfferModal({
 
               {/* Quick Discount Presets & Custom Pill */}
               <div className="space-y-2">
-                <label className="block text-xs font-semibold text-slate-300">
+                <label className="block text-xs font-semibold text-[#3D3D3D]">
                   Quick Discount Presets or Custom Amount:
                 </label>
                 <div className="grid grid-cols-4 gap-2">
@@ -257,12 +257,12 @@ export function MakeOfferModal({
                       onClick={() => handlePresetClick(pct)}
                       className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all flex flex-col items-center justify-center gap-0.5 ${
                         selectedPreset === pct
-                          ? "bg-amber-500/20 border-amber-400 text-amber-300 shadow-md shadow-amber-500/10"
-                          : "bg-pitch-card border-pitch-border text-slate-300 hover:bg-pitch-surface hover:text-white"
+                          ? "bg-[#FEF3C7] border-amber-400 text-[#92400E] shadow-md shadow-amber-500/10"
+                          : "bg-pitch-card border-pitch-border text-[#3D3D3D] hover:bg-pitch-surface hover:text-[#0F0F0F]"
                       }`}
                     >
                       <span className="font-bold">-{pct}%</span>
-                      <span className="text-[10px] font-mono text-slate-400">
+                      <span className="text-[10px] font-mono text-[#5F5F5F]">
                         KES {Math.round(originalPrice * (1 - pct / 100)).toLocaleString()}
                       </span>
                     </button>
@@ -273,11 +273,11 @@ export function MakeOfferModal({
                     onClick={() => setSelectedPreset("custom")}
                     className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all flex flex-col items-center justify-center gap-0.5 ${
                       selectedPreset === "custom"
-                        ? "bg-amber-500/20 border-amber-400 text-amber-300 shadow-md shadow-amber-500/10"
-                        : "bg-pitch-card border-pitch-border text-slate-300 hover:bg-pitch-surface hover:text-white"
+                        ? "bg-[#FEF3C7] border-amber-400 text-[#92400E] shadow-md shadow-amber-500/10"
+                        : "bg-pitch-card border-pitch-border text-[#3D3D3D] hover:bg-pitch-surface hover:text-[#0F0F0F]"
                     }`}
                   >
-                    <Edit3 className="w-3.5 h-3.5 text-amber-400" />
+                    <Edit3 className="w-3.5 h-3.5 text-[#B45309]" />
                     <span className="font-bold">Custom</span>
                   </button>
                 </div>
@@ -286,17 +286,17 @@ export function MakeOfferModal({
               {/* Custom Price Input (Full arbitrary price freedom e.g. 70 bob) */}
               <div className="space-y-1.5">
                 <div className="flex justify-between items-center">
-                  <label className="text-xs font-semibold text-slate-300">
-                    Your Offer Amount (KES) <span className="text-rose-400">*</span>
+                  <label className="text-xs font-semibold text-[#3D3D3D]">
+                    Your Offer Amount (KES) <span className="text-[#C92A2A]">*</span>
                   </label>
                   {discountAmount > 0 && (
-                    <span className="text-[11px] font-bold text-emerald-400">
+                    <span className="text-[11px] font-bold text-[#006340]">
                       Saves {formatCurrency(discountAmount)} ({discountPercent}% OFF)
                     </span>
                   )}
                 </div>
                 <div className="relative">
-                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400 font-mono">
+                  <span className="absolute left-4 top-1/2 -translate-y-1/2 text-sm font-bold text-[#5F5F5F] font-mono">
                     KES
                   </span>
                   <input
@@ -308,20 +308,20 @@ export function MakeOfferModal({
                     value={offerPrice}
                     onChange={(e) => handleCustomPriceChange(e.target.value)}
                     required
-                    className="w-full pl-14 pr-4 py-3 rounded-xl bg-pitch-card border border-pitch-border text-slate-100 text-base font-mono font-bold focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-colors"
+                    className="w-full pl-14 pr-4 py-3 rounded-xl bg-pitch-card border border-pitch-border text-[#0F0F0F] text-base font-mono font-bold focus:outline-none focus:border-amber-400 focus:ring-1 focus:ring-amber-400 transition-colors"
                   />
                 </div>
-                <div className="flex items-center justify-between text-[11px] text-slate-400 px-1">
-                  <span>Minimum acceptable offer: <strong className="text-slate-300">KES {minAllowed.toLocaleString()}</strong> (50% threshold)</span>
-                  <span>Asking: <strong className="text-slate-300">{formatCurrency(originalPrice)}</strong></span>
+                <div className="flex items-center justify-between text-[11px] text-[#5F5F5F] px-1">
+                  <span>Minimum acceptable offer: <strong className="text-[#3D3D3D]">KES {minAllowed.toLocaleString()}</strong> (50% threshold)</span>
+                  <span>Asking: <strong className="text-[#3D3D3D]">{formatCurrency(originalPrice)}</strong></span>
                 </div>
               </div>
 
               {/* Buyer Contact Inputs */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    Your Name / Handle <span className="text-rose-400">*</span>
+                  <label className="block text-xs font-semibold text-[#3D3D3D] mb-1">
+                    Your Name / Handle <span className="text-[#C92A2A]">*</span>
                   </label>
                   <input
                     type="text"
@@ -329,13 +329,13 @@ export function MakeOfferModal({
                     value={buyerName}
                     onChange={(e) => setBuyerName(e.target.value)}
                     required
-                    className="w-full px-3 py-2.5 rounded-xl bg-pitch-card border border-pitch-border text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400"
+                    className="w-full px-3 py-2.5 rounded-xl bg-pitch-card border border-pitch-border text-xs text-[#0F0F0F] placeholder-slate-500 focus:outline-none focus:border-amber-400"
                   />
                 </div>
 
                 <div>
-                  <label className="block text-xs font-semibold text-slate-300 mb-1">
-                    M-Pesa Phone Number <span className="text-rose-400">*</span>
+                  <label className="block text-xs font-semibold text-[#3D3D3D] mb-1">
+                    M-Pesa Phone Number <span className="text-[#C92A2A]">*</span>
                   </label>
                   <input
                     type="tel"
@@ -343,15 +343,15 @@ export function MakeOfferModal({
                     value={buyerPhone}
                     onChange={(e) => setBuyerPhone(e.target.value)}
                     required
-                    className="w-full px-3 py-2.5 rounded-xl bg-pitch-card border border-pitch-border text-xs text-slate-100 placeholder-slate-500 font-mono focus:outline-none focus:border-amber-400"
+                    className="w-full px-3 py-2.5 rounded-xl bg-pitch-card border border-pitch-border text-xs text-[#0F0F0F] placeholder-slate-500 font-mono focus:outline-none focus:border-amber-400"
                   />
                 </div>
               </div>
 
               {/* Note to Seller */}
               <div>
-                <label className="block text-xs font-semibold text-slate-300 mb-1">
-                  Note to Seller <span className="text-slate-500">(Optional)</span>
+                <label className="block text-xs font-semibold text-[#3D3D3D] mb-1">
+                  Note to Seller <span className="text-[#767676]">(Optional)</span>
                 </label>
                 <input
                   type="text"
@@ -359,13 +359,13 @@ export function MakeOfferModal({
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   maxLength={150}
-                  className="w-full px-3 py-2.5 rounded-xl bg-pitch-card border border-pitch-border text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-amber-400"
+                  className="w-full px-3 py-2.5 rounded-xl bg-pitch-card border border-pitch-border text-xs text-[#0F0F0F] placeholder-slate-500 focus:outline-none focus:border-amber-400"
                 />
               </div>
 
               {error && (
-                <div className="p-3 rounded-xl bg-rose-950/70 border border-rose-800 text-rose-300 text-xs flex items-start gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
+                <div className="p-3 rounded-xl bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs flex items-start gap-2">
+                  <AlertCircle className="w-4 h-4 shrink-0 text-[#C92A2A] mt-0.5" />
                   <span className="leading-relaxed">{error}</span>
                 </div>
               )}
@@ -384,8 +384,8 @@ export function MakeOfferModal({
                 Submit Offer of KES {numericOffer > 0 ? numericOffer.toLocaleString() : "..."}
               </Button>
 
-              <div className="flex items-center justify-center gap-1.5 text-[11px] text-slate-400">
-                <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
+              <div className="flex items-center justify-center gap-1.5 text-[11px] text-[#5F5F5F]">
+                <ShieldCheck className="w-3.5 h-3.5 text-[#006340]" />
                 <span>Protected by Till 1572931 Escrow Guarantee</span>
               </div>
             </div>

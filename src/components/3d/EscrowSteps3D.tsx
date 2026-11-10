@@ -48,14 +48,14 @@ export function EscrowSteps3D() {
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="text-center max-w-3xl mx-auto mb-16">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-emerald-950/80 border border-emerald-800/80 text-emerald-300 text-xs font-bold mb-4 shadow-inner">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
+          <div className="inline-flex items-center gap-2 px-3.5 py-1 rounded-full bg-[#EBF5F0] border border-[#BFE0CE] text-[#006340] text-xs font-bold mb-4 shadow-inner">
+            <ShieldCheck className="w-4 h-4 text-[#006340]" />
             <span>M-Pesa Escrow Protection</span>
           </div>
-          <h2 className="text-3xl sm:text-4xl font-bold text-white font-display">
+          <h2 className="text-3xl sm:text-4xl font-bold text-[#0F0F0F] font-display">
             How M-Pesa Payment Protection Works
           </h2>
-          <p className="mt-3 text-sm sm:text-base text-slate-300">
+          <p className="mt-3 text-sm sm:text-base text-[#3D3D3D]">
             Never send money directly to strangers. Your payment stays protected in escrow until you log into the Konami ID and bind your personal email.
           </p>
         </div>
@@ -86,8 +86,8 @@ export function EscrowSteps3D() {
               >
                 {/* Connecting Arrow for Wide Screens */}
                 {idx < 3 && (
-                  <div className="hidden lg:flex absolute -right-3.5 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-pitch-card border border-pitch-border items-center justify-center text-slate-400 shadow-lg pointer-events-none">
-                    <ArrowRight className="w-3.5 h-3.5 text-amber-400" />
+                  <div className="hidden lg:flex absolute -right-3.5 top-1/2 -translate-y-1/2 z-20 w-7 h-7 rounded-full bg-pitch-card border border-pitch-border items-center justify-center text-[#5F5F5F] shadow-lg pointer-events-none">
+                    <ArrowRight className="w-3.5 h-3.5 text-[#B45309]" />
                   </div>
                 )}
 
@@ -98,14 +98,14 @@ export function EscrowSteps3D() {
                     className={`w-12 h-12 rounded-2xl flex items-center justify-center font-black text-sm transition-all duration-300 shadow-md ${
                       isHovered
                         ? `bg-gradient-to-tr ${step.glowColor} text-slate-950 scale-110 shadow-lg`
-                        : "bg-pitch-card border border-pitch-border text-slate-300"
+                        : "bg-pitch-card border border-pitch-border text-[#3D3D3D]"
                     }`}
                   >
                     {step.num}
                   </div>
 
                   {/* Step Tag */}
-                  <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 px-2 py-0.5 rounded-full bg-slate-900/80 border border-pitch-border">
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-[#5F5F5F] px-2 py-0.5 rounded-full bg-[#F9F9F8] border border-pitch-border">
                     {step.tag}
                   </span>
                 </div>
@@ -113,15 +113,15 @@ export function EscrowSteps3D() {
                 {/* Content with 3D Depth */}
                 <div style={{ transform: "translateZ(20px)" }} className="space-y-2 mb-6">
                   <div className="flex items-center gap-2 mb-1">
-                    <Icon className="w-5 h-5 text-amber-400" />
-                    <h3 className="text-base font-bold text-white font-display">{step.title}</h3>
+                    <Icon className="w-5 h-5 text-[#B45309]" />
+                    <h3 className="text-base font-bold text-[#0F0F0F] font-display">{step.title}</h3>
                   </div>
-                  <p className="text-xs text-slate-300 leading-relaxed">{step.description}</p>
+                  <p className="text-xs text-[#3D3D3D] leading-relaxed">{step.description}</p>
                 </div>
 
                 {/* Bottom Step Indicator Bar */}
                 <div style={{ transform: "translateZ(15px)" }} className="pt-4 border-t border-pitch-border/60 flex items-center justify-between">
-                  <span className="text-[11px] font-bold text-slate-400">Step {idx + 1} of 4</span>
+                  <span className="text-[11px] font-bold text-[#5F5F5F]">Step {idx + 1} of 4</span>
                   <div className="flex items-center gap-1">
                     {[0, 1, 2, 3].map((dot) => (
                       <div

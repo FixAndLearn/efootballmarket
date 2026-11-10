@@ -150,18 +150,18 @@ export function DirectCheckoutForm({
     const isInEscrow = listing.status === "in_escrow";
 
     return (
-      <div className="w-full max-w-xl mx-auto p-8 rounded-3xl bg-[#111827] border border-slate-800 text-center space-y-4">
-        <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/30 text-amber-400 flex items-center justify-center mx-auto">
-          <Lock className="w-6 h-6 text-amber-400" />
+      <div className="w-full max-w-xl mx-auto p-8 rounded-3xl bg-[#111827] border border-[#E2E2E0] text-center space-y-4">
+        <div className="w-12 h-12 rounded-2xl bg-[#FEF3C7] border border-[#FDE68A] text-[#B45309] flex items-center justify-center mx-auto">
+          <Lock className="w-6 h-6 text-[#B45309]" />
         </div>
-        <h2 className="text-xl font-bold text-white font-display">
+        <h2 className="text-xl font-bold text-[#0F0F0F] font-display">
           {isSold
             ? "Account Sold & Delivered"
             : isInEscrow
             ? "Account Under Active Escrow"
             : "You Own This Listing"}
         </h2>
-        <p className="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
+        <p className="text-xs text-[#5F5F5F] max-w-sm mx-auto leading-relaxed">
           {isSold
             ? "This account has already been sold and transferred. Sold accounts cannot be edited or purchased."
             : isInEscrow
@@ -190,14 +190,14 @@ export function DirectCheckoutForm({
   // 2. Guardrail: Account is already locked in escrow or sold
   if (!isAvailable) {
     return (
-      <div className="w-full max-w-xl mx-auto p-8 rounded-3xl bg-[#111827] border border-slate-800 text-center space-y-4">
-        <div className="w-12 h-12 rounded-2xl bg-slate-800 border border-slate-700 text-amber-400 flex items-center justify-center mx-auto">
-          <Lock className="w-6 h-6 text-amber-400" />
+      <div className="w-full max-w-xl mx-auto p-8 rounded-3xl bg-[#111827] border border-[#E2E2E0] text-center space-y-4">
+        <div className="w-12 h-12 rounded-2xl bg-[#F4F3F1] border border-[#C8C8C4] text-[#B45309] flex items-center justify-center mx-auto">
+          <Lock className="w-6 h-6 text-[#B45309]" />
         </div>
-        <h2 className="text-xl font-bold text-white font-display">
+        <h2 className="text-xl font-bold text-[#0F0F0F] font-display">
           {listing.status === "sold" ? "Account Sold & Delivered" : "Account Under Active Escrow Lock"}
         </h2>
-        <p className="text-xs text-slate-400 max-w-sm mx-auto leading-relaxed">
+        <p className="text-xs text-[#5F5F5F] max-w-sm mx-auto leading-relaxed">
           {listing.status === "sold"
             ? "This eFootball squad has already been purchased and transferred to a verified buyer."
             : "Another trader has deposited funds into Till 1572931 and is currently completing the 24-hour verification inspection."}
@@ -267,27 +267,27 @@ export function DirectCheckoutForm({
     <div className="w-full max-w-xl mx-auto space-y-6">
       {/* Top Escrow Guarantee Header */}
       <div className="text-center space-y-2">
-        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-950/80 border border-emerald-500/40 text-emerald-400 text-xs font-bold">
+        <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-[#EBF5F0] border border-[#BFE0CE] text-[#006340] text-xs font-bold">
           <ShieldCheck className="w-4 h-4" />
           <span>Till 1572931 Verified Escrow Checkout</span>
         </div>
-        <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-100 font-display">
+        <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F0F0F] font-display">
           Instant M-Pesa Checkout
         </h1>
-        <p className="text-xs sm:text-sm text-slate-400 max-w-md mx-auto">
+        <p className="text-xs sm:text-sm text-[#5F5F5F] max-w-md mx-auto">
           Funds are locked in escrow and released to the seller only after you test and bind Konami ID credentials.
         </p>
       </div>
 
       {/* Friday Flash Drop Banner */}
       {isFlashDrop && (
-        <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-950/60 via-rose-950/40 to-amber-950/60 border border-amber-500/50 flex items-start gap-3 shadow-lg">
-          <Flame className="w-5 h-5 text-amber-400 fill-amber-400 shrink-0 mt-0.5 animate-pulse" />
+        <div className="p-4 rounded-2xl bg-gradient-to-r from-amber-950/60 via-rose-950/40 to-amber-950/60 border border-[#FDE68A] flex items-start gap-3 shadow-lg">
+          <Flame className="w-5 h-5 text-[#B45309] fill-amber-400 shrink-0 mt-0.5 animate-pulse" />
           <div className="space-y-0.5 text-xs">
-            <span className="font-bold text-amber-300 block text-sm">
+            <span className="font-bold text-[#92400E] block text-sm">
               ⚡ Friday Flash Drop Checkout
             </span>
-            <p className="text-slate-300">
+            <p className="text-[#3D3D3D]">
               This squad is locked at the promotional flash price of <strong>{formatCurrency(payablePrice, listing.currency)}</strong>. Further bargaining is withdrawn during flash sales.
             </p>
           </div>
@@ -296,13 +296,13 @@ export function DirectCheckoutForm({
 
       {/* Accepted Offer Banner */}
       {isDiscounted && (
-        <div className="p-4 rounded-xl bg-gradient-to-r from-amber-950/60 to-emerald-950/60 border border-amber-500/50 flex items-start gap-3 shadow-lg">
-          <Tag className="w-5 h-5 text-amber-400 shrink-0 mt-0.5" />
+        <div className="p-4 rounded-xl bg-gradient-to-r from-amber-950/60 to-emerald-950/60 border border-[#FDE68A] flex items-start gap-3 shadow-lg">
+          <Tag className="w-5 h-5 text-[#B45309] shrink-0 mt-0.5" />
           <div className="space-y-0.5 text-xs">
-            <span className="font-bold text-amber-300 block text-sm">
+            <span className="font-bold text-[#92400E] block text-sm">
               🎉 Accepted Offer Applied ({activeOffer.discount_percentage}% OFF)
             </span>
-            <p className="text-slate-300">
+            <p className="text-[#3D3D3D]">
               The seller accepted your custom price of <strong>KES {activeOffer.offered_price.toLocaleString()}</strong>.
               This discounted rate is locked for checkout.
             </p>
@@ -315,24 +315,24 @@ export function DirectCheckoutForm({
         <div className="flex items-start justify-between gap-4">
           <div>
             <div className="flex items-center gap-2 mb-1.5">
-              <span className="text-[10px] font-bold uppercase tracking-wider text-amber-400 bg-amber-950/60 border border-amber-800/40 px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-bold uppercase tracking-wider text-[#B45309] bg-[#FEF3C7] border border-[#FDE68A] px-2 py-0.5 rounded-full">
                 {getPlatformLabel(listing.platform)}
               </span>
-              <span className="text-[10px] font-bold text-emerald-400 bg-emerald-950/60 border border-emerald-800/40 px-2 py-0.5 rounded-full">
+              <span className="text-[10px] font-bold text-[#006340] bg-[#EBF5F0] border border-[#BFE0CE] px-2 py-0.5 rounded-full">
                 OVR {listing.overall_team_strength}
               </span>
             </div>
-            <h2 className="text-lg font-bold text-slate-100 font-display">
+            <h2 className="text-lg font-bold text-[#0F0F0F] font-display">
               {listing.title}
             </h2>
-            <p className="text-xs text-slate-400 mt-0.5">
+            <p className="text-xs text-[#5F5F5F] mt-0.5">
               Manager: {listing.manager_name || "Custom"} <span className="text-slate-600">/</span> Playstyle: {listing.primary_playstyle?.replace("_", " ") || "Quick Counter"}
             </p>
           </div>
 
           <Link
             href={`/listings/${listing.id}`}
-            className="text-xs font-semibold text-brand-400 hover:text-brand-300 flex items-center gap-1 shrink-0 pt-1"
+            className="text-xs font-semibold text-[#006340] hover:text-[#006340] flex items-center gap-1 shrink-0 pt-1"
           >
             <span>View Squad</span>
             <ExternalLink className="w-3.5 h-3.5" />
@@ -341,15 +341,15 @@ export function DirectCheckoutForm({
 
         {/* Pricing Breakdown */}
         <div className="p-4 rounded-xl bg-pitch-card border border-pitch-border/80 space-y-2 text-xs">
-          <div className="flex justify-between text-slate-400">
+          <div className="flex justify-between text-[#5F5F5F]">
             <span>Listing Price</span>
-            <span className={isDiscounted ? "line-through text-slate-500 font-mono" : "text-slate-200 font-mono"}>
+            <span className={isDiscounted ? "line-through text-[#767676] font-mono" : "text-[#1F1F1F] font-mono"}>
               {formatCurrency(listing.price)}
             </span>
           </div>
 
           {isDiscounted && (
-            <div className="flex justify-between text-amber-400 font-semibold">
+            <div className="flex justify-between text-[#B45309] font-semibold">
               <span>Accepted Offer Discount</span>
               <span className="font-mono">
                 - {formatCurrency(Number(listing.price) - activeOffer.offered_price)}
@@ -357,16 +357,16 @@ export function DirectCheckoutForm({
             </div>
           )}
 
-          <div className="flex justify-between text-slate-400">
+          <div className="flex justify-between text-[#5F5F5F]">
             <span>Escrow Protection Fee</span>
-            <span className="text-emerald-400 font-semibold font-mono">
+            <span className="text-[#006340] font-semibold font-mono">
               KES {calculateEscrowCommission(payablePrice)} (5% Tiered: KES 50 - 500)
             </span>
           </div>
 
           <div className="border-t border-pitch-border/60 pt-2 flex justify-between items-baseline font-bold text-sm">
-            <span className="text-slate-200">Total Payable via M-Pesa:</span>
-            <span className="text-2xl text-emerald-400 font-mono font-extrabold">
+            <span className="text-[#1F1F1F]">Total Payable via M-Pesa:</span>
+            <span className="text-2xl text-[#006340] font-mono font-extrabold">
               {formatCurrency(payablePrice)}
             </span>
           </div>
@@ -377,16 +377,16 @@ export function DirectCheckoutForm({
       {stkStatus === "idle" || stkStatus === "failed" ? (
         <form onSubmit={handleTriggerPayment} className="p-6 rounded-2xl bg-pitch-surface border border-pitch-border shadow-2xl space-y-5">
           <div className="flex items-center gap-2 pb-2 border-b border-pitch-border/60">
-            <Smartphone className="w-5 h-5 text-emerald-400" />
-            <h3 className="text-sm font-bold text-slate-200 uppercase tracking-wider">
+            <Smartphone className="w-5 h-5 text-[#006340]" />
+            <h3 className="text-sm font-bold text-[#1F1F1F] uppercase tracking-wider">
               Enter Safaricom Details
             </h3>
           </div>
 
           <div className="space-y-4">
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                M-Pesa Phone Number (Auto International Format) <span className="text-rose-400">*</span>
+              <label className="block text-xs font-semibold text-[#3D3D3D] mb-1.5">
+                M-Pesa Phone Number (Auto International Format) <span className="text-[#C92A2A]">*</span>
               </label>
               <div className="relative">
                 <input
@@ -397,23 +397,23 @@ export function DirectCheckoutForm({
                   value={phoneNumber}
                   onChange={(e) => setPhoneNumber(e.target.value)}
                   required
-                  className="w-full px-4 py-3 rounded-xl bg-pitch-card border border-pitch-border text-slate-100 placeholder-slate-500 text-sm font-mono focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                  className="w-full px-4 py-3 rounded-xl bg-pitch-card border border-pitch-border text-[#0F0F0F] placeholder-slate-500 text-sm font-mono focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
                 />
               </div>
               <div className="mt-1 flex items-center justify-between text-[11px]">
                 {phoneNumber.trim().length >= 9 ? (
                   normalizePhoneNumber(phoneNumber).isValid ? (
-                    <span className="text-emerald-400 font-semibold flex items-center gap-1">
-                      <Check className="w-3 h-3 text-emerald-400" />
+                    <span className="text-[#006340] font-semibold flex items-center gap-1">
+                      <Check className="w-3 h-3 text-[#006340]" />
                       Verified format: {normalizePhoneNumber(phoneNumber).international}
                     </span>
                   ) : (
-                    <span className="text-amber-400">
+                    <span className="text-[#B45309]">
                       Format: 07XX XXX XXX or 01XX XXX XXX
                     </span>
                   )
                 ) : (
-                  <span className="text-slate-400">
+                  <span className="text-[#5F5F5F]">
                     Safaricom Till 1572931 STK Prompt
                   </span>
                 )}
@@ -421,8 +421,8 @@ export function DirectCheckoutForm({
             </div>
 
             <div>
-              <label className="block text-xs font-semibold text-slate-300 mb-1.5">
-                Your Name / WhatsApp Handle <span className="text-slate-500">(Optional)</span>
+              <label className="block text-xs font-semibold text-[#3D3D3D] mb-1.5">
+                Your Name / WhatsApp Handle <span className="text-[#767676]">(Optional)</span>
               </label>
               <input
                 type="text"
@@ -430,14 +430,14 @@ export function DirectCheckoutForm({
                 placeholder="e.g. Brian O."
                 value={buyerName}
                 onChange={(e) => setBuyerName(e.target.value)}
-                className="w-full px-4 py-2.5 rounded-xl bg-pitch-card border border-pitch-border text-slate-100 placeholder-slate-500 text-sm focus:outline-none focus:border-emerald-500"
+                className="w-full px-4 py-2.5 rounded-xl bg-pitch-card border border-pitch-border text-[#0F0F0F] placeholder-slate-500 text-sm focus:outline-none focus:border-emerald-500"
               />
             </div>
           </div>
 
           {error && (
-            <div className="p-3.5 rounded-xl bg-rose-950/70 border border-rose-800 text-rose-300 text-xs flex items-start gap-2.5 shadow-md">
-              <AlertCircle className="w-4 h-4 shrink-0 text-rose-400 mt-0.5" />
+            <div className="p-3.5 rounded-xl bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs flex items-start gap-2.5 shadow-md">
+              <AlertCircle className="w-4 h-4 shrink-0 text-[#C92A2A] mt-0.5" />
               <div className="space-y-1">
                 <span className="font-semibold block">Payment Notice</span>
                 <p className="leading-relaxed">{error}</p>
@@ -465,44 +465,44 @@ export function DirectCheckoutForm({
               )}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full inline-flex items-center justify-center gap-2 p-2.5 rounded-xl bg-slate-900 border border-slate-700/80 hover:border-emerald-500/50 hover:bg-slate-800 transition-all text-xs font-semibold text-white"
+              className="w-full inline-flex items-center justify-center gap-2 p-2.5 rounded-xl bg-[#F9F9F8] border border-[#C8C8C4] hover:border-[#BFE0CE] hover:bg-[#F4F3F1] transition-all text-xs font-semibold text-[#0F0F0F]"
             >
-              <MessageCircle className="w-3.5 h-3.5 text-emerald-400 fill-emerald-400" />
+              <MessageCircle className="w-3.5 h-3.5 text-[#006340] fill-emerald-400" />
               <span>Instant WhatsApp Escrow Support (0794400365)</span>
             </a>
           </div>
-<div className="pt-2 flex items-center justify-between text-xs text-slate-400">
+<div className="pt-2 flex items-center justify-between text-xs text-[#5F5F5F]">
             <div className="flex items-center gap-1.5">
-              <Lock className="w-3.5 h-3.5 text-emerald-400" />
+              <Lock className="w-3.5 h-3.5 text-[#006340]" />
               <span>Safaricom Daraja API Protected</span>
             </div>
             <button
               type="button"
               onClick={handleCopyLink}
-              className="hover:text-slate-200 transition-colors flex items-center gap-1"
+              className="hover:text-[#1F1F1F] transition-colors flex items-center gap-1"
             >
-              {copiedLink ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+              {copiedLink ? <Check className="w-3.5 h-3.5 text-[#006340]" /> : <Copy className="w-3.5 h-3.5" />}
               <span>{copiedLink ? "Link Copied!" : "Share Buy Link"}</span>
             </button>
           </div>
         </form>
       ) : (
         /* Live Polling & Prompt Status Screen */
-        <div className="p-8 rounded-2xl bg-pitch-surface border border-emerald-500/40 shadow-2xl space-y-6 text-center animate-fade-in">
+        <div className="p-8 rounded-2xl bg-pitch-surface border border-[#BFE0CE] shadow-2xl space-y-6 text-center animate-fade-in">
           {stkStatus === "confirmed" ? (
             <div className="space-y-4">
-              <div className="w-16 h-16 rounded-full bg-emerald-500/20 border-2 border-emerald-400 text-emerald-400 flex items-center justify-center mx-auto">
+              <div className="w-16 h-16 rounded-full bg-[#EBF5F0] border-2 border-emerald-400 text-[#006340] flex items-center justify-center mx-auto">
                 <CheckCircle2 className="w-10 h-10" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-xl font-bold text-emerald-300 font-display">
+                <h3 className="text-xl font-bold text-[#006340] font-display">
                   Payment Confirmed via M-Pesa!
                 </h3>
-                <p className="text-xs text-slate-300">
+                <p className="text-xs text-[#3D3D3D]">
                   Funds safely secured in escrow under <strong>Till 1572931</strong>.
                 </p>
               </div>
-              <div className="p-4 rounded-xl bg-pitch-card border border-pitch-border text-xs text-slate-300">
+              <div className="p-4 rounded-xl bg-pitch-card border border-pitch-border text-xs text-[#3D3D3D]">
                 Redirecting you to view credentials & start the Konami ID takeover checklist...
               </div>
               {createdOrderId && (
@@ -516,25 +516,25 @@ export function DirectCheckoutForm({
             </div>
           ) : (
             <div className="space-y-5">
-              <div className="w-16 h-16 rounded-full bg-amber-500/10 border-2 border-amber-400/80 text-amber-400 flex items-center justify-center mx-auto animate-pulse">
+              <div className="w-16 h-16 rounded-full bg-[#FEF3C7] border-2 border-amber-400/80 text-[#B45309] flex items-center justify-center mx-auto animate-pulse">
                 <Smartphone className="w-8 h-8" />
               </div>
 
               <div className="space-y-1.5">
-                <h3 className="text-lg font-bold text-slate-100 font-display">
+                <h3 className="text-lg font-bold text-[#0F0F0F] font-display">
                   M-Pesa STK Prompt Sent!
                 </h3>
-                <p className="text-xs text-slate-300 max-w-sm mx-auto">
-                  A prompt was sent to <strong className="text-emerald-400 font-mono">{phoneNumber}</strong>.
+                <p className="text-xs text-[#3D3D3D] max-w-sm mx-auto">
+                  A prompt was sent to <strong className="text-[#006340] font-mono">{phoneNumber}</strong>.
                 </p>
               </div>
 
-              <div className="p-4 rounded-xl bg-pitch-card border border-pitch-border text-xs text-left space-y-2 text-slate-300">
-                <div className="flex items-center gap-2 text-amber-300 font-semibold">
+              <div className="p-4 rounded-xl bg-pitch-card border border-pitch-border text-xs text-left space-y-2 text-[#3D3D3D]">
+                <div className="flex items-center gap-2 text-[#92400E] font-semibold">
                   <Clock className="w-4 h-4" />
                   <span>Next Steps on your phone ({countdown}s):</span>
                 </div>
-                <ol className="list-decimal pl-4 space-y-1 text-[11px] text-slate-300">
+                <ol className="list-decimal pl-4 space-y-1 text-[11px] text-[#3D3D3D]">
                   <li>Unlock your Safaricom phone.</li>
                   <li>Verify Till: <strong>1572931 (EFootballMarket)</strong>.</li>
                   <li>Verify Amount: <strong>KES {payablePrice.toLocaleString()}</strong>.</li>
@@ -542,32 +542,32 @@ export function DirectCheckoutForm({
                 </ol>
               </div>
 
-              <div className="flex items-center justify-center gap-2 text-xs text-slate-400">
-                <Loader2 className="w-4 h-4 animate-spin text-emerald-400" />
+              <div className="flex items-center justify-center gap-2 text-xs text-[#5F5F5F]">
+                <Loader2 className="w-4 h-4 animate-spin text-[#006340]" />
                 <span>Waiting for Safaricom confirmation...</span>
               </div>
 
               {/* Manual Till 1572931 Fallback Option */}
-              <div className="p-3.5 rounded-xl bg-pitch-surface border border-dashed border-amber-500/40 text-left text-xs space-y-2">
+              <div className="p-3.5 rounded-xl bg-pitch-surface border border-dashed border-[#FDE68A] text-left text-xs space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="font-bold text-amber-300 flex items-center gap-1.5">
-                    <Smartphone className="w-3.5 h-3.5 text-amber-400" />
+                  <span className="font-bold text-[#92400E] flex items-center gap-1.5">
+                    <Smartphone className="w-3.5 h-3.5 text-[#B45309]" />
                     Didn't receive the STK prompt?
                   </span>
-                  <span className="text-[10px] text-slate-400 bg-pitch-card px-2 py-0.5 rounded border border-pitch-border font-mono">
+                  <span className="text-[10px] text-[#5F5F5F] bg-pitch-card px-2 py-0.5 rounded border border-pitch-border font-mono">
                     Till 1572931
                   </span>
                 </div>
-                <p className="text-[11px] text-slate-300 leading-relaxed">
+                <p className="text-[11px] text-[#3D3D3D] leading-relaxed">
                   Pay directly: <strong>M-Pesa</strong> &rarr; <strong>Lipa Na M-Pesa</strong> &rarr; <strong>Buy Goods</strong> &rarr; Till <strong>1572931</strong> (Brian Okibo) &rarr; Amount: <strong>KES {payablePrice.toLocaleString()}</strong>.
                 </p>
                 <div className="pt-1 flex items-center justify-between text-[11px]">
-                  <span className="text-slate-400">Instant Escrow Lock</span>
+                  <span className="text-[#5F5F5F]">Instant Escrow Lock</span>
                   <a
                     href="https://wa.me/254794400365"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-emerald-400 hover:text-emerald-300 font-semibold underline"
+                    className="text-[#006340] hover:text-[#006340] font-semibold underline"
                   >
                     WhatsApp Support: 0794400365 &rarr;
                   </a>
@@ -578,7 +578,7 @@ export function DirectCheckoutForm({
                 <button
                   type="button"
                   onClick={() => setStkStatus("idle")}
-                  className="text-xs text-slate-400 hover:text-slate-200 underline"
+                  className="text-xs text-[#5F5F5F] hover:text-[#1F1F1F] underline"
                 >
                   Change Phone Number or Retry STK
                 </button>
@@ -589,12 +589,12 @@ export function DirectCheckoutForm({
       )}
 
       {/* Security Footer Guarantee */}
-      <div className="p-4 rounded-xl bg-pitch-card/60 border border-pitch-border/60 text-xs text-slate-400 space-y-2">
-        <div className="flex items-center gap-2 text-slate-200 font-semibold">
-          <ShieldCheck className="w-4 h-4 text-emerald-400" />
+      <div className="p-4 rounded-xl bg-pitch-card/60 border border-pitch-border/60 text-xs text-[#5F5F5F] space-y-2">
+        <div className="flex items-center gap-2 text-[#1F1F1F] font-semibold">
+          <ShieldCheck className="w-4 h-4 text-[#006340]" />
           <span>How our escrow checkout protects your payment:</span>
         </div>
-        <ul className="space-y-1 text-[11px] text-slate-400 pl-6 list-disc">
+        <ul className="space-y-1 text-[11px] text-[#5F5F5F] pl-6 list-disc">
           <li>The seller DOES NOT receive your money until you confirm Konami ID access.</li>
           <li>If credentials do not work, you can open an instant dispute for a full refund.</li>
           <li>Executive oversight by Brian Okibo, CEO (Helpline: 0794400365).</li>
@@ -602,16 +602,16 @@ export function DirectCheckoutForm({
       </div>
 
       {/* Konami Publisher Notice */}
-      <div className="p-3.5 rounded-xl bg-slate-900/80 border border-slate-700/80 text-xs text-slate-300">
+      <div className="p-3.5 rounded-xl bg-[#F9F9F8] border border-[#C8C8C4] text-xs text-[#3D3D3D]">
         <div className="flex items-start gap-2">
-          <AlertCircle className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
+          <AlertCircle className="w-4 h-4 text-[#B45309] shrink-0 mt-0.5" />
           <p className="text-[11px] leading-relaxed">
             Konami’s current rules prohibit selling or transferring eFootball accounts and sharing account IDs or passwords. Trading may result in loss of account access or support.{" "}
             <a
               href="https://www.konami.com/efootball/en-us/topic/news/5174"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-amber-400 hover:text-amber-300 underline font-medium inline-flex items-center gap-1"
+              className="text-[#B45309] hover:text-[#92400E] underline font-medium inline-flex items-center gap-1"
             >
               Read Konami’s official notice
               <ExternalLink className="w-3 h-3 inline" />

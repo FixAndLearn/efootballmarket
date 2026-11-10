@@ -48,10 +48,10 @@ export function SellerDashboardView({
       {/* Top Financial Ribbon */}
       <div className="grid grid-cols-1 sm:grid-cols-4 gap-6">
         <div className="p-5 rounded-2xl bg-pitch-surface border border-pitch-border shadow-lg">
-          <span className="block text-xs uppercase font-bold text-slate-400 tracking-wider">
+          <span className="block text-xs uppercase font-bold text-[#5F5F5F] tracking-wider">
             Available to Withdraw
           </span>
-          <span className="text-3xl font-bold text-emerald-400 font-display mt-2 block font-mono">
+          <span className="text-3xl font-bold text-[#006340] font-display mt-2 block font-mono">
             {formatCurrency(sellerProfile.available_balance)}
           </span>
           <Button
@@ -67,50 +67,50 @@ export function SellerDashboardView({
         </div>
 
         <div className="p-5 rounded-2xl bg-pitch-surface border border-pitch-border shadow-lg">
-          <span className="block text-xs uppercase font-bold text-amber-400 tracking-wider">
+          <span className="block text-xs uppercase font-bold text-[#B45309] tracking-wider">
             Locked in Escrow
           </span>
-          <span className="text-3xl font-bold text-amber-400 font-display mt-2 block font-mono">
+          <span className="text-3xl font-bold text-[#B45309] font-display mt-2 block font-mono">
             {formatCurrency(sellerProfile.escrow_balance)}
           </span>
-          <span className="text-[11px] text-slate-400 mt-3 block">
+          <span className="text-[11px] text-[#5F5F5F] mt-3 block">
             Released automatically after buyer confirmation
           </span>
         </div>
 
         <div className="p-5 rounded-2xl bg-pitch-surface border border-pitch-border shadow-lg">
-          <span className="block text-xs uppercase font-bold text-indigo-400 tracking-wider">
+          <span className="block text-xs uppercase font-bold text-[#4338CA] tracking-wider">
             Completed Sales
           </span>
-          <span className="text-3xl font-bold text-white font-display mt-2 block">
+          <span className="text-3xl font-bold text-[#0F0F0F] font-display mt-2 block">
             {sellerProfile.completed_sales_count}
           </span>
-          <span className="text-[11px] text-slate-400 mt-3 block">
+          <span className="text-[11px] text-[#5F5F5F] mt-3 block">
             Total successful transfers
           </span>
         </div>
 
         <div className="p-5 rounded-2xl bg-pitch-surface border border-pitch-border shadow-lg">
-          <span className="block text-xs uppercase font-bold text-slate-400 tracking-wider">
+          <span className="block text-xs uppercase font-bold text-[#5F5F5F] tracking-wider">
             Seller Rating
           </span>
           <div className="flex items-center gap-2 mt-2">
-            <span className="text-3xl font-bold text-white font-display">
+            <span className="text-3xl font-bold text-[#0F0F0F] font-display">
               {sellerProfile.seller_rating > 0
                 ? Number(sellerProfile.seller_rating).toFixed(1)
                 : "New"}
             </span>
             {sellerProfile.seller_rating > 0 && (
-              <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
+              <Star className="w-5 h-5 text-[#B45309] fill-amber-400" />
             )}
           </div>
-          <div className="flex items-center gap-1.5 mt-3 text-xs text-slate-300">
+          <div className="flex items-center gap-1.5 mt-3 text-xs text-[#3D3D3D]">
             {sellerProfile.is_verified_seller ? (
-              <span className="text-emerald-400 flex items-center gap-1 font-semibold text-[11px]">
+              <span className="text-[#006340] flex items-center gap-1 font-semibold text-[11px]">
                 <ShieldCheck className="w-3.5 h-3.5" /> KYC Verified Seller
               </span>
             ) : (
-              <Link href="/seller/verification" className="text-amber-400 hover:underline text-[11px]">
+              <Link href="/seller/verification" className="text-[#B45309] hover:underline text-[11px]">
                 Submit KYC Verification →
               </Link>
             )}
@@ -132,50 +132,50 @@ export function SellerDashboardView({
                 <div
                   className={`w-12 h-12 rounded-2xl flex items-center justify-center text-lg shadow-inner ${
                     tier.level === "master"
-                      ? "bg-amber-500/20 text-amber-300 border border-amber-400/50"
+                      ? "bg-[#FEF3C7] text-[#92400E] border border-amber-400/50"
                       : tier.level === "verified"
-                      ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/50"
-                      : "bg-slate-800 text-slate-300 border border-slate-700"
+                      ? "bg-[#EBF5F0] text-[#006340] border border-[#BFE0CE]"
+                      : "bg-[#F4F3F1] text-[#3D3D3D] border border-[#C8C8C4]"
                   }`}
                 >
                   {tier.level === "master" ? (
-                    <Crown className="w-6 h-6 text-amber-400 fill-amber-400" />
+                    <Crown className="w-6 h-6 text-[#B45309] fill-amber-400" />
                   ) : tier.level === "verified" ? (
-                    <ShieldCheck className="w-6 h-6 text-emerald-400" />
+                    <ShieldCheck className="w-6 h-6 text-[#006340]" />
                   ) : (
-                    <Trophy className="w-6 h-6 text-slate-400" />
+                    <Trophy className="w-6 h-6 text-[#5F5F5F]" />
                   )}
                 </div>
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="text-base font-bold text-white font-display">{tier.label}</h3>
+                    <h3 className="text-base font-bold text-[#0F0F0F] font-display">{tier.label}</h3>
                     <span
                       className={`text-[10px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
                         tier.level === "master"
-                          ? "bg-amber-400/20 text-amber-300 border border-amber-400/40"
+                          ? "bg-amber-400/20 text-[#92400E] border border-amber-400/40"
                           : tier.level === "verified"
-                          ? "bg-emerald-400/20 text-emerald-300 border border-emerald-400/40"
-                          : "bg-slate-800 text-slate-300 border border-slate-700"
+                          ? "bg-emerald-400/20 text-[#006340] border border-emerald-400/40"
+                          : "bg-[#F4F3F1] text-[#3D3D3D] border border-[#C8C8C4]"
                       }`}
                     >
                       Tier {tier.level === "master" ? "3 (Elite)" : tier.level === "verified" ? "2 (Verified)" : "1 (Rookie)"}
                     </span>
                   </div>
-                  <p className="text-xs text-slate-400 mt-0.5">{tier.description}</p>
+                  <p className="text-xs text-[#5F5F5F] mt-0.5">{tier.description}</p>
                 </div>
               </div>
 
               {tier.nextTierLabel ? (
                 <div className="text-left sm:text-right">
-                  <span className="text-xs font-semibold text-slate-300">
-                    Next Tier: <span className="text-amber-300 font-bold">{tier.nextTierLabel}</span>
+                  <span className="text-xs font-semibold text-[#3D3D3D]">
+                    Next Tier: <span className="text-[#92400E] font-bold">{tier.nextTierLabel}</span>
                   </span>
-                  <span className="block text-[11px] text-slate-400">
+                  <span className="block text-[11px] text-[#5F5F5F]">
                     {tier.salesRequiredForNext} more completed trade{tier.salesRequiredForNext === 1 ? "" : "s"} required
                   </span>
                 </div>
               ) : (
-                <div className="px-3 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold text-center">
+                <div className="px-3 py-1.5 rounded-xl bg-[#FEF3C7] border border-[#FDE68A] text-[#92400E] text-xs font-bold text-center">
                   VIP Escrow Partner Tier Active
                 </div>
               )}
@@ -184,11 +184,11 @@ export function SellerDashboardView({
             {/* Progress Bar */}
             {tier.nextTierLabel && (
               <div className="space-y-1.5">
-                <div className="flex justify-between text-[11px] text-slate-400 font-medium">
+                <div className="flex justify-between text-[11px] text-[#5F5F5F] font-medium">
                   <span>Level Progress: {currentSales} / {targetSales} Deals</span>
-                  <span className="text-emerald-400 font-bold">{progressPercent}%</span>
+                  <span className="text-[#006340] font-bold">{progressPercent}%</span>
                 </div>
-                <div className="w-full h-2 rounded-full bg-slate-800 overflow-hidden border border-slate-700/60">
+                <div className="w-full h-2 rounded-full bg-[#F4F3F1] overflow-hidden border border-[#C8C8C4]">
                   <div
                     className="h-full bg-gradient-to-r from-brand-500 via-emerald-400 to-amber-400 transition-all duration-500 rounded-full"
                     style={{ width: `${progressPercent}%` }}
@@ -199,10 +199,10 @@ export function SellerDashboardView({
 
             {/* Tier Perks */}
             <div className="pt-2 border-t border-pitch-border/60">
-              <span className="text-[11px] uppercase font-bold text-slate-400 tracking-wider block mb-2">
+              <span className="text-[11px] uppercase font-bold text-[#5F5F5F] tracking-wider block mb-2">
                 Unlocked Privileges:
               </span>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-slate-300">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-[#3D3D3D]">
                 {tier.perks.map((perk, idx) => (
                   <div key={idx} className="flex items-center gap-2">
                     <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0" />
@@ -226,10 +226,10 @@ export function SellerDashboardView({
 
       {/* Action Required: Orders Awaiting Credential Delivery */}
       {pendingOrders.length > 0 && (
-        <div className="bg-amber-950/30 border border-amber-800/60 rounded-2xl p-6 shadow-xl space-y-4">
+        <div className="bg-[#FEF3C7] border border-[#FDE68A] rounded-2xl p-6 shadow-xl space-y-4">
           <div className="flex items-center gap-2">
             <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-ping" />
-            <h2 className="text-base font-bold text-amber-200 font-display">
+            <h2 className="text-base font-bold text-[#92400E] font-display">
               Action Required: {pendingOrders.length} Order(s) Awaiting Credential Delivery
             </h2>
           </div>
@@ -238,10 +238,10 @@ export function SellerDashboardView({
             {pendingOrders.map((order) => (
               <div key={order.id} className="py-3 flex items-center justify-between">
                 <div>
-                  <span className="font-mono text-xs font-bold text-amber-400">
+                  <span className="font-mono text-xs font-bold text-[#B45309]">
                     Order #{order.order_number}
                   </span>
-                  <p className="text-sm font-semibold text-slate-200 mt-0.5">
+                  <p className="text-sm font-semibold text-[#1F1F1F] mt-0.5">
                     {order.listing?.title}
                   </p>
                 </div>
@@ -264,7 +264,7 @@ export function SellerDashboardView({
       {/* Seller Listings */}
       <div className="bg-pitch-surface border border-pitch-border rounded-2xl p-6 shadow-xl space-y-4">
         <div className="flex items-center justify-between">
-          <h2 className="text-base font-bold text-slate-100 font-display">
+          <h2 className="text-base font-bold text-[#0F0F0F] font-display">
             Your Listed Accounts ({listings.length})
           </h2>
           <Link href="/seller/create-listing">
@@ -287,27 +287,27 @@ export function SellerDashboardView({
                     <Badge variant={item.status === "published" ? "success" : "default"} size="sm">
                       {item.status.toUpperCase()}
                     </Badge>
-                    <span className="text-xs text-slate-400">{getPlatformLabel(item.platform)}</span>
-                    <span className="text-xs text-amber-300 font-semibold font-mono">
+                    <span className="text-xs text-[#5F5F5F]">{getPlatformLabel(item.platform)}</span>
+                    <span className="text-xs text-[#92400E] font-semibold font-mono">
                       OVR {item.overall_team_strength}
                     </span>
                   </div>
-                  <h3 className="text-sm font-semibold text-slate-100">{item.title}</h3>
+                  <h3 className="text-sm font-semibold text-[#0F0F0F]">{item.title}</h3>
                 </div>
 
                 <div className="flex items-center justify-between sm:justify-end gap-3 pt-2 sm:pt-0 border-t sm:border-t-0 border-pitch-border/40">
-                  <span className="text-base font-bold text-emerald-400 font-display font-mono">
+                  <span className="text-base font-bold text-[#006340] font-display font-mono">
                     {formatCurrency(item.price, item.currency)}
                   </span>
                   <div className="flex items-center gap-2">
                     {item.status === "sold" ? (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-slate-800/80 border border-slate-700/80 text-xs font-semibold text-slate-400 select-none">
-                        <Lock className="w-3.5 h-3.5 text-slate-500" />
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#F4F3F1] border border-[#C8C8C4] text-xs font-semibold text-[#5F5F5F] select-none">
+                        <Lock className="w-3.5 h-3.5 text-[#767676]" />
                         <span>Sold (Locked)</span>
                       </span>
                     ) : item.status === "in_escrow" ? (
-                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-amber-950/60 border border-amber-800/60 text-xs font-semibold text-amber-300 select-none">
-                        <Lock className="w-3.5 h-3.5 text-amber-400" />
+                      <span className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#FEF3C7] border border-[#FDE68A] text-xs font-semibold text-[#92400E] select-none">
+                        <Lock className="w-3.5 h-3.5 text-[#B45309]" />
                         <span>In Escrow</span>
                       </span>
                     ) : (

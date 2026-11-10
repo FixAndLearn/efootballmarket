@@ -599,20 +599,20 @@ function AdminControlCenterContent() {
     return (
       <div className="py-24 text-center space-y-3">
         <div className="w-8 h-8 rounded-full border-2 border-brand-400 border-t-transparent animate-spin mx-auto" />
-        <p className="text-xs text-slate-400">Verifying administrative credentials...</p>
+        <p className="text-xs text-[#5F5F5F]">Verifying administrative credentials...</p>
       </div>
     );
   }
 
   if (!isAdmin) {
     return (
-      <div className="max-w-md mx-auto my-20 p-8 rounded-3xl bg-pitch-surface border border-rose-500/30 text-center space-y-4 shadow-2xl">
-        <div className="w-14 h-14 rounded-2xl bg-rose-500/20 border border-rose-500/40 flex items-center justify-center text-rose-400 mx-auto">
+      <div className="max-w-md mx-auto my-20 p-8 rounded-3xl bg-pitch-surface border border-[#FECACA] text-center space-y-4 shadow-2xl">
+        <div className="w-14 h-14 rounded-2xl bg-[#FEE2E2] border border-[#FECACA] flex items-center justify-center text-[#C92A2A] mx-auto">
           <ShieldAlert className="w-7 h-7" />
         </div>
-        <h2 className="text-xl font-bold text-white">Administrative Access Restricted</h2>
-        <p className="text-xs text-slate-400 leading-relaxed">
-          This portal is reserved strictly for Super Administrator <strong className="text-slate-200">{PRIMARY_SUPER_ADMIN_EMAIL}</strong> and authorized platform moderators.
+        <h2 className="text-xl font-bold text-[#0F0F0F]">Administrative Access Restricted</h2>
+        <p className="text-xs text-[#5F5F5F] leading-relaxed">
+          This portal is reserved strictly for Super Administrator <strong className="text-[#1F1F1F]">{PRIMARY_SUPER_ADMIN_EMAIL}</strong> and authorized platform moderators.
         </p>
         <Link href="/">
           <Button variant="secondary" size="sm" className="w-full mt-2">
@@ -676,19 +676,19 @@ function AdminControlCenterContent() {
       {/* Super Admin Top Banner */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-pitch-border/80 pb-6 mb-8">
         <div>
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold mb-2">
-            <Crown className="w-3.5 h-3.5 text-amber-400" />
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FEF3C7] border border-[#FDE68A] text-[#92400E] text-xs font-bold mb-2">
+            <Crown className="w-3.5 h-3.5 text-[#B45309]" />
             <span>
               {isSuperAdmin
                 ? "Primary Super Administrator Active"
                 : "Platform Administrator Active"}
             </span>
           </div>
-          <h1 className="text-2xl sm:text-3xl font-bold text-white font-display">
+          <h1 className="text-2xl sm:text-3xl font-bold text-[#0F0F0F] font-display">
             Admin Console
           </h1>
-          <p className="text-xs text-slate-400 mt-1">
-            Administrator: <strong className="text-slate-200">{PRIMARY_SUPER_ADMIN_EMAIL}</strong> (Brian Okibo)
+          <p className="text-xs text-[#5F5F5F] mt-1">
+            Administrator: <strong className="text-[#1F1F1F]">{PRIMARY_SUPER_ADMIN_EMAIL}</strong> (Brian Okibo)
           </p>
         </div>
 
@@ -719,22 +719,22 @@ function AdminControlCenterContent() {
         <div
           className={`p-4 rounded-2xl border text-xs flex items-center justify-between gap-3 animate-in fade-in mb-8 ${
             feedback.type === "success"
-              ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-200"
-              : "bg-rose-950/60 border-rose-500/40 text-rose-200"
+              ? "bg-[#EBF5F0] border-[#BFE0CE] text-emerald-200"
+              : "bg-[#FEE2E2] border-[#FECACA] text-[#B91C1C]"
           }`}
         >
           <div className="flex items-center gap-2 flex-wrap">
             {feedback.type === "success" ? (
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+              <CheckCircle2 className="w-4 h-4 text-[#006340] shrink-0" />
             ) : (
-              <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
+              <AlertTriangle className="w-4 h-4 text-[#C92A2A] shrink-0" />
             )}
             <span>{feedback.message}</span>
           </div>
           <button
             type="button"
             onClick={() => setFeedback(null)}
-            className="text-slate-400 hover:text-white"
+            className="text-[#5F5F5F] hover:text-[#0F0F0F]"
           >
             <X className="w-4 h-4" />
           </button>
@@ -748,11 +748,11 @@ function AdminControlCenterContent() {
           onClick={() => switchTab("users")}
           className="text-left p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 shadow-sm hover:border-cyan-500/50 hover:bg-pitch-surface/80 transition-all cursor-pointer group"
         >
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block group-hover:text-slate-300 transition-colors">
+          <span className="text-xs font-semibold text-[#5F5F5F] uppercase tracking-wider block group-hover:text-[#3D3D3D] transition-colors">
             TOTAL ACCOUNTS
           </span>
-          <p className="text-3xl font-black text-white font-display">{users.length}</p>
-          <span className="text-xs text-slate-400 block font-mono">
+          <p className="text-3xl font-black text-[#0F0F0F] font-display">{users.length}</p>
+          <span className="text-xs text-[#5F5F5F] block font-mono">
             Registered platform members
           </span>
         </button>
@@ -762,11 +762,11 @@ function AdminControlCenterContent() {
           onClick={() => switchTab("listings")}
           className="text-left p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 shadow-sm hover:border-cyan-500/50 hover:bg-pitch-surface/80 transition-all cursor-pointer group"
         >
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block group-hover:text-slate-300 transition-colors">
+          <span className="text-xs font-semibold text-[#5F5F5F] uppercase tracking-wider block group-hover:text-[#3D3D3D] transition-colors">
             TOTAL LISTINGS
           </span>
-          <p className="text-3xl font-black text-white font-display">{listings.length}</p>
-          <span className="text-xs text-emerald-400 block font-mono">
+          <p className="text-3xl font-black text-[#0F0F0F] font-display">{listings.length}</p>
+          <span className="text-xs text-[#006340] block font-mono">
             Active in catalog
           </span>
         </button>
@@ -774,7 +774,7 @@ function AdminControlCenterContent() {
         <button
           type="button"
           onClick={() => switchTab("disputes")}
-          className="text-left p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 shadow-sm hover:border-rose-500/50 hover:bg-pitch-surface/80 transition-all cursor-pointer group"
+          className="text-left p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 shadow-sm hover:border-[#FECACA] hover:bg-pitch-surface/80 transition-all cursor-pointer group"
         >
           <span className="text-xs font-semibold text-red-400 uppercase tracking-wider flex items-center justify-between">
             <span className="flex items-center gap-1.5">
@@ -785,8 +785,8 @@ function AdminControlCenterContent() {
               <span className="w-2.5 h-2.5 rounded-full bg-red-400 animate-pulse" />
             )}
           </span>
-          <p className="text-3xl font-black text-white font-display">{openDisputesCount}</p>
-          <span className="text-xs text-slate-400 block font-mono">
+          <p className="text-3xl font-black text-[#0F0F0F] font-display">{openDisputesCount}</p>
+          <span className="text-xs text-[#5F5F5F] block font-mono">
             {disputes.length} total cases
           </span>
         </button>
@@ -794,18 +794,18 @@ function AdminControlCenterContent() {
         <button
           type="button"
           onClick={() => switchTab("withdrawals")}
-          className="text-left p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 shadow-sm hover:border-amber-500/50 hover:bg-pitch-surface/80 transition-all cursor-pointer group"
+          className="text-left p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 shadow-sm hover:border-[#FDE68A] hover:bg-pitch-surface/80 transition-all cursor-pointer group"
         >
-          <span className="text-xs font-semibold text-amber-400 uppercase tracking-wider flex items-center justify-between">
+          <span className="text-xs font-semibold text-[#B45309] uppercase tracking-wider flex items-center justify-between">
             <span>PENDING PAYOUTS</span>
             {pendingWithdrawalsCount > 0 && (
               <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse" />
             )}
           </span>
-          <p className="text-3xl font-black text-white font-display">
+          <p className="text-3xl font-black text-[#0F0F0F] font-display">
             {pendingWithdrawalsCount}
           </p>
-          <span className="text-xs text-slate-400 block font-mono">
+          <span className="text-xs text-[#5F5F5F] block font-mono">
             {formatCurrency(pendingWithdrawalsSum)} queued
           </span>
         </button>
@@ -813,15 +813,15 @@ function AdminControlCenterContent() {
         <button
           type="button"
           onClick={() => switchTab("users")}
-          className="text-left p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 shadow-sm hover:border-rose-500/50 hover:bg-pitch-surface/80 transition-all cursor-pointer group"
+          className="text-left p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 shadow-sm hover:border-[#FECACA] hover:bg-pitch-surface/80 transition-all cursor-pointer group"
         >
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block group-hover:text-slate-300 transition-colors">
+          <span className="text-xs font-semibold text-[#5F5F5F] uppercase tracking-wider block group-hover:text-[#3D3D3D] transition-colors">
             ACTIVE BANS
           </span>
-          <p className="text-3xl font-black text-white font-display">
+          <p className="text-3xl font-black text-[#0F0F0F] font-display">
             {users.filter((u) => u.is_suspended).length}
           </p>
-          <span className="text-xs text-slate-400 block font-mono">
+          <span className="text-xs text-[#5F5F5F] block font-mono">
             Suspended user accounts
           </span>
         </button>
@@ -831,11 +831,11 @@ function AdminControlCenterContent() {
           onClick={() => switchTab("news")}
           className="text-left p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 shadow-sm hover:border-cyan-500/50 hover:bg-pitch-surface/80 transition-all cursor-pointer group"
         >
-          <span className="text-xs font-semibold text-slate-400 uppercase tracking-wider block group-hover:text-slate-300 transition-colors">
+          <span className="text-xs font-semibold text-[#5F5F5F] uppercase tracking-wider block group-hover:text-[#3D3D3D] transition-colors">
             NEWS &amp; ALERTS
           </span>
-          <p className="text-3xl font-black text-white font-display">{articles.length}</p>
-          <span className="text-xs text-slate-400 block font-mono">
+          <p className="text-3xl font-black text-[#0F0F0F] font-display">{articles.length}</p>
+          <span className="text-xs text-[#5F5F5F] block font-mono">
             Community broadcasts
           </span>
         </button>
@@ -850,24 +850,24 @@ function AdminControlCenterContent() {
                 <Layers className="w-3.5 h-3.5" />
                 <span>Squad Inventory Moderation</span>
               </div>
-              <h2 className="text-2xl font-bold text-white font-display flex items-center gap-2.5">
+              <h2 className="text-2xl font-bold text-[#0F0F0F] font-display flex items-center gap-2.5">
                 <span>Squad Listings</span>
                 <span className="text-xs px-2.5 py-0.5 rounded-full bg-cyan-500/15 text-cyan-300 border border-cyan-500/30 font-mono font-bold">
                   {filteredListings.length} Active
                 </span>
               </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-[#5F5F5F] mt-0.5">
                 Bring down any squad listing that violates marketplace rules or broadcast verified accounts to Telegram.
               </p>
             </div>
             <div className="relative min-w-[260px]">
-              <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-[#767676] absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={listingSearch}
                 onChange={(e) => setListingSearch(e.target.value)}
                 placeholder="Search listing or seller..."
-                className="w-full pl-9 pr-3.5 py-2 rounded-xl bg-pitch-surface border border-pitch-border text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-cyan-400 shadow-sm"
+                className="w-full pl-9 pr-3.5 py-2 rounded-xl bg-pitch-surface border border-pitch-border text-xs text-[#1F1F1F] placeholder:text-[#767676] focus:outline-none focus:border-cyan-400 shadow-sm"
               />
             </div>
           </div>
@@ -875,7 +875,7 @@ function AdminControlCenterContent() {
           <div className="bg-pitch-surface border border-pitch-border rounded-2xl overflow-hidden shadow-xl">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-pitch-card border-b border-pitch-border text-slate-400 text-[11px] uppercase tracking-wider">
+                <thead className="bg-pitch-card border-b border-pitch-border text-[#5F5F5F] text-[11px] uppercase tracking-wider">
                   <tr>
                     <th className="p-3.5">Listing Title</th>
                     <th className="p-3.5">Seller</th>
@@ -892,36 +892,36 @@ function AdminControlCenterContent() {
                         <td className="p-3.5">
                           <Link
                             href={`/listings/${l.id}`}
-                            className="font-bold text-white hover:text-amber-400 transition-colors block max-w-xs truncate"
+                            className="font-bold text-[#0F0F0F] hover:text-[#B45309] transition-colors block max-w-xs truncate"
                           >
                             {l.title}
                           </Link>
-                          <span className="text-[10px] text-slate-500">ID: {l.id.slice(0, 8)}...</span>
+                          <span className="text-[10px] text-[#767676]">ID: {l.id.slice(0, 8)}...</span>
                         </td>
-                        <td className="p-3.5 text-slate-300">
+                        <td className="p-3.5 text-[#3D3D3D]">
                           <span className="font-semibold">{l.seller?.username || "Unknown"}</span>
                           {l.seller?.is_suspended && (
-                            <span className="block text-[10px] text-rose-400 font-bold">Banned Seller</span>
+                            <span className="block text-[10px] text-[#C92A2A] font-bold">Banned Seller</span>
                           )}
                         </td>
-                        <td className="p-3.5 font-bold text-emerald-400">
+                        <td className="p-3.5 font-bold text-[#006340]">
                           {formatCurrency(l.price, l.currency || "KES")}
                         </td>
-                        <td className="p-3.5 text-slate-400">
+                        <td className="p-3.5 text-[#5F5F5F]">
                           <span>{l.platform}</span> <span className="text-slate-600">/</span> <span>OVR {l.overall_team_strength}</span>
                         </td>
                         <td className="p-3.5">
                           <span
                             className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
                               l.status === "published" || l.status === "active"
-                                ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/30"
+                                ? "bg-[#EBF5F0] text-[#006340] border border-[#BFE0CE]"
                                 : l.status === "in_escrow"
-                                ? "bg-amber-500/10 text-amber-400 border border-amber-500/30"
+                                ? "bg-[#FEF3C7] text-[#B45309] border border-[#FDE68A]"
                                 : l.status === "sold"
-                                ? "bg-indigo-500/10 text-indigo-400 border border-indigo-500/30"
+                                ? "bg-[#EEF2FF] text-[#4338CA] border border-[#C7D2FE]"
                                 : l.status === "suspended" || l.status === "archived"
-                                ? "bg-rose-500/10 text-rose-400 border border-rose-500/30"
-                                : "bg-slate-800 text-slate-400"
+                                ? "bg-[#FEE2E2] text-[#C92A2A] border border-[#FECACA]"
+                                : "bg-[#F4F3F1] text-[#5F5F5F]"
                             }`}
                           >
                             {l.status}
@@ -935,7 +935,7 @@ function AdminControlCenterContent() {
                               size="sm"
                               onClick={() => handleBroadcastListing(l)}
                               isLoading={broadcastingListingId === l.id}
-                              className="text-xs py-1 px-2.5 border-indigo-500/40 text-indigo-300 hover:bg-indigo-500/10"
+                              className="text-xs py-1 px-2.5 border-[#C7D2FE] text-[#3730A3] hover:bg-[#EEF2FF]"
                             >
                               <Send className="w-3.5 h-3.5 mr-1" />
                               Broadcast
@@ -958,7 +958,7 @@ function AdminControlCenterContent() {
                                 size="sm"
                                 onClick={() => handleModerateListing(l.id, "reinstate")}
                                 disabled={actionLoading}
-                                className="text-xs py-1 px-2.5 text-emerald-400"
+                                className="text-xs py-1 px-2.5 text-[#006340]"
                               >
                                 <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
                                 Reinstate
@@ -970,7 +970,7 @@ function AdminControlCenterContent() {
                     ))
                   ) : (
                     <tr>
-                      <td colSpan={6} className="p-8 text-center text-slate-500">
+                      <td colSpan={6} className="p-8 text-center text-[#767676]">
                         No listings match your search criteria.
                       </td>
                     </tr>
@@ -985,16 +985,16 @@ function AdminControlCenterContent() {
       {/* TAB: ESCROW DISPUTES & ARBITRATION EVIDENCE LOCKER */}
       {activeTab === "disputes" && (
         <div className="space-y-6">
-          <div className="p-5 rounded-2xl bg-pitch-surface border border-rose-500/30 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
+          <div className="p-5 rounded-2xl bg-pitch-surface border border-[#FECACA] flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xl">
             <div>
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-rose-500/10 border border-rose-500/30 text-rose-300 text-[11px] font-bold mb-1">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-[11px] font-bold mb-1">
                 <Scale className="w-3.5 h-3.5" />
                 <span>Safeguarded Escrow Arbitration Court</span>
               </div>
-              <h2 className="text-xl font-bold text-white font-display">
+              <h2 className="text-xl font-bold text-[#0F0F0F] font-display">
                 Dispute Evidence Locker &amp; Binding Rulings
               </h2>
-              <p className="text-xs text-slate-400 mt-0.5 max-w-2xl">
+              <p className="text-xs text-[#5F5F5F] mt-0.5 max-w-2xl">
                 Inspect Konami credentials verification claims, 2FA screenshot proofs, and chat evidence. Issue binding arbitration: release escrow to seller or refund buyer balance.
               </p>
             </div>
@@ -1007,7 +1007,7 @@ function AdminControlCenterContent() {
                 className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
                   disputeFilter === "open"
                     ? "bg-rose-500 text-white shadow"
-                    : "text-slate-400 hover:text-white"
+                    : "text-[#5F5F5F] hover:text-[#0F0F0F]"
                 }`}
               >
                 Needs Action ({openDisputesCount})
@@ -1017,8 +1017,8 @@ function AdminControlCenterContent() {
                 onClick={() => setDisputeFilter("all")}
                 className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
                   disputeFilter === "all"
-                    ? "bg-slate-700 text-white shadow"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-slate-700 text-[#0F0F0F] shadow"
+                    : "text-[#5F5F5F] hover:text-[#0F0F0F]"
                 }`}
               >
                 All ({disputes.length})
@@ -1029,7 +1029,7 @@ function AdminControlCenterContent() {
                 className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
                   disputeFilter === "resolved"
                     ? "bg-emerald-600 text-white shadow"
-                    : "text-slate-400 hover:text-white"
+                    : "text-[#5F5F5F] hover:text-[#0F0F0F]"
                 }`}
               >
                 Resolved ({disputes.filter((d) => d.status !== "open").length})
@@ -1039,11 +1039,11 @@ function AdminControlCenterContent() {
 
           {filteredDisputes.length === 0 ? (
             <div className="bg-pitch-surface border border-pitch-border rounded-2xl p-12 text-center space-y-3">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-emerald-400 mx-auto">
+              <div className="w-12 h-12 rounded-2xl bg-[#EBF5F0] border border-[#BFE0CE] flex items-center justify-center text-[#006340] mx-auto">
                 <ShieldCheck className="w-6 h-6" />
               </div>
-              <h3 className="text-base font-bold text-white">No Disputes In This View</h3>
-              <p className="text-xs text-slate-400 max-w-sm mx-auto">
+              <h3 className="text-base font-bold text-[#0F0F0F]">No Disputes In This View</h3>
+              <p className="text-xs text-[#5F5F5F] max-w-sm mx-auto">
                 {disputeFilter === "open"
                   ? "All escrow orders are trading peacefully without active disputes."
                   : "No dispute records match the selected filter."}
@@ -1063,20 +1063,20 @@ function AdminControlCenterContent() {
                   <div
                     key={disp.id}
                     className={`p-6 rounded-3xl bg-pitch-surface border transition-all shadow-xl space-y-5 ${
-                      isOpen ? "border-rose-500/40 ring-1 ring-rose-500/20" : "border-pitch-border"
+                      isOpen ? "border-[#FECACA] ring-1 ring-rose-500/20" : "border-pitch-border"
                     }`}
                   >
                     {/* Top Row: Case info, Order info, Status Badge */}
                     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-pitch-border/60 pb-4">
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-mono text-xs font-bold text-slate-300">
+                          <span className="font-mono text-xs font-bold text-[#3D3D3D]">
                             Case #{disp.id.slice(0, 8).toUpperCase()}
                           </span>
-                          <span className="text-[11px] px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 font-mono">
+                          <span className="text-[11px] px-2 py-0.5 rounded-full bg-[#F4F3F1] text-[#5F5F5F] font-mono">
                             Order {order?.order_number || disp.order_id.slice(0, 8)}
                           </span>
-                          <span className="text-xs text-slate-400">
+                          <span className="text-xs text-[#5F5F5F]">
                             {new Date(disp.created_at).toLocaleString("en-KE", {
                               day: "numeric",
                               month: "short",
@@ -1087,7 +1087,7 @@ function AdminControlCenterContent() {
                           </span>
                         </div>
                         {listing && (
-                          <p className="text-xs font-semibold text-white mt-1">
+                          <p className="text-xs font-semibold text-[#0F0F0F] mt-1">
                             Listing: {listing.title} ({listing.platform})
                           </p>
                         )}
@@ -1095,22 +1095,22 @@ function AdminControlCenterContent() {
 
                       <div className="flex items-center gap-3">
                         <div className="text-right">
-                          <span className="text-[10px] text-slate-400 uppercase font-semibold block">
+                          <span className="text-[10px] text-[#5F5F5F] uppercase font-semibold block">
                             In Escrow
                           </span>
-                          <span className="text-sm font-black text-amber-400 font-mono">
+                          <span className="text-sm font-black text-[#B45309] font-mono">
                             {formatCurrency(order?.total_amount || 0)}
                           </span>
                         </div>
                         <span
                           className={`text-xs px-3 py-1 rounded-full font-bold uppercase tracking-wider border ${
                             isOpen
-                              ? "bg-rose-500/20 text-rose-300 border-rose-500/40 animate-pulse"
+                              ? "bg-[#FEE2E2] text-[#B91C1C] border-[#FECACA] animate-pulse"
                               : disp.status === "resolved_seller_release"
-                              ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/40"
+                              ? "bg-[#EBF5F0] text-[#006340] border-[#BFE0CE]"
                               : disp.status === "resolved_buyer_refund"
                               ? "bg-blue-500/20 text-blue-300 border-blue-500/40"
-                              : "bg-slate-800 text-slate-300 border-slate-700"
+                              : "bg-[#F4F3F1] text-[#3D3D3D] border-[#C8C8C4]"
                           }`}
                         >
                           {disp.status.replace(/_/g, " ")}
@@ -1119,14 +1119,14 @@ function AdminControlCenterContent() {
                     </div>
 
                     {/* Dispute Claims & Stated Reason */}
-                    <div className="p-4 rounded-2xl bg-rose-500/5 border border-rose-500/20 space-y-1.5">
+                    <div className="p-4 rounded-2xl bg-rose-500/5 border border-[#FECACA] space-y-1.5">
                       <div className="flex items-center gap-2">
-                        <AlertTriangle className="w-4 h-4 text-rose-400 shrink-0" />
-                        <span className="text-xs font-bold text-rose-300">
+                        <AlertTriangle className="w-4 h-4 text-[#C92A2A] shrink-0" />
+                        <span className="text-xs font-bold text-[#B91C1C]">
                           Dispute Claim: {disp.reason || "Account Credentials / Access Discrepancy"}
                         </span>
                       </div>
-                      <p className="text-xs text-slate-200 leading-relaxed pl-6">
+                      <p className="text-xs text-[#1F1F1F] leading-relaxed pl-6">
                         {disp.description || "No dispute description text provided."}
                       </p>
                     </div>
@@ -1141,10 +1141,10 @@ function AdminControlCenterContent() {
                         </span>
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-xs font-bold text-white">
+                            <p className="text-xs font-bold text-[#0F0F0F]">
                               {buyer?.username || "Buyer"}
                             </p>
-                            <p className="text-[11px] font-mono text-slate-400">
+                            <p className="text-[11px] font-mono text-[#5F5F5F]">
                               {formatDisplayPhone(buyer?.phone_number || "")}
                             </p>
                           </div>
@@ -1154,11 +1154,11 @@ function AdminControlCenterContent() {
                                 <button
                                   type="button"
                                   onClick={() => handleCopyPhone(buyer.phone_number)}
-                                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px]"
+                                  className="p-1.5 rounded-lg bg-[#F4F3F1] hover:bg-slate-700 text-[#3D3D3D] text-[11px]"
                                   title="Copy phone"
                                 >
                                   {copiedPhone === buyer.phone_number ? (
-                                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                                    <Check className="w-3.5 h-3.5 text-[#006340]" />
                                   ) : (
                                     <Copy className="w-3.5 h-3.5" />
                                   )}
@@ -1167,7 +1167,7 @@ function AdminControlCenterContent() {
                                   href={`https://wa.me/${formatWhatsAppPhone(buyer.phone_number)}?text=${encodeURIComponent(`Hello ${buyer.username || ""}, this is Brian Okibo (CEO & Escrow Director of eFootball Marketplace Kenya) regarding Escrow Dispute #${disp.id.slice(0, 8)} on Order ${order?.order_number || ""}.`)}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="p-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 text-[11px] flex items-center gap-1"
+                                  className="p-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-[#006340] border border-[#BFE0CE] text-[11px] flex items-center gap-1"
                                   title="Chat on WhatsApp"
                                 >
                                   <MessageCircle className="w-3.5 h-3.5" />
@@ -1181,16 +1181,16 @@ function AdminControlCenterContent() {
 
                       {/* Seller */}
                       <div className="p-4 rounded-2xl bg-pitch-card border border-pitch-border space-y-2">
-                        <span className="text-[10px] uppercase font-bold text-emerald-400 tracking-wider flex items-center gap-1.5">
+                        <span className="text-[10px] uppercase font-bold text-[#006340] tracking-wider flex items-center gap-1.5">
                           <Users className="w-3.5 h-3.5" />
                           <span>Seller Counterparty</span>
                         </span>
                         <div className="flex items-center justify-between">
                           <div>
-                            <p className="text-xs font-bold text-white">
+                            <p className="text-xs font-bold text-[#0F0F0F]">
                               {seller?.username || "Seller"}
                             </p>
-                            <p className="text-[11px] font-mono text-slate-400">
+                            <p className="text-[11px] font-mono text-[#5F5F5F]">
                               {formatDisplayPhone(seller?.phone_number || "")}
                             </p>
                           </div>
@@ -1200,11 +1200,11 @@ function AdminControlCenterContent() {
                                 <button
                                   type="button"
                                   onClick={() => handleCopyPhone(seller.phone_number)}
-                                  className="p-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300 text-[11px]"
+                                  className="p-1.5 rounded-lg bg-[#F4F3F1] hover:bg-slate-700 text-[#3D3D3D] text-[11px]"
                                   title="Copy phone"
                                 >
                                   {copiedPhone === seller.phone_number ? (
-                                    <Check className="w-3.5 h-3.5 text-emerald-400" />
+                                    <Check className="w-3.5 h-3.5 text-[#006340]" />
                                   ) : (
                                     <Copy className="w-3.5 h-3.5" />
                                   )}
@@ -1213,7 +1213,7 @@ function AdminControlCenterContent() {
                                   href={`https://wa.me/${formatWhatsAppPhone(seller.phone_number)}?text=${encodeURIComponent(`Hello ${seller.username || ""}, this is Brian Okibo (CEO & Escrow Director of eFootball Marketplace Kenya) regarding Escrow Dispute #${disp.id.slice(0, 8)} on Order ${order?.order_number || ""}.`)}`}
                                   target="_blank"
                                   rel="noopener noreferrer"
-                                  className="p-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-emerald-400 border border-emerald-500/30 text-[11px] flex items-center gap-1"
+                                  className="p-1.5 rounded-lg bg-emerald-600/20 hover:bg-emerald-600/30 text-[#006340] border border-[#BFE0CE] text-[11px] flex items-center gap-1"
                                   title="Chat on WhatsApp"
                                 >
                                   <MessageCircle className="w-3.5 h-3.5" />
@@ -1229,17 +1229,17 @@ function AdminControlCenterContent() {
                     {/* Evidence Locker Screenshots */}
                     <div className="space-y-2">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-slate-200 flex items-center gap-1.5">
-                          <FileText className="w-3.5 h-3.5 text-indigo-400" />
+                        <span className="text-xs font-bold text-[#1F1F1F] flex items-center gap-1.5">
+                          <FileText className="w-3.5 h-3.5 text-[#4338CA]" />
                           <span>Submitted Proof Evidence ({evidenceList.length})</span>
                         </span>
-                        <span className="text-[11px] text-slate-400">
+                        <span className="text-[11px] text-[#5F5F5F]">
                           Click image to inspect in full-screen lightbox
                         </span>
                       </div>
 
                       {evidenceList.length === 0 ? (
-                        <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border text-center text-xs text-slate-500">
+                        <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border text-center text-xs text-[#767676]">
                           No screenshot evidence uploaded to the locker yet.
                         </div>
                       ) : (
@@ -1248,7 +1248,7 @@ function AdminControlCenterContent() {
                             <div
                               key={idx}
                               onClick={() => setAdminZoomImage(ev.url)}
-                              className="group relative rounded-xl overflow-hidden bg-slate-900 border border-pitch-border hover:border-brand-400 transition-all cursor-pointer aspect-video"
+                              className="group relative rounded-xl overflow-hidden bg-[#F9F9F8] border border-pitch-border hover:border-brand-400 transition-all cursor-pointer aspect-video"
                             >
                               <img
                                 src={ev.url}
@@ -1259,14 +1259,14 @@ function AdminControlCenterContent() {
                                 <span
                                   className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded w-fit mb-0.5 ${
                                     ev.role === "buyer"
-                                      ? "bg-blue-500/80 text-white"
-                                      : "bg-emerald-500/80 text-white"
+                                      ? "bg-blue-500/80 text-[#0F0F0F]"
+                                      : "bg-emerald-500/80 text-[#0F0F0F]"
                                   }`}
                                 >
                                   {ev.role || "Proof"}
                                 </span>
                                 {ev.note && (
-                                  <p className="text-[10px] text-slate-200 truncate font-sans">
+                                  <p className="text-[10px] text-[#1F1F1F] truncate font-sans">
                                     {ev.note}
                                   </p>
                                 )}
@@ -1279,19 +1279,19 @@ function AdminControlCenterContent() {
 
                     {/* Arbitration Decision Action Box */}
                     {isOpen ? (
-                      <div className="p-4 rounded-2xl bg-pitch-card border border-amber-500/30 space-y-3">
+                      <div className="p-4 rounded-2xl bg-pitch-card border border-[#FDE68A] space-y-3">
                         <div className="flex items-center justify-between">
-                          <span className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-                            <Scale className="w-4 h-4 text-amber-400" />
+                          <span className="text-xs font-bold text-[#92400E] flex items-center gap-1.5">
+                            <Scale className="w-4 h-4 text-[#B45309]" />
                             <span>Executive Escrow Ruling (Brian Okibo)</span>
                           </span>
-                          <span className="text-[10px] text-slate-400 font-mono">
+                          <span className="text-[10px] text-[#5F5F5F] font-mono">
                             Final &amp; Binding
                           </span>
                         </div>
 
                         <div className="space-y-1.5">
-                          <label className="block text-[11px] font-semibold text-slate-300">
+                          <label className="block text-[11px] font-semibold text-[#3D3D3D]">
                             Arbitration Rationale &amp; Notes
                           </label>
                           <textarea
@@ -1302,7 +1302,7 @@ function AdminControlCenterContent() {
                             }}
                             placeholder="Explain the verified evidence and decision (e.g. 'Seller provided authentic Konami credentials. Buyer successfully received access token. Escrow released to seller.')"
                             rows={2}
-                            className="w-full rounded-xl bg-pitch-surface border border-pitch-border p-2.5 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-amber-400"
+                            className="w-full rounded-xl bg-pitch-surface border border-pitch-border p-2.5 text-xs text-[#0F0F0F] placeholder:text-[#767676] focus:outline-none focus:border-amber-400"
                           />
                         </div>
 
@@ -1363,16 +1363,16 @@ function AdminControlCenterContent() {
                       </div>
                     ) : (
                       <div className="p-3.5 rounded-xl bg-pitch-card border border-pitch-border text-xs space-y-1">
-                        <span className="text-[10px] uppercase font-bold text-slate-400 tracking-wider block">
+                        <span className="text-[10px] uppercase font-bold text-[#5F5F5F] tracking-wider block">
                           Official Arbitration Ruling Notes
                         </span>
-                        <p className="text-slate-200">
+                        <p className="text-[#1F1F1F]">
                           {disp.resolution_notes && !disp.resolution_notes.startsWith("[")
                             ? disp.resolution_notes
                             : "Case concluded and archived."}
                         </p>
                         {disp.resolved_at && (
-                          <span className="text-[10px] text-slate-500 font-mono block">
+                          <span className="text-[10px] text-[#767676] font-mono block">
                             Resolved on {new Date(disp.resolved_at).toLocaleString()}
                           </span>
                         )}
@@ -1391,28 +1391,28 @@ function AdminControlCenterContent() {
         <div className="space-y-6 animate-in fade-in">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-pitch-border/80 pb-4">
             <div>
-              <div className="inline-flex items-center gap-1.5 text-amber-400 text-xs font-bold uppercase tracking-wider mb-1">
+              <div className="inline-flex items-center gap-1.5 text-[#B45309] text-xs font-bold uppercase tracking-wider mb-1">
                 <Users className="w-3.5 h-3.5" />
                 <span>RBAC &amp; Access Control</span>
               </div>
-              <h2 className="text-2xl font-bold text-white font-display flex items-center gap-2.5">
+              <h2 className="text-2xl font-bold text-[#0F0F0F] font-display flex items-center gap-2.5">
                 <span>User Directory</span>
-                <span className="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/15 text-amber-300 border border-amber-500/30 font-mono font-bold">
+                <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A] font-mono font-bold">
                   {filteredUsers.length} accounts
                 </span>
               </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-[#5F5F5F] mt-0.5">
                 Grant or dismiss administrator privileges, ban scam accounts, and manage trader access.
               </p>
             </div>
             <div className="relative min-w-[260px]">
-              <Search className="w-4 h-4 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+              <Search className="w-4 h-4 text-[#767676] absolute left-3 top-1/2 -translate-y-1/2" />
               <input
                 type="text"
                 value={userSearch}
                 onChange={(e) => setUserSearch(e.target.value)}
                 placeholder="Search user or email..."
-                className="w-full pl-9 pr-3.5 py-2 rounded-xl bg-pitch-surface border border-pitch-border text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-amber-400 shadow-sm"
+                className="w-full pl-9 pr-3.5 py-2 rounded-xl bg-pitch-surface border border-pitch-border text-xs text-[#1F1F1F] placeholder:text-[#767676] focus:outline-none focus:border-amber-400 shadow-sm"
               />
             </div>
           </div>
@@ -1420,7 +1420,7 @@ function AdminControlCenterContent() {
           <div className="bg-pitch-surface border border-pitch-border rounded-2xl overflow-hidden shadow-xl">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
-                <thead className="bg-pitch-card border-b border-pitch-border text-slate-400 text-[11px] uppercase tracking-wider">
+                <thead className="bg-pitch-card border-b border-pitch-border text-[#5F5F5F] text-[11px] uppercase tracking-wider">
                   <tr>
                     <th className="p-3.5">User Profile</th>
                     <th className="p-3.5">Email</th>
@@ -1439,48 +1439,48 @@ function AdminControlCenterContent() {
                       return (
                         <tr key={u.id} className="hover:bg-pitch-card/40 transition-colors">
                           <td className="p-3.5">
-                            <span className="font-bold text-white block">{u.username}</span>
-                            <span className="text-[10px] text-slate-500">ID: {u.id.slice(0, 8)}...</span>
+                            <span className="font-bold text-[#0F0F0F] block">{u.username}</span>
+                            <span className="text-[10px] text-[#767676]">ID: {u.id.slice(0, 8)}...</span>
                           </td>
-                          <td className="p-3.5 text-slate-300 font-mono text-[11px]">
+                          <td className="p-3.5 text-[#3D3D3D] font-mono text-[11px]">
                             {u.email || "No email on record"}
                           </td>
                           <td className="p-3.5">
                             {isTargetSuperAdmin ? (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-amber-500/20 border border-amber-500/40 text-amber-300 font-extrabold text-[10px] uppercase">
-                                <Crown className="w-3 h-3 text-amber-400" />
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#FEF3C7] border border-[#FDE68A] text-[#92400E] font-extrabold text-[10px] uppercase">
+                                <Crown className="w-3 h-3 text-[#B45309]" />
                                 Super Admin
                               </span>
                             ) : isTargetAdmin ? (
-                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-brand-500/20 border border-brand-500/40 text-brand-300 font-bold text-[10px] uppercase">
-                                <Shield className="w-3 h-3 text-brand-400" />
+                              <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-brand-500/20 border border-brand-500/40 text-[#006340] font-bold text-[10px] uppercase">
+                                <Shield className="w-3 h-3 text-[#006340]" />
                                 Administrator
                               </span>
                             ) : (
-                              <span className="px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 text-[10px]">
+                              <span className="px-2 py-0.5 rounded-full bg-[#F4F3F1] text-[#5F5F5F] text-[10px]">
                                 Trader
                               </span>
                             )}
                           </td>
                           <td className="p-3.5">
                             {u.is_suspended ? (
-                              <span className="px-2 py-0.5 rounded-full bg-rose-950 text-rose-400 border border-rose-800 text-[10px] font-bold">
+                              <span className="px-2 py-0.5 rounded-full bg-[#FEE2E2] text-[#C92A2A] border border-[#FECACA] text-[10px] font-bold">
                                 Banned / Suspended
                               </span>
                             ) : (
-                              <span className="px-2 py-0.5 rounded-full bg-emerald-950 text-emerald-400 border border-emerald-800 text-[10px] font-bold">
+                              <span className="px-2 py-0.5 rounded-full bg-[#EBF5F0] text-[#006340] border border-[#BFE0CE] text-[10px] font-bold">
                                 Active & Good Standing
                               </span>
                             )}
                           </td>
-                          <td className="p-3.5 text-slate-400">
+                          <td className="p-3.5 text-[#5F5F5F]">
                             <span>{u.completed_sales_count || 0} sales</span> / <span>{u.seller_rating ? `⭐ ${u.seller_rating}` : "No reviews yet"}</span>
                           </td>
                           <td className="p-3.5 text-right">
                             <div className="flex items-center justify-end gap-1.5">
                               {/* Cannot alter Super Admin */}
                               {isTargetSuperAdmin ? (
-                                <span className="text-[10px] font-bold text-slate-500 italic">
+                                <span className="text-[10px] font-bold text-[#767676] italic">
                                   Immutable Super Admin
                                 </span>
                               ) : (
@@ -1495,7 +1495,7 @@ function AdminControlCenterContent() {
                                           size="sm"
                                           onClick={() => handleUserAction(u.id, "dismiss_admin")}
                                           disabled={actionLoading}
-                                          className="text-[11px] py-1 px-2 text-amber-400 hover:text-rose-400"
+                                          className="text-[11px] py-1 px-2 text-[#B45309] hover:text-[#C92A2A]"
                                           title="Dismiss Administrator privileges"
                                         >
                                           <UserMinus className="w-3.5 h-3.5 mr-1" />
@@ -1508,7 +1508,7 @@ function AdminControlCenterContent() {
                                           size="sm"
                                           onClick={() => handleUserAction(u.id, "grant_admin")}
                                           disabled={actionLoading}
-                                          className="text-[11px] py-1 px-2 text-brand-400"
+                                          className="text-[11px] py-1 px-2 text-[#006340]"
                                           title="Grant Administrator privileges"
                                         >
                                           <UserPlus className="w-3.5 h-3.5 mr-1" />
@@ -1526,7 +1526,7 @@ function AdminControlCenterContent() {
                                       size="sm"
                                       onClick={() => handleUserAction(u.id, "unban_user")}
                                       disabled={actionLoading}
-                                      className="text-[11px] py-1 px-2 text-emerald-400"
+                                      className="text-[11px] py-1 px-2 text-[#006340]"
                                     >
                                       <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
                                       Lift Ban
@@ -1553,7 +1553,7 @@ function AdminControlCenterContent() {
                     })
                   ) : (
                     <tr>
-                      <td colSpan={6} className="p-8 text-center text-slate-500">
+                      <td colSpan={6} className="p-8 text-center text-[#767676]">
                         No users match your search query.
                       </td>
                     </tr>
@@ -1572,36 +1572,36 @@ function AdminControlCenterContent() {
           {/* Left Column: Post Form */}
           <div className="lg:col-span-2 bg-pitch-surface border border-pitch-border rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
             <div>
-              <h2 className="text-xl font-bold text-white font-display">
+              <h2 className="text-xl font-bold text-[#0F0F0F] font-display">
                 Publish Official Community Bulletin
               </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-[#5F5F5F] mt-0.5">
                 Post scammer alerts, eFootball game updates, and escrow guides. Sends broadcast notifications to all traders.
               </p>
             </div>
 
             <form onSubmit={handleCreateNews} className="space-y-4">
               <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-slate-200">
-                  Article Title <span className="text-rose-400">*</span>
+                <label className="block text-xs font-semibold text-[#1F1F1F]">
+                  Article Title <span className="text-[#C92A2A]">*</span>
                 </label>
                 <input
                   type="text"
                   value={newsTitle}
                   onChange={(e) => setNewsTitle(e.target.value)}
                   placeholder="e.g. 🚨 SCAMMER ALERT: Blacklist of Impersonator Phone Numbers"
-                  className="w-full rounded-xl bg-pitch-card border border-pitch-border px-3.5 py-2.5 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-brand-500"
+                  className="w-full rounded-xl bg-pitch-card border border-pitch-border px-3.5 py-2.5 text-xs text-[#0F0F0F] placeholder:text-[#767676] focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-200">Category</label>
+                  <label className="block text-xs font-semibold text-[#1F1F1F]">Category</label>
                   <select
                     value={newsCategory}
                     onChange={(e) => setNewsCategory(e.target.value as NewsCategory)}
-                    className="w-full rounded-xl bg-pitch-card border border-pitch-border px-3.5 py-2.5 text-xs text-slate-100 focus:outline-none focus:border-brand-500"
+                    className="w-full rounded-xl bg-pitch-card border border-pitch-border px-3.5 py-2.5 text-xs text-[#0F0F0F] focus:outline-none focus:border-brand-500"
                   >
                     <option value="scammer_alert">🚨 Scammer Alert (High Priority)</option>
                     <option value="efootball_news">⚽ eFootball News & Updates</option>
@@ -1611,7 +1611,7 @@ function AdminControlCenterContent() {
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-slate-200">
+                  <label className="block text-xs font-semibold text-[#1F1F1F]">
                     Cover Image URL (Optional)
                   </label>
                   <input
@@ -1619,43 +1619,43 @@ function AdminControlCenterContent() {
                     value={newsCoverImage}
                     onChange={(e) => setNewsCoverImage(e.target.value)}
                     placeholder="https://images.unsplash.com/..."
-                    className="w-full rounded-xl bg-pitch-card border border-pitch-border px-3.5 py-2.5 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-brand-500"
+                    className="w-full rounded-xl bg-pitch-card border border-pitch-border px-3.5 py-2.5 text-xs text-[#0F0F0F] placeholder:text-[#767676] focus:outline-none focus:border-brand-500"
                   />
                 </div>
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-slate-200">
-                  Short Summary <span className="text-rose-400">*</span>
+                <label className="block text-xs font-semibold text-[#1F1F1F]">
+                  Short Summary <span className="text-[#C92A2A]">*</span>
                 </label>
                 <textarea
                   value={newsSummary}
                   onChange={(e) => setNewsSummary(e.target.value)}
                   placeholder="Brief 1-2 sentence overview shown in notifications and cards..."
                   rows={2}
-                  className="w-full rounded-xl bg-pitch-card border border-pitch-border px-3.5 py-2 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-brand-500"
+                  className="w-full rounded-xl bg-pitch-card border border-pitch-border px-3.5 py-2 text-xs text-[#0F0F0F] placeholder:text-[#767676] focus:outline-none focus:border-brand-500"
                   required
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-slate-200">
-                  Full Bulletin Content (Markdown supported) <span className="text-rose-400">*</span>
+                <label className="block text-xs font-semibold text-[#1F1F1F]">
+                  Full Bulletin Content (Markdown supported) <span className="text-[#C92A2A]">*</span>
                 </label>
                 <textarea
                   value={newsContent}
                   onChange={(e) => setNewsContent(e.target.value)}
                   placeholder="Write the complete bulletin details, scammer evidence, or eFootball patch analysis..."
                   rows={8}
-                  className="w-full rounded-xl bg-pitch-card border border-pitch-border px-3.5 py-2.5 text-xs text-slate-100 placeholder:text-slate-500 font-mono focus:outline-none focus:border-brand-500 leading-relaxed"
+                  className="w-full rounded-xl bg-pitch-card border border-pitch-border px-3.5 py-2.5 text-xs text-[#0F0F0F] placeholder:text-[#767676] font-mono focus:outline-none focus:border-brand-500 leading-relaxed"
                   required
                 />
               </div>
 
               <div className="p-3.5 rounded-xl bg-pitch-card border border-pitch-border flex items-center justify-between">
                 <div>
-                  <p className="text-xs font-bold text-white">Broadcast Push Notification Alert</p>
-                  <p className="text-[11px] text-slate-400">
+                  <p className="text-xs font-bold text-[#0F0F0F]">Broadcast Push Notification Alert</p>
+                  <p className="text-[11px] text-[#5F5F5F]">
                     Immediately send an in-app notification to all registered buyers & sellers.
                   </p>
                 </div>
@@ -1681,7 +1681,7 @@ function AdminControlCenterContent() {
 
           {/* Right Column: Published Articles Manager */}
           <div className="lg:col-span-1 space-y-4">
-            <h3 className="text-xs uppercase font-bold text-slate-400 tracking-wider">
+            <h3 className="text-xs uppercase font-bold text-[#5F5F5F] tracking-wider">
               Published Bulletins ({articles.length})
             </h3>
 
@@ -1695,8 +1695,8 @@ function AdminControlCenterContent() {
                     <span
                       className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
                         item.category === "scammer_alert"
-                          ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
-                          : "bg-brand-500/20 text-brand-300 border border-brand-500/30"
+                          ? "bg-[#FEE2E2] text-[#B91C1C] border border-[#FECACA]"
+                          : "bg-brand-500/20 text-[#006340] border border-brand-500/30"
                       }`}
                     >
                       {item.category.replace("_", " ")}
@@ -1705,20 +1705,20 @@ function AdminControlCenterContent() {
                     <button
                       type="button"
                       onClick={() => handleDeleteNews(item.id)}
-                      className="p-1 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-950/40 transition-colors"
+                      className="p-1 rounded-lg text-[#767676] hover:text-[#C92A2A] hover:bg-[#FEE2E2] transition-colors"
                       title="Delete article"
                     >
                       <Trash2 className="w-3.5 h-3.5" />
                     </button>
                   </div>
 
-                  <h4 className="text-xs font-bold text-white line-clamp-2">
-                    <Link href={`/news/${item.slug}`} className="hover:text-amber-400">
+                  <h4 className="text-xs font-bold text-[#0F0F0F] line-clamp-2">
+                    <Link href={`/news/${item.slug}`} className="hover:text-[#B45309]">
                       {item.title}
                     </Link>
                   </h4>
 
-                  <div className="flex items-center justify-between text-[10px] text-slate-500 pt-1">
+                  <div className="flex items-center justify-between text-[10px] text-[#767676] pt-1">
                     <span>{new Date(item.created_at).toLocaleDateString()}</span>
                     <span>{item.views_count} views</span>
                   </div>
@@ -1735,23 +1735,23 @@ function AdminControlCenterContent() {
         <div className="space-y-6 animate-in fade-in">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-pitch-border/80 pb-4">
             <div>
-              <div className="inline-flex items-center gap-1.5 text-amber-400 text-xs font-bold uppercase tracking-wider mb-1">
+              <div className="inline-flex items-center gap-1.5 text-[#B45309] text-xs font-bold uppercase tracking-wider mb-1">
                 <Banknote className="w-3.5 h-3.5" />
                 <span>Safaricom Daraja B2C</span>
               </div>
-              <h2 className="text-2xl font-bold text-white font-display flex items-center gap-2.5">
+              <h2 className="text-2xl font-bold text-[#0F0F0F] font-display flex items-center gap-2.5">
                 <span>M-Pesa Payouts</span>
                 {pendingWithdrawalsCount > 0 ? (
-                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-mono font-bold animate-pulse">
+                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A] font-mono font-bold animate-pulse">
                     {pendingWithdrawalsCount} pending
                   </span>
                 ) : (
-                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-slate-800 text-slate-300 font-mono font-bold">
+                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#F4F3F1] text-[#3D3D3D] font-mono font-bold">
                     All processed
                   </span>
                 )}
               </h2>
-              <p className="text-xs text-slate-400 mt-0.5">
+              <p className="text-xs text-[#5F5F5F] mt-0.5">
                 Review and disburse seller wallet balance withdrawals or reject suspicious requests.
               </p>
             </div>
@@ -1773,7 +1773,7 @@ function AdminControlCenterContent() {
                     className={`px-3 py-1.5 rounded-lg font-medium transition-all capitalize flex items-center gap-1.5 shrink-0 ${
                       withdrawalFilter === filter
                         ? "bg-amber-500 text-pitch-dark font-bold shadow"
-                        : "text-slate-400 hover:text-slate-200"
+                        : "text-[#5F5F5F] hover:text-[#1F1F1F]"
                     }`}
                   >
                     <span>{filter}</span>
@@ -1781,7 +1781,7 @@ function AdminControlCenterContent() {
                       className={`text-[10px] px-1.5 py-0.5 rounded-full ${
                         withdrawalFilter === filter
                           ? "bg-black/20 text-pitch-dark font-bold"
-                          : "bg-pitch-card text-slate-400"
+                          : "bg-pitch-card text-[#5F5F5F]"
                       }`}
                     >
                       {count}
@@ -1792,7 +1792,7 @@ function AdminControlCenterContent() {
             </div>
 
             <div className="flex items-center gap-2 flex-wrap">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-emerald-950/60 border border-emerald-500/30 text-[11px] font-medium text-emerald-300">
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#EBF5F0] border border-[#BFE0CE] text-[11px] font-medium text-[#006340]">
                 <span className="relative flex h-2 w-2">
                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                   <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
@@ -1802,19 +1802,19 @@ function AdminControlCenterContent() {
               <button
                 type="button"
                 onClick={reloadWithdrawals}
-                className="p-2 rounded-xl bg-pitch-surface border border-pitch-border text-slate-400 hover:text-white hover:bg-pitch-card transition-colors"
+                className="p-2 rounded-xl bg-pitch-surface border border-pitch-border text-[#5F5F5F] hover:text-[#0F0F0F] hover:bg-pitch-card transition-colors"
                 title="Refresh withdrawals"
               >
                 <RefreshCw className="w-3.5 h-3.5" />
               </button>
               <div className="relative min-w-[220px]">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-500" />
+                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-[#767676]" />
                 <input
                   type="text"
                   placeholder="Search phone, seller, amount..."
                   value={withdrawalSearch}
                   onChange={(e) => setWithdrawalSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-pitch-surface border border-pitch-border text-xs text-slate-200 placeholder:text-slate-500 focus:outline-none focus:border-amber-400"
+                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-pitch-surface border border-pitch-border text-xs text-[#1F1F1F] placeholder:text-[#767676] focus:outline-none focus:border-amber-400"
                 />
               </div>
             </div>
@@ -1822,10 +1822,10 @@ function AdminControlCenterContent() {
 
           {/* Table / List */}
           {filteredWithdrawals.length === 0 ? (
-            <div className="p-12 text-center rounded-2xl bg-pitch-surface border border-pitch-border text-slate-400 space-y-2">
+            <div className="p-12 text-center rounded-2xl bg-pitch-surface border border-pitch-border text-[#5F5F5F] space-y-2">
               <Banknote className="w-8 h-8 mx-auto text-slate-600" />
-              <p className="text-xs font-semibold text-slate-300">No withdrawal requests found</p>
-              <p className="text-[11px] text-slate-500">
+              <p className="text-xs font-semibold text-[#3D3D3D]">No withdrawal requests found</p>
+              <p className="text-[11px] text-[#767676]">
                 {withdrawalFilter !== "all"
                   ? `There are no withdrawals with status "${withdrawalFilter}".`
                   : "No sellers have requested withdrawals yet."}
@@ -1834,8 +1834,8 @@ function AdminControlCenterContent() {
           ) : (
             <div className="overflow-hidden rounded-2xl bg-pitch-surface border border-pitch-border shadow-xl">
               <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs text-slate-300">
-                  <thead className="bg-pitch-card/60 border-b border-pitch-border text-[11px] text-slate-400 uppercase tracking-wider font-semibold">
+                <table className="w-full text-left text-xs text-[#3D3D3D]">
+                  <thead className="bg-pitch-card/60 border-b border-pitch-border text-[11px] text-[#5F5F5F] uppercase tracking-wider font-semibold">
                     <tr>
                       <th className="px-4 py-3">Seller</th>
                       <th className="px-4 py-3">M-Pesa Phone</th>
@@ -1854,25 +1854,25 @@ function AdminControlCenterContent() {
                       return (
                         <tr key={w.id} className="hover:bg-pitch-card/30 transition-colors">
                           <td className="px-4 py-3.5">
-                            <div className="font-semibold text-white">
+                            <div className="font-semibold text-[#0F0F0F]">
                               {w.seller?.username || "Unknown Seller"}
                             </div>
-                            <div className="text-[10px] text-slate-500 font-mono">
+                            <div className="text-[10px] text-[#767676] font-mono">
                               {w.seller?.email || w.seller_id}
                             </div>
                           </td>
 
                           <td className="px-4 py-3.5">
-                            <div className="flex items-center gap-2 font-mono text-slate-200">
+                            <div className="flex items-center gap-2 font-mono text-[#1F1F1F]">
                               <span>{formatDisplayPhone(w.phone_number)}</span>
                               <button
                                 type="button"
                                 onClick={() => handleCopyPhone(w.phone_number)}
-                                className="p-1 rounded hover:bg-pitch-card text-slate-400 hover:text-white transition-colors"
+                                className="p-1 rounded hover:bg-pitch-card text-[#5F5F5F] hover:text-[#0F0F0F] transition-colors"
                                 title="Copy phone number"
                               >
                                 {copiedPhone === w.phone_number ? (
-                                  <Check className="w-3.5 h-3.5 text-emerald-400" />
+                                  <Check className="w-3.5 h-3.5 text-[#006340]" />
                                 ) : (
                                   <Copy className="w-3.5 h-3.5" />
                                 )}
@@ -1881,7 +1881,7 @@ function AdminControlCenterContent() {
                                 href={`https://wa.me/${formatWhatsAppPhone(w.phone_number)}`}
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                className="p-1 rounded hover:bg-emerald-950/60 text-emerald-400 hover:text-emerald-300 transition-colors"
+                                className="p-1 rounded hover:bg-[#EBF5F0] text-[#006340] hover:text-[#006340] transition-colors"
                                 title="Chat on WhatsApp"
                               >
                                 <MessageCircle className="w-3.5 h-3.5" />
@@ -1889,31 +1889,31 @@ function AdminControlCenterContent() {
                             </div>
                           </td>
 
-                          <td className="px-4 py-3.5 font-mono font-bold text-emerald-400 text-sm">
+                          <td className="px-4 py-3.5 font-mono font-bold text-[#006340] text-sm">
                             {formatCurrency(w.amount)}
                           </td>
 
                           <td className="px-4 py-3.5">
                             {isPending && (
-                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/10 border border-amber-500/30 text-amber-300">
-                                <Clock className="w-3 h-3 animate-spin text-amber-400" />
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#FEF3C7] border border-[#FDE68A] text-[#92400E]">
+                                <Clock className="w-3 h-3 animate-spin text-[#B45309]" />
                                 Pending Payout
                               </span>
                             )}
                             {isCompleted && (
-                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-emerald-500/10 border border-emerald-500/30 text-emerald-300">
-                                <CheckCircle2 className="w-3 h-3 text-emerald-400" />
+                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#EBF5F0] border border-[#BFE0CE] text-[#006340]">
+                                <CheckCircle2 className="w-3 h-3 text-[#006340]" />
                                 Completed / Paid
                               </span>
                             )}
                             {isRejected && (
                               <div className="space-y-0.5">
-                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-500/10 border border-rose-500/30 text-rose-300">
-                                <XCircle className="w-3 h-3 text-rose-400" />
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C]">
+                                <XCircle className="w-3 h-3 text-[#C92A2A]" />
                                 Rejected &amp; Refunded
                               </span>
                                 {w.failure_reason && (
-                                  <p className="text-[10px] text-slate-500 italic max-w-xs truncate">
+                                  <p className="text-[10px] text-[#767676] italic max-w-xs truncate">
                                     Reason: {w.failure_reason}
                                   </p>
                                 )}
@@ -1921,7 +1921,7 @@ function AdminControlCenterContent() {
                             )}
                           </td>
 
-                          <td className="px-4 py-3.5 text-[11px] text-slate-400">
+                          <td className="px-4 py-3.5 text-[11px] text-[#5F5F5F]">
                             {new Date(w.created_at).toLocaleString()}
                           </td>
 
@@ -1960,7 +1960,7 @@ function AdminControlCenterContent() {
                                 </Button>
                               </div>
                             ) : (
-                              <span className="text-[11px] text-slate-500 italic">No action needed</span>
+                              <span className="text-[11px] text-[#767676] italic">No action needed</span>
                             )}
                           </td>
                         </tr>
@@ -1981,33 +1981,33 @@ function AdminControlCenterContent() {
           <div className="p-6 rounded-3xl bg-pitch-surface border border-indigo-500/50 shadow-2xl relative overflow-hidden">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
               <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/40 text-indigo-300 text-xs font-bold mb-2">
-                  <Bot className="w-3.5 h-3.5 text-indigo-400" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EEF2FF] border border-[#C7D2FE] text-[#3730A3] text-xs font-bold mb-2">
+                  <Bot className="w-3.5 h-3.5 text-[#4338CA]" />
                   <span>Primary Executive Push Channel (100% Free Forever)</span>
                 </div>
-                <h2 className="text-2xl font-bold text-white font-display flex flex-wrap items-center gap-2">
+                <h2 className="text-2xl font-bold text-[#0F0F0F] font-display flex flex-wrap items-center gap-2">
                   <span>Telegram Smartphone Bot Alerts</span>
                   {telegramInfo?.isConfigured ? (
-                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono font-bold">
+                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#EBF5F0] text-[#006340] border border-[#BFE0CE] font-mono font-bold">
                       ACTIVE &amp; READY ⚡
                     </span>
                   ) : (
-                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-mono font-bold">
+                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A] font-mono font-bold">
                       AWAITING BOT TOKEN
                     </span>
                   )}
                 </h2>
-                <p className="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
+                <p className="text-xs text-[#3D3D3D] mt-1 max-w-2xl leading-relaxed">
                   Directly buzzes Brian Okibo&apos;s phone (+254 794 400 365) the second an M-Pesa Till 1572931 payment arrives, a new account is listed, Konami credentials are submitted, or a withdrawal is requested. Instant sound/banner notifications with zero Meta approvals.
                 </p>
               </div>
 
               <div className="p-3.5 rounded-2xl bg-pitch-card border border-pitch-border space-y-1 shrink-0 text-right">
-                <span className="text-[10px] text-slate-400 uppercase font-bold block">Status</span>
-                <span className={`text-sm font-bold ${telegramInfo?.isConfigured ? "text-emerald-400" : "text-amber-400"}`}>
+                <span className="text-[10px] text-[#5F5F5F] uppercase font-bold block">Status</span>
+                <span className={`text-sm font-bold ${telegramInfo?.isConfigured ? "text-[#006340]" : "text-[#B45309]"}`}>
                   {telegramInfo?.isConfigured ? "Connected" : "Not Configured"}
                 </span>
-                <span className="text-[10px] text-slate-400 block font-mono">
+                <span className="text-[10px] text-[#5F5F5F] block font-mono">
                   {telegramInfo?.maskedChatId ? `Chat: ${telegramInfo.maskedChatId}` : "Escrow Till: 1572931"}
                 </span>
               </div>
@@ -2017,11 +2017,11 @@ function AdminControlCenterContent() {
             <div className="mt-6 pt-6 border-t border-pitch-border space-y-4">
               <div className="flex flex-col sm:flex-row items-center justify-between gap-3">
                 <div>
-                  <h3 className="text-sm font-bold text-white flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-amber-400" />
+                  <h3 className="text-sm font-bold text-[#0F0F0F] flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-[#B45309]" />
                     <span>Send Live Push Alert to Brian&apos;s Phone</span>
                   </h3>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-xs text-[#5F5F5F] mt-0.5">
                     Test your Telegram bot connection immediately or simulate a live M-Pesa transaction alert.
                   </p>
                 </div>
@@ -2041,7 +2041,7 @@ function AdminControlCenterContent() {
                     size="md"
                     onClick={() => handleSendTestTelegram("simulated_payment")}
                     isLoading={testTgLoading}
-                    className="flex-1 sm:flex-initial text-xs font-bold border-indigo-500/40 text-indigo-300 hover:bg-indigo-500/10"
+                    className="flex-1 sm:flex-initial text-xs font-bold border-[#C7D2FE] text-[#3730A3] hover:bg-[#EEF2FF]"
                   >
                     <Banknote className="w-4 h-4 mr-1.5" />
                     Simulate Payment Alert
@@ -2051,7 +2051,7 @@ function AdminControlCenterContent() {
                     size="md"
                     onClick={handleRegisterTelegramWebhook}
                     isLoading={registeringWebhook}
-                    className="flex-1 sm:flex-initial text-xs font-bold border-emerald-500/40 text-emerald-300 hover:bg-emerald-500/10"
+                    className="flex-1 sm:flex-initial text-xs font-bold border-[#BFE0CE] text-[#006340] hover:bg-[#EBF5F0]"
                   >
                     <Bot className="w-4 h-4 mr-1.5" />
                     {telegramInfo?.webhook?.url ? "Re-sync Webhook" : "Activate Auto-Replies"}
@@ -2063,8 +2063,8 @@ function AdminControlCenterContent() {
                 <div
                   className={`p-3.5 rounded-xl border text-xs font-mono space-y-1 ${
                     testTgResult.success
-                      ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-300"
-                      : "bg-rose-950/60 border-rose-500/40 text-rose-300"
+                      ? "bg-[#EBF5F0] border-[#BFE0CE] text-[#006340]"
+                      : "bg-[#FEE2E2] border-[#FECACA] text-[#B91C1C]"
                   }`}
                 >
                   <div className="flex items-center justify-between">
@@ -2072,7 +2072,7 @@ function AdminControlCenterContent() {
                       <strong>Result:</strong> {testTgResult.success ? "DELIVERED TO PHONE ✅" : "DISPATCH FAILED ❌"}
                     </span>
                     {testTgResult.messageId && (
-                      <span className="text-[11px] text-slate-400">Telegram msg_id: {testTgResult.messageId}</span>
+                      <span className="text-[11px] text-[#5F5F5F]">Telegram msg_id: {testTgResult.messageId}</span>
                     )}
                   </div>
                   {testTgResult.chatId && (
@@ -2087,36 +2087,36 @@ function AdminControlCenterContent() {
           </div>
 
           {/* TELEGRAM PUBLIC DEALS CHANNEL SUITE */}
-          <div className="p-6 rounded-3xl bg-pitch-surface border border-indigo-500/40 shadow-2xl space-y-5">
+          <div className="p-6 rounded-3xl bg-pitch-surface border border-[#C7D2FE] shadow-2xl space-y-5">
             <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-pitch-border/80 pb-4">
               <div>
-                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-indigo-500/15 border border-indigo-500/40 text-indigo-300 text-xs font-bold mb-2">
-                  <Megaphone className="w-3.5 h-3.5 text-indigo-400" />
+                <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#EEF2FF] border border-[#C7D2FE] text-[#3730A3] text-xs font-bold mb-2">
+                  <Megaphone className="w-3.5 h-3.5 text-[#4338CA]" />
                   <span>Automated Community Growth &amp; Broadcasts</span>
                 </div>
-                <h3 className="text-xl font-bold text-white font-display flex flex-wrap items-center gap-2">
+                <h3 className="text-xl font-bold text-[#0F0F0F] font-display flex flex-wrap items-center gap-2">
                   <span>Telegram Deals Channel Auto-Broadcast</span>
                   {telegramInfo?.channelConfigured ? (
-                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 font-mono font-bold">
+                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#EBF5F0] text-[#006340] border border-[#BFE0CE] font-mono font-bold">
                       CHANNEL LINKED ✅
                     </span>
                   ) : (
-                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40 font-mono font-bold">
+                    <span className="text-xs px-2.5 py-0.5 rounded-full bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A] font-mono font-bold">
                       OPTIONAL BROADCAST
                     </span>
                   )}
                 </h3>
-                <p className="text-xs text-slate-300 mt-1 max-w-2xl leading-relaxed">
+                <p className="text-xs text-[#3D3D3D] mt-1 max-w-2xl leading-relaxed">
                   Automatically posts verified squad cards to your public Telegram gaming channel (e.g. <code>@efootballmarket_deals</code>). Every broadcast includes high-resolution squad screenshots, OVR rating, KES price, and a direct 1-tap Buy via Till 1572931 button!
                 </p>
               </div>
 
               <div className="p-3.5 rounded-2xl bg-pitch-card border border-pitch-border space-y-1 shrink-0 text-right">
-                <span className="text-[10px] text-slate-400 uppercase font-bold block">Target Channel</span>
-                <span className="text-sm font-bold text-indigo-400 font-mono">
+                <span className="text-[10px] text-[#5F5F5F] uppercase font-bold block">Target Channel</span>
+                <span className="text-sm font-bold text-[#4338CA] font-mono">
                   {channelInput.trim() || telegramInfo?.maskedChannel || "@efootballmarket_deals"}
                 </span>
-                <span className="text-[10px] text-slate-400 block font-mono">
+                <span className="text-[10px] text-[#5F5F5F] block font-mono">
                   Bot: @efootballmaket_bot
                 </span>
               </div>
@@ -2126,16 +2126,16 @@ function AdminControlCenterContent() {
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
               {/* Left Column: Test Broadcast & Custom Target */}
               <div className="p-4 rounded-2xl bg-pitch-card border border-pitch-border space-y-3">
-                <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                  <Zap className="w-4 h-4 text-amber-400" />
+                <span className="text-xs font-bold text-[#0F0F0F] flex items-center gap-1.5">
+                  <Zap className="w-4 h-4 text-[#B45309]" />
                   <span>1. Test Channel Dispatch</span>
                 </span>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[#5F5F5F]">
                   Enter your Telegram channel username or numeric ID to broadcast squad deals.
                 </p>
 
                 <div className="space-y-2">
-                  <label className="text-[11px] font-semibold text-slate-300 block">
+                  <label className="text-[11px] font-semibold text-[#3D3D3D] block">
                     Channel Username / ID (leave blank to use .env default):
                   </label>
                   <input
@@ -2143,7 +2143,7 @@ function AdminControlCenterContent() {
                     value={channelInput}
                     onChange={(e) => setChannelInput(e.target.value)}
                     placeholder="e.g. @efootballmarket_deals or -100xxxxxxxxxx"
-                    className="w-full px-3.5 py-2 rounded-xl bg-pitch-surface border border-pitch-border text-xs text-slate-100 font-mono focus:outline-none focus:border-indigo-500"
+                    className="w-full px-3.5 py-2 rounded-xl bg-pitch-surface border border-pitch-border text-xs text-[#0F0F0F] font-mono focus:outline-none focus:border-indigo-500"
                   />
                 </div>
 
@@ -2162,8 +2162,8 @@ function AdminControlCenterContent() {
                   <div
                     className={`p-3 rounded-xl border text-xs font-mono space-y-0.5 ${
                       testChannelResult.success
-                        ? "bg-emerald-950/60 border-emerald-500/40 text-emerald-300"
-                        : "bg-rose-950/60 border-rose-500/40 text-rose-300"
+                        ? "bg-[#EBF5F0] border-[#BFE0CE] text-[#006340]"
+                        : "bg-[#FEE2E2] border-[#FECACA] text-[#B91C1C]"
                     }`}
                   >
                     <div>
@@ -2181,22 +2181,22 @@ function AdminControlCenterContent() {
 
               {/* Right Column: Broadcast Any Active Marketplace Squad */}
               <div className="p-4 rounded-2xl bg-pitch-card border border-pitch-border space-y-3">
-                <span className="text-xs font-bold text-white flex items-center gap-1.5">
-                  <Share2 className="w-4 h-4 text-emerald-400" />
+                <span className="text-xs font-bold text-[#0F0F0F] flex items-center gap-1.5">
+                  <Share2 className="w-4 h-4 text-[#006340]" />
                   <span>2. Manually Broadcast Live Listing</span>
                 </span>
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[#5F5F5F]">
                   Select any approved marketplace squad to push to your channel subscribers.
                 </p>
 
                 <div className="space-y-2">
-                  <label className="text-[11px] font-semibold text-slate-300 block">
+                  <label className="text-[11px] font-semibold text-[#3D3D3D] block">
                     Select Active Squad to Push:
                   </label>
                   <select
                     value={selectedSquadToBroadcast}
                     onChange={(e) => setSelectedSquadToBroadcast(e.target.value)}
-                    className="w-full px-3.5 py-2 rounded-xl bg-pitch-surface border border-pitch-border text-xs text-slate-100 focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3.5 py-2 rounded-xl bg-pitch-surface border border-pitch-border text-xs text-[#0F0F0F] focus:outline-none focus:border-emerald-500"
                   >
                     <option value="">-- Choose squad from marketplace --</option>
                     {listings.filter((l) => l.status === "published" || (l as any).status === "active").map((l) => (
@@ -2229,26 +2229,26 @@ function AdminControlCenterContent() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
           <div className="relative w-full max-w-md bg-pitch-surface border border-pitch-border rounded-3xl p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-rose-400">
+              <div className="flex items-center gap-2 text-[#C92A2A]">
                 <Ban className="w-5 h-5" />
-                <h3 className="text-base font-bold text-white">Bring Down Listing</h3>
+                <h3 className="text-base font-bold text-[#0F0F0F]">Bring Down Listing</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setTakedownTarget(null)}
-                className="text-slate-400 hover:text-white"
+                className="text-[#5F5F5F] hover:text-[#0F0F0F]"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-300">
-              You are taking down <strong className="text-white">&quot;{takedownTarget.title}&quot;</strong>.
+            <p className="text-xs text-[#3D3D3D]">
+              You are taking down <strong className="text-[#0F0F0F]">&quot;{takedownTarget.title}&quot;</strong>.
               The seller will be notified with your explanation.
             </p>
 
             <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-slate-200">
+              <label className="block text-xs font-semibold text-[#1F1F1F]">
                 Violation Explanation (Sent to Seller)
               </label>
               <textarea
@@ -2256,7 +2256,7 @@ function AdminControlCenterContent() {
                 onChange={(e) => setTakedownReason(e.target.value)}
                 placeholder="e.g. Listing removed: Inaccurate player card proof or suspected circumvention attempt."
                 rows={3}
-                className="w-full rounded-xl bg-pitch-card border border-pitch-border p-3 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-rose-500"
+                className="w-full rounded-xl bg-pitch-card border border-pitch-border p-3 text-xs text-[#0F0F0F] placeholder:text-[#767676] focus:outline-none focus:border-rose-500"
               />
             </div>
 
@@ -2288,33 +2288,33 @@ function AdminControlCenterContent() {
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in">
           <div className="relative w-full max-w-md bg-pitch-surface border border-pitch-border rounded-3xl p-6 shadow-2xl space-y-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2 text-rose-400">
+              <div className="flex items-center gap-2 text-[#C92A2A]">
                 <AlertTriangle className="w-5 h-5" />
-                <h3 className="text-base font-bold text-white">Reject Withdrawal &amp; Refund</h3>
+                <h3 className="text-base font-bold text-[#0F0F0F]">Reject Withdrawal &amp; Refund</h3>
               </div>
               <button
                 type="button"
                 onClick={() => setRejectModalTarget(null)}
-                className="text-slate-400 hover:text-white"
+                className="text-[#5F5F5F] hover:text-[#0F0F0F]"
               >
                 <X className="w-4 h-4" />
               </button>
             </div>
 
-            <p className="text-xs text-slate-300">
+            <p className="text-xs text-[#3D3D3D]">
               You are rejecting the withdrawal of{" "}
-              <strong className="text-emerald-400 font-mono">
+              <strong className="text-[#006340] font-mono">
                 {formatCurrency(rejectModalTarget.amount)}
               </strong>{" "}
               for{" "}
-              <strong className="text-white">
+              <strong className="text-[#0F0F0F]">
                 {rejectModalTarget.seller?.username || rejectModalTarget.phone_number}
               </strong>
               . The funds will be automatically credited back to their Available Balance.
             </p>
 
             <div className="space-y-1.5">
-              <label className="block text-xs font-semibold text-slate-200">
+              <label className="block text-xs font-semibold text-[#1F1F1F]">
                 Rejection Reason (Sent to Seller)
               </label>
               <textarea
@@ -2322,7 +2322,7 @@ function AdminControlCenterContent() {
                 onChange={(e) => setRejectModalReason(e.target.value)}
                 placeholder="e.g. Invalid phone number format, M-Pesa name mismatch, or network bounce."
                 rows={3}
-                className="w-full rounded-xl bg-pitch-card border border-pitch-border p-3 text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none focus:border-rose-500"
+                className="w-full rounded-xl bg-pitch-card border border-pitch-border p-3 text-xs text-[#0F0F0F] placeholder:text-[#767676] focus:outline-none focus:border-rose-500"
               />
             </div>
 
@@ -2365,8 +2365,8 @@ function AdminControlCenterContent() {
             className="relative max-w-4xl max-h-[90vh] flex flex-col items-center"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="w-full flex items-center justify-between pb-3 text-white">
-              <span className="text-xs font-bold text-slate-300">
+            <div className="w-full flex items-center justify-between pb-3 text-[#0F0F0F]">
+              <span className="text-xs font-bold text-[#3D3D3D]">
                 Dispute Evidence Inspection Lightbox
               </span>
               <div className="flex items-center gap-3">
@@ -2374,14 +2374,14 @@ function AdminControlCenterContent() {
                   href={adminZoomImage}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-xs text-brand-400 hover:underline"
+                  className="text-xs text-[#006340] hover:underline"
                 >
                   Open Original
                 </a>
                 <button
                   type="button"
                   onClick={() => setAdminZoomImage(null)}
-                  className="p-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-300"
+                  className="p-1 rounded-lg bg-[#F4F3F1] hover:bg-slate-700 text-[#3D3D3D]"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -2403,7 +2403,7 @@ export default function AdminControlCenterPage() {
   return (
     <Suspense
       fallback={
-        <div className="py-24 text-center text-xs text-slate-400">
+        <div className="py-24 text-center text-xs text-[#5F5F5F]">
           Loading Executive Admin Control Center...
         </div>
       }

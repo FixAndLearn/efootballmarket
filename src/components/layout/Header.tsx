@@ -11,7 +11,6 @@ import { NotificationBell } from "@/components/layout/NotificationBell";
 import {
   Menu,
   X,
-  Plus,
   LogOut,
   ChevronDown,
   ShoppingBag,
@@ -20,7 +19,6 @@ import {
   Settings,
   ShieldAlert,
   Search,
-  ShieldCheck,
 } from "lucide-react";
 
 export function Header() {
@@ -34,14 +32,18 @@ export function Header() {
   const isSeller = profile?.role === "seller" || profile?.role === "admin";
   const isAdmin = profile?.role === "admin" || isSuperAdminEmail(user?.email);
 
-  const navLinks = [
-    { name: "Marketplace", href: "/browse" },
-    { name: "Friday Drops", href: "/friday-drops", tag: "8H" },
-    { name: "Middleman", href: "/middleman" },
-    { name: "Wanted", href: "/wanted" },
+  const categoryStrip = [
+    { name: "All Squads", href: "/browse" },
+    { name: "Epic & Booster", href: "/browse?minStrength=3150" },
+    { name: "Mobile Android", href: "/browse?platform=android" },
+    { name: "Mobile iOS", href: "/browse?platform=ios" },
+    { name: "PlayStation & PC", href: "/browse?platform=playstation_5" },
+    { name: "Under KES 5,000", href: "/browse?maxPrice=5000" },
+    { name: "Friday Drops", href: "/friday-drops" },
+    { name: "Middleman Escrow", href: "/middleman" },
     { name: "Tournaments", href: "/tournaments" },
-    { name: "Scam Check", href: "/scammer-check" },
-    { name: "Guides", href: "/news" },
+    { name: "Scammer Check", href: "/scammer-check" },
+    { name: "Guides & Tactics", href: "/news" },
   ];
 
   const handleHeaderSearch = (e: React.FormEvent) => {
@@ -56,184 +58,189 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-[#07090D]/95 backdrop-blur-md border-b border-[#1E2636]">
-      {/* Primary Storefront Bar */}
+    <header className="sticky top-0 z-50 w-full bg-white border-b border-[#E2E2E0]">
+      {/* Row 1: StockX Signature Top Bar — Wordmark + Wide Stone Search Bar + Nav Actions */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-4 h-16">
-          {/* Left: Brand + Instant Storefront Search (Eldorado / G2G style) */}
-          <div className="flex items-center gap-5 flex-1 min-w-0">
-            <Logo size="md" />
+        <div className="flex items-center justify-between gap-4 lg:gap-6 h-[68px]">
+          {/* Left: Brand Wordmark */}
+          <Logo size="md" />
 
-            <form
-              onSubmit={handleHeaderSearch}
-              className="hidden md:flex items-center flex-1 max-w-md relative"
-            >
-              <Search className="w-4 h-4 text-slate-500 absolute left-3.5 pointer-events-none" />
-              <input
-                type="text"
-                value={headerSearch}
-                onChange={(e) => setHeaderSearch(e.target.value)}
-                placeholder="Search squads, Gullit, Vieira, 3150+ OVR..."
-                className="w-full h-9 pl-9 pr-16 rounded-lg bg-[#0D1117] border border-[#222B3C] hover:border-[#2E3A50] focus:border-emerald-500 text-xs text-white placeholder:text-slate-500 focus:outline-none transition-colors"
-              />
-              <button
-                type="submit"
-                className="absolute right-1.5 px-2 py-1 rounded bg-[#161D2A] hover:bg-[#1E2738] border border-[#273246] text-[10px] font-mono font-semibold text-slate-300 hover:text-white transition-colors"
+          {/* Center: StockX Signature Wide Neutral Search Bar */}
+          <form
+            onSubmit={handleHeaderSearch}
+            className="hidden md:flex items-center flex-1 max-w-xl relative"
+          >
+            <Search className="w-4 h-4 text-[#5F5F5F] absolute left-3.5 pointer-events-none" />
+            <input
+              type="text"
+              value={headerSearch}
+              onChange={(e) => setHeaderSearch(e.target.value)}
+              placeholder="Search for squad strength, Gullit, Vieira, PS5, Booster Manager..."
+              aria-label="Search marketplace squads"
+              className="w-full h-11 pl-10 pr-4 rounded-md bg-[#F4F3F1] border border-transparent hover:border-[#C8C8C4] focus:bg-white focus:border-[#0F0F0F] text-sm text-[#0F0F0F] placeholder:text-[#6B6B6B] focus:outline-none transition-colors"
+            />
+          </form>
+
+          {/* Right: StockX Editorial Links + Auth + Outlined 'Sell' Pill */}
+          <div className="hidden md:flex items-center gap-5 shrink-0">
+            <nav className="hidden xl:flex items-center gap-5 text-sm font-medium text-[#0F0F0F]">
+              <Link href="/browse" className="hover:text-[#006340] transition-colors">
+                Browse
+              </Link>
+              <Link href="/news" className="hover:text-[#006340] transition-colors">
+                News
+              </Link>
+              <Link href="/about" className="hover:text-[#006340] transition-colors">
+                About
+              </Link>
+              <Link href="/escrow-guarantee" className="hover:text-[#006340] transition-colors">
+                Help
+              </Link>
+            </nav>
+
+            <div className="flex items-center gap-2.5">
+              <Link
+                href="/seller/create-listing"
+                className="inline-flex items-center justify-center h-9 px-4 rounded-full border border-[#0F0F0F] text-xs font-semibold text-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-white transition-colors"
               >
-                GO
-              </button>
-            </form>
-          </div>
+                Sell
+              </Link>
 
-          {/* Right: Till Indicator + Sell CTA + Account */}
-          <div className="hidden md:flex items-center gap-2.5 shrink-0">
-            <Link
-              href="/escrow-guarantee"
-              className="hidden xl:inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-[#0D1117] border border-[#1E2636] hover:border-emerald-500/40 text-[11px] font-mono text-slate-300 transition-colors"
-              title="Safaricom Lipa Na M-Pesa Buyer Protection"
-            >
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400" />
-              <span>Till 1572931</span>
-            </Link>
+              {user ? (
+                <>
+                  <NotificationBell />
+                  <div className="relative">
+                    <button
+                      type="button"
+                      onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
+                      className="flex items-center gap-2 h-9 pl-2 pr-3 rounded-full bg-[#F4F3F1] hover:bg-[#E9E8E4] border border-[#E2E2E0] transition-colors cursor-pointer"
+                    >
+                      <div className="w-6 h-6 rounded-full bg-[#006340] flex items-center justify-center text-white font-mono font-bold text-[11px]">
+                        {profile?.username ? profile.username.slice(0, 2).toUpperCase() : "ME"}
+                      </div>
+                      <span className="text-xs font-semibold text-[#0F0F0F] max-w-[96px] truncate">
+                        {profile?.username || "Account"}
+                      </span>
+                      <ChevronDown className="w-3.5 h-3.5 text-[#5F5F5F]" />
+                    </button>
 
-            {user && <NotificationBell />}
+                    {profileDropdownOpen && (
+                      <>
+                        <div
+                          className="fixed inset-0 z-10"
+                          onClick={() => setProfileDropdownOpen(false)}
+                        />
+                        <div className="absolute right-0 mt-2 w-56 rounded-lg bg-white border border-[#E2E2E0] shadow-xl py-1.5 z-20 text-sm">
+                          <div className="px-4 py-2.5 border-b border-[#E2E2E0]">
+                            <p className="font-bold text-[#0F0F0F] text-xs truncate">
+                              {profile?.username || user.email}
+                            </p>
+                            <p className="text-[11px] text-[#5F5F5F] capitalize mt-0.5">
+                              {isAdmin ? "Administrator" : `${profile?.role || "Verified"} Member`}
+                            </p>
+                          </div>
 
-            <Link href="/seller/create-listing">
-              <Button variant="primary" size="sm" className="h-9 px-3.5">
-                <Plus className="w-3.5 h-3.5" />
-                <span>Sell Squad</span>
-              </Button>
-            </Link>
+                          <div className="py-1">
+                            <Link
+                              href="/dashboard/buyer"
+                              onClick={() => setProfileDropdownOpen(false)}
+                              className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-[#0F0F0F] hover:bg-[#F4F3F1]"
+                            >
+                              <ShoppingBag className="w-3.5 h-3.5 text-[#5F5F5F]" />
+                              <span>Buying &amp; Orders</span>
+                            </Link>
 
-            {user ? (
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                  className="flex items-center gap-2 h-9 pl-2 pr-2.5 rounded-lg bg-[#0D1117] hover:bg-[#131923] border border-[#222B3C] transition-colors"
-                >
-                  <div className="w-6 h-6 rounded bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 font-mono font-bold text-[11px]">
-                    {profile?.username ? profile.username.slice(0, 2).toUpperCase() : "ME"}
+                            <Link
+                              href="/dashboard/seller"
+                              onClick={() => setProfileDropdownOpen(false)}
+                              className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-[#0F0F0F] hover:bg-[#F4F3F1]"
+                            >
+                              <Store className="w-3.5 h-3.5 text-[#5F5F5F]" />
+                              <span>Selling Portfolio</span>
+                            </Link>
+
+                            {isSeller && (
+                              <Link
+                                href="/seller/earnings"
+                                onClick={() => setProfileDropdownOpen(false)}
+                                className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-[#0F0F0F] hover:bg-[#F4F3F1]"
+                              >
+                                <Wallet className="w-3.5 h-3.5 text-[#5F5F5F]" />
+                                <span>Payouts &amp; Earnings</span>
+                              </Link>
+                            )}
+
+                            <Link
+                              href="/profile"
+                              onClick={() => setProfileDropdownOpen(false)}
+                              className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-[#0F0F0F] hover:bg-[#F4F3F1]"
+                            >
+                              <Settings className="w-3.5 h-3.5 text-[#5F5F5F]" />
+                              <span>Profile Settings</span>
+                            </Link>
+
+                            {isAdmin && (
+                              <Link
+                                href="/admin"
+                                onClick={() => setProfileDropdownOpen(false)}
+                                className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-[#006340] hover:bg-[#EBF5F0]"
+                              >
+                                <ShieldAlert className="w-3.5 h-3.5" />
+                                <span>Admin Console</span>
+                              </Link>
+                            )}
+                          </div>
+
+                          <div className="border-t border-[#E2E2E0] pt-1">
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setProfileDropdownOpen(false);
+                                signOut();
+                              }}
+                              className="flex w-full items-center gap-2.5 px-4 py-2 text-xs font-medium text-[#C92A2A] hover:bg-[#FEE2E2]/50 cursor-pointer"
+                            >
+                              <LogOut className="w-3.5 h-3.5" />
+                              <span>Log Out</span>
+                            </button>
+                          </div>
+                        </div>
+                      </>
+                    )}
                   </div>
-                  <span className="text-xs font-medium text-slate-200 max-w-[96px] truncate">
-                    {profile?.username || "Account"}
-                  </span>
-                  <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
-                </button>
-
-                {profileDropdownOpen && (
-                  <>
-                    <div
-                      className="fixed inset-0 z-10"
-                      onClick={() => setProfileDropdownOpen(false)}
-                    />
-                    <div className="absolute right-0 mt-2 w-56 rounded-xl bg-[#0D1117] border border-[#222B3C] shadow-2xl py-1.5 z-20 text-sm">
-                      <div className="px-3.5 py-2.5 border-b border-[#1E2636]">
-                        <p className="font-semibold text-white text-xs truncate">
-                          {profile?.username || user.email}
-                        </p>
-                        <p className="text-[11px] text-slate-400 capitalize mt-0.5">
-                          {isAdmin ? "Administrator" : `${profile?.role || "Trader"} Account`}
-                        </p>
-                      </div>
-
-                      <div className="py-1">
-                        <Link
-                          href="/dashboard/buyer"
-                          onClick={() => setProfileDropdownOpen(false)}
-                          className="flex items-center gap-2.5 px-3.5 py-2 text-xs text-slate-300 hover:bg-[#131923] hover:text-white"
-                        >
-                          <ShoppingBag className="w-3.5 h-3.5 text-slate-400" />
-                          <span>My Purchases</span>
-                        </Link>
-
-                        <Link
-                          href="/dashboard/seller"
-                          onClick={() => setProfileDropdownOpen(false)}
-                          className="flex items-center gap-2.5 px-3.5 py-2 text-xs text-slate-300 hover:bg-[#131923] hover:text-white"
-                        >
-                          <Store className="w-3.5 h-3.5 text-slate-400" />
-                          <span>Seller Dashboard</span>
-                        </Link>
-
-                        {isSeller && (
-                          <Link
-                            href="/seller/earnings"
-                            onClick={() => setProfileDropdownOpen(false)}
-                            className="flex items-center gap-2.5 px-3.5 py-2 text-xs text-slate-300 hover:bg-[#131923] hover:text-white"
-                          >
-                            <Wallet className="w-3.5 h-3.5 text-slate-400" />
-                            <span>Earnings &amp; Payouts</span>
-                          </Link>
-                        )}
-
-                        <Link
-                          href="/profile"
-                          onClick={() => setProfileDropdownOpen(false)}
-                          className="flex items-center gap-2.5 px-3.5 py-2 text-xs text-slate-300 hover:bg-[#131923] hover:text-white"
-                        >
-                          <Settings className="w-3.5 h-3.5 text-slate-400" />
-                          <span>Account Settings</span>
-                        </Link>
-
-                        {isAdmin && (
-                          <Link
-                            href="/admin"
-                            onClick={() => setProfileDropdownOpen(false)}
-                            className="flex items-center gap-2.5 px-3.5 py-2 text-xs text-amber-400 hover:bg-[#131923]"
-                          >
-                            <ShieldAlert className="w-3.5 h-3.5" />
-                            <span>Admin Console</span>
-                          </Link>
-                        )}
-                      </div>
-
-                      <div className="border-t border-[#1E2636] pt-1">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setProfileDropdownOpen(false);
-                            signOut();
-                          }}
-                          className="flex w-full items-center gap-2.5 px-3.5 py-2 text-xs text-rose-400 hover:bg-[#131923]"
-                        >
-                          <LogOut className="w-3.5 h-3.5" />
-                          <span>Sign Out</span>
-                        </button>
-                      </div>
-                    </div>
-                  </>
-                )}
-              </div>
-            ) : (
-              <div className="flex items-center gap-2">
-                <Link href="/login">
-                  <Button variant="ghost" size="sm" className="h-9">
-                    Sign In
-                  </Button>
-                </Link>
-                <Link href="/register">
-                  <Button variant="secondary" size="sm" className="h-9">
-                    Register
-                  </Button>
-                </Link>
-              </div>
-            )}
+                </>
+              ) : (
+                <>
+                  <Link
+                    href="/login"
+                    className="inline-flex items-center justify-center h-9 px-3.5 rounded-full border border-[#C8C8C4] text-xs font-semibold text-[#0F0F0F] hover:border-[#0F0F0F] transition-colors"
+                  >
+                    Log In
+                  </Link>
+                  <Link
+                    href="/register"
+                    className="inline-flex items-center justify-center h-9 px-4 rounded-full bg-[#0F0F0F] text-xs font-semibold text-white hover:bg-[#262626] transition-colors"
+                  >
+                    Sign Up
+                  </Link>
+                </>
+              )}
+            </div>
           </div>
 
           {/* Mobile Controls */}
           <div className="flex items-center gap-2 md:hidden">
             {user && <NotificationBell />}
-            <Link href="/seller/create-listing">
-              <Button variant="primary" size="sm" className="h-8 px-2.5 text-xs">
-                <Plus className="w-3.5 h-3.5" />
-                <span>Sell</span>
-              </Button>
+            <Link
+              href="/seller/create-listing"
+              className="inline-flex items-center justify-center h-8 px-3.5 rounded-full border border-[#0F0F0F] text-xs font-semibold text-[#0F0F0F]"
+            >
+              Sell
             </Link>
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-lg text-slate-300 hover:text-white bg-[#0D1117] border border-[#222B3C]"
+              className="p-2 rounded-md text-[#0F0F0F] hover:bg-[#F4F3F1]"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -242,137 +249,106 @@ export function Header() {
         </div>
       </div>
 
-      {/* Secondary Storefront Category Rail (Desktop) */}
-      <div className="hidden md:block border-t border-[#161C28] bg-[#0A0D13]">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-10">
-          <nav className="flex items-center gap-1 h-full">
-            {navLinks.map((link) => {
+      {/* Row 2: StockX Signature Category Strip */}
+      <div className="border-t border-[#E2E2E0] bg-[#F9F9F8]">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <nav
+            aria-label="Product Categories"
+            className="flex items-center gap-6 h-10 overflow-x-auto no-scrollbar"
+          >
+            {categoryStrip.map((item) => {
+              const baseHref = item.href.split("?")[0];
               const isActive =
-                pathname === link.href ||
-                (link.href !== "/" && pathname?.startsWith(link.href));
+                item.href === "/browse"
+                  ? pathname === "/browse"
+                  : baseHref !== "/browse" && pathname?.startsWith(baseHref);
               return (
                 <Link
-                  key={link.href}
-                  href={link.href}
-                  className={`relative h-full inline-flex items-center gap-1.5 px-3 text-xs font-medium transition-colors ${
+                  key={item.name}
+                  href={item.href}
+                  className={`relative h-full inline-flex items-center whitespace-nowrap text-[13px] font-medium transition-colors ${
                     isActive
-                      ? "text-white"
-                      : "text-slate-400 hover:text-slate-100"
+                      ? "text-[#006340] font-semibold"
+                      : "text-[#3D3D3D] hover:text-[#0F0F0F]"
                   }`}
                 >
-                  <span>{link.name}</span>
-                  {link.tag && (
-                    <span className="px-1.5 py-0.2 rounded bg-amber-500/15 border border-amber-500/30 text-[9px] font-mono font-bold text-amber-300">
-                      {link.tag}
-                    </span>
-                  )}
+                  <span>{item.name}</span>
                   {isActive && (
-                    <span className="absolute bottom-0 left-3 right-3 h-[2px] bg-emerald-400 rounded-t-full" />
+                    <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#006340]" />
                   )}
                 </Link>
               );
             })}
           </nav>
-
-          <div className="flex items-center gap-4 text-[11px] text-slate-400">
-            <Link href="/browse?minStrength=3150" className="hover:text-emerald-400 transition-colors font-mono">
-              3150+ OVR
-            </Link>
-            <Link href="/browse?platform=android" className="hover:text-emerald-400 transition-colors">
-              Android
-            </Link>
-            <Link href="/browse?platform=ios" className="hover:text-emerald-400 transition-colors">
-              iOS
-            </Link>
-            <Link href="/contact" className="hover:text-white transition-colors">
-              Support: 0794 400 365
-            </Link>
-          </div>
         </div>
       </div>
 
-      {/* Mobile Drawer */}
+      {/* Mobile Search & Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-[#0D1117] border-b border-[#1E2636] px-4 pt-3 pb-5 space-y-3">
+        <div className="md:hidden bg-white border-t border-[#E2E2E0] px-4 pt-3 pb-5 space-y-4 shadow-lg">
           <form onSubmit={handleHeaderSearch} className="relative flex items-center">
-            <Search className="w-4 h-4 text-slate-500 absolute left-3.5 pointer-events-none" />
+            <Search className="w-4 h-4 text-[#5F5F5F] absolute left-3.5 pointer-events-none" />
             <input
               type="text"
               value={headerSearch}
               onChange={(e) => setHeaderSearch(e.target.value)}
               placeholder="Search squads, players, OVR..."
-              className="w-full h-10 pl-9 pr-16 rounded-lg bg-[#131923] border border-[#222B3C] text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
+              className="w-full h-10 pl-9 pr-20 rounded-md bg-[#F4F3F1] text-xs text-[#0F0F0F] placeholder:text-[#6B6B6B] focus:outline-none focus:ring-1 focus:ring-[#0F0F0F]"
             />
             <button
               type="submit"
-              className="absolute right-1.5 px-2.5 py-1 rounded bg-emerald-500 text-zinc-950 text-xs font-bold"
+              className="absolute right-1.5 px-3 py-1 rounded bg-[#0F0F0F] text-white text-xs font-semibold"
             >
               Search
             </button>
           </form>
 
-          <div className="grid grid-cols-2 gap-1.5">
-            {navLinks.map((link) => {
-              const isActive = pathname === link.href;
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setMobileMenuOpen(false)}
-                  className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-xs font-medium border ${
-                    isActive
-                      ? "bg-emerald-500/10 border-emerald-500/40 text-emerald-300"
-                      : "bg-[#131923] border-[#222B3C] text-slate-300"
-                  }`}
-                >
-                  <span>{link.name}</span>
-                  {link.tag && (
-                    <span className="text-[9px] font-mono font-bold text-amber-300">
-                      {link.tag}
-                    </span>
-                  )}
-                </Link>
-              );
-            })}
+          <div className="grid grid-cols-2 gap-2">
+            {[
+              { name: "Browse Market", href: "/browse" },
+              { name: "Guides & Tactics", href: "/news" },
+              { name: "Middleman Escrow", href: "/middleman" },
+              { name: "Scammer Check", href: "/scammer-check" },
+              { name: "1v1 Tournaments", href: "/tournaments" },
+              { name: "Wanted Board", href: "/wanted" },
+              { name: "How Escrow Works", href: "/escrow-guarantee" },
+              { name: "Contact Support", href: "/contact" },
+            ].map((link) => (
+              <Link
+                key={link.href}
+                href={link.href}
+                onClick={() => setMobileMenuOpen(false)}
+                className="px-3 py-2.5 rounded-md bg-[#F4F3F1] text-xs font-semibold text-[#0F0F0F] hover:bg-[#EAE9E6]"
+              >
+                {link.name}
+              </Link>
+            ))}
           </div>
 
-          <div className="pt-2 border-t border-[#1E2636] space-y-2">
+          <div className="pt-2 border-t border-[#E2E2E0]">
             {user ? (
-              <>
-                <div className="grid grid-cols-2 gap-2">
-                  <Link href="/dashboard/buyer" onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="secondary" size="sm" className="w-full">
-                      Purchases
-                    </Button>
-                  </Link>
-                  <Link href="/dashboard/seller" onClick={() => setMobileMenuOpen(false)}>
-                    <Button variant="secondary" size="sm" className="w-full">
-                      Seller Hub
-                    </Button>
-                  </Link>
-                </div>
-                <Button
-                  variant="danger"
-                  size="sm"
-                  className="w-full"
-                  onClick={() => {
-                    setMobileMenuOpen(false);
-                    signOut();
-                  }}
-                >
-                  Sign Out
-                </Button>
-              </>
+              <div className="grid grid-cols-2 gap-2">
+                <Link href="/dashboard/buyer" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="outline" size="sm" className="w-full">
+                    My Orders
+                  </Button>
+                </Link>
+                <Link href="/dashboard/seller" onClick={() => setMobileMenuOpen(false)}>
+                  <Button variant="secondary" size="sm" className="w-full">
+                    Selling Hub
+                  </Button>
+                </Link>
+              </div>
             ) : (
               <div className="grid grid-cols-2 gap-2">
                 <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="secondary" size="sm" className="w-full">
-                    Sign In
+                  <Button variant="outline" size="sm" className="w-full">
+                    Log In
                   </Button>
                 </Link>
                 <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="primary" size="sm" className="w-full">
-                    Create Account
+                  <Button variant="secondary" size="sm" className="w-full">
+                    Sign Up
                   </Button>
                 </Link>
               </div>

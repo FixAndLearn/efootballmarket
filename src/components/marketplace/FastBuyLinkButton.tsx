@@ -38,18 +38,18 @@ export function FastBuyLinkButton({
       <Button
         variant="outline"
         size="sm"
-        className="text-xs text-emerald-400 border-emerald-500/40 hover:bg-emerald-500/10"
+        className="text-xs text-[#006340] border-[#BFE0CE] hover:bg-[#EBF5F0]"
         onClick={handleCopy}
         title="Copy direct 1-tap M-Pesa checkout link"
       >
         {copied ? (
           <>
-            <Check className="w-3.5 h-3.5 mr-1 text-emerald-400" />
+            <Check className="w-3.5 h-3.5 mr-1 text-[#006340]" />
             <span>Copied!</span>
           </>
         ) : (
           <>
-            <Zap className="w-3.5 h-3.5 mr-1 text-emerald-400" />
+            <Zap className="w-3.5 h-3.5 mr-1 text-[#006340]" />
             <span>Fast Link</span>
           </>
         )}
@@ -61,17 +61,17 @@ export function FastBuyLinkButton({
     <Button
       variant="outline"
       size="md"
-      className="w-full text-xs font-semibold border-emerald-500/40 text-emerald-300 hover:bg-emerald-950/40 hover:border-emerald-400"
+      className="w-full text-xs font-semibold border-[#BFE0CE] text-[#006340] hover:bg-[#EBF5F0] hover:border-emerald-400"
       onClick={handleCopy}
     >
       {copied ? (
         <>
-          <Check className="w-4 h-4 mr-2 text-emerald-400" />
+          <Check className="w-4 h-4 mr-2 text-[#006340]" />
           <span>Direct Checkout Link Copied to Clipboard!</span>
         </>
       ) : (
         <>
-          <Zap className="w-4 h-4 mr-2 text-emerald-400" />
+          <Zap className="w-4 h-4 mr-2 text-[#006340]" />
           <span>Copy Fast WhatsApp Buy Link (/pay/{listingId.slice(0, 8)})</span>
         </>
       )}

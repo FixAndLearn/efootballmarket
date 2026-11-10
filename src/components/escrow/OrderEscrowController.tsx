@@ -182,25 +182,25 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
       {/* Escrow Progress Stepper */}
       <div className="bg-pitch-surface border border-pitch-border rounded-2xl p-4 sm:p-6 shadow-xl space-y-4 overflow-hidden">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-          <h3 className="text-xs uppercase font-bold text-slate-400 tracking-wider">
+          <h3 className="text-xs uppercase font-bold text-[#5F5F5F] tracking-wider">
             Transaction Lifecycle &amp; Escrow State
           </h3>
           <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={() => setIsChecklistModalOpen(true)}
-              className="text-xs text-emerald-400 hover:text-emerald-300 flex items-center gap-1.5 font-bold transition-colors cursor-pointer bg-emerald-950/60 border border-emerald-800/80 px-2.5 py-1.5 rounded-xl shadow-sm"
+              className="text-xs text-[#006340] hover:text-[#006340] flex items-center gap-1.5 font-bold transition-colors cursor-pointer bg-[#EBF5F0] border border-[#BFE0CE] px-2.5 py-1.5 rounded-xl shadow-sm"
             >
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
+              <ShieldCheck className="w-3.5 h-3.5 text-[#006340] shrink-0" />
               <span>Handover Guide &amp; Rules</span>
             </button>
             {currentStatus !== "payment_pending" && currentStatus !== "cancelled" && (
               <button
                 type="button"
                 onClick={() => setIsReceiptModalOpen(true)}
-                className="text-xs text-amber-300 hover:text-amber-200 flex items-center gap-1.5 font-bold transition-colors cursor-pointer bg-pitch-card border border-pitch-border px-2.5 py-1.5 rounded-xl"
+                className="text-xs text-[#92400E] hover:text-[#92400E] flex items-center gap-1.5 font-bold transition-colors cursor-pointer bg-pitch-card border border-pitch-border px-2.5 py-1.5 rounded-xl"
               >
-                <FileText className="w-3.5 h-3.5 text-amber-400 shrink-0" />
+                <FileText className="w-3.5 h-3.5 text-[#B45309] shrink-0" />
                 <span>Official Receipt</span>
               </button>
             )}
@@ -208,9 +208,9 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
               <button
                 type="button"
                 onClick={() => setIsDisputeModalOpen(true)}
-                className="text-xs text-rose-400 hover:text-rose-300 flex items-center gap-1.5 font-bold transition-colors cursor-pointer bg-rose-950/60 border border-rose-800/80 px-2.5 py-1.5 rounded-xl shadow-sm"
+                className="text-xs text-[#C92A2A] hover:text-[#B91C1C] flex items-center gap-1.5 font-bold transition-colors cursor-pointer bg-[#FEE2E2] border border-[#FECACA] px-2.5 py-1.5 rounded-xl shadow-sm"
               >
-                <ShieldAlert className="w-3.5 h-3.5 text-rose-400 shrink-0" />
+                <ShieldAlert className="w-3.5 h-3.5 text-[#C92A2A] shrink-0" />
                 <span>{currentStatus === "completed" ? "Post-Release Dispute" : "Raise Dispute"}</span>
               </button>
             )}
@@ -221,28 +221,28 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
 
       {/* Stage 1: Payment Pending (Buyer STK Push Trigger) */}
       {currentStatus === "payment_pending" && (
-        <div className="bg-gradient-to-br from-[#0D192E] via-pitch-surface to-[#0A1220] border border-amber-500/40 rounded-2xl p-5 sm:p-6 shadow-xl space-y-4 relative overflow-hidden">
+        <div className="bg-gradient-to-br from-[#0D192E] via-pitch-surface to-[#0A1220] border border-[#FDE68A] rounded-2xl p-5 sm:p-6 shadow-xl space-y-4 relative overflow-hidden">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-pitch-border/80">
             <div className="flex items-center gap-3">
-              <div className="w-11 h-11 rounded-2xl bg-amber-500/10 border border-amber-500/30 flex items-center justify-center text-amber-400 shrink-0 shadow-inner">
+              <div className="w-11 h-11 rounded-2xl bg-[#FEF3C7] border border-[#FDE68A] flex items-center justify-center text-[#B45309] shrink-0 shadow-inner">
                 <Smartphone className="w-5 h-5 animate-pulse" />
               </div>
               <div>
                 <div className="flex items-center gap-2">
-                  <h3 className="text-base font-bold text-white font-display">Awaiting M-Pesa Deposit</h3>
-                  <span className="text-[10px] font-bold text-amber-300 bg-amber-950/80 px-2 py-0.5 rounded-full border border-amber-800">
+                  <h3 className="text-base font-bold text-[#0F0F0F] font-display">Awaiting M-Pesa Deposit</h3>
+                  <span className="text-[10px] font-bold text-[#92400E] bg-[#FEF3C7] px-2 py-0.5 rounded-full border border-[#FDE68A]">
                     Safaricom Till 1572931
                   </span>
                 </div>
-                <p className="text-xs text-slate-300 mt-0.5">
+                <p className="text-xs text-[#3D3D3D] mt-0.5">
                   Deposit escrow amount to unlock seller credentials &amp; encrypted chat.
                 </p>
               </div>
             </div>
 
             <div className="text-left sm:text-right">
-              <span className="text-[11px] text-slate-400 block font-medium">Payable Total</span>
-              <span className="text-2xl font-black text-emerald-400 font-mono tracking-tight">
+              <span className="text-[11px] text-[#5F5F5F] block font-medium">Payable Total</span>
+              <span className="text-2xl font-black text-[#006340] font-mono tracking-tight">
                 {formatCurrency(order.total_amount, order.currency)}
               </span>
             </div>
@@ -252,16 +252,16 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5 text-xs">
                 <div className="p-2.5 rounded-xl bg-pitch-card border border-pitch-border flex items-start gap-2">
-                  <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">1</span>
-                  <span className="text-slate-300 text-[11px] leading-tight">Tap Pay to trigger M-Pesa prompt on phone</span>
+                  <span className="w-5 h-5 rounded-full bg-[#EBF5F0] text-[#006340] font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">1</span>
+                  <span className="text-[#3D3D3D] text-[11px] leading-tight">Tap Pay to trigger M-Pesa prompt on phone</span>
                 </div>
                 <div className="p-2.5 rounded-xl bg-pitch-card border border-pitch-border flex items-start gap-2">
-                  <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">2</span>
-                  <span className="text-slate-300 text-[11px] leading-tight">Enter your Safaricom PIN on handset</span>
+                  <span className="w-5 h-5 rounded-full bg-[#EBF5F0] text-[#006340] font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">2</span>
+                  <span className="text-[#3D3D3D] text-[11px] leading-tight">Enter your Safaricom PIN on handset</span>
                 </div>
                 <div className="p-2.5 rounded-xl bg-pitch-card border border-pitch-border flex items-start gap-2">
-                  <span className="w-5 h-5 rounded-full bg-emerald-500/20 text-emerald-400 font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">3</span>
-                  <span className="text-slate-300 text-[11px] leading-tight">Locked in Till 1572931 custody instantly</span>
+                  <span className="w-5 h-5 rounded-full bg-[#EBF5F0] text-[#006340] font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">3</span>
+                  <span className="text-[#3D3D3D] text-[11px] leading-tight">Locked in Till 1572931 custody instantly</span>
                 </div>
               </div>
 
@@ -275,15 +275,15 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
                   <Smartphone className="w-4 h-4 mr-2" />
                   Pay via M-Pesa STK Push
                 </Button>
-                <span className="text-[11px] text-slate-400 flex items-center gap-1.5">
-                  <ShieldCheck className="w-4 h-4 text-emerald-400 shrink-0" />
+                <span className="text-[11px] text-[#5F5F5F] flex items-center gap-1.5">
+                  <ShieldCheck className="w-4 h-4 text-[#006340] shrink-0" />
                   <span>100% money-back escrow guarantee if seller fails to deliver</span>
                 </span>
               </div>
             </div>
           ) : (
-            <div className="p-4 rounded-xl bg-pitch-card border border-pitch-border text-xs text-slate-300 flex items-center gap-3">
-              <Clock className="w-4 h-4 text-amber-400 shrink-0 animate-spin" />
+            <div className="p-4 rounded-xl bg-pitch-card border border-pitch-border text-xs text-[#3D3D3D] flex items-center gap-3">
+              <Clock className="w-4 h-4 text-[#B45309] shrink-0 animate-spin" />
               <span>
                 Awaiting buyer M-Pesa settlement into Safaricom Till 1572931. <strong>Do NOT share account credentials</strong> until escrow confirmation illuminates.
               </span>
@@ -300,40 +300,40 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
           ) : (
             <div className="bg-pitch-surface border border-pitch-border rounded-2xl p-6 space-y-4 shadow-xl">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-950/60 border border-indigo-800/60 flex items-center justify-center text-indigo-400">
+                <div className="w-10 h-10 rounded-xl bg-indigo-950/60 border border-indigo-800/60 flex items-center justify-center text-[#4338CA]">
                   <Lock className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-slate-100">Payment Secured in Escrow (Funds Safely Held)</h3>
-                  <p className="text-xs text-slate-400">
+                  <h3 className="text-base font-bold text-[#0F0F0F]">Payment Secured in Escrow (Funds Safely Held)</h3>
+                  <p className="text-xs text-[#5F5F5F]">
                     Safaricom Till 1572931 custody active. Seller cannot withdraw funds until you confirm full access.
                   </p>
                 </div>
               </div>
 
-              <div className="p-3.5 rounded-xl bg-pitch-card border border-pitch-border text-xs text-slate-300 space-y-1.5">
-                <span className="font-bold text-white block">Escrow Protection &amp; Handover Protocol:</span>
-                <p className="text-slate-300">
+              <div className="p-3.5 rounded-xl bg-pitch-card border border-pitch-border text-xs text-[#3D3D3D] space-y-1.5">
+                <span className="font-bold text-[#0F0F0F] block">Escrow Protection &amp; Handover Protocol:</span>
+                <p className="text-[#3D3D3D]">
                   The seller will deliver credentials either using the encrypted vault OR by communicating directly with you in the <strong>Order Chat</strong> to the right.
                 </p>
               </div>
 
               {/* Handover Verification Card (In case seller provides credentials in chat) */}
-              <div className="p-4 rounded-xl bg-pitch-card/70 border border-emerald-500/40 space-y-3">
+              <div className="p-4 rounded-xl bg-pitch-card/70 border border-[#BFE0CE] space-y-3">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <div>
-                    <h4 className="text-xs font-bold text-emerald-300 flex items-center gap-1.5">
+                    <h4 className="text-xs font-bold text-[#006340] flex items-center gap-1.5">
                       <KeyRound className="w-3.5 h-3.5" />
                       <span>Received Credentials via Chat or Form? Verify Here:</span>
                     </h4>
-                    <p className="text-[11px] text-slate-400 mt-0.5">
+                    <p className="text-[11px] text-[#5F5F5F] mt-0.5">
                       You do not have to wait if the seller assists you directly in chat. Verify all 5 points before releasing funds.
                     </p>
                   </div>
                   <button
                     type="button"
                     onClick={() => setIsChecklistModalOpen(true)}
-                    className="inline-flex items-center gap-1 text-xs font-semibold text-emerald-400 hover:text-emerald-300 underline underline-offset-2 shrink-0"
+                    className="inline-flex items-center gap-1 text-xs font-semibold text-[#006340] hover:text-[#006340] underline underline-offset-2 shrink-0"
                   >
                     <ShieldCheck className="w-3.5 h-3.5" />
                     <span>View Visual 6-Step Guide</span>
@@ -341,7 +341,7 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
                 </div>
 
                 <div className="space-y-2 pt-2 border-t border-pitch-border/60 text-xs">
-                  <label className="flex items-start gap-2.5 cursor-pointer text-slate-200 select-none">
+                  <label className="flex items-start gap-2.5 cursor-pointer text-[#1F1F1F] select-none">
                     <input
                       type="checkbox"
                       checked={stepLogin}
@@ -351,7 +351,7 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
                     <span><strong>1. Account Inspection:</strong> Logged into eFootball and confirmed squad players, OVR, and Epics match the listing.</span>
                   </label>
 
-                  <label className="flex items-start gap-2.5 cursor-pointer text-slate-200 select-none">
+                  <label className="flex items-start gap-2.5 cursor-pointer text-[#1F1F1F] select-none">
                     <input
                       type="checkbox"
                       checked={stepEmail}
@@ -361,7 +361,7 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
                     <span><strong>2. Primary Email Binding:</strong> Changed registered email at <em>my.konami.net</em> to my own email and confirmed OTP code.</span>
                   </label>
 
-                  <label className="flex items-start gap-2.5 cursor-pointer text-slate-200 select-none">
+                  <label className="flex items-start gap-2.5 cursor-pointer text-[#1F1F1F] select-none">
                     <input
                       type="checkbox"
                       checked={stepPassword}
@@ -371,7 +371,7 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
                     <span><strong>3. Password &amp; Security:</strong> Updated Konami ID password and security question to new private combinations.</span>
                   </label>
 
-                  <label className="flex items-start gap-2.5 cursor-pointer text-slate-200 select-none">
+                  <label className="flex items-start gap-2.5 cursor-pointer text-[#1F1F1F] select-none">
                     <input
                       type="checkbox"
                       checked={step2FA}
@@ -381,21 +381,21 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
                     <span><strong>4. Two-Step Verification (2FA):</strong> Enabled 2-Step OTP on my own phone to block previous owner access.</span>
                   </label>
 
-                  <label className="flex items-start gap-2.5 cursor-pointer text-slate-200 select-none">
+                  <label className="flex items-start gap-2.5 cursor-pointer text-[#1F1F1F] select-none">
                     <input
                       type="checkbox"
                       checked={stepUnlink}
                       onChange={(e) => setStepUnlink(e.target.checked)}
                       className="mt-0.5 w-4 h-4 rounded border-pitch-border text-brand-500"
                     />
-                    <span className="text-rose-200">
+                    <span className="text-[#B91C1C]">
                       <strong>5. Verified ZERO Google-Play Link (&quot;Googling&quot;):</strong> Checked in-game <em>Extras &rarr; Support &rarr; Link Data</em> and confirmed Google Play Games says <strong>&quot;Not Linked&quot;</strong>. (If linked, STOP &amp; Dispute).
                     </span>
                   </label>
                 </div>
 
                 {releaseError && (
-                  <div className="p-3 rounded-lg bg-rose-950/60 border border-rose-800 text-rose-300 text-xs flex items-center gap-2">
+                  <div className="p-3 rounded-lg bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs flex items-center gap-2">
                     <ShieldAlert className="w-4 h-4 shrink-0" />
                     <span>{releaseError}</span>
                   </div>
@@ -435,22 +435,22 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
         <div className="bg-pitch-surface border border-pitch-border rounded-2xl p-6 space-y-5">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-emerald-950/60 border border-emerald-800/60 flex items-center justify-center text-emerald-400">
+              <div className="w-10 h-10 rounded-xl bg-[#EBF5F0] border border-[#BFE0CE] flex items-center justify-center text-[#006340]">
                 <KeyRound className="w-5 h-5" />
               </div>
               <div>
-                <h3 className="text-base font-bold text-slate-100">
+                <h3 className="text-base font-bold text-[#0F0F0F]">
                   {isBuyer ? "Account Handover in Progress (2-Way Code Transfer)" : "Credentials Delivered — Handover Active"}
                 </h3>
-                <p className="text-xs text-slate-400">24-Hour Security & Binding Window Active</p>
+                <p className="text-xs text-[#5F5F5F]">24-Hour Security & Binding Window Active</p>
               </div>
             </div>
           </div>
 
           {isBuyer ? (
             <div className="space-y-4 pt-1">
-              <div className="p-3.5 rounded-xl bg-amber-950/40 border border-amber-800/60 text-xs text-amber-200 space-y-1.5">
-                <span className="font-bold text-amber-300 block">💬 Two-Way Verification in Progress:</span>
+              <div className="p-3.5 rounded-xl bg-[#FEF3C7] border border-[#FDE68A] text-xs text-[#92400E] space-y-1.5">
+                <span className="font-bold text-[#92400E] block">💬 Two-Way Verification in Progress:</span>
                 <p>
                   Konami ID security requires login OTP codes and email change confirmations. View opening credentials below, log into eFootball, and use the <strong>Order Chat</strong> to get the 2-step codes from the seller so you can change <strong>both the password and registered email address</strong>.
                 </p>
@@ -459,11 +459,11 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
               {/* Step 1: Opening Credentials */}
               <div className="p-4 rounded-xl bg-pitch-card border border-pitch-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <h4 className="text-sm font-bold text-slate-100 flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-brand-500/20 text-brand-400 text-xs flex items-center justify-center font-bold">1</span>
+                  <h4 className="text-sm font-bold text-[#0F0F0F] flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-brand-500/20 text-[#006340] text-xs flex items-center justify-center font-bold">1</span>
                     Opening Credentials Vault
                   </h4>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-xs text-[#5F5F5F] mt-0.5">
                     Konami ID email & temporary opening login details.
                   </p>
                 </div>
@@ -480,15 +480,15 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
               {/* Step 2: Live Chat for Codes */}
               <div className="p-4 rounded-xl bg-pitch-card border border-pitch-border flex items-center justify-between">
                 <div>
-                  <h4 className="text-sm font-bold text-slate-100 flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-brand-500/20 text-brand-400 text-xs flex items-center justify-center font-bold">2</span>
+                  <h4 className="text-sm font-bold text-[#0F0F0F] flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-brand-500/20 text-[#006340] text-xs flex items-center justify-center font-bold">2</span>
                     Request 2FA / OTP in Chat
                   </h4>
-                  <p className="text-xs text-slate-400 mt-0.5">
+                  <p className="text-xs text-[#5F5F5F] mt-0.5">
                     Ask seller for the Konami 2-Step verification code sent to their email.
                   </p>
                 </div>
-                <span className="text-xs text-emerald-400 font-semibold bg-emerald-950/60 border border-emerald-800/60 px-2.5 py-1 rounded-lg">
+                <span className="text-xs text-[#006340] font-semibold bg-[#EBF5F0] border border-[#BFE0CE] px-2.5 py-1 rounded-lg">
                   Chat Active
                 </span>
               </div>
@@ -496,26 +496,26 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
               {/* Step 3: Konami ID Security Transfer Checklist (5-Point Protocol) */}
               <div className="p-4 rounded-xl bg-pitch-card border border-pitch-border space-y-3.5">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-                  <h4 className="text-sm font-bold text-slate-100 flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-brand-500/20 text-brand-400 text-xs flex items-center justify-center font-bold">3</span>
+                  <h4 className="text-sm font-bold text-[#0F0F0F] flex items-center gap-2">
+                    <span className="w-5 h-5 rounded-full bg-brand-500/20 text-[#006340] text-xs flex items-center justify-center font-bold">3</span>
                     Konami ID Handover Safety Checklist
                   </h4>
                   <button
                     type="button"
                     onClick={() => setIsChecklistModalOpen(true)}
-                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-emerald-400 hover:text-emerald-300 underline underline-offset-2"
+                    className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#006340] hover:text-[#006340] underline underline-offset-2"
                   >
                     <ShieldCheck className="w-3.5 h-3.5" />
                     <span>View Visual Handover Guide</span>
                   </button>
                 </div>
 
-                <p className="text-xs text-slate-400">
+                <p className="text-xs text-[#5F5F5F]">
                   Complete all 5 security protocols below before releasing escrow funds:
                 </p>
 
                 <div className="space-y-2.5 pt-1 text-xs">
-                  <label className="flex items-start gap-2.5 cursor-pointer text-slate-200 hover:text-white select-none">
+                  <label className="flex items-start gap-2.5 cursor-pointer text-[#1F1F1F] hover:text-[#0F0F0F] select-none">
                     <input
                       type="checkbox"
                       checked={stepLogin}
@@ -525,7 +525,7 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
                     <span><strong>1. Account Inspection:</strong> Logged in and verified all squad players, OVR, Epics, and Coin balances match the listing.</span>
                   </label>
 
-                  <label className="flex items-start gap-2.5 cursor-pointer text-slate-200 hover:text-white select-none">
+                  <label className="flex items-start gap-2.5 cursor-pointer text-[#1F1F1F] hover:text-[#0F0F0F] select-none">
                     <input
                       type="checkbox"
                       checked={stepEmail}
@@ -535,7 +535,7 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
                     <span><strong>2. Primary Email Binding:</strong> Changed registered email at <em>my.konami.net</em> to my own personal email and confirmed OTP code.</span>
                   </label>
 
-                  <label className="flex items-start gap-2.5 cursor-pointer text-slate-200 hover:text-white select-none">
+                  <label className="flex items-start gap-2.5 cursor-pointer text-[#1F1F1F] hover:text-[#0F0F0F] select-none">
                     <input
                       type="checkbox"
                       checked={stepPassword}
@@ -545,7 +545,7 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
                     <span><strong>3. Password & Security:</strong> Updated Konami ID password and security question to new private combinations.</span>
                   </label>
 
-                  <label className="flex items-start gap-2.5 cursor-pointer text-slate-200 hover:text-white select-none">
+                  <label className="flex items-start gap-2.5 cursor-pointer text-[#1F1F1F] hover:text-[#0F0F0F] select-none">
                     <input
                       type="checkbox"
                       checked={step2FA}
@@ -555,26 +555,26 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
                     <span><strong>4. Two-Step Verification (2FA):</strong> Enabled Konami 2-Step OTP on my own handset to block previous owner access.</span>
                   </label>
 
-                  <label className="flex items-start gap-2.5 cursor-pointer text-slate-200 hover:text-white select-none">
+                  <label className="flex items-start gap-2.5 cursor-pointer text-[#1F1F1F] hover:text-[#0F0F0F] select-none">
                     <input
                       type="checkbox"
                       checked={stepUnlink}
                       onChange={(e) => setStepUnlink(e.target.checked)}
                       className="mt-0.5 w-4 h-4 rounded border-pitch-border text-brand-500 focus:ring-brand-500/20"
                     />
-                    <span className="text-rose-200">
+                    <span className="text-[#B91C1C]">
                       <strong>5. Verified ZERO Google-Play Link (&quot;Googling&quot;):</strong> Checked in-game <em>Extras &rarr; Support &rarr; Link Data</em> and confirmed Google Play Games says <strong>&quot;Not Linked&quot;</strong>. (If linked, STOP &amp; Dispute).
                     </span>
                   </label>
                 </div>
 
-                <div className="pt-1 flex items-center justify-between text-[11px] text-slate-400 border-t border-pitch-border/60">
+                <div className="pt-1 flex items-center justify-between text-[11px] text-[#5F5F5F] border-t border-pitch-border/60">
                   <span>Completed: <strong>{[stepLogin, stepEmail, stepPassword, step2FA, stepUnlink].filter(Boolean).length} / 5</strong></span>
                   <a
                     href="https://my.konami.net"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-amber-400 hover:text-amber-300 font-semibold"
+                    className="text-[#B45309] hover:text-[#92400E] font-semibold"
                   >
                     Open official my.konami.net ↗
                   </a>
@@ -582,7 +582,7 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
               </div>
 
               {releaseError && (
-                <div className="p-3 rounded-lg bg-rose-950/60 border border-rose-800 text-rose-300 text-xs flex items-center gap-2">
+                <div className="p-3 rounded-lg bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs flex items-center gap-2">
                   <ShieldAlert className="w-4 h-4 shrink-0" />
                   <span>{releaseError}</span>
                 </div>
@@ -615,12 +615,12 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
             </div>
           ) : (
             <div className="space-y-4 pt-1">
-              <div className="p-4 rounded-xl bg-amber-950/30 border border-amber-800/50 text-xs text-amber-200 space-y-2">
-                <span className="font-bold text-amber-300 block text-sm">⚡ Action Needed in Order Chat:</span>
+              <div className="p-4 rounded-xl bg-[#FEF3C7] border border-[#FDE68A] text-xs text-[#92400E] space-y-2">
+                <span className="font-bold text-[#92400E] block text-sm">⚡ Action Needed in Order Chat:</span>
                 <p>
                   The buyer is currently attempting login and updating the Konami account. Please stay active in the <strong>Order Chat</strong> below to send the <strong>2-Step OTP codes</strong> when prompted!
                 </p>
-                <p className="text-[11px] text-amber-300/80">
+                <p className="text-[11px] text-[#92400E]/80">
                   Once the buyer finishes binding both their password and email, the escrow funds will be cleared automatically to your Available Balance.
                 </p>
               </div>
@@ -644,29 +644,29 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
       {currentStatus === "completed" && (
         <div className="bg-pitch-surface border border-pitch-border rounded-2xl p-6 space-y-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-emerald-950/60 border border-emerald-800/60 flex items-center justify-center text-emerald-400">
+            <div className="w-10 h-10 rounded-xl bg-[#EBF5F0] border border-[#BFE0CE] flex items-center justify-center text-[#006340]">
               <CheckCircle2 className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-slate-100">Order Completed & Funds Released</h3>
-              <p className="text-xs text-slate-400">Escrow ledger settled successfully.</p>
+              <h3 className="text-base font-bold text-[#0F0F0F]">Order Completed & Funds Released</h3>
+              <p className="text-xs text-[#5F5F5F]">Escrow ledger settled successfully.</p>
             </div>
           </div>
-          <p className="text-xs text-slate-300">
+          <p className="text-xs text-[#3D3D3D]">
             {isBuyer
               ? "Account access confirmed. Enjoy your new eFootball squad!"
               : `Net payout of ${formatCurrency(order.seller_net_amount, order.currency)} has been credited to your available balance.`}
           </p>
 
           {/* Post-Release Dispute Guarantee Box */}
-          <div className="p-4 rounded-xl bg-pitch-card/80 border border-amber-500/30 space-y-3">
+          <div className="p-4 rounded-xl bg-pitch-card/80 border border-[#FDE68A] space-y-3">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
-                <h4 className="text-xs font-bold text-amber-300 flex items-center gap-1.5">
-                  <ShieldAlert className="w-4 h-4 text-amber-400" />
+                <h4 className="text-xs font-bold text-[#92400E] flex items-center gap-1.5">
+                  <ShieldAlert className="w-4 h-4 text-[#B45309]" />
                   <span>Konami Post-Release Security Guarantee</span>
                 </h4>
-                <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
+                <p className="text-[11px] text-[#5F5F5F] mt-1 leading-relaxed">
                   Did the seller attempt to recover the Konami ID? Was an unmentioned Google Play link found, or did the account get banned? You can raise an official post-release dispute at any time.
                 </p>
               </div>
