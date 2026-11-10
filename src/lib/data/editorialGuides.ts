@@ -1,9 +1,36 @@
-import { NewsArticle } from "@/types/database";
+import { NewsArticle, NewsCategory } from "@/types/database";
 
-/**
- * Evergreen, original editorial & tactical reference library for Kenyan eFootball players.
- * Combines pure eFootball 2026 gameplay/mechanics journalism with Konami ID security & M-Pesa escrow guides.
- */
+export function getCategoryLabel(category: NewsCategory | string) {
+  switch (category) {
+    case "scammer_alert":
+      return {
+        label: "Safety Advisory",
+        color: "bg-sx-red-tint border-sx-red-border text-sx-red-text",
+      };
+    case "escrow_guide":
+      return {
+        label: "Verification & Escrow",
+        color: "bg-sx-green-tint border-sx-green-border text-sx-green-text",
+      };
+    case "efootball_news":
+      return {
+        label: "Meta & Tactics",
+        color: "bg-sx-stone border-sx-border-strong text-sx-ink",
+      };
+    case "announcement":
+    case "update":
+      return {
+        label: "Platform Update",
+        color: "bg-sx-amber-tint border-sx-amber-border text-sx-amber-text",
+      };
+    default:
+      return {
+        label: "Editorial Guide",
+        color: "bg-sx-stone border-sx-border text-sx-ink",
+      };
+  }
+}
+
 export const EDITORIAL_GUIDES: NewsArticle[] = [
   {
     id: "guide-team-playstyles-meta-2026",

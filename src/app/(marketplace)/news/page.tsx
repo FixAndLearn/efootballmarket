@@ -29,30 +29,8 @@ export default async function NewsFeedPage() {
   const service = new NewsService(primaryClient);
   const articles = await service.getPublishedArticles();
 
-  const jsonLd = {
-    "@context": "https://schema.org",
-    "@type": "CollectionPage",
-    name: "eFootball 2026 Guides, Tactics & Safety Advisories",
-    url: "https://www.efootballmarket.co.ke/news",
-    description:
-      "Editorial guides covering eFootball 2026 team playstyles, manager proficiency breakpoints, custom player progression, mobile ping optimization, and Konami ID escrow security.",
-    mainEntity: {
-      "@type": "ItemList",
-      itemListElement: articles.slice(0, 20).map((article, idx) => ({
-        "@type": "ListItem",
-        position: idx + 1,
-        url: `https://www.efootballmarket.co.ke/news/${article.slug}`,
-        name: article.title,
-      })),
-    },
-  };
-
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full">
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
       <NewsFeedClient initialArticles={articles} />
     </div>
   );

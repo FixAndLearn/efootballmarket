@@ -61,38 +61,38 @@ export function CredentialsDeliveryForm({ orderId, onDelivered }: CredentialsDel
   return (
     <form onSubmit={handleSubmit} className="bg-pitch-surface border border-pitch-border rounded-2xl p-6 space-y-4">
       <div className="flex items-center gap-3 border-b border-pitch-border/60 pb-4">
-        <div className="w-10 h-10 rounded-xl bg-[#FEF3C7] border border-[#FDE68A] flex items-center justify-center text-[#B45309]">
+        <div className="w-10 h-10 rounded-xl bg-sx-amber-tint border border-sx-amber-border flex items-center justify-center text-sx-amber-text">
           <Lock className="w-5 h-5" />
         </div>
         <div>
-          <h3 className="text-base font-bold text-[#0F0F0F]">Deliver Account Credentials</h3>
-          <p className="text-xs text-[#5F5F5F]">
+          <h3 className="text-base font-bold text-sx-ink">Deliver Account Credentials</h3>
+          <p className="text-xs text-sx-muted">
             Credentials are encrypted with AES-256-GCM before entering the database.
           </p>
         </div>
       </div>
 
       {error && (
-        <div className="p-3 rounded-lg bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs flex items-center gap-2">
+        <div className="p-3 rounded-lg bg-sx-red-tint border border-sx-red-border text-sx-red-text text-xs flex items-center gap-2">
           <ShieldAlert className="w-4 h-4 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {success && (
-        <div className="p-3 rounded-lg bg-[#EBF5F0] border border-[#BFE0CE] text-[#006340] text-xs flex items-center gap-2">
+        <div className="p-3 rounded-lg bg-sx-green-tint border border-sx-green-border text-sx-green-text text-xs flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 shrink-0" />
           <span>Credentials encrypted & saved successfully! Updating order status...</span>
         </div>
       )}
 
       {/* Strict Anti-Googling Alert */}
-      <div className="p-3.5 rounded-xl bg-[#FEE2E2] border border-[#FECACA] text-xs text-[#B91C1C] space-y-1.5">
-        <div className="flex items-center gap-1.5 font-bold text-[#B91C1C]">
-          <AlertTriangle className="w-4 h-4 text-[#C92A2A] shrink-0" />
+      <div className="p-3.5 rounded-xl bg-sx-red-tint border border-sx-red-border text-xs text-sx-red-text space-y-1.5">
+        <div className="flex items-center gap-1.5 font-bold text-sx-red-text">
+          <AlertTriangle className="w-4 h-4 text-sx-red-text shrink-0" />
           <span>STRICT SELLER POLICY: Never Deliver a Google-Linked Account</span>
         </div>
-        <p className="text-[11px] text-[#3D3D3D] leading-relaxed">
+        <p className="text-[11px] text-sx-ink-soft leading-relaxed">
           eFootball accounts linked to Google Play Games cannot be transferred cleanly and permit account pull-backs. Delivering an account with Google Play linked will trigger an instant buyer dispute, freezing of your payout, and permanent seller suspension.
         </p>
       </div>
@@ -125,7 +125,7 @@ export function CredentialsDeliveryForm({ orderId, onDelivered }: CredentialsDel
       />
 
       <div className="space-y-1.5">
-        <label className="block text-xs font-medium text-[#3D3D3D]">
+        <label className="block text-xs font-medium text-sx-ink-soft">
           Special Transfer Instructions (Optional)
         </label>
         <textarea
@@ -133,13 +133,13 @@ export function CredentialsDeliveryForm({ orderId, onDelivered }: CredentialsDel
           value={instructions}
           onChange={(e) => setInstructions(e.target.value)}
           placeholder="e.g. Please log in on Android/iOS, check Link Data, and bind your own email in Konami settings."
-          className="w-full rounded-lg bg-pitch-card border border-pitch-border p-3 text-xs text-[#0F0F0F] placeholder:text-[#767676] focus:outline-none focus:border-brand-500"
+          className="w-full rounded-lg bg-pitch-card border border-pitch-border p-3 text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-brand-500"
         />
       </div>
 
       {/* Certification Checkbox */}
       <div className="p-3.5 rounded-xl bg-pitch-card border border-pitch-border space-y-2">
-        <label className="flex items-start gap-2.5 cursor-pointer text-[#1F1F1F] select-none">
+        <label className="flex items-start gap-2.5 cursor-pointer text-sx-ink-soft select-none">
           <input
             type="checkbox"
             checked={certifyNoGoogleLink}
@@ -147,23 +147,23 @@ export function CredentialsDeliveryForm({ orderId, onDelivered }: CredentialsDel
             className="mt-0.5 w-4 h-4 rounded border-pitch-border text-brand-500 focus:ring-brand-500/20"
             required
           />
-          <span className="text-xs text-[#1F1F1F] font-medium leading-relaxed">
+          <span className="text-xs text-sx-ink-soft font-medium leading-relaxed">
             I certify under penalty of permanent ban and escrow fund forfeiture that this account is <strong>NOT linked to Google Play Games (&quot;Googling&quot;)</strong>. Handover is purely Konami ID linked without active Google links.
           </span>
         </label>
       </div>
 
       {/* Konami Publisher Notice */}
-      <div className="p-3.5 rounded-xl bg-[#F9F9F8] border border-[#C8C8C4] text-xs text-[#3D3D3D]">
+      <div className="p-3.5 rounded-xl bg-sx-subtle border border-sx-border-strong text-xs text-sx-ink-soft">
         <div className="flex items-start gap-2">
-          <AlertCircle className="w-4 h-4 text-[#B45309] shrink-0 mt-0.5" />
+          <AlertCircle className="w-4 h-4 text-sx-amber-text shrink-0 mt-0.5" />
           <p className="text-[11px] leading-relaxed">
             Konami’s current rules prohibit selling or transferring eFootball accounts and sharing account IDs or passwords. Trading may result in loss of account access or support.{" "}
             <a
               href="https://www.konami.com/efootball/en-us/topic/news/5174"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-[#B45309] hover:text-[#92400E] underline font-medium"
+              className="text-sx-amber-text hover:text-sx-amber-text underline font-medium"
             >
               Read Konami’s official notice
             </a>.

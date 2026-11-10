@@ -34,7 +34,11 @@ const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://www.efootballmarket.
 const DEFAULT_ADSENSE_CLIENT_ID = "ca-pub-5924764989915276";
 
 export const viewport: Viewport = {
-  themeColor: "#FFFFFF",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#FFFFFF" },
+    { media: "(prefers-color-scheme: dark)", color: "#0E1014" },
+  ],
+  colorScheme: "light dark",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -47,7 +51,7 @@ export const metadata: Metadata = {
     template: "%s | eFootballMarket",
   },
   description:
-    "In-depth eFootball tactical guides, player progression builds, and verified Konami ID marketplace in Kenya with Safaricom M-Pesa Till 1572931 buyer protection.",
+    "eFootball tactical guides, player progression builds, and verified Konami ID marketplace in Kenya with Safaricom M-Pesa Till 1572931 buyer protection.",
   keywords: [
     "eFootball guides Kenya",
     "eFootball player builds",
@@ -137,36 +141,13 @@ export default function RootLayout({
     process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || DEFAULT_ADSENSE_CLIENT_ID;
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
-  const organizationJsonLd = {
-    "@context": "https://schema.org",
-    "@type": "Organization",
-    name: "eFootballMarket",
-    url: APP_URL,
-    logo: `${APP_URL}/icon-512.png`,
-    description:
-      "Kenyan eFootball tactical publication, security resource, and M-Pesa escrow marketplace.",
-    address: {
-      "@type": "PostalAddress",
-      addressLocality: "Nairobi",
-      addressCountry: "KE",
-    },
-    contactPoint: {
-      "@type": "ContactPoint",
-      telephone: "+254-794-400-365",
-      email: "support@efootballmarket.co.ke",
-      contactType: "customer support",
-      areaServed: "KE",
-      availableLanguage: ["English", "Swahili"],
-    },
-  };
-
   return (
     <html
       lang="en"
-      className={`dark ${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
+      className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
     >
       <head>
-        {/* Google Consent Mode v2 Bootstrap (must run before Google tags) */}
+        {/* Google Consent Mode v2 Bootstrap */}
         <script
           id="google-consent-mode"
           dangerouslySetInnerHTML={{
@@ -195,10 +176,6 @@ export default function RootLayout({
             `,
           }}
         />
-        <script
-          type="application/ld+json"
-          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd) }}
-        />
         {gaId && (
           <>
             <Script
@@ -220,7 +197,7 @@ export default function RootLayout({
           </>
         )}
       </head>
-      <body className="font-sans antialiased flex flex-col min-h-screen bg-white text-[#0F0F0F] selection:bg-[#006340] selection:text-white">
+      <body className="font-sans antialiased flex flex-col min-h-screen bg-sx-canvas text-sx-ink selection:bg-sx-green selection:text-white">
         <LanguageProvider>
           <Header />
           <main className="flex-1 flex flex-col pb-20 md:pb-0">{children}</main>

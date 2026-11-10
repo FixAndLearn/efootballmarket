@@ -40,7 +40,7 @@ export function HomeFaqAccordion() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
   return (
-    <div className="divide-y divide-[#E2E2E0] border-t border-b border-[#E2E2E0] bg-white">
+    <div className="divide-y divide-sx-border border-t border-b border-sx-border bg-sx-canvas">
       {FAQS.map((faq, idx) => {
         const isOpen = openIndex === idx;
         return (
@@ -48,21 +48,21 @@ export function HomeFaqAccordion() {
             <button
               type="button"
               onClick={() => setOpenIndex(isOpen ? null : idx)}
-              className="w-full text-left py-4 flex items-center justify-between gap-4 hover:text-[#006340] transition-colors focus:outline-none cursor-pointer"
+              className="w-full text-left py-4 flex items-center justify-between gap-4 hover:text-sx-green-text transition-colors focus:outline-none cursor-pointer"
               aria-expanded={isOpen}
             >
-              <span className="text-sm sm:text-[15px] font-semibold text-[#0F0F0F]">
+              <span className="text-sm sm:text-[15px] font-semibold text-sx-ink">
                 {faq.question}
               </span>
               <ChevronDown
-                className={`w-4 h-4 text-[#5F5F5F] shrink-0 transition-transform duration-150 ${
-                  isOpen ? "rotate-180 text-[#006340]" : ""
+                className={`w-4 h-4 text-sx-muted shrink-0 transition-transform duration-150 ${
+                  isOpen ? "rotate-180 text-sx-green-text" : ""
                 }`}
               />
             </button>
 
             {isOpen && (
-              <div className="pb-4 text-xs sm:text-sm text-[#5F5F5F] leading-relaxed">
+              <div className="pb-4 text-xs sm:text-sm text-sx-muted leading-relaxed">
                 {faq.answer}
               </div>
             )}

@@ -66,15 +66,15 @@ export async function POST(req: NextRequest) {
     // Automated 24/7 Bot Assistant responses
     if (trimmedText === "HI" || trimmedText === "HELLO" || trimmedText === "MENU" || trimmedText === "HELP" || trimmedText === "START") {
       const menu =
-        `⚽ *Welcome to eFootballMarket Kenya!*\n\n` +
-        `🛡️ Escrow-Protected trading for Konami IDs, Coins & Squads.\n\n` +
+        `*Welcome to eFootballMarket Kenya!*\n\n` +
+        `Escrow-Protected trading for Konami IDs, Coins & Squads.\n\n` +
         `*Quick Commands (Reply with a number):*\n` +
-        `*1* ➔ Verify M-Pesa Till 1572931\n` +
-        `*2* ➔ How Escrow Protection Works\n` +
-        `*3* ➔ Check Order Status\n` +
-        `*4* ➔ Bring-Your-Own-Deal Middleman\n` +
-        `*5* ➔ Speak with CEO Brian Okibo\n\n` +
-        `🔗 *Browse Squads:* https://www.efootballmarket.co.ke`;
+        `*1* Verify M-Pesa Till 1572931\n` +
+        `*2* How Escrow Protection Works\n` +
+        `*3* Check Order Status\n` +
+        `*4* Bring-Your-Own-Deal Middleman\n` +
+        `*5* Speak with Support Desk\n\n` +
+        `*Browse Squads:* https://www.efootballmarket.co.ke`;
 
       await sendWhatsAppMessage({ toPhone: cleanSender, message: menu });
       return NextResponse.json({ status: "replied_menu" });
@@ -82,11 +82,11 @@ export async function POST(req: NextRequest) {
 
     if (trimmedText === "1" || trimmedText.includes("TILL")) {
       const tillInfo =
-        `🟢 *OFFICIAL SAFARICOM M-PESA PAYMENT DETAILS*\n\n` +
-        `🏪 *Store Name:* EFootballMarket\n` +
-        `🏷️ *Buy Goods Till Number:* *1572931*\n` +
-        `👤 *Escrow Officer:* Brian Okibo (+254 794 400 365)\n\n` +
-        `⚠️ *Safety Warning:* Never send funds directly to an individual's phone number. All protected trades must go to Till *1572931* so escrow can lock the funds safely.`;
+        `*OFFICIAL SAFARICOM M-PESA PAYMENT DETAILS*\n\n` +
+        `*Store Name:* EFootballMarket\n` +
+        `*Buy Goods Till Number:* *1572931*\n` +
+        `*Escrow Officer:* Brian Okibo (+254 794 400 365)\n\n` +
+        `*Safety Warning:* Never send funds directly to an individual's phone number. All protected trades must go to Till *1572931* so escrow can lock the funds safely.`;
 
       await sendWhatsAppMessage({ toPhone: cleanSender, message: tillInfo });
       return NextResponse.json({ status: "replied_till" });
@@ -94,12 +94,12 @@ export async function POST(req: NextRequest) {
 
     if (trimmedText === "2" || trimmedText.includes("ESCROW")) {
       const escrowInfo =
-        `🛡️ *HOW EFOOTBALLMARKET ESCROW WORKS*\n\n` +
-        `1️⃣ Buyer pays via Till *1572931*.\n` +
-        `2️⃣ Funds are locked in our escrow vault — the seller is NOT paid yet.\n` +
-        `3️⃣ Seller delivers the Konami ID & password into our encrypted portal.\n` +
-        `4️⃣ Buyer verifies players, coins, and changes the email/password.\n` +
-        `5️⃣ Only when the buyer confirms satisfaction are funds released to the seller.\n\n` +
+        `*HOW EFOOTBALLMARKET ESCROW WORKS*\n\n` +
+        `1⃣ Buyer pays via Till *1572931*.\n` +
+        `2⃣ Funds are locked in our escrow vault — the seller is NOT paid yet.\n` +
+        `3⃣ Seller delivers the Konami ID & password into our encrypted portal.\n` +
+        `4⃣ Buyer verifies players, coins, and changes the email/password.\n` +
+        `5⃣ Only when the buyer confirms satisfaction are funds released to the seller.\n\n` +
         `_Verified trades. 24-hour buyer inspection protection._`;
 
       await sendWhatsAppMessage({ toPhone: cleanSender, message: escrowInfo });
@@ -120,16 +120,16 @@ export async function POST(req: NextRequest) {
 
       if (order) {
         const orderReply =
-          `📦 *ORDER #${order.order_number} STATUS*\n\n` +
-          `🎮 *Squad:* ${(order.listing as any)?.title || "Account"}\n` +
-          `💵 *Amount:* KES ${Number(order.total_amount).toLocaleString()}\n` +
-          `🛡️ *Status:* *${order.status.toUpperCase().replace(/_/g, " ")}*\n\n` +
-          `👉 *View Order Portal:* https://www.efootballmarket.co.ke/orders/${order.order_number}`;
+          `*ORDER #${order.order_number} STATUS*\n\n` +
+          `*Squad:* ${(order.listing as any)?.title || "Account"}\n` +
+          `*Amount:* KES ${Number(order.total_amount).toLocaleString()}\n` +
+          `*Status:* *${order.status.toUpperCase().replace(/_/g, " ")}*\n\n` +
+          `*View Order Portal:* https://www.efootballmarket.co.ke/orders/${order.order_number}`;
 
         await sendWhatsAppMessage({ toPhone: cleanSender, message: orderReply });
       } else {
         const notFoundReply =
-          `🔍 Order *"${orderRef}"* not found.\n\n` +
+          `Order *"${orderRef}"* not found.\n\n` +
           `Please provide your full order number (e.g. *EFM-XXXX-123*). You can find this on your email receipt or order page.`;
 
         await sendWhatsAppMessage({ toPhone: cleanSender, message: notFoundReply });
@@ -139,7 +139,7 @@ export async function POST(req: NextRequest) {
 
     if (trimmedText === "4" || trimmedText.includes("MIDDLEMAN")) {
       const middlemanInfo =
-        `🤝 *BRING-YOUR-OWN-DEAL (BYOD) MIDDLEMAN*\n\n` +
+        `*BRING-YOUR-OWN-DEAL (BYOD) MIDDLEMAN*\n\n` +
         `Found a trader on Facebook or WhatsApp? Stop arguing about who sends first!\n\n` +
         `1. Create a safe escrow contract in 30 seconds at:\n` +
         `https://www.efootballmarket.co.ke/middleman\n` +
@@ -153,7 +153,7 @@ export async function POST(req: NextRequest) {
 
     if (trimmedText === "5" || trimmedText.includes("AGENT") || trimmedText.includes("BRIAN")) {
       const agentReply =
-        `👤 *CONNECTING TO BRIAN OKIBO (CEO)*\n\n` +
+        `*CONNECTING TO SUPPORT DESK*\n\n` +
         `Your message has been escalated to Brian Okibo (+254 794 400 365).\n` +
         `You can also reach him directly on WhatsApp: https://wa.me/254794400365\n\n` +
         `An officer will get back to you shortly. Thank you!`;
@@ -173,9 +173,9 @@ export async function POST(req: NextRequest) {
 
     // Default friendly fallback
     const fallback =
-      `👋 Thank you for contacting *eFootballMarket*!\n\n` +
+      `Thank you for contacting *eFootballMarket*!\n\n` +
       `We received your message: _"${text}"_\n\n` +
-      `Reply with *MENU* to see options or *5* to chat with CEO Brian Okibo (+254 794 400 365).\n\n` +
+      `Reply with *MENU* to see options or *5* to message Support (+254 794 400 365).\n\n` +
       `Official Website: https://www.efootballmarket.co.ke`;
 
     await sendWhatsAppMessage({ toPhone: cleanSender, message: fallback });

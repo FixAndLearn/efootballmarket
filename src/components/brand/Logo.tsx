@@ -31,10 +31,9 @@ export function Logo({
 
   const content = (
     <div className={cn("inline-flex items-center gap-2 group select-none shrink-0", className)}>
-      {/* StockX-inspired Verified X-Check Emblem */}
       <div
         className={cn(
-          "relative flex items-center justify-center rounded-full bg-[#006340] text-white transition-transform group-hover:scale-105",
+          "relative flex items-center justify-center rounded-full bg-sx-green text-white transition-transform group-hover:scale-105",
           badgeSizes[size]
         )}
       >
@@ -59,13 +58,13 @@ export function Logo({
         <div className="flex items-baseline gap-1 leading-none">
           <span
             className={cn(
-              "font-display font-extrabold tracking-[-0.045em] text-[#0F0F0F]",
+              "font-display font-extrabold tracking-[-0.045em] text-sx-ink",
               textSizes[size]
             )}
           >
-            eFootball<span className="text-[#006340]">X</span>
+            eFootball<span className="text-sx-green-text">X</span>
           </span>
-          <span className="hidden sm:inline-block text-[10px] font-bold tracking-wider uppercase text-[#5F5F5F] ml-0.5">
+          <span className="hidden sm:inline-block text-[10px] font-bold tracking-wider uppercase text-sx-muted ml-0.5">
             Market
           </span>
         </div>

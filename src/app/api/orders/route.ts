@@ -99,7 +99,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Dispatch automated WhatsApp alert to CEO Brian Okibo (0794400365)
+    // Dispatch automated WhatsApp alert to admin support desk
     dispatchAdminWhatsAppAlert({
       eventType: "NEW_ORDER_CREATED",
       orderId: order.id,

@@ -186,7 +186,7 @@ export class PaymentService {
         });
       }
 
-      // Dispatch instant alert to CEO Brian Okibo (0794400365)
+      // Dispatch instant alert to admin support desk
       dispatchAdminOrderAlert({
         orderId: payment.order_id || paymentId,
         orderNumber: payment.order?.order_number || `ORD-${paymentId.slice(0, 8)}`,

@@ -103,7 +103,7 @@ export async function PATCH(req: NextRequest) {
       await primaryClient.from("notifications").insert({
         recipient_id: listing.seller_id,
         type: "listing_moderated",
-        title: "⚠️ Listing Brought Down by Administration",
+        title: "Listing Brought Down by Administration",
         message:
           reason ||
           `Your squad listing "${listing.title}" was brought down for non-conformance with platform rules. Please review guidelines.`,
@@ -123,7 +123,7 @@ export async function PATCH(req: NextRequest) {
       await primaryClient.from("notifications").insert({
         recipient_id: listing.seller_id,
         type: "listing_reinstated",
-        title: "✅ Listing Restored to Marketplace",
+        title: "Listing Restored to Marketplace",
         message: `Your squad listing "${listing.title}" has been approved and reinstated to the active browse catalog.`,
         action_url: `/listings/${listing.id}`,
         is_read: false,

@@ -16,13 +16,13 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
     return (
       <div className="w-full space-y-1.5">
         {label && (
-          <label htmlFor={inputId} className="block text-xs font-semibold text-[#0F0F0F]">
+          <label htmlFor={inputId} className="block text-xs font-semibold text-sx-ink">
             {label}
           </label>
         )}
         <div className="relative rounded-md">
           {leftIcon && (
-            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-[#5F5F5F]">
+            <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-sx-muted">
               {leftIcon}
             </div>
           )}
@@ -30,22 +30,22 @@ export const Input = forwardRef<HTMLInputElement, InputProps>(
             id={inputId}
             ref={ref}
             className={cn(
-              "w-full rounded-md bg-white border border-[#C8C8C4] px-3.5 py-2.5 text-sm text-[#0F0F0F] placeholder:text-[#767676] transition-colors focus:border-[#0F0F0F] focus:outline-none focus:ring-1 focus:ring-[#0F0F0F] disabled:opacity-50",
+              "w-full rounded-md bg-sx-canvas border border-sx-border-strong px-3.5 py-2.5 text-sm text-sx-ink placeholder:text-sx-muted transition-colors focus:border-sx-ink focus:outline-none focus:ring-1 focus:ring-sx-ink disabled:opacity-50",
               leftIcon && "pl-9",
               rightIcon && "pr-9",
-              error && "border-[#C92A2A] focus:border-[#C92A2A] focus:ring-[#C92A2A]",
+              error && "border-sx-red focus:border-sx-red focus:ring-sx-red",
               className
             )}
             {...props}
           />
           {rightIcon && (
-            <div className="absolute inset-y-0 right-0 pr-3 flex items-center text-[#5F5F5F]">
+            <div className="absolute inset-y-0 right-0 pr-3 flex items-center text-sx-muted">
               {rightIcon}
             </div>
           )}
         </div>
-        {error && <p className="text-xs text-[#C92A2A] font-medium">{error}</p>}
-        {helperText && !error && <p className="text-xs text-[#5F5F5F]">{helperText}</p>}
+        {error && <p className="text-xs text-sx-red-text font-medium">{error}</p>}
+        {helperText && !error && <p className="text-xs text-sx-muted">{helperText}</p>}
       </div>
     );
   }

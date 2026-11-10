@@ -146,7 +146,7 @@ export async function PATCH(req: NextRequest) {
       await primaryClient.from("notifications").insert({
         recipient_id: targetUserId,
         type: "admin_role_granted",
-        title: "🛡️ Administrator Privileges Granted",
+        title: "Administrator Privileges Granted",
         message: "You have been granted platform administrator privileges by Brian Okibo, Super Admin.",
         action_url: "/admin",
         is_read: false,
@@ -189,7 +189,7 @@ export async function PATCH(req: NextRequest) {
       await primaryClient.from("notifications").insert({
         recipient_id: targetUserId,
         type: "account_suspended",
-        title: "⛔ Account Suspended for Rule Violation",
+        title: "Account Suspended for Rule Violation",
         message: reason || "Your account has been suspended by administration for violating marketplace rules.",
         action_url: "/dispute-policy",
         is_read: false,
@@ -207,7 +207,7 @@ export async function PATCH(req: NextRequest) {
       await primaryClient.from("notifications").insert({
         recipient_id: targetUserId,
         type: "account_reinstated",
-        title: "✅ Account Reinstated",
+        title: "Account Reinstated",
         message: "Your account suspension has been lifted by administration.",
         action_url: "/dashboard/buyer",
         is_read: false,

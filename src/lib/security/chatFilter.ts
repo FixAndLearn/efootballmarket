@@ -86,7 +86,7 @@ export function detectProhibitedOffPlatformContent(rawContent: string): FilterRe
         reason: "Detected WhatsApp solicitation or contact handle",
         matchedCategory: "whatsapp",
         userWarningMessage:
-          "⚠️ Prohibited: Sharing or requesting WhatsApp contact is strictly forbidden. For your financial safety, all conversations, orders, and deliveries must stay within eFootballMarket's automated M-Pesa escrow. Moving off-platform voids your buyer/seller guarantee and will lead to account suspension.",
+          "Prohibited: Sharing or requesting WhatsApp contact is strictly forbidden. For your financial safety, all conversations, orders, and deliveries must stay within eFootballMarket's automated M-Pesa escrow. Moving off-platform voids your buyer/seller guarantee and will lead to account suspension.",
       };
     }
   }
@@ -97,7 +97,7 @@ export function detectProhibitedOffPlatformContent(rawContent: string): FilterRe
       reason: "Detected obfuscated WhatsApp keyword",
       matchedCategory: "whatsapp",
       userWarningMessage:
-        "⚠️ Prohibited: Sharing or requesting WhatsApp contact is strictly forbidden. Communications must remain in our protected escrow messaging center.",
+        "Prohibited: Sharing or requesting WhatsApp contact is strictly forbidden. Communications must remain in our protected escrow messaging center.",
     };
   }
 
@@ -109,7 +109,7 @@ export function detectProhibitedOffPlatformContent(rawContent: string): FilterRe
         reason: "Detected Telegram handle or link",
         matchedCategory: "telegram",
         userWarningMessage:
-          "⚠️ Prohibited: Sharing or requesting Telegram contact is strictly forbidden. All negotiations and account transfers must remain inside eFootballMarket to protect your funds in escrow.",
+          "Prohibited: Sharing or requesting Telegram contact is strictly forbidden. All negotiations and account transfers must remain inside eFootballMarket to protect your funds in escrow.",
       };
     }
   }
@@ -120,7 +120,7 @@ export function detectProhibitedOffPlatformContent(rawContent: string): FilterRe
       reason: "Detected obfuscated Telegram keyword",
       matchedCategory: "telegram",
       userWarningMessage:
-        "⚠️ Prohibited: Sharing Telegram details is strictly forbidden. Moving off-platform is a primary vector for account theft.",
+        "Prohibited: Sharing Telegram details is strictly forbidden. Moving off-platform is a primary vector for account theft.",
     };
   }
 
@@ -132,7 +132,7 @@ export function detectProhibitedOffPlatformContent(rawContent: string): FilterRe
         reason: "Detected external hyperlink or unauthorized URL",
         matchedCategory: "url",
         userWarningMessage:
-          "⚠️ Prohibited: Sharing external website links or phishing URLs is strictly blocked. To keep all traders secure from phishing and credential snatching, links outside eFootballMarket are deleted directly.",
+          "Prohibited: Sharing external website links or phishing URLs is strictly blocked. To keep all traders secure from phishing and credential snatching, links outside eFootballMarket are deleted directly.",
       };
     }
   }
@@ -145,7 +145,7 @@ export function detectProhibitedOffPlatformContent(rawContent: string): FilterRe
         reason: "Detected personal phone number exchange",
         matchedCategory: "phone_number",
         userWarningMessage:
-          "⚠️ Prohibited: Sharing direct phone numbers is blocked. Transactions must proceed via automated M-Pesa STK Push inside the escrow vault without off-platform contact.",
+          "Prohibited: Sharing direct phone numbers is blocked. Transactions must proceed via automated M-Pesa STK Push inside the escrow vault without off-platform contact.",
       };
     }
   }
@@ -158,7 +158,7 @@ export function detectProhibitedOffPlatformContent(rawContent: string): FilterRe
         reason: "Detected solicitation for off-platform contact",
         matchedCategory: "off_platform",
         userWarningMessage:
-          "⚠️ Prohibited: Soliciting off-platform contacts or phone numbers is strictly forbidden. All negotiations and escrow transactions must remain inside eFootballMarket.",
+          "Prohibited: Soliciting off-platform contacts or phone numbers is strictly forbidden. All negotiations and escrow transactions must remain inside eFootballMarket.",
       };
     }
   }
@@ -171,7 +171,7 @@ export function detectProhibitedOffPlatformContent(rawContent: string): FilterRe
         reason: "Detected off-platform contact channel or raw email",
         matchedCategory: "off_platform",
         userWarningMessage:
-          "⚠️ Prohibited: Sharing external social media accounts or off-platform contact details is forbidden. All order support and credential delivery take place right here.",
+          "Prohibited: Sharing external social media accounts or off-platform contact details is forbidden. All order support and credential delivery take place right here.",
       };
     }
   }

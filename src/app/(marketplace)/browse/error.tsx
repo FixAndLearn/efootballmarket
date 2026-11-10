@@ -18,14 +18,14 @@ export default function BrowseError({
 
   return (
     <div className="max-w-2xl mx-auto px-4 py-16 text-center">
-      <div className="w-16 h-16 rounded-2xl bg-[#FEE2E2] border border-[#FECACA] flex items-center justify-center text-[#C92A2A] mx-auto mb-6 shadow-inner">
+      <div className="w-16 h-16 rounded-2xl bg-sx-red-tint border border-sx-red-border flex items-center justify-center text-sx-red-text mx-auto mb-6 shadow-inner">
         <AlertCircle className="w-8 h-8" />
       </div>
 
-      <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0F0F0F] font-display mb-2">
+      <h2 className="text-2xl sm:text-3xl font-extrabold text-sx-ink font-display mb-2">
         Unable to Load Listings
       </h2>
-      <p className="text-sm text-[#5F5F5F] mb-6 max-w-md mx-auto leading-relaxed">
+      <p className="text-sm text-sx-muted mb-6 max-w-md mx-auto leading-relaxed">
         A temporary connection glitch prevented us from retrieving marketplace accounts. Your account data and active escrow orders remain completely secure.
       </p>
 
@@ -50,11 +50,11 @@ export default function BrowseError({
       {/* Wanted Board Fallback */}
       <div className="p-5 rounded-2xl bg-pitch-card/80 border border-pitch-border text-left flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
         <div>
-          <div className="flex items-center gap-1.5 text-xs font-bold text-[#92400E] mb-1">
-            <Sparkles className="w-3.5 h-3.5 text-[#B45309]" />
+          <div className="flex items-center gap-1.5 text-xs font-bold text-sx-amber-text mb-1">
+            <Sparkles className="w-3.5 h-3.5 text-sx-amber-text" />
             <span>Looking for specific players?</span>
           </div>
-          <p className="text-xs text-[#5F5F5F] leading-normal">
+          <p className="text-xs text-sx-muted leading-normal">
             Post what squad or Epics you need on our Wanted Board and verified sellers will bring options directly to you.
           </p>
         </div>

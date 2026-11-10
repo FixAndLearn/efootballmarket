@@ -109,7 +109,7 @@ export async function POST(req: NextRequest) {
         await client.from("messages").insert({
           conversation_id: conv.id,
           sender_id: user.id,
-          message_text: `📷 [Dispute Evidence Uploaded by ${uploaderRole}]: ${title} - ${evidenceUrl}`,
+          message_text: `[Dispute Evidence Uploaded by ${uploaderRole}]: ${title} - ${evidenceUrl}`,
           message_type: "system",
         });
       }
@@ -126,12 +126,12 @@ export async function POST(req: NextRequest) {
         : rawListing?.title;
 
       const tgMsg =
-        `🚨 <b>NEW EVIDENCE UPLOADED FOR DISPUTE</b>\n\n` +
-        `📦 <b>Order #${order.order_number}</b>: ${listingTitle || "eFootball Squad"}\n` +
-        `👤 <b>Uploader</b>: ${uploaderRole} (${user.id.slice(0, 8)})\n` +
-        `📝 <b>Title</b>: ${title}\n` +
-        `🔗 <b>Evidence URL</b>: ${evidenceUrl}\n\n` +
-        `👉 <a href="${appUrl}/admin?tab=disputes">Open Admin Dispute Locker</a>`;
+        `<b>NEW EVIDENCE UPLOADED FOR DISPUTE</b>\n\n` +
+        `<b>Order #${order.order_number}</b>: ${listingTitle || "eFootball Squad"}\n` +
+        `<b>Uploader</b>: ${uploaderRole} (${user.id.slice(0, 8)})\n` +
+        `<b>Title</b>: ${title}\n` +
+        `<b>Evidence URL</b>: ${evidenceUrl}\n\n` +
+        `<a href="${appUrl}/admin?tab=disputes">Open Admin Dispute Locker</a>`;
 
       await sendTelegramMessage(tgMsg);
     } catch (e) {

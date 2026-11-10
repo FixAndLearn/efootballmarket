@@ -2,13 +2,14 @@ import { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "eFootballMarket - eFootball Account Escrow Marketplace",
+    name: "eFootballMarket — Verified eFootball Marketplace Kenya",
     short_name: "eFootballMarket",
-    description: "Kenya's #1 verified eFootball account trading platform with automated M-Pesa escrow protection.",
+    description:
+      "Verified eFootball account marketplace, Konami ID transfer guides, and M-Pesa Till 1572931 escrow protection in Kenya.",
     start_url: "/",
     display: "standalone",
-    background_color: "#090d16",
-    theme_color: "#090d16",
+    background_color: "#FFFFFF",
+    theme_color: "#006340",
     icons: [
       {
         src: "/icon-192.png",
@@ -21,7 +22,7 @@ export default function manifest(): MetadataRoute.Manifest {
         type: "image/png",
       },
       {
-        src: "/icon.svg",
+        src: "/favicon.svg",
         sizes: "any",
         type: "image/svg+xml",
       },

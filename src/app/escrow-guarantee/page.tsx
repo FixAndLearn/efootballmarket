@@ -1,143 +1,135 @@
-import { Button } from "@/components/ui/Button";
-import { CheckCircle2, Clock, Lock, ShieldCheck, AlertTriangle } from "lucide-react";
+import React from "react";
 import Link from "next/link";
 import { Metadata } from "next";
+import { PolicyPageShell } from "@/components/layout/PolicyPageShell";
 
 export const metadata: Metadata = {
-  title: "How Buyer Protection Works | eFootballMarket Kenya",
+  title: "How M-Pesa Escrow & Clean ID Verification Works | eFootballMarket",
   description:
-    "See how eFootballMarket holds M-Pesa payments on Till 1572931 during a 24-hour inspection window so buyers can verify squads and secure their Konami ID safely.",
+    "Step-by-step guide to Safaricom M-Pesa Till 1572931 escrow custody, the 7-point Clean Konami ID buyer verification checklist, OS coin rules, and Middleman deal protection.",
+  alternates: { canonical: "https://www.efootballmarket.co.ke/escrow-guarantee" },
 };
 
 export default function EscrowGuaranteePage() {
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full space-y-10">
-      <header className="space-y-2 border-b border-[#E2E2E0] pb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-[#0F0F0F] font-display tracking-tight">
-          How M-Pesa Buyer Protection Works
-        </h1>
-        <p className="text-sm text-[#5F5F5F] max-w-2xl leading-relaxed">
-          We hold the buyer&apos;s payment in the middle until the squad is verified in-game and the Konami ID is moved to the buyer&apos;s own email.
+    <PolicyPageShell
+      currentPath="/escrow-guarantee"
+      badge="Escrow & Verification Guide"
+      title="How M-Pesa Escrow & Verification Works"
+      subtitle="Peer-to-peer gaming trades fail in WhatsApp, Telegram, and Facebook groups because one person is forced to go first. eFootballMarket eliminates that risk by holding M-Pesa funds in neutral custody while the buyer verifies Clean Konami ID ownership in-game."
+      summaryPoints={[
+        "Never send M-Pesa directly to a stranger's personal phone number — fund orders exclusively via Safaricom Buy Goods Till 1572931.",
+        "Sellers never see your money until you confirm in-game squad accuracy or 24 uncontested inspection hours pass.",
+        "Buyers never get squad credentials until our server verifies their real Safaricom M-Pesa payment receipt.",
+        "Every buyer should run the 7-Point Clean Konami ID Checklist before clicking Confirm & Release.",
+        "Off-platform deals negotiated on WhatsApp or TikTok can use the exact same escrow protection via /middleman.",
+        "Full refund protection applies if Google Play or Apple ID is still linked or if permanent cards are missing.",
+      ]}
+    >
+      <section className="space-y-3">
+        <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display">
+          1. Why Direct Group-Chat Transfers Lose Money
+        </h2>
+        <p>
+          In unmoderated social-media groups, buyers lose money in two ways: (1) sending M-Pesa to a personal number only to get blocked immediately, or (2) receiving a Konami ID password while the seller secretly leaves their own <strong>Google Play Games</strong> or <strong>Apple Game Center</strong> linked—allowing the seller to log right back in a week later without needing your new password. Meanwhile, honest sellers get tricked by fake edited M-Pesa SMS text apps.
         </p>
-      </header>
+        <p>
+          Our platform solves both halves of the problem simultaneously: server-verified Till `1572931` custody protects the seller from fake SMS receipts, and our 24-hour Clean ID inspection window protects the buyer from hidden recovery links.
+        </p>
+      </section>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <div className="p-5 rounded-xl bg-white border border-[#E2E2E0] space-y-2.5">
-          <div className="flex items-center gap-2 text-[#0F0F0F] font-semibold text-sm">
-            <Lock className="w-4 h-4 text-[#006340]" />
-            <span>1. Payment Held on Till 1572931</span>
-          </div>
-          <p className="text-xs text-[#5F5F5F] leading-relaxed">
-            When you pay via M-Pesa STK push, the money does not go directly to the seller&apos;s phone. It stays held on platform Till 1572931 while the handover takes place.
-          </p>
-        </div>
-
-        <div className="p-5 rounded-xl bg-white border border-[#E2E2E0] space-y-2.5">
-          <div className="flex items-center gap-2 text-[#0F0F0F] font-semibold text-sm">
-            <Clock className="w-4 h-4 text-[#006340]" />
-            <span>2. 24-Hour Inspection Window</span>
-          </div>
-          <p className="text-xs text-[#5F5F5F] leading-relaxed">
-            From the moment the seller submits login details, you have a full 24 hours to sign in on your phone, confirm all players and coin balances match, and update the Konami ID email.
-          </p>
-        </div>
-
-        <div className="p-5 rounded-xl bg-white border border-[#E2E2E0] space-y-2.5">
-          <div className="flex items-center gap-2 text-[#0F0F0F] font-semibold text-sm">
-            <ShieldCheck className="w-4 h-4 text-[#006340]" />
-            <span>3. Clean Konami ID Rule</span>
-          </div>
-          <p className="text-xs text-[#5F5F5F] leading-relaxed">
-            Accounts with Google Play or Apple Game Center still linked are rejected. If you see a linked platform account under Extras &rarr; Support &rarr; Link Data, open a dispute for a full refund.
-          </p>
-        </div>
-
-        <div className="p-5 rounded-xl bg-white border border-[#E2E2E0] space-y-2.5">
-          <div className="flex items-center gap-2 text-[#0F0F0F] font-semibold text-sm">
-            <AlertTriangle className="w-4 h-4 text-[#B45309]" />
-            <span>4. Instant Dispute Freeze</span>
-          </div>
-          <p className="text-xs text-[#5F5F5F] leading-relaxed">
-            Clicking <em>Raise Dispute</em> inside your order page pauses automatic payout immediately so support can review the order chat and screenshots.
-          </p>
-        </div>
-      </div>
-
-      <section className="p-6 rounded-xl bg-white border border-[#E2E2E0] space-y-5">
-        <div>
-          <h2 className="text-lg font-semibold text-[#0F0F0F] font-display">
-            Order Timeline (Start to Finish)
-          </h2>
-          <p className="text-xs text-[#5F5F5F] mt-0.5">
-            Clear deadlines protect both the buyer&apos;s money and the seller&apos;s time.
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs">
-          <div className="p-4 rounded-lg bg-[#F4F3F1] border border-[#DCDCD8] space-y-1">
-            <span className="font-mono font-semibold text-[#006340]">Step 1</span>
-            <strong className="text-[#0F0F0F] block">M-Pesa Deposit</strong>
-            <p className="text-[#5F5F5F] leading-relaxed">
-              Buyer completes STK push to Till 1572931. Listing locks immediately.
-            </p>
-          </div>
-
-          <div className="p-4 rounded-lg bg-[#F4F3F1] border border-[#DCDCD8] space-y-1">
-            <span className="font-mono font-semibold text-[#006340]">Step 2 (&#8804; 12h)</span>
-            <strong className="text-[#0F0F0F] block">Seller Delivers</strong>
-            <p className="text-[#5F5F5F] leading-relaxed">
-              Seller submits encrypted Konami ID login details and helps with email OTP in chat.
-            </p>
-          </div>
-
-          <div className="p-4 rounded-lg bg-[#F4F3F1] border border-[#DCDCD8] space-y-1">
-            <span className="font-mono font-semibold text-[#006340]">Step 3 (24h)</span>
-            <strong className="text-[#0F0F0F] block">Buyer Inspects</strong>
-            <p className="text-[#5F5F5F] leading-relaxed">
-              Buyer checks squad specs in-game, changes Konami email &amp; password, and sets 2FA.
-            </p>
-          </div>
-
-          <div className="p-4 rounded-lg bg-[#F4F3F1] border border-[#DCDCD8] space-y-1">
-            <span className="font-mono font-semibold text-[#006340]">Step 4</span>
-            <strong className="text-[#0F0F0F] block">Seller Paid</strong>
-            <p className="text-[#5F5F5F] leading-relaxed">
-              Buyer confirms delivery (or 24h passes without dispute) and seller receives M-Pesa payout.
-            </p>
-          </div>
+      <section className="space-y-4 pt-6 border-t border-sx-border">
+        <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display">
+          2. The 5-Stage Escrow Lifecycle
+        </h2>
+        <div className="space-y-3">
+          {[
+            {
+              stage: "Stage 1 · Lock Listing & Fund Till 1572931",
+              detail:
+                "Click Buy Now (or accept an Offer) on a listing, or generate a Middleman Deal Code. Pay via automated M-Pesa STK Push or Buy Goods Till 1572931. Once verified by our server callback, the listing locks so nobody else can buy it.",
+            },
+            {
+              stage: "Stage 2 · Encrypted Seller Handover (Within 12 Hours)",
+              detail:
+                "We notify the seller that funds are secured in escrow—without releasing the cash. Within 12 hours, the seller submits the Konami ID email/password into our AES-256-GCM encrypted Order Vault and coordinates in Order Chat to share the 6-digit email-change OTP.",
+            },
+            {
+              stage: "Stage 3 · Data Transfer & In-Game Verification",
+              detail:
+                "Start your screen recorder, launch eFootball, and tap Title Screen -> Data Transfer -> Transfer Data Linked to KONAMI ID (never overwrite from inside Settings -> Link Data!). Check Game Plan, Permanent OVR, Epics, Managers, and Link Data.",
+            },
+            {
+              stage: "Stage 4 · Exclusive Rebinding at my.konami.net",
+              detail:
+                "Log in to my.konami.net, replace the seller's email address with a fresh Gmail address only you control, set a brand-new password, and enable Two-Factor Authentication (2FA) via Google Authenticator.",
+            },
+            {
+              stage: "Stage 5 · Buyer Release or Moderator Arbitration",
+              detail:
+                "Once satisfied, click Confirm & Release so net proceeds disburse to the seller's M-Pesa number. If anything does not match the listing, click Open Dispute within the 24-hour window to freeze funds for moderator review.",
+            },
+          ].map((item) => (
+            <div
+              key={item.stage}
+              className="p-4 rounded-lg bg-sx-stone border border-sx-border space-y-1"
+            >
+              <h3 className="text-sm font-bold text-sx-ink font-display">
+                {item.stage}
+              </h3>
+              <p className="text-xs sm:text-[13px] text-sx-ink-soft leading-relaxed">
+                {item.detail}
+              </p>
+            </div>
+          ))}
         </div>
       </section>
 
-      <section className="p-6 rounded-xl bg-white border border-[#E2E2E0] space-y-4">
-        <h2 className="text-base font-semibold text-[#0F0F0F]">Buyer Checklist Before Releasing Funds</h2>
-        <ul className="space-y-2 text-xs sm:text-sm text-[#3D3D3D]">
-          <li className="flex items-start gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-[#006340] shrink-0 mt-0.5" />
-            <span>Sign into eFootball from the <strong>Title Screen &rarr; Data Transfer</strong> menu (never overwrite from inside Extras).</span>
+      <section className="space-y-3 pt-6 border-t border-sx-border">
+        <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display">
+          3. Buyer&apos;s Mandatory 7-Point Verification Checklist
+        </h2>
+        <p>Before you click <strong>Confirm &amp; Release</strong> on any order, check all seven items below:</p>
+        <ol className="list-decimal pl-5 space-y-2">
+          <li><strong>Link Data Screen (`Extras &rarr; Support &rarr; Link Data`):</strong> Confirm <em>KONAMI ID: Linked</em> AND both <em>Google Play: Not Linked</em> and <em>Apple ID: Not Linked</em>.</li>
+          <li><strong>Permanent Collective Strength:</strong> Open <em>Game Plan</em>, remove any temporary <em>My League</em> loan cards, and verify permanent Team Strength matches the listing.</li>
+          <li><strong>Epic, Big Time &amp; Show Time Roster:</strong> Filter <em>My Team &rarr; Players</em> by card type to confirm every advertised legend/booster card is present and unlocked.</li>
+          <li><strong>Booster Managers:</strong> Check <em>My Team &rarr; Managers</em> to confirm advertised 88-proficiency managers are permanently owned.</li>
+          <li><strong>Remaining Monthly Data Transfers:</strong> Verify on the Data Transfer prompt that you were not handed an account on its `10/10` monthly transfer lockout.</li>
+          <li><strong>Exclusive Email Ownership (`my.konami.net`):</strong> Confirm your own email address is now listed under Personal Information on `my.konami.net` and the seller&apos;s old email is completely removed.</li>
+          <li><strong>Password + 2FA Enabled:</strong> Set a unique password and activate Konami 2-Step Verification so no previous session can authenticate.</li>
+        </ol>
+      </section>
+
+      <section className="space-y-3 pt-6 border-t border-sx-border">
+        <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display">
+          4. Important Platform Mechanics Every Buyer Should Know
+        </h2>
+        <ul className="list-disc pl-5 space-y-2">
+          <li>
+            <strong>Title Screen Data Transfer vs In-Menu Link Data:</strong> Always import a purchased Konami ID from the <strong>Title Screen</strong> (circle menu icon at bottom-right &rarr; <em>Data Transfer</em>). Tapping <em>Extras &rarr; Support &rarr; Link Data</em> while logged into a fresh Lv.1 guest squad can overwrite your Konami ID with the empty squad!
           </li>
-          <li className="flex items-start gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-[#006340] shrink-0 mt-0.5" />
-            <span>Open <strong>Extras &rarr; Support &rarr; Link Data</strong> and confirm Google Play and Game Center both say <em>Not Linked</em>.</span>
+          <li>
+            <strong>Android vs iOS Coin Wallets:</strong> Konami keeps eFootball Coins separate between Google Play (Android) and App Store (iOS). If you buy an Android squad with 2,500 coins and log in on an iPhone, your iPhone will show `0` coins—while the 2,500 coins remain safely stored on Android whenever logged in from an Android device.
           </li>
-          <li className="flex items-start gap-2.5">
-            <CheckCircle2 className="w-4 h-4 text-[#006340] shrink-0 mt-0.5" />
-            <span>Change the Konami ID email address, password, and two-step verification at <code className="text-[#1F1F1F]">my.konami.net</code>.</span>
+          <li>
+            <strong>10 Transfers Per Month Cap:</strong> Avoid reinstalling the game or switching between multiple accounts repeatedly; Konami resets the 10-transfer counter on the 1st of each calendar month (UTC).
           </li>
         </ul>
-
-        <div className="pt-2 flex flex-wrap items-center gap-3">
-          <Link href="/browse">
-            <Button variant="primary" size="md">
-              Browse Available Squads
-            </Button>
-          </Link>
-          <Link href="/middleman">
-            <Button variant="secondary" size="md">
-              Use WhatsApp Middleman
-            </Button>
-          </Link>
-        </div>
       </section>
-    </div>
+
+      <section className="space-y-3 pt-6 border-t border-sx-border">
+        <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display">
+          5. Using Middleman Escrow for Off-Platform Deals
+        </h2>
+        <p>
+          Found a squad on WhatsApp, Telegram, Discord, or TikTok? Either party can open our{" "}
+          <Link href="/middleman" className="text-sx-green-text underline font-semibold">
+            Middleman Escrow Room
+          </Link>
+          , enter the agreed KES price and squad summary, and share the generated Deal Code with the counterparty. You get the exact same Till `1572931` custody, encrypted credential handover, and 24-hour refund protection without having to wait for a full public marketplace listing.
+        </p>
+      </section>
+    </PolicyPageShell>
   );
 }

@@ -23,19 +23,19 @@ export function EarningsWithdrawSection({
     <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-pitch-surface to-pitch-surface border border-emerald-900/40 shadow-xl">
       <div className="space-y-1">
         <div className="flex items-center gap-2 flex-wrap">
-          <span className="text-xs uppercase font-bold text-[#5F5F5F] tracking-wider">
+          <span className="text-xs uppercase font-bold text-sx-muted tracking-wider">
             Withdrawable Available Balance
           </span>
           {escrowBalance > 0 && (
-            <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]">
+            <span className="inline-flex items-center px-2 py-0.5 rounded text-[11px] font-medium bg-sx-amber-tint text-sx-amber-text border border-sx-amber-border">
               {formatCurrency(escrowBalance)} Locked in Escrow
             </span>
           )}
         </div>
-        <div className="text-3xl font-extrabold text-[#006340] font-display font-mono">
+        <div className="text-3xl font-extrabold text-sx-green-text font-display font-mono">
           {formatCurrency(availableBalance)}
         </div>
-        <p className="text-xs text-[#5F5F5F]">
+        <p className="text-xs text-sx-muted">
           Instant disbursement to your registered Safaricom M-Pesa mobile line.
         </p>
       </div>

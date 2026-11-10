@@ -44,12 +44,12 @@ export async function POST(req: NextRequest) {
       }).catch((e) => console.warn("WhatsApp champion alert error:", e));
 
       // 2. Telegram Bot notification
-      const tgMsg = `🏆 <b>eFootball Kenya - TOURNAMENT CHAMPION CROWNED!</b>\n\n` +
-        `⚔️ <b>Tournament:</b> ${tourney.title}\n` +
-        `🥇 <b>Champion:</b> <b>${result.championName}</b>\n` +
-        `💰 <b>1st Place Cash Prize:</b> ${formatCurrency(tourney.first_place_kes, "KES")}\n` +
-        `🥈 <b>2nd Place Cash Prize:</b> ${formatCurrency(tourney.second_place_kes, "KES")}\n\n` +
-        `📲 <b>Action Required:</b> Officer Brian Okibo disburse winnings via Safaricom Till 1572931 / M-Pesa.`;
+      const tgMsg = `<b>eFootball Kenya - TOURNAMENT CHAMPION CROWNED!</b>\n\n` +
+        `<b>Tournament:</b> ${tourney.title}\n` +
+        `<b>Champion:</b> <b>${result.championName}</b>\n` +
+        `<b>1st Place Cash Prize:</b> ${formatCurrency(tourney.first_place_kes, "KES")}\n` +
+        `<b>2nd Place Cash Prize:</b> ${formatCurrency(tourney.second_place_kes, "KES")}\n\n` +
+        `<b>Action Required:</b> Officer Brian Okibo disburse winnings via Safaricom Till 1572931 / M-Pesa.`;
 
       await sendTelegramMessage(tgMsg).catch((e) => console.warn("Telegram alert error:", e));
     }
@@ -60,7 +60,7 @@ export async function POST(req: NextRequest) {
       championName: result.championName,
       tournament: result.tournament,
       message: result.isChampionCrowned
-        ? `🏆 Grand Final complete! ${result.championName} is crowned Tournament Champion!`
+        ? `Grand Final complete! ${result.championName} is crowned Tournament Champion!`
         : `Match result updated! Winner ${winner_name} advances to the next round.`,
     });
   } catch (err: any) {

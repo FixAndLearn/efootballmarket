@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
-export const alt = "eFootballMarket - Institutional eFootball Account Escrow Marketplace";
+export const alt = "eFootballMarket Kenya — Verified eFootball Squads & M-Pesa Escrow";
 export const size = {
   width: 1200,
   height: 630,
@@ -19,175 +19,109 @@ export default async function Image() {
           flexDirection: "column",
           justifyContent: "space-between",
           padding: "70px 80px",
-          backgroundColor: "#090d16",
-          backgroundImage:
-            "radial-gradient(circle at 25% 30%, rgba(37, 99, 235, 0.35) 0%, transparent 60%), radial-gradient(circle at 80% 70%, rgba(217, 119, 6, 0.25) 0%, transparent 50%), radial-gradient(circle at 85% 20%, rgba(5, 150, 105, 0.3) 0%, transparent 50%)",
-          color: "#ffffff",
+          backgroundColor: "#F4F3F1",
+          color: "#0F0F0F",
           fontFamily: "system-ui, sans-serif",
+          border: "16px solid #FFFFFF",
         }}
       >
-        {/* Top Header / Brand */}
-        <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
-          {/* Logo Shield Icon */}
+        <div style={{ display: "flex", alignItems: "center", gap: "18px" }}>
           <div
             style={{
-              width: "68px",
-              height: "68px",
-              borderRadius: "20px",
-              background: "linear-gradient(135deg, #1e3a8a 0%, #2563eb 50%, #0284c7 100%)",
+              width: "56px",
+              height: "56px",
+              borderRadius: "999px",
+              backgroundColor: "#006340",
+              color: "#FFFFFF",
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow: "0 10px 25px rgba(37, 99, 235, 0.4)",
-              border: "2px solid rgba(251, 191, 36, 0.5)",
+              fontSize: "28px",
+              fontWeight: 900,
             }}
           >
-            <div
-              style={{
-                width: "28px",
-                height: "28px",
-                borderRadius: "50%",
-                background: "linear-gradient(135deg, #f59e0b 0%, #fbbf24 100%)",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <div
-                style={{
-                  width: "10px",
-                  height: "10px",
-                  borderRadius: "50%",
-                  backgroundColor: "#ffffff",
-                }}
-              />
-            </div>
+            X
           </div>
-
-          <div>
+          <div style={{ display: "flex", flexDirection: "column" }}>
             <div
               style={{
-                fontSize: "42px",
+                fontSize: "38px",
                 fontWeight: 900,
-                letterSpacing: "-1px",
+                letterSpacing: "-1.5px",
                 display: "flex",
-                alignItems: "center",
               }}
             >
               <span>eFootball</span>
-              <span style={{ color: "#38bdf8" }}>Market</span>
+              <span style={{ color: "#006340" }}>X</span>
+              <span style={{ color: "#5F5F5F", marginLeft: "10px", fontWeight: 700 }}>
+                Market
+              </span>
             </div>
             <div
               style={{
                 fontSize: "13px",
                 fontWeight: 700,
-                color: "#f59e0b",
-                letterSpacing: "4px",
+                color: "#006340",
+                letterSpacing: "2px",
                 marginTop: "2px",
               }}
             >
-              INSTITUTIONAL ESCROW EXCHANGE
+              VERIFIED MARKETPLACE KENYA
             </div>
           </div>
         </div>
 
-        {/* Main Pitch Headline */}
-        <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+        <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
           <div
             style={{
-              fontSize: "54px",
+              fontSize: "56px",
               fontWeight: 900,
-              lineHeight: 1.15,
-              letterSpacing: "-1.5px",
-              maxWidth: "1000px",
+              lineHeight: 1.1,
+              letterSpacing: "-2px",
+              maxWidth: "980px",
             }}
           >
-            Trade High-OVR eFootball Accounts
+            Buy & Sell Verified eFootball Squads in Kenya.
           </div>
           <div
             style={{
-              fontSize: "54px",
-              fontWeight: 900,
-              lineHeight: 1.15,
-              letterSpacing: "-1.5px",
-              color: "#10b981",
-              maxWidth: "1000px",
-            }}
-          >
-            With Safaricom M-Pesa Escrow Protection.
-          </div>
-          <div
-            style={{
-              fontSize: "22px",
+              fontSize: "24px",
               fontWeight: 500,
-              color: "#94a3b8",
-              marginTop: "8px",
+              color: "#4A4A4A",
+              maxWidth: "900px",
+              marginTop: "6px",
             }}
           >
-            Reduce peer-to-peer trading risks. Automated Lipa Na M-Pesa STK push & 24h inspection protection.
+            Clean Konami ID ownership checks, tactical meta guides, and Safaricom M-Pesa Till 1572931 escrow custody.
           </div>
         </div>
 
-        {/* Trust Badges Ribbon */}
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              backgroundColor: "rgba(30, 41, 59, 0.8)",
-              border: "1.5px solid rgba(51, 65, 85, 0.8)",
-              borderRadius: "999px",
-              padding: "12px 22px",
-              fontSize: "16px",
-              fontWeight: 700,
-              color: "#f1f5f9",
-            }}
-          >
-            <span style={{ color: "#10b981" }}>✓</span>
-            <span>Safaricom Escrow Protected</span>
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              backgroundColor: "rgba(30, 41, 59, 0.8)",
-              border: "1.5px solid rgba(51, 65, 85, 0.8)",
-              borderRadius: "999px",
-              padding: "12px 22px",
-              fontSize: "16px",
-              fontWeight: 700,
-              color: "#f1f5f9",
-            }}
-          >
-            <span style={{ color: "#10b981" }}>KES</span>
-            <span>Lipa Na M-Pesa STK Push</span>
-          </div>
-
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: "10px",
-              backgroundColor: "rgba(30, 41, 59, 0.8)",
-              border: "1.5px solid rgba(51, 65, 85, 0.8)",
-              borderRadius: "999px",
-              padding: "12px 22px",
-              fontSize: "16px",
-              fontWeight: 700,
-              color: "#f1f5f9",
-            }}
-          >
-            <span style={{ color: "#f59e0b" }}>⏱</span>
-            <span>24-Hour Inspection Window</span>
-          </div>
+          {[
+            "Clean Konami ID Required",
+            "M-Pesa Till 1572931 Custody",
+            "24-Hour Buyer Inspection",
+          ].map((pill) => (
+            <div
+              key={pill}
+              style={{
+                display: "flex",
+                alignItems: "center",
+                backgroundColor: "#FFFFFF",
+                border: "2px solid #E2E2E0",
+                borderRadius: "999px",
+                padding: "12px 24px",
+                fontSize: "16px",
+                fontWeight: 700,
+                color: "#0F0F0F",
+              }}
+            >
+              {pill}
+            </div>
+          ))}
         </div>
       </div>
     ),
-    {
-      ...size,
-    }
+    { ...size }
   );
 }

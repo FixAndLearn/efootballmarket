@@ -331,8 +331,8 @@ export default function EditListingPage() {
   if (initialLoading || authLoading) {
     return (
       <div className="min-h-[60vh] flex flex-col items-center justify-center space-y-4">
-        <Loader2 className="w-8 h-8 text-[#006340] animate-spin" />
-        <p className="text-sm text-[#5F5F5F]">Loading listing details...</p>
+        <Loader2 className="w-8 h-8 text-sx-green-text animate-spin" />
+        <p className="text-sm text-sx-muted">Loading listing details...</p>
       </div>
     );
   }
@@ -344,26 +344,26 @@ export default function EditListingPage() {
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full space-y-6">
         <Link
           href="/dashboard/seller"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#5F5F5F] hover:text-[#006340] transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-sx-muted hover:text-sx-green-text transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Seller Dashboard</span>
         </Link>
 
-        <div className="rounded-3xl bg-gradient-to-br from-[#0D192E] via-pitch-surface to-[#0A1220] border border-[#E2E2E0] p-6 sm:p-8 shadow-2xl text-center space-y-5">
-          <div className="w-16 h-16 rounded-3xl bg-[#F4F3F1] border border-[#C8C8C4] flex items-center justify-center mx-auto text-[#006340] shadow-inner">
-            <Lock className="w-8 h-8 text-[#006340]" />
+        <div className="rounded-3xl bg-gradient-to-br from-[#0D192E] via-pitch-surface to-[#0A1220] border border-sx-border p-6 sm:p-8 shadow-2xl text-center space-y-5">
+          <div className="w-16 h-16 rounded-3xl bg-sx-stone border border-sx-border-strong flex items-center justify-center mx-auto text-sx-green-text shadow-inner">
+            <Lock className="w-8 h-8 text-sx-green-text" />
           </div>
 
           <div className="space-y-1.5">
-            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border bg-[#EBF5F0] text-[#006340] border-[#BFE0CE] mb-2">
+            <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold border bg-sx-green-tint text-sx-green-text border-sx-green-border mb-2">
               <CheckCircle2 className="w-3.5 h-3.5" />
               <span>{isSold ? "ACCOUNT SOLD & DELIVERED" : "LOCKED UNDER ACTIVE ESCROW"}</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-[#0F0F0F] font-display">
+            <h1 className="text-2xl sm:text-3xl font-black text-sx-ink font-display">
               {isSold ? "This Account Has Been Sold" : "Active Escrow Transaction in Progress"}
             </h1>
-            <p className="text-xs sm:text-sm text-[#3D3D3D] max-w-lg mx-auto leading-relaxed">
+            <p className="text-xs sm:text-sm text-sx-ink-soft max-w-lg mx-auto leading-relaxed">
               {isSold
                 ? "This eFootball squad has been sold and ownership has transferred to the buyer. Sold listings are permanently locked to preserve escrow audit history and protect buyer security."
                 : "This eFootball squad is currently locked under an active escrow order. Listing details, pricing, and squad attributes cannot be modified during trade inspection."}
@@ -372,16 +372,16 @@ export default function EditListingPage() {
 
           {/* Account Mini-Card */}
           <div className="p-4 rounded-2xl bg-pitch-card border border-pitch-border text-left space-y-2">
-            <span className="text-[10px] text-[#5F5F5F] uppercase font-bold tracking-wider block">Target Account</span>
-            <h3 className="text-base font-bold text-[#0F0F0F] font-display">{title}</h3>
-            <div className="flex flex-wrap items-center gap-3 text-xs text-[#3D3D3D]">
-              <span className="text-[#006340] font-mono font-bold">KES {Number(price || 0).toLocaleString()}</span>
-              <span className="text-slate-600">|</span>
+            <span className="text-[10px] text-sx-muted uppercase font-bold tracking-wider block">Target Account</span>
+            <h3 className="text-base font-bold text-sx-ink font-display">{title}</h3>
+            <div className="flex flex-wrap items-center gap-3 text-xs text-sx-ink-soft">
+              <span className="text-sx-green-text font-mono font-bold">KES {Number(price || 0).toLocaleString()}</span>
+              <span className="text-sx-muted">|</span>
               <span>{platform.toUpperCase()}</span>
               {overallStrength && (
                 <>
-                  <span className="text-slate-600">|</span>
-                  <span className="text-[#92400E] font-mono font-bold">⚡ {overallStrength} OVR</span>
+                  <span className="text-sx-muted">|</span>
+                  <span className="text-sx-amber-text font-mono font-bold">{overallStrength} OVR</span>
                 </>
               )}
             </div>
@@ -411,7 +411,7 @@ export default function EditListingPage() {
       <div className="mb-6 flex items-center justify-between">
         <Link
           href={`/listings/${id}`}
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-[#5F5F5F] hover:text-[#1F1F1F] transition-colors"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-sx-muted hover:text-sx-ink transition-colors"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Listing</span>
@@ -426,7 +426,7 @@ export default function EditListingPage() {
           <Button
             variant="ghost"
             size="sm"
-            className="text-[#C92A2A] hover:text-[#B91C1C] hover:bg-[#FEE2E2]"
+            className="text-sx-red-text hover:text-sx-red-text hover:bg-sx-red-tint"
             onClick={handleDelete}
             disabled={deleting}
           >
@@ -438,23 +438,23 @@ export default function EditListingPage() {
 
       {/* Header */}
       <div className="mb-6">
-        <h1 className="text-2xl sm:text-3xl font-bold text-[#0F0F0F] font-display">
+        <h1 className="text-2xl sm:text-3xl font-bold text-sx-ink font-display">
           Edit eFootball Account Listing
         </h1>
-        <p className="text-xs sm:text-sm text-[#5F5F5F] mt-1">
+        <p className="text-xs sm:text-sm text-sx-muted mt-1">
           Update squad attributes, pricing, head coach, and HD squad screenshots (up to 5 photos).
         </p>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 rounded-xl bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-sm flex items-center gap-2">
+        <div className="mb-6 p-4 rounded-xl bg-sx-red-tint border border-sx-red-border text-sx-red-text text-sm flex items-center gap-2">
           <AlertCircle className="w-5 h-5 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {successMessage && (
-        <div className="mb-6 p-4 rounded-xl bg-[#EBF5F0] border border-[#BFE0CE] text-[#006340] text-sm flex items-center gap-2">
+        <div className="mb-6 p-4 rounded-xl bg-sx-green-tint border border-sx-green-border text-sx-green-text text-sm flex items-center gap-2">
           <CheckCircle2 className="w-5 h-5 shrink-0" />
           <span>{successMessage}</span>
         </div>
@@ -464,16 +464,16 @@ export default function EditListingPage() {
         {/* Streamlined Card: Squad Details */}
         <div className="bg-pitch-surface border border-pitch-border rounded-2xl p-6 shadow-xl space-y-5">
           <div className="flex items-center justify-between border-b border-pitch-border/60 pb-3">
-            <h2 className="text-base font-bold text-[#0F0F0F] font-display flex items-center gap-2">
-              <Zap className="w-4 h-4 text-[#006340]" />
+            <h2 className="text-base font-bold text-sx-ink font-display flex items-center gap-2">
+              <Zap className="w-4 h-4 text-sx-green-text" />
               <span>Squad Information</span>
             </h2>
             <div className="flex items-center gap-2">
-              <label className="text-[11px] text-[#5F5F5F]">Status:</label>
+              <label className="text-[11px] text-sx-muted">Status:</label>
               <select
                 value={status}
                 onChange={(e) => setStatus(e.target.value)}
-                className="bg-pitch-card border border-pitch-border rounded-lg px-2.5 py-1 text-xs text-[#1F1F1F] focus:outline-none focus:border-brand-500"
+                className="bg-pitch-card border border-pitch-border rounded-lg px-2.5 py-1 text-xs text-sx-ink-soft focus:outline-none focus:border-brand-500"
               >
                 <option value="published">Published</option>
                 <option value="draft">Draft (Hidden)</option>
@@ -506,14 +506,14 @@ export default function EditListingPage() {
                 required
               />
               <div className="pt-0.5 flex items-center gap-1.5">
-                <span className="text-[11px] text-[#5F5F5F]">Quick set:</span>
+                <span className="text-[11px] text-sx-muted">Quick set:</span>
                 <button
                   type="button"
                   onClick={() => setPrice("2500")}
                   className={`text-[10px] px-2 py-0.5 rounded border transition-all ${
                     price === "2500"
                       ? "bg-amber-400 text-slate-950 font-bold border-amber-300"
-                      : "bg-pitch-card border-pitch-border text-[#3D3D3D] hover:border-amber-400/50"
+                      : "bg-pitch-card border-pitch-border text-sx-ink-soft hover:border-amber-400/50"
                   }`}
                 >
                   KES 2,500
@@ -524,7 +524,7 @@ export default function EditListingPage() {
                   className={`text-[10px] px-2 py-0.5 rounded border transition-all ${
                     price === "4500"
                       ? "bg-amber-400 text-slate-950 font-bold border-amber-300"
-                      : "bg-pitch-card border-pitch-border text-[#3D3D3D] hover:border-amber-400/50"
+                      : "bg-pitch-card border-pitch-border text-sx-ink-soft hover:border-amber-400/50"
                   }`}
                 >
                   KES 4,500
@@ -532,20 +532,20 @@ export default function EditListingPage() {
               </div>
 
               {Number(price) > 0 && (
-                <div className="mt-2 p-2.5 rounded-xl bg-[#EBF5F0] border border-[#BFE0CE] text-[11px] space-y-1">
-                  <div className="flex justify-between text-[#3D3D3D]">
+                <div className="mt-2 p-2.5 rounded-xl bg-sx-green-tint border border-sx-green-border text-[11px] space-y-1">
+                  <div className="flex justify-between text-sx-ink-soft">
                     <span>Escrow Commission (5% based on value):</span>
-                    <span className="font-semibold text-[#B45309]">
+                    <span className="font-semibold text-sx-amber-text">
                       KES {calculateEscrowCommission(Number(price)).toLocaleString()}
                     </span>
                   </div>
-                  <div className="flex justify-between font-bold text-[#0F0F0F] border-t border-[#BFE0CE] pt-1">
+                  <div className="flex justify-between font-bold text-sx-ink border-t border-sx-green-border pt-1">
                     <span>Your Net M-Pesa Payout:</span>
-                    <span className="text-[#006340] font-mono">
+                    <span className="text-sx-green-text font-mono">
                       KES {(Number(price) - calculateEscrowCommission(Number(price))).toLocaleString()}
                     </span>
                   </div>
-                  <p className="text-[10px] text-[#5F5F5F] mt-0.5">
+                  <p className="text-[10px] text-sx-muted mt-0.5">
                     Tiered fee: KES 50 (min) to KES 500 (max) platform custody &amp; inspection protection.
                   </p>
                 </div>
@@ -554,11 +554,11 @@ export default function EditListingPage() {
 
             {/* Gaming Platform */}
             <div>
-              <label className="block text-xs font-medium text-[#3D3D3D] mb-1.5">Gaming Platform</label>
+              <label className="block text-xs font-medium text-sx-ink-soft mb-1.5">Gaming Platform</label>
               <select
                 value={platform}
                 onChange={(e) => setPlatform(e.target.value)}
-                className="w-full bg-pitch-card border border-pitch-border rounded-lg px-3 py-2 text-xs text-[#1F1F1F] focus:outline-none focus:border-brand-500"
+                className="w-full bg-pitch-card border border-pitch-border rounded-lg px-3 py-2 text-xs text-sx-ink-soft focus:outline-none focus:border-brand-500"
               >
                 <option value="android">Android Mobile</option>
                 <option value="ios">iOS Mobile</option>
@@ -568,7 +568,7 @@ export default function EditListingPage() {
                 <option value="xbox_one">Xbox One</option>
                 <option value="xbox_series_x">Xbox Series X/S</option>
               </select>
-              <p className="text-[11px] text-[#5F5F5F] mt-1">Select the device OS this squad is played on.</p>
+              <p className="text-[11px] text-sx-muted mt-1">Select the device OS this squad is played on.</p>
             </div>
           </div>
 
@@ -583,26 +583,26 @@ export default function EditListingPage() {
                 onChange={(e) => setOverallStrength(e.target.value)}
                 required
               />
-              <div className="flex items-center gap-1 text-[10px] text-[#5F5F5F] pt-0.5">
+              <div className="flex items-center gap-1 text-[10px] text-sx-muted pt-0.5">
                 <span>Quick:</span>
                 <button
                   type="button"
                   onClick={() => setOverallStrength("3120")}
-                  className="px-1.5 py-0.5 rounded bg-pitch-card border border-pitch-border text-[#3D3D3D] hover:text-[#92400E]"
+                  className="px-1.5 py-0.5 rounded bg-pitch-card border border-pitch-border text-sx-ink-soft hover:text-sx-amber-text"
                 >
                   3120
                 </button>
                 <button
                   type="button"
                   onClick={() => setOverallStrength("3150")}
-                  className="px-1.5 py-0.5 rounded bg-pitch-card border border-pitch-border text-[#3D3D3D] hover:text-[#92400E]"
+                  className="px-1.5 py-0.5 rounded bg-pitch-card border border-pitch-border text-sx-ink-soft hover:text-sx-amber-text"
                 >
                   3150
                 </button>
                 <button
                   type="button"
                   onClick={() => setOverallStrength("3200")}
-                  className="px-1.5 py-0.5 rounded bg-pitch-card border border-pitch-border text-[#3D3D3D] hover:text-[#92400E]"
+                  className="px-1.5 py-0.5 rounded bg-pitch-card border border-pitch-border text-sx-ink-soft hover:text-sx-amber-text"
                 >
                   3200
                 </button>
@@ -618,26 +618,26 @@ export default function EditListingPage() {
                 value={coinBalance}
                 onChange={(e) => setCoinBalance(e.target.value)}
               />
-              <div className="flex items-center gap-1 text-[10px] text-[#5F5F5F] pt-0.5">
+              <div className="flex items-center gap-1 text-[10px] text-sx-muted pt-0.5">
                 <span>Quick:</span>
                 <button
                   type="button"
                   onClick={() => setCoinBalance("0")}
-                  className="px-1.5 py-0.5 rounded bg-pitch-card border border-pitch-border text-[#3D3D3D] hover:text-[#92400E]"
+                  className="px-1.5 py-0.5 rounded bg-pitch-card border border-pitch-border text-sx-ink-soft hover:text-sx-amber-text"
                 >
                   0
                 </button>
                 <button
                   type="button"
                   onClick={() => setCoinBalance("500")}
-                  className="px-1.5 py-0.5 rounded bg-pitch-card border border-pitch-border text-[#3D3D3D] hover:text-[#92400E]"
+                  className="px-1.5 py-0.5 rounded bg-pitch-card border border-pitch-border text-sx-ink-soft hover:text-sx-amber-text"
                 >
                   500
                 </button>
                 <button
                   type="button"
                   onClick={() => setCoinBalance("1500")}
-                  className="px-1.5 py-0.5 rounded bg-pitch-card border border-pitch-border text-[#3D3D3D] hover:text-[#92400E]"
+                  className="px-1.5 py-0.5 rounded bg-pitch-card border border-pitch-border text-sx-ink-soft hover:text-sx-amber-text"
                 >
                   1500
                 </button>
@@ -652,19 +652,19 @@ export default function EditListingPage() {
                 value={managerName}
                 onChange={(e) => setManagerName(e.target.value)}
               />
-              <div className="flex items-center gap-1 text-[10px] text-[#5F5F5F] pt-0.5">
+              <div className="flex items-center gap-1 text-[10px] text-sx-muted pt-0.5">
                 <span>Quick:</span>
                 <button
                   type="button"
                   onClick={() => setManagerName("Pep Guardiola")}
-                  className="px-1.5 py-0.5 rounded bg-pitch-card border border-pitch-border text-[#3D3D3D] hover:text-[#92400E]"
+                  className="px-1.5 py-0.5 rounded bg-pitch-card border border-pitch-border text-sx-ink-soft hover:text-sx-amber-text"
                 >
                   Guardiola
                 </button>
                 <button
                   type="button"
                   onClick={() => setManagerName("L. Roman")}
-                  className="px-1.5 py-0.5 rounded bg-pitch-card border border-pitch-border text-[#3D3D3D] hover:text-[#92400E]"
+                  className="px-1.5 py-0.5 rounded bg-pitch-card border border-pitch-border text-sx-ink-soft hover:text-sx-amber-text"
                 >
                   L. Roman
                 </button>
@@ -677,15 +677,15 @@ export default function EditListingPage() {
         <div className="bg-pitch-surface border border-pitch-border rounded-2xl p-6 shadow-xl space-y-4">
           <div className="flex items-center justify-between border-b border-pitch-border/60 pb-3">
             <div>
-              <h2 className="text-base font-bold text-[#0F0F0F] font-display flex items-center gap-2">
-                <Camera className="w-4 h-4 text-[#006340]" />
+              <h2 className="text-base font-bold text-sx-ink font-display flex items-center gap-2">
+                <Camera className="w-4 h-4 text-sx-green-text" />
                 <span>Squad Screenshots (HD Quality)</span>
               </h2>
-              <p className="text-xs text-[#5F5F5F] mt-0.5">
+              <p className="text-xs text-sx-muted mt-0.5">
                 Upload up to 5 real in-game screenshots (Starting XI, Substitutes, Reserves &amp; Trainer). Full HD resolution is maintained.
               </p>
             </div>
-            <span className="px-2.5 py-1 rounded-full bg-[#F9F9F8] border border-[#E2E2E0] text-[11px] font-mono font-bold text-[#006340] shrink-0">
+            <span className="px-2.5 py-1 rounded-full bg-sx-subtle border border-sx-border text-[11px] font-mono font-bold text-sx-green-text shrink-0">
               {images.length}/5 Uploaded
             </span>
           </div>
@@ -709,24 +709,24 @@ export default function EditListingPage() {
               onClick={() => fileInputRef.current?.click()}
               className={`p-6 sm:p-8 rounded-2xl border-2 border-dashed text-center cursor-pointer transition-all duration-200 flex flex-col items-center justify-center gap-2 ${
                 isDragOver
-                  ? "border-emerald-500 bg-[#EBF5F0]"
-                  : "border-[#C8C8C4] hover:border-emerald-500/60 bg-[#F9F9F8] hover:bg-[#F9F9F8]"
+                  ? "border-emerald-500 bg-sx-green-tint"
+                  : "border-sx-border-strong hover:border-emerald-500/60 bg-sx-subtle hover:bg-sx-subtle"
               }`}
             >
               {uploadingImages ? (
                 <div className="flex flex-col items-center gap-2 py-4">
-                  <Loader2 className="w-8 h-8 text-[#006340] animate-spin" />
-                  <p className="text-xs text-[#3D3D3D] font-medium">Processing &amp; uploading screenshots in HD...</p>
+                  <Loader2 className="w-8 h-8 text-sx-green-text animate-spin" />
+                  <p className="text-xs text-sx-ink-soft font-medium">Processing &amp; uploading screenshots in HD...</p>
                 </div>
               ) : (
                 <>
-                  <div className="w-12 h-12 rounded-2xl bg-[#EBF5F0] border border-[#BFE0CE] flex items-center justify-center text-[#006340] mb-1">
+                  <div className="w-12 h-12 rounded-2xl bg-sx-green-tint border border-sx-green-border flex items-center justify-center text-sx-green-text mb-1">
                     <UploadCloud className="w-6 h-6" />
                   </div>
-                  <p className="text-xs sm:text-sm font-bold text-[#0F0F0F]">
+                  <p className="text-xs sm:text-sm font-bold text-sx-ink">
                     Click to browse or drag &amp; drop squad screenshots here
                   </p>
-                  <p className="text-[11px] text-[#5F5F5F]">
+                  <p className="text-[11px] text-sx-muted">
                     PNG, JPG, or WebP up to 10MB each | Full HD quality preserved
                   </p>
                 </>
@@ -735,7 +735,7 @@ export default function EditListingPage() {
           )}
 
           {uploadError && (
-            <div className="p-3 rounded-xl bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs flex items-center gap-2">
+            <div className="p-3 rounded-xl bg-sx-red-tint border border-sx-red-border text-sx-red-text text-xs flex items-center gap-2">
               <AlertCircle className="w-4 h-4 shrink-0" />
               <span>{uploadError}</span>
             </div>
@@ -747,8 +747,8 @@ export default function EditListingPage() {
               {images.map((img, idx) => (
                 <div
                   key={img.url}
-                  className={`group relative rounded-xl overflow-hidden aspect-[16/10] bg-[#F9F9F8] border ${
-                    idx === 0 ? "border-emerald-500 ring-2 ring-emerald-500/20" : "border-[#E2E2E0]"
+                  className={`group relative rounded-xl overflow-hidden aspect-[16/10] bg-sx-subtle border ${
+                    idx === 0 ? "border-emerald-500 ring-2 ring-emerald-500/20" : "border-sx-border"
                   }`}
                 >
                   <img

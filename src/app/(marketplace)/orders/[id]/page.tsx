@@ -43,13 +43,13 @@ const getStatusConfig = (status: OrderStatus | string) => {
     case "payment_pending":
       return {
         label: "Payment Pending",
-        colorClass: "bg-[#FEF3C7] text-[#B45309] border-[#FDE68A]",
+        colorClass: "bg-sx-amber-tint text-sx-amber-text border-sx-amber-border",
         icon: Clock,
       };
     case "escrow_locked":
       return {
         label: "Funds in Escrow",
-        colorClass: "bg-[#EBF5F0] text-[#006340] border-[#BFE0CE]",
+        colorClass: "bg-sx-green-tint text-sx-green-text border-sx-green-border",
         icon: ShieldCheck,
       };
     case "seller_delivered":
@@ -61,32 +61,32 @@ const getStatusConfig = (status: OrderStatus | string) => {
     case "buyer_reviewing":
       return {
         label: "24h Inspection Window",
-        colorClass: "bg-[#EEF2FF] text-[#4338CA] border-[#C7D2FE]",
+        colorClass: "bg-sx-info-tint text-sx-info-text border-sx-info-border",
         icon: Clock,
       };
     case "completed":
       return {
         label: "Trade Completed",
-        colorClass: "bg-[#EBF5F0] text-[#006340] border-[#BFE0CE]",
+        colorClass: "bg-sx-green-tint text-sx-green-text border-sx-green-border",
         icon: CheckCircle2,
       };
     case "disputed":
       return {
         label: "Dispute Opened",
-        colorClass: "bg-[#FEE2E2] text-[#C92A2A] border-[#FECACA]",
+        colorClass: "bg-sx-red-tint text-sx-red-text border-sx-red-border",
         icon: ShieldAlert,
       };
     case "cancelled":
     case "refunded":
       return {
         label: status === "refunded" ? "Escrow Refunded" : "Order Cancelled",
-        colorClass: "bg-slate-500/10 text-[#5F5F5F] border-slate-500/30",
+        colorClass: "bg-slate-500/10 text-sx-muted border-slate-500/30",
         icon: Shield,
       };
     default:
       return {
         label: status.replace("_", " ").toUpperCase(),
-        colorClass: "bg-slate-500/10 text-[#5F5F5F] border-slate-500/30",
+        colorClass: "bg-slate-500/10 text-sx-muted border-slate-500/30",
         icon: Clock,
       };
   }
@@ -143,17 +143,17 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-6">
       {/* Top Header & Breadcrumb */}
-      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-[#E2E2E0]">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-sx-border">
         <div>
           <Link
             href={isBuyer ? "/dashboard/buyer" : "/dashboard/seller"}
-            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#5F5F5F] hover:text-[#006340] transition-colors mb-2"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-sx-muted hover:text-sx-green-text transition-colors mb-2"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back to {isBuyer ? "Buyer" : "Seller"} Dashboard</span>
           </Link>
           <div className="flex flex-wrap items-center gap-3">
-            <h1 className="text-2xl sm:text-3xl font-black text-[#0F0F0F] font-display tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-sx-ink font-display tracking-tight">
               Escrow Trade Room
             </h1>
             <OrderCopyButton orderNumber={order.order_number} />
@@ -165,11 +165,11 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
         </div>
 
         <div className="flex flex-wrap items-center gap-3 text-xs">
-          <div className="flex items-center gap-1.5 text-[#006340] bg-[#EBF5F0] border border-[#BFE0CE] px-2.5 py-1 rounded-lg">
+          <div className="flex items-center gap-1.5 text-sx-green-text bg-sx-green-tint border border-sx-green-border px-2.5 py-1 rounded-lg">
             <ShieldCheck className="w-3.5 h-3.5" />
             <span className="font-semibold">Safaricom Till 1572931 Active</span>
           </div>
-          <div className="flex items-center gap-1.5 text-[#5F5F5F] font-mono">
+          <div className="flex items-center gap-1.5 text-sx-muted font-mono">
             <Clock className="w-3.5 h-3.5" />
             <span>
               {new Date(order.created_at).toLocaleDateString("en-KE", {
@@ -183,22 +183,22 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
       </div>
 
       {/* Escrow Officer Concierge Bar */}
-      <div className="bg-gradient-to-r from-[#071E16] via-pitch-card to-slate-900 border border-[#BFE0CE] rounded-2xl p-4 sm:p-5 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="bg-sx-stone border border-sx-green-border rounded-2xl p-4 sm:p-5 shadow-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-start gap-3.5">
-          <div className="relative w-11 h-11 rounded-2xl bg-[#EBF5F0] border border-[#BFE0CE] flex items-center justify-center text-[#006340] shrink-0 shadow-md">
+          <div className="relative w-11 h-11 rounded-2xl bg-sx-green-tint border border-sx-green-border flex items-center justify-center text-sx-green-text shrink-0 shadow-md">
             <MessageCircle className="w-5 h-5 fill-emerald-400" />
             <span className="absolute -top-1 -right-1 w-3 h-3 rounded-full bg-emerald-400 ring-4 ring-pitch-bg animate-pulse" />
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h4 className="text-sm font-bold text-[#0F0F0F] flex items-center gap-2">
+              <h4 className="text-sm font-bold text-sx-ink flex items-center gap-2">
                 <span>Escrow Officer: Brian Okibo</span>
               </h4>
-              <span className="text-[10px] font-bold text-[#006340] bg-[#EBF5F0] px-2 py-0.5 rounded-full border border-[#BFE0CE]">
+              <span className="text-[10px] font-bold text-sx-green-text bg-sx-green-tint px-2 py-0.5 rounded-full border border-sx-green-border">
                 Online &amp; Monitoring
               </span>
             </div>
-            <p className="text-xs text-[#3D3D3D] mt-0.5 leading-relaxed">
+            <p className="text-xs text-sx-ink-soft mt-0.5 leading-relaxed">
               Assigned mediator for Order #{order.order_number}. Real-time M-Pesa Till verification, handover oversight, and dispute resolution.
             </p>
           </div>
@@ -221,22 +221,22 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
         <div className="lg:col-span-7 space-y-6">
           {/* Target Account Esports Showcase Card */}
           {order.listing && (
-            <div className="rounded-3xl bg-gradient-to-br from-[#0D192E] via-[#081224] to-[#0D192E] border border-[#E2E2E0] hover:border-[#BFE0CE] p-5 sm:p-6 shadow-2xl transition-all space-y-5 relative overflow-hidden group">
+            <div className="rounded-3xl bg-gradient-to-br from-[#0D192E] via-[#081224] to-[#0D192E] border border-sx-border hover:border-sx-green-border p-5 sm:p-6 shadow-2xl transition-all space-y-5 relative overflow-hidden group">
               {/* Stadium Background Glow */}
-              <div className="absolute top-0 right-0 w-72 h-36 bg-emerald-500/5 blur-3xl pointer-events-none group-hover:bg-[#EBF5F0] transition-colors" />
+              <div className="absolute top-0 right-0 w-72 h-36 bg-emerald-500/5 blur-3xl pointer-events-none group-hover:bg-sx-green-tint transition-colors" />
 
               {/* Card Header: Category & Public Listing Link */}
-              <div className="flex items-center justify-between pb-3 border-b border-[#E2E2E0]">
+              <div className="flex items-center justify-between pb-3 border-b border-sx-border">
                 <div className="flex items-center gap-2">
-                  <Trophy className="w-4 h-4 text-[#B45309]" />
-                  <span className="text-xs uppercase font-extrabold text-[#3D3D3D] tracking-wider">
+                  <Trophy className="w-4 h-4 text-sx-amber-text" />
+                  <span className="text-xs uppercase font-extrabold text-sx-ink-soft tracking-wider">
                     Target eFootball Account
                   </span>
                 </div>
                 <Link
                   href={`/listings/${order.listing.id}`}
                   target="_blank"
-                  className="text-xs text-[#006340] hover:text-[#006340] flex items-center gap-1 font-semibold transition-colors"
+                  className="text-xs text-sx-green-text hover:text-sx-green-text flex items-center gap-1 font-semibold transition-colors"
                 >
                   <span>View Public Listing</span>
                   <ExternalLink className="w-3.5 h-3.5" />
@@ -244,7 +244,7 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
               </div>
 
               {/* Squad Image Banner with Overlay Badges */}
-              <div className="relative w-full h-44 sm:h-56 rounded-2xl overflow-hidden bg-[#F9F9F8] border border-[#C8C8C4] shadow-lg">
+              <div className="relative w-full h-44 sm:h-56 rounded-2xl overflow-hidden bg-sx-subtle border border-sx-border-strong shadow-lg">
                 {primaryImage ? (
                   <Image
                     src={primaryImage}
@@ -255,10 +255,10 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
                     priority
                   />
                 ) : (
-                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#0F1E38] via-[#0A1426] to-[#08101E] text-[#006340] p-6 text-center">
-                    <ShieldCheck className="w-12 h-12 mb-2 text-[#006340] opacity-90" />
-                    <span className="text-sm font-bold text-[#0F0F0F] font-display">eFootball Squad Verified</span>
-                    <span className="text-xs text-[#5F5F5F] mt-1">Konami ID Handover Secured</span>
+                  <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#0F1E38] via-[#0A1426] to-[#08101E] text-sx-green-text p-6 text-center">
+                    <ShieldCheck className="w-12 h-12 mb-2 text-sx-green-text opacity-90" />
+                    <span className="text-sm font-bold text-sx-ink font-display">eFootball Squad Verified</span>
+                    <span className="text-xs text-sx-muted mt-1">Konami ID Handover Secured</span>
                   </div>
                 )}
 
@@ -267,33 +267,33 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
 
                 {/* Top-Left: OVR Pill Badge */}
                 {order.listing.overall_team_strength && (
-                  <div className="absolute top-3 left-3 px-3 py-1 rounded-xl bg-black/80 backdrop-blur-md border border-amber-400/60 text-[#92400E] font-mono font-black text-sm flex items-center gap-1.5 shadow-lg">
-                    <span>⚡</span>
+                  <div className="absolute top-3 left-3 px-3 py-1 rounded-xl bg-black/80 backdrop-blur-md border border-amber-400/60 text-sx-amber-text font-mono font-black text-sm flex items-center gap-1.5 shadow-lg">
+                    <span></span>
                     <span>{order.listing.overall_team_strength} OVR</span>
                   </div>
                 )}
 
                 {/* Top-Right: Till 1572931 Seal */}
-                <div className="absolute top-3 right-3 px-2.5 py-1 rounded-xl bg-black/80 backdrop-blur-md border border-[#BFE0CE] text-[#006340] font-bold text-[11px] flex items-center gap-1.5 shadow-lg">
-                  <ShieldCheck className="w-3.5 h-3.5 text-[#006340]" />
+                <div className="absolute top-3 right-3 px-2.5 py-1 rounded-xl bg-black/80 backdrop-blur-md border border-sx-green-border text-sx-green-text font-bold text-[11px] flex items-center gap-1.5 shadow-lg">
+                  <ShieldCheck className="w-3.5 h-3.5 text-sx-green-text" />
                   <span>Till 1572931 Protected</span>
                 </div>
 
                 {/* Bottom-Left: Platform Pill */}
-                <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg bg-black/80 backdrop-blur-md border border-[#C8C8C4] text-[#1F1F1F] text-xs font-semibold">
+                <div className="absolute bottom-3 left-3 px-2.5 py-1 rounded-lg bg-black/80 backdrop-blur-md border border-sx-border-strong text-sx-ink-soft text-xs font-semibold">
                   {getPlatformLabel(order.listing.platform)}
                 </div>
 
                 {/* Bottom-Right: Division Pill */}
-                <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-lg bg-black/80 backdrop-blur-md border border-[#FDE68A] text-[#92400E] text-xs font-bold flex items-center gap-1">
-                  <Trophy className="w-3.5 h-3.5 text-[#B45309]" />
+                <div className="absolute bottom-3 right-3 px-2.5 py-1 rounded-lg bg-black/80 backdrop-blur-md border border-sx-amber-border text-sx-amber-text text-xs font-bold flex items-center gap-1">
+                  <Trophy className="w-3.5 h-3.5 text-sx-amber-text" />
                   <span>Div {order.listing.current_division || 1}</span>
                 </div>
               </div>
 
               {/* Account Title */}
               <div>
-                <h2 className="text-lg sm:text-xl font-black text-[#0F0F0F] font-display leading-snug">
+                <h2 className="text-lg sm:text-xl font-black text-sx-ink font-display leading-snug">
                   {order.listing.title}
                 </h2>
               </div>
@@ -301,56 +301,56 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
               {/* Spec Highlights Grid */}
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 text-xs">
                 <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border space-y-0.5">
-                  <span className="text-[10px] text-[#5F5F5F] uppercase font-bold block">Division</span>
-                  <span className="text-[#0F0F0F] font-bold flex items-center gap-1">
-                    <Trophy className="w-3 h-3 text-[#B45309]" />
+                  <span className="text-[10px] text-sx-muted uppercase font-bold block">Division</span>
+                  <span className="text-sx-ink font-bold flex items-center gap-1">
+                    <Trophy className="w-3 h-3 text-sx-amber-text" />
                     Div {order.listing.current_division || 1}
                   </span>
-                  <span className="text-[10px] text-[#5F5F5F]">Peak: Div {order.listing.highest_division || 1}</span>
+                  <span className="text-[10px] text-sx-muted">Peak: Div {order.listing.highest_division || 1}</span>
                 </div>
 
                 <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border space-y-0.5">
-                  <span className="text-[10px] text-[#5F5F5F] uppercase font-bold block">Card Power</span>
-                  <span className="text-[#92400E] font-bold flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 text-[#B45309]" />
+                  <span className="text-[10px] text-sx-muted uppercase font-bold block">Card Power</span>
+                  <span className="text-sx-amber-text font-bold flex items-center gap-1">
+                    <Sparkles className="w-3 h-3 text-sx-amber-text" />
                     {order.listing.epic_players_count || 0} Epics
                   </span>
-                  <span className="text-[10px] text-[#5F5F5F]">{order.listing.legend_players_count || 0} Legends</span>
+                  <span className="text-[10px] text-sx-muted">{order.listing.legend_players_count || 0} Legends</span>
                 </div>
 
                 <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border space-y-0.5">
-                  <span className="text-[10px] text-[#5F5F5F] uppercase font-bold block">Konami ID</span>
-                  <span className="text-[#006340] font-bold truncate block">
+                  <span className="text-[10px] text-sx-muted uppercase font-bold block">Konami ID</span>
+                  <span className="text-sx-green-text font-bold truncate block">
                     {order.listing.konami_id_status === "unlinked" ? "Clean Unlinked" : "Changeable ID"}
                   </span>
-                  <span className="text-[10px] text-[#5F5F5F]">
+                  <span className="text-[10px] text-sx-muted">
                     {order.listing.linked_email_status === "transferable_full_access" ? "Full Email Access" : "Buyer Bindable"}
                   </span>
                 </div>
 
                 <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border space-y-0.5">
-                  <span className="text-[10px] text-[#5F5F5F] uppercase font-bold block">Currency Balance</span>
+                  <span className="text-[10px] text-sx-muted uppercase font-bold block">Currency Balance</span>
                   <span className="text-yellow-300 font-bold flex items-center gap-1">
                     <Coins className="w-3 h-3 text-yellow-400" />
                     {(order.listing.coin_balance || 0).toLocaleString()} Coins
                   </span>
-                  <span className="text-[10px] text-[#5F5F5F]">{formatCompactNumber(order.listing.gp_balance || 0)} GP</span>
+                  <span className="text-[10px] text-sx-muted">{formatCompactNumber(order.listing.gp_balance || 0)} GP</span>
                 </div>
               </div>
 
               {/* Key Players Showcase (if populated) */}
               {order.listing.key_players_list && order.listing.key_players_list.length > 0 && (
                 <div className="space-y-1.5 pt-1">
-                  <span className="text-[11px] uppercase font-bold text-[#5F5F5F] tracking-wider block">
+                  <span className="text-[11px] uppercase font-bold text-sx-muted tracking-wider block">
                     Featured Squad Stars
                   </span>
                   <div className="flex flex-wrap gap-1.5">
                     {order.listing.key_players_list.slice(0, 8).map((player, idx) => (
                       <span
                         key={idx}
-                        className="px-2.5 py-1 rounded-lg bg-pitch-card border border-pitch-border text-[#1F1F1F] text-xs font-semibold flex items-center gap-1"
+                        className="px-2.5 py-1 rounded-lg bg-pitch-card border border-pitch-border text-sx-ink-soft text-xs font-semibold flex items-center gap-1"
                       >
-                        <Sparkles className="w-3 h-3 text-[#B45309]" />
+                        <Sparkles className="w-3 h-3 text-sx-amber-text" />
                         <span>{player}</span>
                       </span>
                     ))}
@@ -359,21 +359,21 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
               )}
 
               {/* Financial & Escrow Custody Bar */}
-              <div className="p-4 rounded-2xl bg-gradient-to-r from-emerald-950/60 via-pitch-card to-slate-900 border border-[#BFE0CE] flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="p-4 rounded-2xl bg-sx-stone border border-sx-green-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
-                  <span className="text-[11px] text-[#5F5F5F] uppercase font-bold tracking-wider block">
+                  <span className="text-[11px] text-sx-muted uppercase font-bold tracking-wider block">
                     Escrow Custody Amount
                   </span>
-                  <span className="text-2xl font-black text-[#006340] font-mono tracking-tight">
+                  <span className="text-2xl font-black text-sx-green-text font-mono tracking-tight">
                     {formatCurrency(order.total_amount, order.currency)}
                   </span>
                 </div>
-                <div className="text-left sm:text-right text-xs text-[#3D3D3D]">
-                  <span className="text-[#006340] font-bold block flex items-center gap-1 sm:justify-end">
-                    <ShieldCheck className="w-4 h-4 text-[#006340]" />
+                <div className="text-left sm:text-right text-xs text-sx-ink-soft">
+                  <span className="text-sx-green-text font-bold block flex items-center gap-1 sm:justify-end">
+                    <ShieldCheck className="w-4 h-4 text-sx-green-text" />
                     <span>100% Protected via Safaricom Till 1572931</span>
                   </span>
-                  <span className="text-[11px] text-[#5F5F5F]">
+                  <span className="text-[11px] text-sx-muted">
                     Funds released only after buyer verifies Konami ID &amp; 2FA
                   </span>
                 </div>
@@ -401,21 +401,21 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
 
           {/* Participant / Counterparty Card */}
           <div className="rounded-2xl bg-pitch-surface border border-pitch-border p-5 shadow-xl space-y-4">
-            <h4 className="text-xs uppercase font-extrabold text-[#5F5F5F] tracking-wider">
+            <h4 className="text-xs uppercase font-extrabold text-sx-muted tracking-wider">
               Trade Counterparty
             </h4>
             <div className="flex items-center gap-3.5 pb-3 border-b border-pitch-border">
-              <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-slate-800 to-slate-900 border border-[#C8C8C4] flex items-center justify-center font-bold text-base text-[#1F1F1F] shadow-inner">
+              <div className="w-12 h-12 rounded-2xl bg-sx-stone border border-sx-border-strong flex items-center justify-center font-bold text-base text-sx-ink-soft shadow-inner">
                 {isBuyer
                   ? (order.seller?.username?.[0] || "S").toUpperCase()
                   : (order.buyer?.username?.[0] || "B").toUpperCase()}
               </div>
               <div className="min-w-0 flex-1">
-                <p className="text-base font-bold text-[#0F0F0F] truncate font-display">
+                <p className="text-base font-bold text-sx-ink truncate font-display">
                   {isBuyer ? order.seller?.username || "Verified Seller" : order.buyer?.username || "Verified Buyer"}
                 </p>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="text-[11px] font-semibold text-[#006340] bg-[#EBF5F0] px-2 py-0.5 rounded-md border border-[#BFE0CE]">
+                  <span className="text-[11px] font-semibold text-sx-green-text bg-sx-green-tint px-2 py-0.5 rounded-md border border-sx-green-border">
                     {isBuyer ? "Account Provider" : "Purchaser (Funds Guaranteed)"}
                   </span>
                 </div>
@@ -452,21 +452,21 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
             )}
 
             {/* Security Rules Box */}
-            <div className="p-3.5 rounded-xl bg-pitch-card border border-pitch-border text-xs text-[#3D3D3D] space-y-2">
-              <span className="font-bold text-[#1F1F1F] block text-[11px] uppercase tracking-wider">
+            <div className="p-3.5 rounded-xl bg-pitch-card border border-pitch-border text-xs text-sx-ink-soft space-y-2">
+              <span className="font-bold text-sx-ink-soft block text-[11px] uppercase tracking-wider">
                 Escrow Rules for Counterparties:
               </span>
-              <ul className="space-y-1.5 text-[11px] text-[#3D3D3D] leading-relaxed">
+              <ul className="space-y-1.5 text-[11px] text-sx-ink-soft leading-relaxed">
                 <li className="flex items-start gap-1.5">
-                  <Check className="w-3.5 h-3.5 text-[#006340] shrink-0 mt-0.5" />
+                  <Check className="w-3.5 h-3.5 text-sx-green-text shrink-0 mt-0.5" />
                   <span>All messages &amp; credential codes are encrypted and permanently logged for dispute resolution.</span>
                 </li>
                 <li className="flex items-start gap-1.5">
-                  <Check className="w-3.5 h-3.5 text-[#006340] shrink-0 mt-0.5" />
+                  <Check className="w-3.5 h-3.5 text-sx-green-text shrink-0 mt-0.5" />
                   <span>Never pay or accept payments outside Till 1572931. Direct personal trades are ineligible for dispute coverage.</span>
                 </li>
                 <li className="flex items-start gap-1.5">
-                  <Check className="w-3.5 h-3.5 text-[#006340] shrink-0 mt-0.5" />
+                  <Check className="w-3.5 h-3.5 text-sx-green-text shrink-0 mt-0.5" />
                   <span>Verify in-game <em>Support &gt; Link Data</em> has ZERO Google Play links before confirming funds release.</span>
                 </li>
               </ul>

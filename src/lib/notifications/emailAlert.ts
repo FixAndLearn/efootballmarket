@@ -31,7 +31,7 @@ export async function sendOtpVerificationEmail(params: {
                 <tr>
                   <td style="padding: 28px 32px; background: linear-gradient(135deg, #065f46 0%, #047857 100%); text-align: center;">
                     <h1 style="margin: 0; font-size: 22px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px;">eFootball Market</h1>
-                    <p style="margin: 6px 0 0; font-size: 13px; color: #a7f3d0;">Institutional Escrow &amp; Account Exchange</p>
+                    <p style="margin: 6px 0 0; font-size: 13px; color: #a7f3d0;">Verified eFootball Marketplace Kenya</p>
                   </td>
                 </tr>
 

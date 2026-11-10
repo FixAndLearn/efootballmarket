@@ -277,11 +277,11 @@ function LoginForm() {
   return (
     <div className="w-full max-w-md store-panel rounded-2xl p-6 sm:p-8 space-y-6">
       <div className="space-y-1">
-        <span className="text-[11px] font-mono uppercase tracking-wider text-[#006340] font-bold">
+        <span className="text-[11px] font-mono uppercase tracking-wider text-sx-green-text font-bold">
           Trader Sign In
         </span>
-        <h1 className="text-2xl font-bold text-[#0F0F0F] font-display">Sign in to eFootballMarket</h1>
-        <p className="text-xs text-[#5F5F5F]">
+        <h1 className="text-2xl font-bold text-sx-ink font-display">Sign in to eFootballMarket</h1>
+        <p className="text-xs text-sx-muted">
           Manage your active orders, squad listings, and M-Pesa payouts.
         </p>
       </div>
@@ -291,7 +291,7 @@ function LoginForm() {
 
       <div className="relative flex items-center justify-center my-4">
         <div className="border-t border-pitch-border/80 w-full" />
-        <span className="bg-pitch-surface px-3 text-[11px] font-semibold text-[#5F5F5F] uppercase tracking-wider shrink-0">
+        <span className="bg-pitch-surface px-3 text-[11px] font-semibold text-sx-muted uppercase tracking-wider shrink-0">
           Or sign in with email
         </span>
         <div className="border-t border-pitch-border/80 w-full" />
@@ -307,8 +307,8 @@ function LoginForm() {
           }}
           className={`flex items-center justify-center gap-1.5 py-2 font-semibold rounded-lg transition-all ${
             authMethod === "password"
-              ? "bg-pitch-surface text-[#0F0F0F] shadow-sm border border-pitch-border/80"
-              : "text-[#5F5F5F] hover:text-[#1F1F1F]"
+              ? "bg-pitch-surface text-sx-ink shadow-sm border border-pitch-border/80"
+              : "text-sx-muted hover:text-sx-ink"
           }`}
         >
           <Lock className="w-3.5 h-3.5" />
@@ -322,8 +322,8 @@ function LoginForm() {
           }}
           className={`flex items-center justify-center gap-1.5 py-2 font-semibold rounded-lg transition-all ${
             authMethod === "magic-link"
-              ? "bg-pitch-surface text-[#006340] shadow-sm border border-brand-500/30"
-              : "text-[#5F5F5F] hover:text-[#1F1F1F]"
+              ? "bg-pitch-surface text-sx-green-text shadow-sm border border-brand-500/30"
+              : "text-sx-muted hover:text-sx-ink"
           }`}
         >
           <Wand2 className="w-3.5 h-3.5" />
@@ -337,8 +337,8 @@ function LoginForm() {
           }}
           className={`flex items-center justify-center gap-1.5 py-2 font-semibold rounded-lg transition-all ${
             authMethod === "otp"
-              ? "bg-pitch-surface text-[#B45309] shadow-sm border border-[#FDE68A]"
-              : "text-[#5F5F5F] hover:text-[#1F1F1F]"
+              ? "bg-pitch-surface text-sx-amber-text shadow-sm border border-sx-amber-border"
+              : "text-sx-muted hover:text-sx-ink"
           }`}
         >
           <KeyRound className="w-3.5 h-3.5" />
@@ -347,14 +347,14 @@ function LoginForm() {
       </div>
 
       {error && (
-        <div className="p-3 rounded-lg bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs flex items-center gap-2">
+        <div className="p-3 rounded-lg bg-sx-red-tint border border-sx-red-border text-sx-red-text text-xs flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {infoMessage && (
-        <div className="p-3 rounded-lg bg-[#EBF5F0] border border-[#BFE0CE] text-[#006340] text-xs flex items-center gap-2">
+        <div className="p-3 rounded-lg bg-sx-green-tint border border-sx-green-border text-sx-green-text text-xs flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 shrink-0" />
           <span>{infoMessage}</span>
         </div>
@@ -377,10 +377,10 @@ function LoginForm() {
 
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-semibold text-[#3D3D3D]">Password</label>
+              <label className="text-xs font-semibold text-sx-ink-soft">Password</label>
               <Link
                 href={`/forgot-password?redirect=${encodeURIComponent(redirect)}`}
-                className="text-xs text-[#B45309] hover:text-[#92400E] hover:underline"
+                className="text-xs text-sx-amber-text hover:text-sx-amber-text hover:underline"
               >
                 Forgot password?
               </Link>
@@ -397,12 +397,12 @@ function LoginForm() {
           </div>
 
           <div className="flex items-center justify-between text-xs pt-1">
-            <label className="flex items-center gap-2 cursor-pointer text-[#3D3D3D]">
+            <label className="flex items-center gap-2 cursor-pointer text-sx-ink-soft">
               <input
                 type="checkbox"
                 checked={rememberMe}
                 onChange={(e) => setRememberMe(e.target.checked)}
-                className="w-4 h-4 rounded border-[#C8C8C4] bg-[#F9F9F8] text-brand-500 focus:ring-brand-500 focus:ring-offset-0"
+                className="w-4 h-4 rounded border-sx-border-strong bg-sx-subtle text-brand-500 focus:ring-brand-500 focus:ring-offset-0"
               />
               <span>Remember me on this device</span>
             </label>
@@ -438,7 +438,7 @@ function LoginForm() {
       ) : authMethod === "otp" && !otpSent ? (
         /* OTP Request Form */
         <form onSubmit={handleSendOtp} className="space-y-4">
-          <div className="p-3.5 rounded-xl bg-[#FEF3C7] border border-[#FDE68A] text-xs text-[#92400E]/90 leading-relaxed">
+          <div className="p-3.5 rounded-xl bg-sx-amber-tint border border-sx-amber-border text-xs text-sx-amber-text/90 leading-relaxed">
             We will dispatch an 8-digit numeric verification code to your email. Enter it to sign in without entering a password.
           </div>
 
@@ -461,15 +461,15 @@ function LoginForm() {
       ) : (
         /* OTP / Magic Link Verification Step */
         <div className="space-y-5">
-          <div className="p-3.5 rounded-xl bg-[#F9F9F8] border border-pitch-border text-xs text-[#3D3D3D] space-y-2">
-            <p className="font-semibold text-[#0F0F0F]">Email Dispatched</p>
-            <p className="text-[#5F5F5F]">
-              We sent a message to <span className="text-[#92400E] font-mono">{email}</span>. You can either tap the 1-click magic link in the email or enter the 8-digit code below:
+          <div className="p-3.5 rounded-xl bg-sx-subtle border border-pitch-border text-xs text-sx-ink-soft space-y-2">
+            <p className="font-semibold text-sx-ink">Email Dispatched</p>
+            <p className="text-sx-muted">
+              We sent a message to <span className="text-sx-amber-text font-mono">{email}</span>. You can either tap the 1-click magic link in the email or enter the 8-digit code below:
             </p>
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-[#3D3D3D] block text-center">
+            <label className="text-xs font-semibold text-sx-ink-soft block text-center">
               Enter 8-Digit Code
             </label>
             <OtpCodeInput
@@ -498,15 +498,15 @@ function LoginForm() {
 
           <div className="space-y-3 pt-2 text-xs">
             <div className="flex items-center justify-between">
-              <span className="text-[#5F5F5F]">Didn&apos;t receive it?</span>
+              <span className="text-sx-muted">Didn&apos;t receive it?</span>
               <button
                 type="button"
                 onClick={handleResendOtp}
                 disabled={resendCooldown > 0 || resending}
                 className={`font-medium ${
                   resendCooldown > 0 || resending
-                    ? "text-slate-600 cursor-not-allowed"
-                    : "text-[#B45309] hover:text-[#92400E] hover:underline"
+                    ? "text-sx-muted cursor-not-allowed"
+                    : "text-sx-amber-text hover:text-sx-amber-text hover:underline"
                 }`}
               >
                 {resending
@@ -521,7 +521,7 @@ function LoginForm() {
               <button
                 type="button"
                 onClick={handleOpenEmailApp}
-                className="text-[#5F5F5F] hover:text-[#0F0F0F] flex items-center gap-1.5 transition-colors"
+                className="text-sx-muted hover:text-sx-ink flex items-center gap-1.5 transition-colors"
               >
                 <Mail className="w-3.5 h-3.5" />
                 <span>Launch Mail App</span>
@@ -533,7 +533,7 @@ function LoginForm() {
                   setOtpCode("");
                   setError("");
                 }}
-                className="text-[#5F5F5F] hover:text-[#0F0F0F] transition-colors"
+                className="text-sx-muted hover:text-sx-ink transition-colors"
               >
                 Change Email
               </button>
@@ -542,9 +542,9 @@ function LoginForm() {
         </div>
       )}
 
-      <div className="text-center text-xs text-[#5F5F5F] border-t border-pitch-border/60 pt-4">
+      <div className="text-center text-xs text-sx-muted border-t border-pitch-border/60 pt-4">
         Don&apos;t have an account yet?{" "}
-        <Link href={`/register?redirect=${encodeURIComponent(redirect)}`} className="text-[#006340] hover:underline font-semibold">
+        <Link href={`/register?redirect=${encodeURIComponent(redirect)}`} className="text-sx-green-text hover:underline font-semibold">
           Create an Account
         </Link>
       </div>
@@ -555,7 +555,7 @@ function LoginForm() {
 export default function LoginPage() {
   return (
     <div className="flex-1 flex items-center justify-center p-4 py-12">
-      <Suspense fallback={<div className="text-[#5F5F5F] text-sm">Loading login...</div>}>
+      <Suspense fallback={<div className="text-sx-muted text-sm">Loading login...</div>}>
         <LoginForm />
       </Suspense>
     </div>

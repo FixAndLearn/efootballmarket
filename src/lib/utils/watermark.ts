@@ -67,7 +67,7 @@ export async function watermarkSquadImage(
           ctx.textBaseline = "middle";
 
           // Center watermark stamp
-          ctx.fillText(`🛡️ ${websiteUrl.toUpperCase()} | ESCROW PROTECTED`, 0, -fontSizeCenter);
+          ctx.fillText(`${websiteUrl.toUpperCase()} | ESCROW PROTECTED`, 0, -fontSizeCenter);
 
           ctx.font = `700 ${Math.round(fontSizeCenter * 0.65)}px system-ui, -apple-system, sans-serif`;
           ctx.fillStyle = "rgba(245, 158, 11, 0.22)"; // amber-tinted
@@ -100,7 +100,7 @@ export async function watermarkSquadImage(
           ctx.fillStyle = "#10B981"; // Emerald
           ctx.textAlign = "left";
           ctx.textBaseline = "middle";
-          ctx.fillText("🛡️ ESCROW VERIFIED ASSET", Math.max(12, Math.round(w * 0.02)), yPos + ribbonHeight / 2);
+          ctx.fillText("ESCROW VERIFIED ASSET", Math.max(12, Math.round(w * 0.02)), yPos + ribbonHeight / 2);
 
           ctx.font = `600 ${Math.max(11, Math.round(ribbonHeight * 0.34))}px system-ui, -apple-system, sans-serif`;
           ctx.fillStyle = "#F8FAFC"; // White text

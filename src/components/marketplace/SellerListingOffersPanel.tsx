@@ -160,15 +160,15 @@ export function SellerListingOffersPanel({
   if (offers.length === 0) return null;
 
   return (
-    <div className="p-5 rounded-2xl bg-[#FEF3C7] border border-amber-600/40 space-y-4 shadow-xl">
+    <div className="p-5 rounded-2xl bg-sx-amber-tint border border-amber-600/40 space-y-4 shadow-xl">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <Handshake className="w-5 h-5 text-[#B45309]" />
-          <h3 className="text-sm font-bold text-[#92400E] uppercase tracking-wider font-display">
+          <Handshake className="w-5 h-5 text-sx-amber-text" />
+          <h3 className="text-sm font-bold text-sx-amber-text uppercase tracking-wider font-display">
             Incoming Buyer Offers ({offers.length})
           </h3>
         </div>
-        <span className="text-[11px] text-[#92400E] bg-[#FEF3C7] px-2 py-0.5 rounded-full font-semibold">
+        <span className="text-[11px] text-sx-amber-text bg-sx-amber-tint px-2 py-0.5 rounded-full font-semibold">
           Negotiation Active
         </span>
       </div>
@@ -187,30 +187,30 @@ export function SellerListingOffersPanel({
               <div className="flex items-start justify-between gap-3">
                 <div>
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="text-sm font-bold text-[#0F0F0F]">
+                    <span className="text-sm font-bold text-sx-ink">
                       {offer.buyer_name}
                     </span>
-                    <span className="text-xs font-mono text-[#5F5F5F]">
+                    <span className="text-xs font-mono text-sx-muted">
                       ({offer.buyer_phone})
                     </span>
                   </div>
                   {offer.listing && (
-                    <p className="text-xs text-[#5F5F5F] mt-0.5">
-                      Squad: <strong className="text-[#1F1F1F]">{(offer.listing as any).title}</strong>
+                    <p className="text-xs text-sx-muted mt-0.5">
+                      Squad: <strong className="text-sx-ink-soft">{(offer.listing as any).title}</strong>
                     </p>
                   )}
                   {offer.note && (
-                    <p className="text-xs text-[#3D3D3D] italic mt-1 bg-pitch-card p-2 rounded-lg border border-pitch-border/60">
+                    <p className="text-xs text-sx-ink-soft italic mt-1 bg-pitch-card p-2 rounded-lg border border-pitch-border/60">
                       "{offer.note}"
                     </p>
                   )}
                 </div>
 
                 <div className="text-right shrink-0">
-                  <span className="text-base font-extrabold text-[#006340] font-mono block">
+                  <span className="text-base font-extrabold text-sx-green-text font-mono block">
                     {formatCurrency(offer.offered_price)}
                   </span>
-                  <span className="text-[10px] text-[#B45309] font-bold">
+                  <span className="text-[10px] text-sx-amber-text font-bold">
                     -{offer.discount_percentage}% OFF
                   </span>
                 </div>
@@ -218,30 +218,30 @@ export function SellerListingOffersPanel({
 
               {/* Status Badge */}
               <div className="flex items-center gap-2 text-xs flex-wrap">
-                <span className="text-[#5F5F5F]">Status:</span>
+                <span className="text-sx-muted">Status:</span>
                 <span
                   className={`font-semibold capitalize px-2 py-0.5 rounded-md text-[11px] ${
                     offer.status === "accepted"
-                      ? "bg-[#EBF5F0] text-[#006340] border border-[#BFE0CE]"
+                      ? "bg-sx-green-tint text-sx-green-text border border-sx-green-border"
                       : offer.status === "declined"
-                      ? "bg-[#FEE2E2] text-[#B91C1C] border border-[#FECACA]"
+                      ? "bg-sx-red-tint text-sx-red-text border border-sx-red-border"
                       : offer.status === "countered"
-                      ? "bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]"
-                      : "bg-[#F4F3F1] text-[#1F1F1F] border border-[#C8C8C4]"
+                      ? "bg-sx-amber-tint text-sx-amber-text border border-sx-amber-border"
+                      : "bg-sx-stone text-sx-ink-soft border border-sx-border-strong"
                   }`}
                 >
                   {offer.status}
                 </span>
 
                 {offer.status === "countered" && offer.counter_price && (
-                  <span className="text-xs text-[#92400E] font-bold font-mono">
+                  <span className="text-xs text-sx-amber-text font-bold font-mono">
                     Counter: KES {Number(offer.counter_price).toLocaleString()}
                   </span>
                 )}
 
                 {offer.status === "accepted" && offer.expires_at && (
-                  <span className="text-[10px] text-[#5F5F5F] flex items-center gap-1">
-                    <Clock className="w-3 h-3 text-[#B45309]" />
+                  <span className="text-[10px] text-sx-muted flex items-center gap-1">
+                    <Clock className="w-3 h-3 text-sx-amber-text" />
                     <span>Checkout expires in 12 hours</span>
                   </span>
                 )}
@@ -249,17 +249,17 @@ export function SellerListingOffersPanel({
 
               {/* Action Result / Link sharing */}
               {result && (
-                <div className="p-3 rounded-xl bg-[#EBF5F0] border border-[#BFE0CE] space-y-2 text-xs animate-in fade-in">
-                  <span className="font-bold text-[#006340] block">
+                <div className="p-3 rounded-xl bg-sx-green-tint border border-sx-green-border space-y-2 text-xs animate-in fade-in">
+                  <span className="font-bold text-sx-green-text block">
                     {result.message}
                   </span>
                   <div className="flex items-center gap-2 flex-wrap">
                     <button
                       type="button"
                       onClick={() => handleCopyCheckout(result.checkoutUrl, offer.id)}
-                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-pitch-card border border-pitch-border text-[#1F1F1F] hover:text-[#0F0F0F] font-mono text-[11px]"
+                      className="inline-flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-pitch-card border border-pitch-border text-sx-ink-soft hover:text-sx-ink font-mono text-[11px]"
                     >
-                      {copiedId === offer.id ? <Check className="w-3 h-3 text-[#006340]" /> : <Copy className="w-3 h-3" />}
+                      {copiedId === offer.id ? <Check className="w-3 h-3 text-sx-green-text" /> : <Copy className="w-3 h-3" />}
                       <span>{copiedId === offer.id ? "Copied!" : "Copy Checkout Link"}</span>
                     </button>
 
@@ -303,14 +303,14 @@ export function SellerListingOffersPanel({
                       <Button
                         variant="outline"
                         size="sm"
-                        className="text-xs text-[#92400E] border-amber-600/60 hover:bg-[#FEF3C7] py-2"
+                        className="text-xs text-sx-amber-text border-amber-600/60 hover:bg-sx-amber-tint py-2"
                         disabled={actionLoading === offer.id}
                         onClick={() => {
                           setActiveCounterOfferId(offer.id);
                           setCounterPriceInput(String(Math.round((offer.original_price + offer.offered_price) / 2)));
                         }}
                       >
-                        <Edit3 className="w-3.5 h-3.5 mr-1 text-[#B45309]" />
+                        <Edit3 className="w-3.5 h-3.5 mr-1 text-sx-amber-text" />
                         <span>Counter</span>
                       </Button>
 
@@ -318,7 +318,7 @@ export function SellerListingOffersPanel({
                       <Button
                         variant="outline"
                         size="sm"
-                        className="text-xs text-[#C92A2A] border-[#FECACA] hover:bg-[#FEE2E2] py-2"
+                        className="text-xs text-sx-red-text border-sx-red-border hover:bg-sx-red-tint py-2"
                         disabled={actionLoading === offer.id}
                         onClick={() => setActiveDeclineOfferId(offer.id)}
                       >
@@ -330,16 +330,16 @@ export function SellerListingOffersPanel({
 
                   {/* Inline Counter-Offer Drawer */}
                   {isCountering && (
-                    <div className="p-3.5 rounded-xl bg-pitch-card border border-[#FDE68A] space-y-2.5 animate-in fade-in">
+                    <div className="p-3.5 rounded-xl bg-pitch-card border border-sx-amber-border space-y-2.5 animate-in fade-in">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-[#92400E] flex items-center gap-1.5">
+                        <span className="text-xs font-bold text-sx-amber-text flex items-center gap-1.5">
                           <Edit3 className="w-3.5 h-3.5" />
                           <span>Propose Counter Price</span>
                         </span>
                         <button
                           type="button"
                           onClick={() => setActiveCounterOfferId(null)}
-                          className="text-xs text-[#5F5F5F] hover:text-[#1F1F1F]"
+                          className="text-xs text-sx-muted hover:text-sx-ink"
                         >
                           Cancel
                         </button>
@@ -347,7 +347,7 @@ export function SellerListingOffersPanel({
 
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                         <div>
-                          <label className="text-[11px] text-[#3D3D3D] block mb-1">
+                          <label className="text-[11px] text-sx-ink-soft block mb-1">
                             Counter Price (KES)
                           </label>
                           <input
@@ -357,12 +357,12 @@ export function SellerListingOffersPanel({
                             step="1"
                             value={counterPriceInput}
                             onChange={(e) => setCounterPriceInput(e.target.value)}
-                            className="w-full px-3 py-1.5 rounded-lg bg-pitch-surface border border-pitch-border text-xs text-[#0F0F0F] font-mono font-bold focus:outline-none focus:border-amber-400"
+                            className="w-full px-3 py-1.5 rounded-lg bg-pitch-surface border border-pitch-border text-xs text-sx-ink font-mono font-bold focus:outline-none focus:border-amber-400"
                           />
                         </div>
 
                         <div>
-                          <label className="text-[11px] text-[#3D3D3D] block mb-1">
+                          <label className="text-[11px] text-sx-ink-soft block mb-1">
                             Note to Buyer (Optional)
                           </label>
                           <input
@@ -371,7 +371,7 @@ export function SellerListingOffersPanel({
                             value={sellerNoteInput}
                             onChange={(e) => setSellerNoteInput(e.target.value)}
                             maxLength={100}
-                            className="w-full px-3 py-1.5 rounded-lg bg-pitch-surface border border-pitch-border text-xs text-[#0F0F0F] focus:outline-none focus:border-amber-400"
+                            className="w-full px-3 py-1.5 rounded-lg bg-pitch-surface border border-pitch-border text-xs text-sx-ink focus:outline-none focus:border-amber-400"
                           />
                         </div>
                       </div>
@@ -397,16 +397,16 @@ export function SellerListingOffersPanel({
 
                   {/* Inline Decline Drawer */}
                   {isDeclining && (
-                    <div className="p-3.5 rounded-xl bg-pitch-card border border-[#FECACA] space-y-2.5 animate-in fade-in">
+                    <div className="p-3.5 rounded-xl bg-pitch-card border border-sx-red-border space-y-2.5 animate-in fade-in">
                       <div className="flex items-center justify-between">
-                        <span className="text-xs font-bold text-[#B91C1C] flex items-center gap-1.5">
+                        <span className="text-xs font-bold text-sx-red-text flex items-center gap-1.5">
                           <XCircle className="w-3.5 h-3.5" />
                           <span>Decline Reason (Sent to Buyer)</span>
                         </span>
                         <button
                           type="button"
                           onClick={() => setActiveDeclineOfferId(null)}
-                          className="text-xs text-[#5F5F5F] hover:text-[#1F1F1F]"
+                          className="text-xs text-sx-muted hover:text-sx-ink"
                         >
                           Cancel
                         </button>
@@ -416,7 +416,7 @@ export function SellerListingOffersPanel({
                         <select
                           value={declineReasonInput}
                           onChange={(e) => setDeclineReasonInput(e.target.value)}
-                          className="w-full px-3 py-2 rounded-lg bg-pitch-surface border border-pitch-border text-xs text-[#0F0F0F] focus:outline-none focus:border-rose-400"
+                          className="w-full px-3 py-2 rounded-lg bg-pitch-surface border border-pitch-border text-xs text-sx-ink focus:outline-none focus:border-rose-400"
                         >
                           <option value="Offer is lower than expected">Offer is lower than expected</option>
                           <option value="Squad has high-value epic/booster players">Squad has high-value epic/booster players</option>
@@ -428,7 +428,7 @@ export function SellerListingOffersPanel({
                       <Button
                         variant="outline"
                         size="sm"
-                        className="w-full text-xs font-bold text-[#B91C1C] border-rose-700 hover:bg-[#FEE2E2] py-2"
+                        className="w-full text-xs font-bold text-sx-red-text border-rose-700 hover:bg-sx-red-tint py-2"
                         disabled={actionLoading === offer.id}
                         onClick={() => handleAction(offer.id, "decline", undefined, declineReasonInput)}
                       >

@@ -83,8 +83,8 @@ export function BuyNowButton({ listingId, priceFormatted, compact = false }: Buy
       </Button>
 
       {error && (
-        <div className="p-3 rounded-xl bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs flex items-start gap-2 shadow-md">
-          <AlertCircle className="w-4 h-4 shrink-0 text-[#C92A2A] mt-0.5" />
+        <div className="p-3 rounded-xl bg-sx-red-tint border border-sx-red-border text-sx-red-text text-xs flex items-start gap-2 shadow-md">
+          <AlertCircle className="w-4 h-4 shrink-0 text-sx-red-text mt-0.5" />
           <span className="leading-relaxed">{error}</span>
         </div>
       )}
@@ -93,23 +93,23 @@ export function BuyNowButton({ listingId, priceFormatted, compact = false }: Buy
       {/* Guest guidance: tells visitor when & why to sign in or create an account */}
       {!isAuthenticated && !authLoading && (
         <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border/80 space-y-2">
-          <div className="flex items-center gap-1.5 text-xs font-semibold text-[#92400E]">
+          <div className="flex items-center gap-1.5 text-xs font-semibold text-sx-amber-text">
             <Sparkles className="w-3.5 h-3.5" />
             <span>Guest Buyer Recommendation:</span>
           </div>
-          <p className="text-[11px] text-[#3D3D3D]">
+          <p className="text-[11px] text-sx-ink-soft">
             Create an account or log in to secure your M-Pesa payment in escrow and view encrypted account login credentials safely.
           </p>
           <div className="flex items-center gap-2 pt-0.5">
             <Link
               href={`/login?redirect=/listings/${listingId}`}
-              className="text-xs px-2.5 py-1 rounded-md bg-pitch-surface border border-pitch-border text-[#1F1F1F] hover:text-[#0F0F0F] transition-colors"
+              className="text-xs px-2.5 py-1 rounded-md bg-pitch-surface border border-pitch-border text-sx-ink-soft hover:text-sx-ink transition-colors"
             >
               Log In
             </Link>
             <Link
               href={`/register?redirect=/listings/${listingId}`}
-              className="text-xs px-2.5 py-1 rounded-md bg-brand-500/20 border border-brand-500/40 text-[#006340] hover:bg-brand-500/30 font-semibold transition-colors"
+              className="text-xs px-2.5 py-1 rounded-md bg-brand-500/20 border border-brand-500/40 text-sx-green-text hover:bg-brand-500/30 font-semibold transition-colors"
             >
               Create Free Account
             </Link>
@@ -117,8 +117,8 @@ export function BuyNowButton({ listingId, priceFormatted, compact = false }: Buy
         </div>
       )}
 
-      <p className="text-[11px] text-[#5F5F5F] text-center flex items-center justify-center gap-1.5 pt-0.5">
-        <ShieldCheck className="w-3.5 h-3.5 text-[#006340]" />
+      <p className="text-[11px] text-sx-muted text-center flex items-center justify-center gap-1.5 pt-0.5">
+        <ShieldCheck className="w-3.5 h-3.5 text-sx-green-text" />
         Protected by eFootballMarket Escrow Guarantee
       </p>
     </div>

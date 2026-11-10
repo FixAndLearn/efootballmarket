@@ -291,19 +291,19 @@ export function MpesaPaymentModal({
         <button
           type="button"
           onClick={onClose}
-          className="absolute top-4 right-4 text-[#5F5F5F] hover:text-[#1F1F1F] transition-colors"
+          className="absolute top-4 right-4 text-sx-muted hover:text-sx-ink transition-colors"
         >
           <X className="w-5 h-5" />
         </button>
 
         {/* Modal Header */}
         <div className="flex items-center gap-3 mb-5">
-          <div className="w-12 h-12 rounded-xl bg-[#EBF5F0] border border-[#BFE0CE] flex items-center justify-center text-[#006340] shrink-0">
+          <div className="w-12 h-12 rounded-xl bg-sx-green-tint border border-sx-green-border flex items-center justify-center text-sx-green-text shrink-0">
             <Smartphone className="w-6 h-6" />
           </div>
           <div>
-            <h3 className="text-base font-bold text-[#0F0F0F]">Lipa Na M-Pesa STK Push</h3>
-            <p className="text-xs text-[#5F5F5F]">Order #{orderNumber}</p>
+            <h3 className="text-base font-bold text-sx-ink">Lipa Na M-Pesa STK Push</h3>
+            <p className="text-xs text-sx-muted">Order #{orderNumber}</p>
           </div>
         </div>
 
@@ -311,8 +311,8 @@ export function MpesaPaymentModal({
         {status === "idle" && (
           <form onSubmit={handleInitiateSTK} className="space-y-4">
             <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border flex items-center justify-between text-sm">
-              <span className="text-[#5F5F5F]">Escrow Total Amount:</span>
-              <span className="font-bold text-[#006340] text-base">{formatCurrency(amount, currency)}</span>
+              <span className="text-sx-muted">Escrow Total Amount:</span>
+              <span className="font-bold text-sx-green-text text-base">{formatCurrency(amount, currency)}</span>
             </div>
 
             <Input
@@ -336,33 +336,33 @@ export function MpesaPaymentModal({
         {status === "awaiting_pin" && (
           <div className="text-center py-4 space-y-4">
             <div className="relative w-16 h-16 mx-auto flex items-center justify-center">
-              <span className="absolute inset-0 rounded-full border-4 border-[#BFE0CE] animate-ping" />
-              <div className="w-16 h-16 rounded-full bg-[#EBF5F0] border border-emerald-500 flex items-center justify-center text-[#006340]">
+              <span className="absolute inset-0 rounded-full border-4 border-sx-green-border animate-ping" />
+              <div className="w-16 h-16 rounded-full bg-sx-green-tint border border-emerald-500 flex items-center justify-center text-sx-green-text">
                 <Loader2 className="w-8 h-8 animate-spin" />
               </div>
             </div>
 
             <div>
-              <h4 className="text-base font-semibold text-[#0F0F0F]">Check Your Handset</h4>
-              <p className="text-xs text-[#5F5F5F] mt-1 max-w-xs mx-auto">
-                An M-Pesa PIN prompt for <strong className="text-[#1F1F1F]">{formatCurrency(amount, currency)}</strong> has been sent to {phoneNumber}. Enter your PIN to lock funds in escrow.
+              <h4 className="text-base font-semibold text-sx-ink">Check Your Handset</h4>
+              <p className="text-xs text-sx-muted mt-1 max-w-xs mx-auto">
+                An M-Pesa PIN prompt for <strong className="text-sx-ink-soft">{formatCurrency(amount, currency)}</strong> has been sent to {phoneNumber}. Enter your PIN to lock funds in escrow.
               </p>
             </div>
 
             {timerSeconds > 0 ? (
-              <div className="text-xs text-[#5F5F5F]">
-                Waiting for network confirmation... (<span className="text-[#B45309] font-mono font-semibold">{timerSeconds}s</span>)
+              <div className="text-xs text-sx-muted">
+                Waiting for network confirmation... (<span className="text-sx-amber-text font-mono font-semibold">{timerSeconds}s</span>)
               </div>
             ) : (
-              <div className="text-xs text-[#92400E] bg-[#FEF3C7] border border-[#FDE68A] rounded-xl p-2.5 flex items-center justify-center gap-2">
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#B45309]" />
+              <div className="text-xs text-sx-amber-text bg-sx-amber-tint border border-sx-amber-border rounded-xl p-2.5 flex items-center justify-center gap-2">
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-sx-amber-text" />
                 <span>Checking Safaricom Till 1572931... Click confirm or enter receipt below.</span>
               </div>
             )}
 
             {manualNote && (
-              <div className="p-2.5 rounded-xl bg-pitch-card border border-pitch-border text-[11px] text-[#3D3D3D] flex items-center gap-2 animate-in fade-in text-left">
-                <Loader2 className="w-3.5 h-3.5 animate-spin text-[#006340] shrink-0" />
+              <div className="p-2.5 rounded-xl bg-pitch-card border border-pitch-border text-[11px] text-sx-ink-soft flex items-center gap-2 animate-in fade-in text-left">
+                <Loader2 className="w-3.5 h-3.5 animate-spin text-sx-green-text shrink-0" />
                 <span>{manualNote}</span>
               </div>
             )}
@@ -383,18 +383,18 @@ export function MpesaPaymentModal({
 
             {/* Instant M-Pesa SMS Receipt Fallback (Direct unlock with code e.g. UJD9J9UHFD) */}
             <div className="pt-3 border-t border-pitch-border/70 text-left">
-              <div className="p-3.5 rounded-xl bg-[#EBF5F0] border border-[#BFE0CE] space-y-2">
+              <div className="p-3.5 rounded-xl bg-sx-green-tint border border-sx-green-border space-y-2">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-[#1F1F1F] flex items-center gap-1.5">
-                    <Zap className="w-3.5 h-3.5 text-[#B45309] fill-amber-400" />
+                  <span className="text-xs font-bold text-sx-ink-soft flex items-center gap-1.5">
+                    <Zap className="w-3.5 h-3.5 text-sx-amber-text fill-amber-400" />
                     <span>Have Your M-Pesa SMS Receipt?</span>
                   </span>
-                  <span className="text-[10px] text-[#006340] font-semibold bg-[#EBF5F0] px-2 py-0.5 rounded border border-[#BFE0CE]">
+                  <span className="text-[10px] text-sx-green-text font-semibold bg-sx-green-tint px-2 py-0.5 rounded border border-sx-green-border">
                     Instant Unlock
                   </span>
                 </div>
-                <p className="text-[11px] text-[#5F5F5F]">
-                  Received the SMS from Safaricom? Enter the receipt code (e.g. <strong className="text-[#1F1F1F]">UJD9J9UHFD</strong>) to immediately lock funds in escrow without waiting.
+                <p className="text-[11px] text-sx-muted">
+                  Received the SMS from Safaricom? Enter the receipt code (e.g. <strong className="text-sx-ink-soft">UJD9J9UHFD</strong>) to immediately lock funds in escrow without waiting.
                 </p>
                 <form onSubmit={handleVerifyReceipt} className="flex items-center gap-2 pt-1">
                   <input
@@ -403,7 +403,7 @@ export function MpesaPaymentModal({
                     placeholder="e.g. UJD9J9UHFD"
                     value={receiptCode}
                     onChange={(e) => setReceiptCode(e.target.value.toUpperCase())}
-                    className="w-full px-3 py-2 rounded-lg bg-pitch-surface border border-pitch-border text-xs text-[#0F0F0F] uppercase font-mono tracking-wider placeholder:text-[#767676] focus:outline-none focus:border-emerald-500 transition-colors"
+                    className="w-full px-3 py-2 rounded-lg bg-pitch-surface border border-pitch-border text-xs text-sx-ink uppercase font-mono tracking-wider placeholder:text-sx-muted focus:outline-none focus:border-emerald-500 transition-colors"
                   />
                   <Button
                     type="submit"
@@ -417,7 +417,7 @@ export function MpesaPaymentModal({
                   </Button>
                 </form>
                 {receiptError && (
-                  <p className="text-[11px] text-[#C92A2A] font-medium pt-0.5 animate-in fade-in">
+                  <p className="text-[11px] text-sx-red-text font-medium pt-0.5 animate-in fade-in">
                     {receiptError}
                   </p>
                 )}
@@ -429,11 +429,11 @@ export function MpesaPaymentModal({
         {/* Completed State */}
         {status === "completed" && (
           <div className="text-center py-6 space-y-3 animate-in zoom-in-95">
-            <div className="w-16 h-16 rounded-full bg-[#EBF5F0] border border-emerald-500 text-[#006340] mx-auto flex items-center justify-center">
+            <div className="w-16 h-16 rounded-full bg-sx-green-tint border border-emerald-500 text-sx-green-text mx-auto flex items-center justify-center">
               <CheckCircle2 className="w-8 h-8" />
             </div>
-            <h4 className="text-base font-bold text-[#0F0F0F]">Payment Verified!</h4>
-            <p className="text-xs text-[#3D3D3D] max-w-xs mx-auto">
+            <h4 className="text-base font-bold text-sx-ink">Payment Verified!</h4>
+            <p className="text-xs text-sx-ink-soft max-w-xs mx-auto">
               Funds are securely locked in eFootballMarket Escrow. Transitioning to account handover...
             </p>
           </div>
@@ -442,12 +442,12 @@ export function MpesaPaymentModal({
         {/* Failed State */}
         {status === "failed" && (
           <div className="text-center py-4 space-y-4">
-            <div className="w-14 h-14 rounded-full bg-[#FEE2E2] border border-rose-500 text-[#C92A2A] mx-auto flex items-center justify-center">
+            <div className="w-14 h-14 rounded-full bg-sx-red-tint border border-rose-500 text-sx-red-text mx-auto flex items-center justify-center">
               <AlertCircle className="w-7 h-7" />
             </div>
             <div>
-              <h4 className="text-base font-bold text-[#0F0F0F]">Payment Unsuccessful</h4>
-              <p className="text-xs text-[#B91C1C] mt-1">{errorMessage}</p>
+              <h4 className="text-base font-bold text-sx-ink">Payment Unsuccessful</h4>
+              <p className="text-xs text-sx-red-text mt-1">{errorMessage}</p>
             </div>
             <Button variant="outline" size="sm" onClick={() => setStatus("idle")}>
               Try Again

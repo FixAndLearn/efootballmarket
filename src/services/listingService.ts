@@ -30,6 +30,10 @@ export class ListingService {
    * Never returns mock or demo data.
    */
   async getListings(filters: ListingFilterParams = {}): Promise<ListingQueryResult> {
+    const sbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+    if (!sbUrl || sbUrl.includes("placeholder-project")) {
+      return { listings: [], totalCount: 0 };
+    }
     const {
       search,
       platform,

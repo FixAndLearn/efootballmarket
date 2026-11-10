@@ -36,7 +36,7 @@ export function SellerTelegramCard({
       });
       const data = await res.json();
       if (res.ok && data.success) {
-        setFeedback({ type: "success", message: "🚀 Instant ping delivered! Check your Telegram app." });
+        setFeedback({ type: "success", message: "Instant ping delivered! Check your Telegram app." });
       } else {
         setFeedback({ type: "error", message: data.error || "Failed to deliver ping." });
       }
@@ -84,22 +84,22 @@ export function SellerTelegramCard({
           </div>
           <div>
             <div className="flex items-center gap-2 flex-wrap">
-              <h3 className="text-base font-bold text-[#0F0F0F] font-display">
+              <h3 className="text-base font-bold text-sx-ink font-display">
                 Telegram Instant Push Alerts &amp; Community
               </h3>
               {isLinked ? (
-                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#EBF5F0] border border-[#BFE0CE] text-[#006340] text-xs font-semibold">
+                <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-sx-green-tint border border-sx-green-border text-sx-green-text text-xs font-semibold">
                   <CheckCircle2 className="w-3.5 h-3.5" />
                   Connected {telegramUsername ? `(${telegramUsername})` : ""}
                 </span>
               ) : (
-                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-[#FEF3C7] border border-[#FDE68A] text-[#92400E] text-[11px] font-semibold">
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-sx-amber-tint border border-sx-amber-border text-sx-amber-text text-[11px] font-semibold">
                   <Bell className="w-3 h-3" />
                   Not Connected
                 </span>
               )}
             </div>
-            <p className="text-xs text-[#3D3D3D] mt-1 max-w-2xl leading-relaxed">
+            <p className="text-xs text-sx-ink-soft mt-1 max-w-2xl leading-relaxed">
               Get instant sub-second alerts right on your phone when a buyer orders your squad, submits a price offer, or messages you in escrow.
             </p>
           </div>
@@ -122,7 +122,7 @@ export function SellerTelegramCard({
         <div
           className={`mt-4 p-3 rounded-xl border text-xs flex items-center gap-2 ${
             feedback.type === "success"
-              ? "bg-[#EBF5F0] border-[#BFE0CE] text-[#006340]"
+              ? "bg-sx-green-tint border-sx-green-border text-sx-green-text"
               : "bg-red-950/40 border-red-500/40 text-red-300"
           }`}
         >
@@ -153,7 +153,7 @@ export function SellerTelegramCard({
               href={deepLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-[#F4F3F1] hover:bg-slate-700 text-[#1F1F1F] text-xs font-semibold border border-[#C8C8C4] transition-colors"
+              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-sx-stone hover:bg-slate-700 text-sx-ink-soft text-xs font-semibold border border-sx-border-strong transition-colors"
             >
               <Send className="w-3.5 h-3.5 text-sky-400" />
               <span>Reconnect Bot</span>
@@ -163,7 +163,7 @@ export function SellerTelegramCard({
               size="sm"
               onClick={handleUnlink}
               disabled={unlinking}
-              className="text-xs text-[#C92A2A] border-[#FECACA] hover:bg-[#FEE2E2] ml-auto"
+              className="text-xs text-sx-red-text border-sx-red-border hover:bg-sx-red-tint ml-auto"
             >
               <Unlink className="w-3.5 h-3.5 mr-1" />
               Disconnect
@@ -175,13 +175,13 @@ export function SellerTelegramCard({
               href={deepLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-[#0F0F0F] font-bold text-xs shadow-lg shadow-sky-500/20 transition-all transform hover:-translate-y-0.5"
+              className="inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-sx-ink font-bold text-xs shadow-lg shadow-sky-500/20 transition-all transform hover:-translate-y-0.5"
             >
               <Send className="w-4 h-4" />
               <span>Connect Telegram Alerts (1-Tap)</span>
             </a>
-            <span className="text-[11px] text-[#5F5F5F]">
-              ⚡ Taps open Telegram Bot. Simply press <b>START</b> to connect immediately!
+            <span className="text-[11px] text-sx-muted">
+              Taps open Telegram Bot. Simply press <b>START</b> to connect immediately!
             </span>
           </>
         )}

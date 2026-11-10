@@ -19,12 +19,12 @@ export async function sendBuyerPaymentSecuredWhatsApp(
   orderId: string
 ): Promise<WhatsAppSendResult> {
   const message =
-    `🛡️ *PAYMENT SECURED IN ESCROW (TILL 1572931)*\n\n` +
+    `*PAYMENT SECURED IN ESCROW (TILL 1572931)*\n\n` +
     `Hello! We received your payment of *KES ${amountKes.toLocaleString()}* for:\n` +
-    `🎮 *${listingTitle}*\n` +
-    `📦 *Order Number:* ${orderNumber}\n\n` +
-    `🔒 *Your payment is secured in escrow:* Funds are held in eFootballMarket Escrow Till 1572931. The seller has NOT been paid and will only receive money after you inspect and confirm access to the Konami ID.\n\n` +
-    `👉 *Track Your Order:* ${APP_URL}/orders/${orderId}\n\n` +
+    `*${listingTitle}*\n` +
+    `*Order Number:* ${orderNumber}\n\n` +
+    `*Your payment is secured in escrow:* Funds are held in eFootballMarket Escrow Till 1572931. The seller has NOT been paid and will only receive money after you inspect and confirm access to the Konami ID.\n\n` +
+    `*Track Your Order:* ${APP_URL}/orders/${orderId}\n\n` +
     `_Need help? Reply to this message anytime._`;
 
   return sendWhatsAppMessage({ toPhone: buyerPhone, message });
@@ -41,13 +41,13 @@ export async function sendSellerDeliverCredentialsWhatsApp(
   orderId: string
 ): Promise<WhatsAppSendResult> {
   const message =
-    `💰 *NEW ORDER: BUYER PAID KES ${amountKes.toLocaleString()}!*\n\n` +
+    `*NEW ORDER: BUYER PAID KES ${amountKes.toLocaleString()}!*\n\n` +
     `Congratulations! A buyer has locked funds into Escrow for your listing:\n` +
-    `🎮 *${listingTitle}*\n` +
-    `📦 *Order:* ${orderNumber}\n\n` +
-    `🔐 *Next Step - Deliver Konami ID:*\n` +
+    `*${listingTitle}*\n` +
+    `*Order:* ${orderNumber}\n\n` +
+    `*Next Step - Deliver Konami ID:*\n` +
     `Log into eFootballMarket now and securely submit your Konami ID email and password into the encrypted vault.\n\n` +
-    `👉 *Deliver Credentials Here:* ${APP_URL}/orders/${orderId}\n\n` +
+    `*Deliver Credentials Here:* ${APP_URL}/orders/${orderId}\n\n` +
     `_Funds will be credited to your available balance as soon as the buyer confirms._`;
 
   return sendWhatsAppMessage({ toPhone: sellerPhone, message });
@@ -63,13 +63,13 @@ export async function sendBuyerCredentialsDeliveredWhatsApp(
   orderId: string
 ): Promise<WhatsAppSendResult> {
   const message =
-    `🔑 *KONAMI ID CREDENTIALS DELIVERED!*\n\n` +
+    `*KONAMI ID CREDENTIALS DELIVERED!*\n\n` +
     `The seller has securely transferred the account credentials for:\n` +
-    `🎮 *${listingTitle}*\n` +
-    `📦 *Order:* ${orderNumber}\n\n` +
+    `*${listingTitle}*\n` +
+    `*Order:* ${orderNumber}\n\n` +
     `⏳ *24-Hour Inspection Window:*\n` +
     `Please log in, reveal your credentials, verify the squad details (OVR, players, coins), and change the password.\n\n` +
-    `👉 *Inspect Account:* ${APP_URL}/orders/${orderId}\n\n` +
+    `*Inspect Account:* ${APP_URL}/orders/${orderId}\n\n` +
     `_If anything is wrong, click 'Open Dispute' before the 24 hours expire._`;
 
   return sendWhatsAppMessage({ toPhone: buyerPhone, message });
@@ -84,12 +84,12 @@ export async function sendSellerFundsReleasedWhatsApp(
   netAmountKes: number
 ): Promise<WhatsAppSendResult> {
   const message =
-    `🎉 *DEAL COMPLETED - FUNDS RELEASED!*\n\n` +
+    `*DEAL COMPLETED - FUNDS RELEASED!*\n\n` +
     `The buyer has confirmed receipt and finalized Order *#${orderNumber}*!\n\n` +
-    `💵 *Net Credited to Wallet:* KES ${netAmountKes.toLocaleString()}\n` +
-    `🏦 *Current Status:* In your Available Balance.\n\n` +
+    `*Net Credited to Wallet:* KES ${netAmountKes.toLocaleString()}\n` +
+    `*Current Status:* In your Available Balance.\n\n` +
     `You can withdraw directly to your Safaricom M-Pesa line at any time:\n` +
-    `👉 *Withdraw Earnings:* ${APP_URL}/seller/earnings\n\n` +
+    `*Withdraw Earnings:* ${APP_URL}/seller/earnings\n\n` +
     `_Thank you for trading safely on eFootballMarket!_`;
 
   return sendWhatsAppMessage({ toPhone: sellerPhone, message });
@@ -106,20 +106,20 @@ export async function sendSellerWithdrawalStatusWhatsApp(
 ): Promise<WhatsAppSendResult> {
   if (status === "completed") {
     const message =
-      `✅ *M-PESA WITHDRAWAL DISBURSED!*\n\n` +
+      `*M-PESA WITHDRAWAL DISBURSED!*\n\n` +
       `Your withdrawal of *KES ${amountKes.toLocaleString()}* has been successfully processed and sent to your registered Safaricom line (${formatDisplayPhone(
         sellerPhone
       )}).\n\n` +
       `Check your M-Pesa SMS for the incoming transaction reference.\n` +
-      `👉 *View Earnings:* ${APP_URL}/seller/earnings`;
+      `*View Earnings:* ${APP_URL}/seller/earnings`;
     return sendWhatsAppMessage({ toPhone: sellerPhone, message });
   } else {
     const message =
-      `⚠️ *WITHDRAWAL REQUEST NOT PROCESSED*\n\n` +
+      `*WITHDRAWAL REQUEST NOT PROCESSED*\n\n` +
       `Your withdrawal request of *KES ${amountKes.toLocaleString()}* could not be processed.\n` +
-      (reason ? `📌 *Reason:* ${reason}\n\n` : "\n") +
-      `💵 *The funds have been automatically refunded to your Available Balance.*\n` +
-      `👉 *Check Balance:* ${APP_URL}/seller/earnings`;
+      (reason ? `*Reason:* ${reason}\n\n` : "\n") +
+      `*The funds have been automatically refunded to your Available Balance.*\n` +
+      `*Check Balance:* ${APP_URL}/seller/earnings`;
     return sendWhatsAppMessage({ toPhone: sellerPhone, message });
   }
 }

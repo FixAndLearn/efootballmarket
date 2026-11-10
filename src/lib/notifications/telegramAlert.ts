@@ -290,25 +290,25 @@ export async function broadcastListingToTelegramChannel(
   const title = listing.title || "eFootball Squad";
   const listingUrl = `${APP_URL}/listings/${listing.id}`;
 
-  const coinLine = listing.coin_balance ? `🪙 <b>Coins:</b> <code>${Number(listing.coin_balance).toLocaleString()}</code>\n` : "";
-  const gpLine = listing.gp_balance ? `💵 <b>GP:</b> <code>${Number(listing.gp_balance).toLocaleString()}</code>\n` : "";
+  const coinLine = listing.coin_balance ? `<b>Coins:</b> <code>${Number(listing.coin_balance).toLocaleString()}</code>\n` : "";
+  const gpLine = listing.gp_balance ? `<b>GP:</b> <code>${Number(listing.gp_balance).toLocaleString()}</code>\n` : "";
   const epicsCount = (listing.epic_players_count || 0) + (listing.big_time_players_count || 0) + (listing.legend_players_count || 0);
-  const epicsLine = epicsCount > 0 ? `🌟 <b>Epic / Big Time / Legends:</b> <code>${epicsCount} Players</code>\n` : "";
-  const divisionLine = listing.highest_division ? `🏆 <b>Peak Division:</b> <code>Division ${listing.highest_division}</code>\n` : "";
+  const epicsLine = epicsCount > 0 ? `<b>Epic / Big Time / Legends:</b> <code>${epicsCount} Players</code>\n` : "";
+  const divisionLine = listing.highest_division ? `<b>Peak Division:</b> <code>Division ${listing.highest_division}</code>\n` : "";
 
   const captionHtml =
-    `🔥 <b>NEW VERIFIED SQUAD ON EFOOTBALLMARKET</b> ⚽\n\n` +
-    `🎮 <b>Account:</b> <b>${escapeHtml(title)}</b>\n` +
+    `<b>NEW VERIFIED SQUAD ON EFOOTBALLMARKET</b> \n\n` +
+    `<b>Account:</b> <b>${escapeHtml(title)}</b>\n` +
     `⭐ <b>Squad Strength:</b> <code>${ovr} OVR</code>\n` +
-    `💰 <b>Price:</b> <b>${priceKes}</b>\n` +
-    `📱 <b>Platform:</b> <code>${platform}</code>\n` +
+    `<b>Price:</b> <b>${priceKes}</b>\n` +
+    `<b>Platform:</b> <code>${platform}</code>\n` +
     coinLine +
     gpLine +
     epicsLine +
     divisionLine +
-    `🛡️ <b>Escrow Protected:</b> Safaricom Till <code>1572931</code>\n` +
-    `🔐 <b>Konami ID:</b> Transferable &amp; Email Bindable\n\n` +
-    `⚡ <i>Funds held in secure escrow until buyer confirms squad access &amp; players!</i>\n\n` +
+    `<b>Escrow Protected:</b> Safaricom Till <code>1572931</code>\n` +
+    `<b>Konami ID:</b> Transferable &amp; Email Bindable\n\n` +
+    `<i>Funds held in secure escrow until buyer confirms squad access &amp; players!</i>\n\n` +
     `#eFootball #eFootballKenya #eFootballMarket #GamingKE`;
 
   const waInquiryUrl = `https://wa.me/254794400365?text=${encodeURIComponent(
@@ -316,10 +316,10 @@ export async function broadcastListingToTelegramChannel(
   )}`;
 
   const buttons = [
-    [{ text: `🛒 Buy Safely (${priceKes})`, url: listingUrl }],
+    [{ text: `Buy Safely (${priceKes})`, url: listingUrl }],
     [
-      { text: "💬 Deal Inquiry / WhatsApp", url: waInquiryUrl },
-      { text: "⚽ Browse All Squads", url: `${APP_URL}/browse` },
+      { text: "Deal Inquiry / WhatsApp", url: waInquiryUrl },
+      { text: "Browse All Squads", url: `${APP_URL}/browse` },
     ],
   ];
 
@@ -425,19 +425,19 @@ export async function notifySellerNewOfferViaTelegram(params: {
       : 0;
 
   const msg =
-    `🤝 <b>NEW CASH OFFER ON YOUR SQUAD!</b> ⚽\n\n` +
-    `🎮 <b>Squad:</b> <b>${escapeHtml(params.listingTitle)}</b>\n` +
-    `💰 <b>Offered:</b> <b>KES ${Number(params.offerAmount).toLocaleString()}</b> ` +
+    `<b>NEW CASH OFFER ON YOUR SQUAD!</b> \n\n` +
+    `<b>Squad:</b> <b>${escapeHtml(params.listingTitle)}</b>\n` +
+    `<b>Offered:</b> <b>KES ${Number(params.offerAmount).toLocaleString()}</b> ` +
     (discount > 0
       ? `<i>(${discount}% off original KES ${Number(params.originalPrice).toLocaleString()})</i>\n`
       : `\n`) +
-    `👤 <b>Buyer:</b> ${escapeHtml(params.buyerName)}\n` +
-    (params.note ? `💬 <b>Buyer Note:</b> <i>"${escapeHtml(params.note)}"</i>\n\n` : `\n`) +
-    `⚡ <i>Review quickly to accept or negotiate before the buyer finds another squad!</i>`;
+    `<b>Buyer:</b> ${escapeHtml(params.buyerName)}\n` +
+    (params.note ? `<b>Buyer Note:</b> <i>"${escapeHtml(params.note)}"</i>\n\n` : `\n`) +
+    `<i>Review quickly to accept or negotiate before the buyer finds another squad!</i>`;
 
   return sendTelegramToUser(params.sellerId, msg, [
-    [{ text: "🤝 Review & Accept Offer", url: `${APP_URL}/dashboard/seller` }],
-    [{ text: "⚽ View Squad Listing", url: `${APP_URL}/listings/${params.listingId}` }],
+    [{ text: "Review & Accept Offer", url: `${APP_URL}/dashboard/seller` }],
+    [{ text: "View Squad Listing", url: `${APP_URL}/listings/${params.listingId}` }],
   ]);
 }
 
@@ -453,17 +453,17 @@ export async function notifySellerOrderSecuredViaTelegram(params: {
   buyerPhone?: string;
 }): Promise<TelegramSendResult> {
   const msg =
-    `🎉 <b>SQUAD SOLD! PAYMENT SECURED IN ESCROW</b> 🛡️\n\n` +
-    `📦 <b>Order:</b> <code>${escapeHtml(params.orderNumber)}</code>\n` +
-    `🎮 <b>Squad:</b> <b>${escapeHtml(params.listingTitle)}</b>\n` +
-    `💵 <b>Amount Locked:</b> <b>KES ${Number(params.amount).toLocaleString()}</b>\n` +
-    `🛡️ <b>M-Pesa Escrow:</b> Verified safely at Till <code>1572931</code>\n\n` +
-    `⚡ <b>ACTION REQUIRED:</b>\n` +
+    `<b>SQUAD SOLD! PAYMENT SECURED IN ESCROW</b> \n\n` +
+    `<b>Order:</b> <code>${escapeHtml(params.orderNumber)}</code>\n` +
+    `<b>Squad:</b> <b>${escapeHtml(params.listingTitle)}</b>\n` +
+    `<b>Amount Locked:</b> <b>KES ${Number(params.amount).toLocaleString()}</b>\n` +
+    `<b>M-Pesa Escrow:</b> Verified safely at Till <code>1572931</code>\n\n` +
+    `<b>ACTION REQUIRED:</b>\n` +
     `Please log into the Escrow Vault now to deliver the Konami ID and login details so the buyer can inspect and release your payout!`;
 
   return sendTelegramToUser(params.sellerId, msg, [
-    [{ text: "🔑 Deliver Credentials to Buyer", url: `${APP_URL}/orders/${params.orderId}` }],
-    [{ text: "📊 Open Seller Dashboard", url: `${APP_URL}/dashboard/seller` }],
+    [{ text: "Deliver Credentials to Buyer", url: `${APP_URL}/orders/${params.orderId}` }],
+    [{ text: "Open Seller Dashboard", url: `${APP_URL}/dashboard/seller` }],
   ]);
 }
 
@@ -483,24 +483,24 @@ export async function notifyEscrowMessageViaTelegram(params: {
     : params.messagePreview;
 
   const msg =
-    `💬 <b>NEW MESSAGE IN ESCROW ROOM</b> 📨\n\n` +
-    `📦 <b>Room:</b> <code>${escapeHtml(title)}</code>\n` +
-    `👤 <b>From:</b> <b>${escapeHtml(params.senderName)}</b>\n` +
-    `📝 <b>Message:</b> <i>"${escapeHtml(preview)}"</i>\n\n` +
-    `🛡️ <i>Funds remain safely protected in Escrow Till 1572931.</i>`;
+    `<b>NEW MESSAGE IN ESCROW ROOM</b> \n\n` +
+    `<b>Room:</b> <code>${escapeHtml(title)}</code>\n` +
+    `<b>From:</b> <b>${escapeHtml(params.senderName)}</b>\n` +
+    `<b>Message:</b> <i>"${escapeHtml(preview)}"</i>\n\n` +
+    `<i>Funds remain safely protected in Escrow Till 1572931.</i>`;
 
   const buttons: Array<Array<{ text: string; url?: string }>> = [];
   if (params.orderId) {
-    buttons.push([{ text: "💬 Reply in Escrow Room", url: `${APP_URL}/orders/${params.orderId}` }]);
+    buttons.push([{ text: "Reply in Escrow Room", url: `${APP_URL}/orders/${params.orderId}` }]);
   } else {
-    buttons.push([{ text: "💬 Open Portal", url: `${APP_URL}/dashboard/buyer` }]);
+    buttons.push([{ text: "Open Portal", url: `${APP_URL}/dashboard/buyer` }]);
   }
 
   return sendTelegramToUser(params.recipientId, msg, buttons);
 }
 
 /**
- * Formats a clean, high-priority HTML Telegram notification for Brian Okibo (CEO).
+ * Formats a clean, high-priority HTML Telegram notification for admin support desk.
  */
 export function formatTelegramAlertHtml(payload: AdminAlertPayload): { text: string; buttons: any[] } {
   const currency = payload.currency || "KES";
@@ -512,206 +512,206 @@ export function formatTelegramAlertHtml(payload: AdminAlertPayload): { text: str
     minute: "2-digit",
   });
 
-  let header = "🔔 <b>eFootballMarket Alert</b>";
+  let header = "<b>eFootballMarket Alert</b>";
   let bodyLines: string[] = [];
   let inlineButtons: any[] = [];
 
   switch (payload.eventType) {
     case "PAYMENT_RECEIVED":
-      header = "💰 <b>M-PESA PAYMENT SECURED (TILL 1572931)</b>";
+      header = "<b>M-PESA PAYMENT SECURED (TILL 1572931)</b>";
       bodyLines = [
-        `📦 <b>Order:</b> <code>${payload.orderNumber || "Direct"}</code>`,
-        `🎮 <b>Squad:</b> ${payload.listingTitle || "eFootball Account"}`,
-        `💵 <b>Amount:</b> <b>${formattedAmount}</b>`,
-        payload.receiptNumber ? `🧾 <b>M-Pesa Receipt:</b> <code>${payload.receiptNumber}</code>` : "",
-        payload.buyerPhone ? `📱 <b>Buyer:</b> <code>${formatDisplayPhone(payload.buyerPhone)}</code>` : "",
-        `🛡️ <b>Status:</b> Locked in Escrow. Seller notified to deliver credentials.`,
+        `<b>Order:</b> <code>${payload.orderNumber || "Direct"}</code>`,
+        `<b>Squad:</b> ${payload.listingTitle || "eFootball Account"}`,
+        `<b>Amount:</b> <b>${formattedAmount}</b>`,
+        payload.receiptNumber ? `<b>M-Pesa Receipt:</b> <code>${payload.receiptNumber}</code>` : "",
+        payload.buyerPhone ? `<b>Buyer:</b> <code>${formatDisplayPhone(payload.buyerPhone)}</code>` : "",
+        `<b>Status:</b> Locked in Escrow. Seller notified to deliver credentials.`,
         `⏰ <b>Time:</b> ${time} EAT`,
       ];
       if (payload.orderId) {
         inlineButtons = [
-          [{ text: "📦 Open Order Portal", url: `${APP_URL}/orders/${payload.orderId}` }],
-          [{ text: "🛡️ Admin Executive Panel", url: `${APP_URL}/admin?tab=withdrawals` }],
+          [{ text: "Open Order Portal", url: `${APP_URL}/orders/${payload.orderId}` }],
+          [{ text: "Admin Console", url: `${APP_URL}/admin?tab=withdrawals` }],
         ];
       }
       break;
 
     case "NEW_USER_REGISTERED":
-      header = "👤 <b>NEW USER REGISTRATION</b>";
+      header = "<b>NEW USER REGISTRATION</b>";
       bodyLines = [
-        `🎮 <b>Trader:</b> @${payload.username || "Gamer"}`,
-        payload.userEmail ? `📧 <b>Email:</b> ${payload.userEmail}` : "",
-        payload.buyerPhone ? `📱 <b>Phone:</b> <code>${formatDisplayPhone(payload.buyerPhone)}</code>` : "",
+        `<b>Trader:</b> @${payload.username || "Gamer"}`,
+        payload.userEmail ? `<b>Email:</b> ${payload.userEmail}` : "",
+        payload.buyerPhone ? `<b>Phone:</b> <code>${formatDisplayPhone(payload.buyerPhone)}</code>` : "",
         `⏰ <b>Joined:</b> ${time} EAT`,
       ];
       inlineButtons = [
-        [{ text: "👥 View Users in Admin", url: `${APP_URL}/admin?tab=users` }],
+        [{ text: "View Users in Admin", url: `${APP_URL}/admin?tab=users` }],
       ];
       break;
 
     case "NEW_LISTING_CREATED":
-      header = "⚽ <b>NEW ACCOUNT LISTED FOR SALE</b>";
+      header = "<b>NEW ACCOUNT LISTED FOR SALE</b>";
       bodyLines = [
-        `🎮 <b>Squad:</b> ${payload.listingTitle || "Account"}`,
-        `💰 <b>Price:</b> <b>${formattedAmount}</b>`,
-        payload.username ? `👤 <b>Seller:</b> @${payload.username}` : "",
-        payload.sellerPhone ? `📱 <b>Phone:</b> <code>${formatDisplayPhone(payload.sellerPhone)}</code>` : "",
+        `<b>Squad:</b> ${payload.listingTitle || "Account"}`,
+        `<b>Price:</b> <b>${formattedAmount}</b>`,
+        payload.username ? `<b>Seller:</b> @${payload.username}` : "",
+        payload.sellerPhone ? `<b>Phone:</b> <code>${formatDisplayPhone(payload.sellerPhone)}</code>` : "",
         `⏰ <b>Listed:</b> ${time} EAT`,
       ];
       if (payload.orderId) {
         inlineButtons = [
           [
-            { text: "📢 Broadcast Deal", callback_data: `broadcast_listing:${payload.orderId}` },
-            { text: "🚨 Take Down", callback_data: `takedown_listing:${payload.orderId}` },
+            { text: "Broadcast Deal", callback_data: `broadcast_listing:${payload.orderId}` },
+            { text: "Take Down", callback_data: `takedown_listing:${payload.orderId}` },
           ],
-          [{ text: "⚽ Review in Admin", url: `${APP_URL}/admin?tab=listings` }],
+          [{ text: "Review in Admin", url: `${APP_URL}/admin?tab=listings` }],
         ];
       } else {
         inlineButtons = [
-          [{ text: "⚽ Review Marketplace Listings", url: `${APP_URL}/admin?tab=listings` }],
+          [{ text: "Review Marketplace Listings", url: `${APP_URL}/admin?tab=listings` }],
         ];
       }
       break;
 
     case "CREDENTIALS_DELIVERED":
-      header = "🔑 <b>SELLER DELIVERED KONAMI ID</b>";
+      header = "<b>SELLER DELIVERED KONAMI ID</b>";
       bodyLines = [
-        `📦 <b>Order:</b> <code>${payload.orderNumber}</code>`,
-        `🎮 <b>Squad:</b> ${payload.listingTitle}`,
+        `<b>Order:</b> <code>${payload.orderNumber}</code>`,
+        `<b>Squad:</b> ${payload.listingTitle}`,
         `⏳ <b>Buyer Window:</b> 24-hr inspection timer running.`,
       ];
       if (payload.orderId) {
         inlineButtons = [
-          [{ text: "🔑 Inspect Order Vault", url: `${APP_URL}/orders/${payload.orderId}` }],
+          [{ text: "Inspect Order Vault", url: `${APP_URL}/orders/${payload.orderId}` }],
         ];
       }
       break;
 
     case "ESCROW_RELEASED":
-      header = "✅ <b>ESCROW COMPLETED &amp; RELEASED</b>";
+      header = "<b>ESCROW COMPLETED &amp; RELEASED</b>";
       bodyLines = [
-        `📦 <b>Order:</b> <code>${payload.orderNumber}</code>`,
-        `🎮 <b>Squad:</b> ${payload.listingTitle}`,
-        `💵 <b>Net to Seller:</b> <b>${formattedAmount}</b>`,
-        `🎉 <b>Status:</b> Deal completed safely with 0 disputes!`,
+        `<b>Order:</b> <code>${payload.orderNumber}</code>`,
+        `<b>Squad:</b> ${payload.listingTitle}`,
+        `<b>Net to Seller:</b> <b>${formattedAmount}</b>`,
+        `<b>Status:</b> Deal completed safely with 0 disputes!`,
       ];
       break;
 
     case "DISPUTE_OPENED":
-      header = "🚨 <b>ESCROW DISPUTE OPENED (ACTION REQUIRED)</b>";
+      header = "<b>ESCROW DISPUTE OPENED (ACTION REQUIRED)</b>";
       bodyLines = [
-        `📦 <b>Order:</b> <code>${payload.orderNumber}</code>`,
-        `🎮 <b>Squad:</b> ${payload.listingTitle}`,
-        payload.details ? `⚠️ <b>Conflict:</b> ${payload.details}` : "",
-        `🛡️ <b>Status:</b> Escrow funds frozen until mediator review.`,
+        `<b>Order:</b> <code>${payload.orderNumber}</code>`,
+        `<b>Squad:</b> ${payload.listingTitle}`,
+        payload.details ? `<b>Conflict:</b> ${payload.details}` : "",
+        `<b>Status:</b> Escrow funds frozen until mediator review.`,
       ];
       if (payload.orderId) {
         inlineButtons = [
-          [{ text: "🚨 Resolve Dispute in Portal", url: `${APP_URL}/orders/${payload.orderId}` }],
+          [{ text: "Resolve Dispute in Portal", url: `${APP_URL}/orders/${payload.orderId}` }],
         ];
       }
       break;
 
     case "POST_RELEASE_DISPUTE_OPENED":
-      header = "🚨 <b>POST-RELEASE DISPUTE OPENED (FUNDS FROZEN)</b>";
+      header = "<b>POST-RELEASE DISPUTE OPENED (FUNDS FROZEN)</b>";
       bodyLines = [
-        `📦 <b>Order:</b> <code>${payload.orderNumber}</code>`,
-        `🎮 <b>Squad:</b> ${payload.listingTitle}`,
-        payload.amount !== undefined ? `💵 <b>Disputed Amount:</b> <b>${formattedAmount}</b>` : "",
-        `⚠️ <b>Conflict:</b> Post-handover dispute raised by buyer after fund release.`,
-        `🔒 <b>Action Taken:</b> Seller available balance frozen. Immediate Konami account audit required.`,
-        payload.details ? `📝 <b>Details:</b> <i>"${payload.details}"</i>` : "",
+        `<b>Order:</b> <code>${payload.orderNumber}</code>`,
+        `<b>Squad:</b> ${payload.listingTitle}`,
+        payload.amount !== undefined ? `<b>Disputed Amount:</b> <b>${formattedAmount}</b>` : "",
+        `<b>Conflict:</b> Post-handover dispute raised by buyer after fund release.`,
+        `<b>Action Taken:</b> Seller available balance frozen. Immediate Konami account audit required.`,
+        payload.details ? `<b>Details:</b> <i>"${payload.details}"</i>` : "",
       ];
       if (payload.orderId) {
         inlineButtons = [
-          [{ text: "🚨 Audit & Resolve in Portal", url: `${APP_URL}/orders/${payload.orderId}` }],
-          [{ text: "🛡️ Admin Executive Panel", url: `${APP_URL}/admin?tab=withdrawals` }],
+          [{ text: "Audit & Resolve in Portal", url: `${APP_URL}/orders/${payload.orderId}` }],
+          [{ text: "Admin Console", url: `${APP_URL}/admin?tab=withdrawals` }],
         ];
       }
       break;
 
     case "NEW_OFFER_SUBMITTED":
-      header = "🤝 <b>NEW BUYER COUNTER-OFFER</b>";
+      header = "<b>NEW BUYER COUNTER-OFFER</b>";
       bodyLines = [
-        `🎮 <b>Squad:</b> ${payload.listingTitle}`,
-        `💰 <b>Offered:</b> <b>${formattedAmount}</b>`,
-        payload.buyerPhone ? `📱 <b>Buyer Phone:</b> <code>${formatDisplayPhone(payload.buyerPhone)}</code>` : "",
-        payload.details ? `💬 <b>Details:</b> <i>"${payload.details}"</i>` : "",
+        `<b>Squad:</b> ${payload.listingTitle}`,
+        `<b>Offered:</b> <b>${formattedAmount}</b>`,
+        payload.buyerPhone ? `<b>Buyer Phone:</b> <code>${formatDisplayPhone(payload.buyerPhone)}</code>` : "",
+        payload.details ? `<b>Details:</b> <i>"${payload.details}"</i>` : "",
       ];
       break;
 
     case "MIDDLEMAN_DEAL_CREATED":
-      header = "🤝 <b>NEW BYOD MIDDLEMAN CONTRACT</b>";
+      header = "<b>NEW BYOD MIDDLEMAN CONTRACT</b>";
       bodyLines = [
-        `🏷️ <b>Deal Code:</b> <code>${payload.orderNumber}</code>`,
-        `🎮 <b>Item:</b> ${payload.listingTitle}`,
-        `💰 <b>Amount:</b> <b>${formattedAmount}</b>`,
-        payload.buyerPhone ? `📱 <b>Buyer:</b> <code>${formatDisplayPhone(payload.buyerPhone)}</code>` : "",
-        payload.sellerPhone ? `📱 <b>Seller:</b> <code>${formatDisplayPhone(payload.sellerPhone)}</code>` : "",
+        `<b>Deal Code:</b> <code>${payload.orderNumber}</code>`,
+        `<b>Item:</b> ${payload.listingTitle}`,
+        `<b>Amount:</b> <b>${formattedAmount}</b>`,
+        payload.buyerPhone ? `<b>Buyer:</b> <code>${formatDisplayPhone(payload.buyerPhone)}</code>` : "",
+        payload.sellerPhone ? `<b>Seller:</b> <code>${formatDisplayPhone(payload.sellerPhone)}</code>` : "",
       ];
       inlineButtons = [
-        [{ text: "🤝 Open Middleman Room", url: `${APP_URL}/middleman` }],
+        [{ text: "Open Middleman Room", url: `${APP_URL}/middleman` }],
       ];
       break;
 
     case "WANTED_REQUEST_POSTED":
-      header = "🎯 <b>NEW WANTED SQUAD REQUEST</b>";
+      header = "<b>NEW WANTED SQUAD REQUEST</b>";
       bodyLines = [
-        `🎮 <b>Squad Request:</b> ${payload.listingTitle}`,
-        `💵 <b>Budget:</b> <b>${formattedAmount}</b>`,
-        payload.buyerPhone ? `📱 <b>Buyer Phone:</b> <code>${formatDisplayPhone(payload.buyerPhone)}</code>` : "",
+        `<b>Squad Request:</b> ${payload.listingTitle}`,
+        `<b>Budget:</b> <b>${formattedAmount}</b>`,
+        payload.buyerPhone ? `<b>Buyer Phone:</b> <code>${formatDisplayPhone(payload.buyerPhone)}</code>` : "",
       ];
       inlineButtons = [
-        [{ text: "🎯 View Wanted Board", url: `${APP_URL}/wanted` }],
+        [{ text: "View Wanted Board", url: `${APP_URL}/wanted` }],
       ];
       break;
 
     case "WITHDRAWAL_REQUESTED":
-      header = "🏦 <b>SELLER M-PESA WITHDRAWAL REQUEST</b>";
+      header = "<b>SELLER M-PESA WITHDRAWAL REQUEST</b>";
       bodyLines = [
-        payload.username ? `👤 <b>Seller:</b> @${payload.username}` : "",
-        `💵 <b>Amount:</b> <b>${formattedAmount}</b>`,
-        payload.sellerPhone ? `📱 <b>M-Pesa Line:</b> <code>${formatDisplayPhone(payload.sellerPhone)}</code>` : "",
-        `⚡ <b>Action:</b> Disburse via M-Pesa B2C or Till payout.`,
+        payload.username ? `<b>Seller:</b> @${payload.username}` : "",
+        `<b>Amount:</b> <b>${formattedAmount}</b>`,
+        payload.sellerPhone ? `<b>M-Pesa Line:</b> <code>${formatDisplayPhone(payload.sellerPhone)}</code>` : "",
+        `<b>Action:</b> Disburse via M-Pesa B2C or Till payout.`,
       ];
       if (payload.orderId) {
         inlineButtons = [
           [
-            { text: "✅ Disburse & Approve", callback_data: `approve_withdrawal:${payload.orderId}` },
-            { text: "❌ Reject & Refund", callback_data: `reject_withdrawal:${payload.orderId}` },
+            { text: "Disburse & Approve", callback_data: `approve_withdrawal:${payload.orderId}` },
+            { text: "Reject & Refund", callback_data: `reject_withdrawal:${payload.orderId}` },
           ],
-          [{ text: "🏦 Open in Admin Dashboard", url: `${APP_URL}/admin?tab=withdrawals` }],
+          [{ text: "Open in Admin Dashboard", url: `${APP_URL}/admin?tab=withdrawals` }],
         ];
       } else {
         inlineButtons = [
-          [{ text: "🏦 Approve Payout in Admin", url: `${APP_URL}/admin?tab=withdrawals` }],
+          [{ text: "Approve Payout in Admin", url: `${APP_URL}/admin?tab=withdrawals` }],
         ];
       }
       break;
 
     case "TOURNAMENT_REGISTRATION":
-      header = "🏆 <b>NEW TOURNAMENT REGISTRATION</b>";
+      header = "<b>NEW TOURNAMENT REGISTRATION</b>";
       bodyLines = [
-        `🎮 <b>Tournament:</b> ${payload.listingTitle || "eFootball Cup"}`,
-        payload.amount ? `💵 <b>Entry Fee:</b> <b>${formattedAmount}</b>` : "💵 <b>Entry Fee:</b> <b>Free Entry</b>",
-        payload.buyerPhone ? `📱 <b>Player Phone:</b> <code>${formatDisplayPhone(payload.buyerPhone)}</code>` : "",
-        payload.details ? `👤 <b>Player Details:</b> ${payload.details}` : "",
-        `⚡ <b>Action:</b> Confirm entry fee payment to Till 1572931 & generate Match Room code.`,
+        `<b>Tournament:</b> ${payload.listingTitle || "eFootball Cup"}`,
+        payload.amount ? `<b>Entry Fee:</b> <b>${formattedAmount}</b>` : "<b>Entry Fee:</b> <b>Free Entry</b>",
+        payload.buyerPhone ? `<b>Player Phone:</b> <code>${formatDisplayPhone(payload.buyerPhone)}</code>` : "",
+        payload.details ? `<b>Player Details:</b> ${payload.details}` : "",
+        `<b>Action:</b> Confirm entry fee payment to Till 1572931 & generate Match Room code.`,
       ];
       inlineButtons = [
-        [{ text: "🏆 View Tournament Brackets", url: `${APP_URL}/tournaments` }],
-        [{ text: "💬 Chat with Player", url: `https://wa.me/${payload.buyerPhone ? payload.buyerPhone.replace(/[^0-9]/g, "") : ""}` }],
+        [{ text: "View Tournament Brackets", url: `${APP_URL}/tournaments` }],
+        [{ text: "Chat with Player", url: `https://wa.me/${payload.buyerPhone ? payload.buyerPhone.replace(/[^0-9]/g, "") : ""}` }],
       ];
       break;
 
     default:
-      header = "🔔 <b>eFootballMarket Update</b>";
+      header = "<b>eFootballMarket Update</b>";
       bodyLines = [payload.details || payload.listingTitle || "Platform activity recorded."];
       break;
   }
 
   const cleanBody = bodyLines.filter(Boolean).join("\n");
-  const fullText = `${header}\n\n${cleanBody}\n\n🏛️ <b>eFootballMarket Executive System</b>`;
+  const fullText = `${header}\n\n${cleanBody}\n\n<b>eFootballMarket Operations</b>`;
 
   return { text: fullText, buttons: inlineButtons };
 }

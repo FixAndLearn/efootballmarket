@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
           error: "prohibited_content",
           userWarningMessage:
             filterResult.userWarningMessage ||
-            "⚠️ Prohibited: Sharing off-platform contacts (WhatsApp, Telegram, links, phone numbers) is strictly not allowed. Your message was blocked and deleted directly.",
+            "Prohibited: Sharing off-platform contacts (WhatsApp, Telegram, links, phone numbers) is strictly not allowed. Your message was blocked and deleted directly.",
           category: filterResult.matchedCategory,
         },
         { status: 400 }
@@ -153,7 +153,7 @@ export async function POST(req: NextRequest) {
         {
           error: "payment_required",
           userWarningMessage:
-            "🔒 Lipa Na M-Pesa STK Push payment must be completed before communication with the seller is activated.",
+            "Lipa Na M-Pesa STK Push payment must be completed before communication with the seller is activated.",
         },
         { status: 403 }
       );

@@ -144,14 +144,14 @@ export default function WantedBoardPage() {
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="max-w-2xl space-y-2.5">
-            <span className="inline-block px-2.5 py-0.5 rounded bg-[#FEF3C7] border border-amber-500/35 text-[11px] font-mono font-bold text-[#92400E] uppercase">
+            <span className="inline-block px-2.5 py-0.5 rounded bg-sx-amber-tint border border-amber-500/35 text-[11px] font-mono font-bold text-sx-amber-text uppercase">
               Buyer Wanted Board
             </span>
-            <h1 className="text-2xl sm:text-4xl font-bold text-[#0F0F0F] font-display tracking-tight">
+            <h1 className="text-2xl sm:text-4xl font-bold text-sx-ink font-display tracking-tight">
               Buyers Looking for Specific Squads
             </h1>
-            <p className="text-xs sm:text-sm text-[#3D3D3D] leading-relaxed">
-              Post the exact Collective Strength, Epic cards, and KES budget you want—or pitch your matching squad to verified Kenyan buyers via Till <strong className="text-[#006340]">1572931</strong>.
+            <p className="text-xs sm:text-sm text-sx-ink-soft leading-relaxed">
+              Post the exact Collective Strength, Epic cards, and KES budget you want—or pitch your matching squad to verified Kenyan buyers via Till <strong className="text-sx-green-text">1572931</strong>.
             </p>
           </div>
 
@@ -189,8 +189,8 @@ export default function WantedBoardPage() {
               onClick={() => setPlatformFilter(tab.id)}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 platformFilter === tab.id
-                  ? "bg-[#006340] hover:bg-[#004D32] text-[#0F0F0F] font-bold shadow-md shadow-amber-500/20"
-                  : "bg-pitch-surface border border-pitch-border text-[#3D3D3D] hover:text-[#0F0F0F] hover:border-[#9E9E99]"
+                  ? "bg-sx-green hover:bg-sx-green-hover text-sx-ink font-bold shadow-md shadow-amber-500/20"
+                  : "bg-pitch-surface border border-pitch-border text-sx-ink-soft hover:text-sx-ink hover:border-sx-border-strong"
               }`}
             >
               {tab.label}
@@ -200,13 +200,13 @@ export default function WantedBoardPage() {
 
         {/* Search */}
         <div className="relative min-w-[240px]">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-[#5F5F5F]" />
+          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-sx-muted" />
           <input
             type="text"
             placeholder="Search wanted players or OVR..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 rounded-xl bg-pitch-surface border border-pitch-border text-xs text-[#0F0F0F] placeholder:text-[#767676] focus:outline-none focus:border-amber-400"
+            className="w-full pl-9 pr-3 py-2 rounded-xl bg-pitch-surface border border-pitch-border text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-amber-400"
           />
         </div>
       </div>
@@ -220,9 +220,9 @@ export default function WantedBoardPage() {
         </div>
       ) : filteredRequests.length === 0 ? (
         <div className="text-center py-16 bg-pitch-surface border border-pitch-border rounded-3xl p-8 space-y-3">
-          <Target className="w-12 h-12 text-[#767676] mx-auto stroke-[1.5]" />
-          <h3 className="text-lg font-bold text-[#0F0F0F]">No active requests for this filter</h3>
-          <p className="text-xs text-[#5F5F5F] max-w-md mx-auto">
+          <Target className="w-12 h-12 text-sx-muted mx-auto stroke-[1.5]" />
+          <h3 className="text-lg font-bold text-sx-ink">No active requests for this filter</h3>
+          <p className="text-xs text-sx-muted max-w-md mx-auto">
             No buyer requests currently open under this category. Use the &quot;Post Account Request&quot; button above to publish your target squad wish.
           </p>
         </div>
@@ -231,7 +231,7 @@ export default function WantedBoardPage() {
           {filteredRequests.map((req) => (
             <div
               key={req.id}
-              className="bg-pitch-surface border border-pitch-border hover:border-[#FDE68A] rounded-2xl p-6 flex flex-col justify-between shadow-xl transition-all duration-300 group hover:-translate-y-1"
+              className="bg-pitch-surface border border-pitch-border hover:border-sx-amber-border rounded-2xl p-6 flex flex-col justify-between shadow-xl transition-all duration-300 group hover:-translate-y-1"
             >
               <div className="space-y-4">
                 {/* Header Pills */}
@@ -239,27 +239,27 @@ export default function WantedBoardPage() {
                   <Badge variant="brand" size="sm">
                     {getPlatformLabel(req.preferred_platform)}
                   </Badge>
-                  <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#FEF3C7] border border-[#FDE68A] text-[11px] font-bold text-[#92400E]">
-                    <Zap className="w-3 h-3 text-[#B45309] fill-amber-400" />
+                  <div className="flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-sx-amber-tint border border-sx-amber-border text-[11px] font-bold text-sx-amber-text">
+                    <Zap className="w-3 h-3 text-sx-amber-text fill-amber-400" />
                     <span>Min OVR {req.min_overall_rating}+</span>
                   </div>
                 </div>
 
                 {/* Title & Description */}
                 <div>
-                  <h3 className="text-base font-bold text-[#0F0F0F] line-clamp-2 group-hover:text-[#92400E] transition-colors">
+                  <h3 className="text-base font-bold text-sx-ink line-clamp-2 group-hover:text-sx-amber-text transition-colors">
                     {req.title}
                   </h3>
-                  <p className="text-xs text-[#3D3D3D] mt-1.5 line-clamp-2 leading-relaxed">
+                  <p className="text-xs text-sx-ink-soft mt-1.5 line-clamp-2 leading-relaxed">
                     {req.description}
                   </p>
                 </div>
 
                 {/* Target Playstyle & Key Players */}
                 <div className="space-y-2">
-                  <div className="text-[11px] text-[#5F5F5F] flex items-center gap-1.5">
-                    <span className="font-semibold text-[#3D3D3D]">Playstyle:</span>
-                    <span className="text-[#1F1F1F]">{getPlaystyleLabel(req.target_playstyle)}</span>
+                  <div className="text-[11px] text-sx-muted flex items-center gap-1.5">
+                    <span className="font-semibold text-sx-ink-soft">Playstyle:</span>
+                    <span className="text-sx-ink-soft">{getPlaystyleLabel(req.target_playstyle)}</span>
                   </div>
 
                   {req.key_players_wanted && req.key_players_wanted.length > 0 && (
@@ -267,7 +267,7 @@ export default function WantedBoardPage() {
                       {req.key_players_wanted.map((player, idx) => (
                         <span
                           key={idx}
-                          className="px-2 py-0.5 rounded-md bg-pitch-card border border-pitch-border text-[10px] font-semibold text-[#92400E]"
+                          className="px-2 py-0.5 rounded-md bg-pitch-card border border-pitch-border text-[10px] font-semibold text-sx-amber-text"
                         >
                           ⭐ {player}
                         </span>
@@ -281,14 +281,14 @@ export default function WantedBoardPage() {
               <div className="mt-6 pt-4 border-t border-pitch-border/60 space-y-3">
                 <div className="flex items-center justify-between">
                   <div>
-                    <span className="text-[10px] text-[#5F5F5F] uppercase font-semibold block">Buyer Budget</span>
-                    <span className="text-lg font-extrabold text-[#006340] font-display">
+                    <span className="text-[10px] text-sx-muted uppercase font-semibold block">Buyer Budget</span>
+                    <span className="text-lg font-extrabold text-sx-green-text font-display">
                       {formatCurrency(req.budget_kes, "KES")}
                     </span>
                   </div>
                   <div className="text-right">
-                    <span className="text-[10px] text-[#5F5F5F] block">Requested by</span>
-                    <span className="text-xs font-bold text-[#1F1F1F]">{req.buyer_name}</span>
+                    <span className="text-[10px] text-sx-muted block">Requested by</span>
+                    <span className="text-xs font-bold text-sx-ink-soft">{req.buyer_name}</span>
                   </div>
                 </div>
 
@@ -310,14 +310,14 @@ export default function WantedBoardPage() {
       )}
 
       {/* Escrow Guarantee Safety Banner */}
-      <div className="mt-12 bg-gradient-to-r from-emerald-950/40 via-pitch-card to-slate-900 border border-[#BFE0CE] rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+      <div className="mt-12 bg-sx-stone border border-sx-green-border rounded-2xl p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#EBF5F0] border border-[#BFE0CE] flex items-center justify-center text-[#006340] shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-sx-green-tint border border-sx-green-border flex items-center justify-center text-sx-green-text shrink-0">
             <ShieldCheck className="w-5 h-5" />
           </div>
           <div>
-            <h4 className="text-sm font-bold text-[#0F0F0F]">Safe Trading Protocol for Wanted Deals</h4>
-            <p className="text-xs text-[#3D3D3D]">
+            <h4 className="text-sm font-bold text-sx-ink">Safe Trading Protocol for Wanted Deals</h4>
+            <p className="text-xs text-sx-ink-soft">
               Never send credentials or money directly on WhatsApp. Always create a listing and process payment through Lipa Na M-Pesa Till <strong>1572931</strong>.
             </p>
           </div>
@@ -342,18 +342,18 @@ export default function WantedBoardPage() {
           <div className="w-full max-w-lg bg-pitch-surface border border-pitch-border rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
             <div className="p-6 border-b border-pitch-border bg-pitch-card/60 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
-                <div className="w-9 h-9 rounded-xl bg-[#FEF3C7] text-[#B45309] flex items-center justify-center">
+                <div className="w-9 h-9 rounded-xl bg-sx-amber-tint text-sx-amber-text flex items-center justify-center">
                   <Target className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-[#0F0F0F]">Post Desired Account Request</h3>
-                  <p className="text-xs text-[#5F5F5F]">Kenyan sellers will pitch matching squads to you.</p>
+                  <h3 className="text-base font-bold text-sx-ink">Post Desired Account Request</h3>
+                  <p className="text-xs text-sx-muted">Kenyan sellers will pitch matching squads to you.</p>
                 </div>
               </div>
               <button
                 type="button"
                 onClick={() => setIsModalOpen(false)}
-                className="p-1.5 rounded-lg text-[#5F5F5F] hover:text-[#0F0F0F] hover:bg-[#F4F3F1]"
+                className="p-1.5 rounded-lg text-sx-muted hover:text-sx-ink hover:bg-sx-stone"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -361,15 +361,15 @@ export default function WantedBoardPage() {
 
             <form onSubmit={handleCreateRequest} className="p-6 overflow-y-auto space-y-4">
               {submitSuccess ? (
-                <div className="p-4 rounded-2xl bg-[#EBF5F0] border border-emerald-500 text-[#006340] text-center space-y-2">
-                  <CheckCircle2 className="w-8 h-8 mx-auto text-[#006340]" />
+                <div className="p-4 rounded-2xl bg-sx-green-tint border border-emerald-500 text-sx-green-text text-center space-y-2">
+                  <CheckCircle2 className="w-8 h-8 mx-auto text-sx-green-text" />
                   <h4 className="text-sm font-bold">Request Posted Live!</h4>
                   <p className="text-xs">Sellers can now reach out with matching eFootball accounts.</p>
                 </div>
               ) : (
                 <>
                   {formError && (
-                    <div className="p-3 rounded-xl bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs">
+                    <div className="p-3 rounded-xl bg-sx-red-tint border border-sx-red-border text-sx-red-text text-xs">
                       {formError}
                     </div>
                   )}
@@ -401,11 +401,11 @@ export default function WantedBoardPage() {
 
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                     <div>
-                      <label className="block text-xs font-medium text-[#3D3D3D] mb-1">Platform</label>
+                      <label className="block text-xs font-medium text-sx-ink-soft mb-1">Platform</label>
                       <select
                         value={reqPlatform}
                         onChange={(e) => setReqPlatform(e.target.value as Platform)}
-                        className="w-full bg-pitch-card border border-pitch-border rounded-lg px-3 py-2 text-xs text-[#1F1F1F]"
+                        className="w-full bg-pitch-card border border-pitch-border rounded-lg px-3 py-2 text-xs text-sx-ink-soft"
                       >
                         <option value="android">Android</option>
                         <option value="ios">iOS (Apple)</option>
@@ -415,11 +415,11 @@ export default function WantedBoardPage() {
                     </div>
 
                     <div>
-                      <label className="block text-xs font-medium text-[#3D3D3D] mb-1">Playstyle</label>
+                      <label className="block text-xs font-medium text-sx-ink-soft mb-1">Playstyle</label>
                       <select
                         value={reqPlaystyle}
                         onChange={(e) => setReqPlaystyle(e.target.value as Playstyle)}
-                        className="w-full bg-pitch-card border border-pitch-border rounded-lg px-3 py-2 text-xs text-[#1F1F1F]"
+                        className="w-full bg-pitch-card border border-pitch-border rounded-lg px-3 py-2 text-xs text-sx-ink-soft"
                       >
                         <option value="quick_counter">Quick Counter</option>
                         <option value="possession">Possession</option>
@@ -454,13 +454,13 @@ export default function WantedBoardPage() {
                   />
 
                   <div>
-                    <label className="block text-xs font-medium text-[#3D3D3D] mb-1">Specific Requirements</label>
+                    <label className="block text-xs font-medium text-sx-ink-soft mb-1">Specific Requirements</label>
                     <textarea
                       rows={2}
                       placeholder="e.g. Prefer clean email link with at least 500 spare coins. Ready to buy today."
                       value={reqDescription}
                       onChange={(e) => setReqDescription(e.target.value)}
-                      className="w-full bg-pitch-card border border-pitch-border rounded-lg p-3 text-xs text-[#1F1F1F]"
+                      className="w-full bg-pitch-card border border-pitch-border rounded-lg p-3 text-xs text-sx-ink-soft"
                     />
                   </div>
 

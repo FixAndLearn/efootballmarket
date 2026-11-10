@@ -51,9 +51,9 @@ export function ListingGrid({ listings: initialListings, filters, isLoading = fa
       <div className="grid grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-5">
         {Array.from({ length: 8 }).map((_, index) => (
           <div key={index} className="space-y-3 animate-pulse">
-            <div className="aspect-[4/3] bg-[#F4F3F1] rounded-md" />
-            <div className="h-4 bg-[#EAE9E6] rounded w-4/5" />
-            <div className="h-5 bg-[#EAE9E6] rounded w-2/5" />
+            <div className="aspect-[4/3] bg-sx-stone rounded-md" />
+            <div className="h-4 bg-sx-elevated rounded w-4/5" />
+            <div className="h-5 bg-sx-elevated rounded w-2/5" />
           </div>
         ))}
       </div>
@@ -63,12 +63,12 @@ export function ListingGrid({ listings: initialListings, filters, isLoading = fa
   return (
     <div className="space-y-6">
       {newListingAlert && (
-        <div className="p-4 rounded-lg bg-[#EBF5F0] border border-[#BFE0CE] flex items-center justify-between gap-4">
+        <div className="p-4 rounded-lg bg-sx-green-tint border border-sx-green-border flex items-center justify-between gap-4">
           <div className="min-w-0">
-            <span className="text-[11px] font-bold uppercase tracking-wider text-[#006340]">
+            <span className="text-[11px] font-bold uppercase tracking-wider text-sx-green-text">
               New Verified Squad Listed
             </span>
-            <p className="text-sm font-semibold text-[#0F0F0F] truncate">
+            <p className="text-sm font-semibold text-sx-ink truncate">
               {newListingAlert.title} &middot; {formatCurrency(newListingAlert.price)} ({newListingAlert.overall_team_strength} OVR)
             </p>
           </div>
@@ -83,7 +83,7 @@ export function ListingGrid({ listings: initialListings, filters, isLoading = fa
             <button
               type="button"
               onClick={dismissAlert}
-              className="p-1.5 rounded-md text-[#5F5F5F] hover:text-[#0F0F0F] transition-colors cursor-pointer"
+              className="p-1.5 rounded-md text-sx-muted hover:text-sx-ink transition-colors cursor-pointer"
               aria-label="Dismiss alert"
             >
               <X className="w-4 h-4" />
@@ -93,15 +93,15 @@ export function ListingGrid({ listings: initialListings, filters, isLoading = fa
       )}
 
       {listings.length === 0 ? (
-        <div className="flex flex-col items-center justify-center text-center p-10 sm:p-14 rounded-lg border border-[#E2E2E0] bg-[#F9F9F8]">
-          <div className="w-12 h-12 rounded-full bg-[#EBF5F0] flex items-center justify-center text-[#006340] mb-4">
+        <div className="flex flex-col items-center justify-center text-center p-10 sm:p-14 rounded-lg border border-sx-border bg-sx-subtle">
+          <div className="w-12 h-12 rounded-full bg-sx-green-tint flex items-center justify-center text-sx-green-text mb-4">
             <SearchX className="w-5 h-5" />
           </div>
 
-          <h3 className="text-base font-bold text-[#0F0F0F] mb-1.5">
+          <h3 className="text-base font-bold text-sx-ink mb-1.5">
             {hasActiveFilters ? "No squads match your current filters" : "No open squads available right now"}
           </h3>
-          <p className="text-xs sm:text-sm text-[#5F5F5F] max-w-md mb-6 leading-relaxed">
+          <p className="text-xs sm:text-sm text-sx-muted max-w-md mb-6 leading-relaxed">
             {hasActiveFilters
               ? "Try clearing some filters or widening your KES price and Collective Strength range."
               : "Active squads are currently sold or inside a buyer's 24-hour inspection window. Have a Clean Konami ID squad ready to list?"}

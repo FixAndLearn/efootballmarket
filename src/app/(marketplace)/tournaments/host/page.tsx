@@ -162,25 +162,25 @@ export default function HostTournamentPage() {
   };
 
   return (
-    <div className="min-h-screen bg-pitch-dark text-[#0F0F0F] flex flex-col">
+    <div className="min-h-screen bg-pitch-dark text-sx-ink flex flex-col">
       {/* Top Navigation Bar: Seamless Back to Tournaments & Marketplace */}
       <div className="border-b border-pitch-border bg-pitch-surface/90 backdrop-blur-md sticky top-16 z-30">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
           <Link
             href="/tournaments"
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-pitch-card hover:bg-[#F4F3F1] border border-pitch-border text-xs font-semibold text-[#3D3D3D] hover:text-[#0F0F0F] transition-all whitespace-nowrap group shadow-sm active:scale-95"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-pitch-card hover:bg-sx-stone border border-pitch-border text-xs font-semibold text-sx-ink-soft hover:text-sx-ink transition-all whitespace-nowrap group shadow-sm active:scale-95"
           >
-            <ArrowLeft className="w-3.5 h-3.5 text-[#5F5F5F] group-hover:-translate-x-0.5 transition-transform" />
+            <ArrowLeft className="w-3.5 h-3.5 text-sx-muted group-hover:-translate-x-0.5 transition-transform" />
             <span>Tournaments Arena</span>
           </Link>
 
           <div className="flex items-center gap-2">
-            <span className="hidden sm:inline-block text-[11px] text-[#5F5F5F] font-mono">
+            <span className="hidden sm:inline-block text-[11px] text-sx-muted font-mono">
               Till 1572931 Escrow
             </span>
             <Link
               href="/browse"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pitch-card hover:bg-[#F4F3F1] border border-pitch-border text-xs font-semibold text-[#3D3D3D] hover:text-[#0F0F0F] transition-all"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pitch-card hover:bg-sx-stone border border-pitch-border text-xs font-semibold text-sx-ink-soft hover:text-sx-ink transition-all"
             >
               <span>Marketplace</span>
             </Link>
@@ -191,18 +191,18 @@ export default function HostTournamentPage() {
       {/* Main Content Area - Full-page Scrollable (Zero Modal Obstruction) */}
       <main className="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-6 py-8 space-y-8 pb-36 sm:pb-24">
         {/* Page Header Banner */}
-        <div className="rounded-3xl bg-gradient-to-r from-amber-950/60 via-pitch-card to-slate-900 border border-[#FDE68A] p-6 sm:p-8 shadow-2xl relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#FEF3C7] rounded-full blur-3xl pointer-events-none" />
+        <div className="rounded-3xl bg-sx-stone border border-sx-amber-border p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+          <div className="absolute top-0 right-0 w-64 h-64 bg-sx-amber-tint rounded-full blur-3xl pointer-events-none" />
 
           <div className="relative z-10 space-y-2">
-            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-[#FEF3C7] border border-[#FDE68A] text-[#92400E] text-xs font-bold font-mono uppercase tracking-wider">
-              <Crown className="w-3.5 h-3.5 text-[#B45309]" />
+            <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sx-amber-tint border border-sx-amber-border text-sx-amber-text text-xs font-bold font-mono uppercase tracking-wider">
+              <Crown className="w-3.5 h-3.5 text-sx-amber-text" />
               <span>You Become Tournament Moderator</span>
             </div>
-            <h1 className="text-2xl sm:text-3xl font-black text-[#0F0F0F] font-display tracking-tight">
+            <h1 className="text-2xl sm:text-3xl font-black text-sx-ink font-display tracking-tight">
               Host a Community Tournament or 1v1 Match
             </h1>
-            <p className="text-xs sm:text-sm text-[#3D3D3D] max-w-xl leading-relaxed">
+            <p className="text-xs sm:text-sm text-sx-ink-soft max-w-xl leading-relaxed">
               Create your match, invite friends via WhatsApp, and manage brackets. All entry funds are protected by Safaricom Till <strong>1572931</strong> escrow with instant M-Pesa winner payout!
             </p>
           </div>
@@ -210,12 +210,12 @@ export default function HostTournamentPage() {
 
         {/* Guest Auth Notice if not logged in */}
         {!authLoading && !user && (
-          <div className="p-5 rounded-2xl bg-[#FEF3C7] border border-[#FDE68A] flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+          <div className="p-5 rounded-2xl bg-sx-amber-tint border border-sx-amber-border flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <Lock className="w-5 h-5 text-[#B45309] shrink-0" />
+              <Lock className="w-5 h-5 text-sx-amber-text shrink-0" />
               <div>
-                <strong className="text-sm text-[#0F0F0F] block">Community Account Required</strong>
-                <span className="text-xs text-[#3D3D3D]">Sign in or register to host and moderate your tournament.</span>
+                <strong className="text-sm text-sx-ink block">Community Account Required</strong>
+                <span className="text-xs text-sx-ink-soft">Sign in or register to host and moderate your tournament.</span>
               </div>
             </div>
             <div className="flex items-center gap-2 w-full sm:w-auto">
@@ -236,15 +236,15 @@ export default function HostTournamentPage() {
         {/* Main Creation Form */}
         <form onSubmit={handleSubmit} className="space-y-6">
           {error && (
-            <div className="p-4 rounded-2xl bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs flex items-center gap-2.5 shadow-lg">
-              <AlertCircle className="w-4 h-4 shrink-0 text-[#C92A2A]" />
+            <div className="p-4 rounded-2xl bg-sx-red-tint border border-sx-red-border text-sx-red-text text-xs flex items-center gap-2.5 shadow-lg">
+              <AlertCircle className="w-4 h-4 shrink-0 text-sx-red-text" />
               <span>{error}</span>
             </div>
           )}
 
           {/* STEP 1: Choose Arena Type (1v1 Wager vs Knockout Tournament) */}
           <div className="space-y-2.5">
-            <label className="block text-xs font-bold text-[#1F1F1F] uppercase tracking-wider">
+            <label className="block text-xs font-bold text-sx-ink-soft uppercase tracking-wider">
               1. Select Arena Match Type
             </label>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
@@ -254,22 +254,22 @@ export default function HostTournamentPage() {
                 onClick={() => handleSwitchArenaType("1v1")}
                 className={`p-4 rounded-2xl border text-left transition-all cursor-pointer relative overflow-hidden ${
                   arenaType === "1v1"
-                    ? "bg-[#FEF3C7] border-amber-500 ring-2 ring-amber-500/30 shadow-lg shadow-amber-500/10"
-                    : "bg-pitch-card border-pitch-border hover:border-[#C8C8C4]"
+                    ? "bg-sx-amber-tint border-amber-500 ring-2 ring-amber-500/30 shadow-lg shadow-amber-500/10"
+                    : "bg-pitch-card border-pitch-border hover:border-sx-border-strong"
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <div className="w-9 h-9 rounded-xl bg-[#FEF3C7] text-[#B45309] flex items-center justify-center font-bold">
+                  <div className="w-9 h-9 rounded-xl bg-sx-amber-tint text-sx-amber-text flex items-center justify-center font-bold">
                     <Swords className="w-5 h-5" />
                   </div>
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#FEF3C7] text-[#92400E]">
+                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-sx-amber-tint text-sx-amber-text">
                     2 Players | Best of 3
                   </span>
                 </div>
-                <h3 className="text-sm font-bold text-[#0F0F0F] font-display">
+                <h3 className="text-sm font-bold text-sx-ink font-display">
                   1v1 Head-to-Head Match
                 </h3>
-                <p className="text-xs text-[#5F5F5F] mt-1 leading-relaxed">
+                <p className="text-xs text-sx-muted mt-1 leading-relaxed">
                   Direct match between 2 players in a tracked Konami Match Room (Best of 3 or single 12-minute fixture).
                 </p>
               </button>
@@ -280,22 +280,22 @@ export default function HostTournamentPage() {
                 onClick={() => handleSwitchArenaType("tournament")}
                 className={`p-4 rounded-2xl border text-left transition-all cursor-pointer relative overflow-hidden ${
                   arenaType === "tournament"
-                    ? "bg-[#EBF5F0] border-emerald-500 ring-2 ring-emerald-500/30 shadow-lg shadow-emerald-500/10"
-                    : "bg-pitch-card border-pitch-border hover:border-[#C8C8C4]"
+                    ? "bg-sx-green-tint border-emerald-500 ring-2 ring-emerald-500/30 shadow-lg shadow-emerald-500/10"
+                    : "bg-pitch-card border-pitch-border hover:border-sx-border-strong"
                 }`}
               >
                 <div className="flex items-center justify-between mb-2">
-                  <div className="w-9 h-9 rounded-xl bg-[#EBF5F0] text-[#006340] flex items-center justify-center font-bold">
+                  <div className="w-9 h-9 rounded-xl bg-sx-green-tint text-sx-green-text flex items-center justify-center font-bold">
                     <Trophy className="w-5 h-5" />
                   </div>
-                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-[#EBF5F0] text-[#006340]">
+                  <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-sx-green-tint text-sx-green-text">
                     4, 8, or 16 Players
                   </span>
                 </div>
-                <h3 className="text-sm font-bold text-[#0F0F0F] font-display">
-                  🏆 Knockout Tournament Cup
+                <h3 className="text-sm font-bold text-sx-ink font-display">
+                  Knockout Tournament Cup
                 </h3>
-                <p className="text-xs text-[#5F5F5F] mt-1 leading-relaxed">
+                <p className="text-xs text-sx-muted mt-1 leading-relaxed">
                   Multi-player knockout bracket. Semi-Finals and Grand Final with agreed 1st/2nd place prize split.
                 </p>
               </button>
@@ -304,7 +304,7 @@ export default function HostTournamentPage() {
 
           {/* STEP 2: Free vs Paid Prize Pool */}
           <div className="space-y-2.5">
-            <label className="block text-xs font-bold text-[#1F1F1F] uppercase tracking-wider">
+            <label className="block text-xs font-bold text-sx-ink-soft uppercase tracking-wider">
               2. Entry &amp; Prize Model
             </label>
             <div className="grid grid-cols-2 gap-3">
@@ -313,12 +313,12 @@ export default function HostTournamentPage() {
                 onClick={() => setHostType("paid")}
                 className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
                   hostType === "paid"
-                    ? "bg-[#FEF3C7] border-amber-500 text-[#92400E] ring-1 ring-amber-500/30"
-                    : "bg-pitch-card border-pitch-border text-[#5F5F5F] hover:border-[#C8C8C4]"
+                    ? "bg-sx-amber-tint border-amber-500 text-sx-amber-text ring-1 ring-amber-500/30"
+                    : "bg-pitch-card border-pitch-border text-sx-muted hover:border-sx-border-strong"
                 }`}
               >
-                <span className="text-xs font-bold block text-[#0F0F0F]">💰 Paid Prize Pool</span>
-                <span className="text-[11px] text-[#5F5F5F] mt-0.5 block leading-tight">
+                <span className="text-xs font-bold block text-sx-ink">Paid Prize Pool</span>
+                <span className="text-[11px] text-sx-muted mt-0.5 block leading-tight">
                   Till 1572931 or Wallet | Fair platform fee
                 </span>
               </button>
@@ -328,12 +328,12 @@ export default function HostTournamentPage() {
                 onClick={() => setHostType("free")}
                 className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
                   hostType === "free"
-                    ? "bg-[#EBF5F0] border-emerald-500 text-[#006340] ring-1 ring-emerald-500/30"
-                    : "bg-pitch-card border-pitch-border text-[#5F5F5F] hover:border-[#C8C8C4]"
+                    ? "bg-sx-green-tint border-emerald-500 text-sx-green-text ring-1 ring-emerald-500/30"
+                    : "bg-pitch-card border-pitch-border text-sx-muted hover:border-sx-border-strong"
                 }`}
               >
-                <span className="text-xs font-bold block text-[#0F0F0F]">🎮 Free Community Match</span>
-                <span className="text-[11px] text-[#5F5F5F] mt-0.5 block leading-tight">
+                <span className="text-xs font-bold block text-sx-ink">Free Community Match</span>
+                <span className="text-[11px] text-sx-muted mt-0.5 block leading-tight">
                   Free to enter | Community ranking
                 </span>
               </button>
@@ -356,11 +356,11 @@ export default function HostTournamentPage() {
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div>
-                <label className="block text-xs font-semibold text-[#3D3D3D] mb-1.5">
+                <label className="block text-xs font-semibold text-sx-ink-soft mb-1.5">
                   Platform
                 </label>
                 <select
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-pitch-card border border-pitch-border text-[#0F0F0F] text-xs focus:outline-none focus:border-amber-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-pitch-card border border-pitch-border text-sx-ink text-xs focus:outline-none focus:border-amber-500"
                   value={platform}
                   onChange={(e: any) => setPlatform(e.target.value)}
                 >
@@ -372,16 +372,16 @@ export default function HostTournamentPage() {
               </div>
 
               <div>
-                <label className="block text-xs font-semibold text-[#3D3D3D] mb-1.5">
+                <label className="block text-xs font-semibold text-sx-ink-soft mb-1.5">
                   Total Player Slots
                 </label>
                 {arenaType === "1v1" ? (
-                  <div className="w-full px-3.5 py-2.5 rounded-xl bg-pitch-card border border-pitch-border text-[#92400E] font-bold text-xs">
+                  <div className="w-full px-3.5 py-2.5 rounded-xl bg-pitch-card border border-pitch-border text-sx-amber-text font-bold text-xs">
                     2 Players (1v1 Head-to-Head)
                   </div>
                 ) : (
                   <select
-                    className="w-full px-3.5 py-2.5 rounded-xl bg-pitch-card border border-pitch-border text-[#0F0F0F] text-xs focus:outline-none focus:border-amber-500"
+                    className="w-full px-3.5 py-2.5 rounded-xl bg-pitch-card border border-pitch-border text-sx-ink text-xs focus:outline-none focus:border-amber-500"
                     value={maxPlayers}
                     onChange={(e) => setMaxPlayers(e.target.value)}
                   >
@@ -404,13 +404,13 @@ export default function HostTournamentPage() {
 
           {/* STEP 4: Financial Calculation Card (Fair Tiered Admin Deal) */}
           {hostType === "paid" && (
-            <div className="p-5 sm:p-6 rounded-3xl bg-pitch-surface border border-[#FDE68A] space-y-4 shadow-xl">
+            <div className="p-5 sm:p-6 rounded-3xl bg-pitch-surface border border-sx-amber-border space-y-4 shadow-xl">
               <div>
                 <div className="flex items-center justify-between mb-1.5">
-                  <label className="block text-xs font-bold text-[#1F1F1F]">
+                  <label className="block text-xs font-bold text-sx-ink-soft">
                     Entry Fee per Player (KES)
                   </label>
-                  <span className="text-[11px] text-[#B45309] font-mono font-semibold">
+                  <span className="text-[11px] text-sx-amber-text font-mono font-semibold">
                     Pay via Till 1572931 or Wallet
                   </span>
                 </div>
@@ -425,7 +425,7 @@ export default function HostTournamentPage() {
                       className={`py-1.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
                         entryFee === preset
                           ? "bg-amber-500 text-black border-amber-400 shadow-md"
-                          : "bg-pitch-card border-pitch-border text-[#3D3D3D] hover:text-[#0F0F0F]"
+                          : "bg-pitch-card border-pitch-border text-sx-ink-soft hover:text-sx-ink"
                       }`}
                     >
                       KES {preset}
@@ -445,7 +445,7 @@ export default function HostTournamentPage() {
               {/* Payout Distribution Option (Only for Multi-Player Tournaments) */}
               {arenaType === "tournament" && (
                 <div className="space-y-1.5 pt-1 border-t border-pitch-border/60">
-                  <label className="block text-xs font-semibold text-[#3D3D3D]">
+                  <label className="block text-xs font-semibold text-sx-ink-soft">
                     Agreed Winner Prize Distribution
                   </label>
                   <div className="grid grid-cols-3 gap-2">
@@ -455,7 +455,7 @@ export default function HostTournamentPage() {
                       className={`p-2.5 rounded-xl border text-center text-xs font-semibold transition-all cursor-pointer ${
                         payoutSplit === "winner_takes_all"
                           ? "bg-amber-500 text-black border-amber-400 font-bold shadow-md"
-                          : "bg-pitch-card border-pitch-border text-[#3D3D3D] hover:text-[#0F0F0F]"
+                          : "bg-pitch-card border-pitch-border text-sx-ink-soft hover:text-sx-ink"
                       }`}
                     >
                       <span className="block text-[11px] font-bold">Winner 100%</span>
@@ -467,7 +467,7 @@ export default function HostTournamentPage() {
                       className={`p-2.5 rounded-xl border text-center text-xs font-semibold transition-all cursor-pointer ${
                         payoutSplit === "80_20"
                           ? "bg-amber-500 text-black border-amber-400 font-bold shadow-md"
-                          : "bg-pitch-card border-pitch-border text-[#3D3D3D] hover:text-[#0F0F0F]"
+                          : "bg-pitch-card border-pitch-border text-sx-ink-soft hover:text-sx-ink"
                       }`}
                     >
                       <span className="block text-[11px] font-bold">80% / 20%</span>
@@ -479,7 +479,7 @@ export default function HostTournamentPage() {
                       className={`p-2.5 rounded-xl border text-center text-xs font-semibold transition-all cursor-pointer ${
                         payoutSplit === "70_30"
                           ? "bg-amber-500 text-black border-amber-400 font-bold shadow-md"
-                          : "bg-pitch-card border-pitch-border text-[#3D3D3D] hover:text-[#0F0F0F]"
+                          : "bg-pitch-card border-pitch-border text-sx-ink-soft hover:text-sx-ink"
                       }`}
                     >
                       <span className="block text-[11px] font-bold">70% / 30%</span>
@@ -490,22 +490,22 @@ export default function HostTournamentPage() {
               )}
 
               {/* Real-Time Fair Fee & Net Prize Card */}
-              <div className="p-4 rounded-2xl bg-pitch-card border border-[#FDE68A] space-y-2.5 text-xs">
-                <div className="flex items-center justify-between text-[#3D3D3D]">
+              <div className="p-4 rounded-2xl bg-pitch-card border border-sx-amber-border space-y-2.5 text-xs">
+                <div className="flex items-center justify-between text-sx-ink-soft">
                   <span>Total Collected Pot ({numPlayers} players × KES {rawFee}):</span>
-                  <strong className="text-[#0F0F0F] font-mono text-sm">KES {totalPot.toLocaleString()}</strong>
+                  <strong className="text-sx-ink font-mono text-sm">KES {totalPot.toLocaleString()}</strong>
                 </div>
 
-                <div className="flex items-center justify-between text-[#3D3D3D]">
+                <div className="flex items-center justify-between text-sx-ink-soft">
                   <span className="flex items-center gap-1.5">
-                    <ShieldCheck className="w-4 h-4 text-[#006340]" />
+                    <ShieldCheck className="w-4 h-4 text-sx-green-text" />
                     <span>Fair Platform Admin Deal:</span>
                   </span>
                   <div className="text-right">
-                    <strong className="text-[#B45309] font-mono font-bold">
+                    <strong className="text-sx-amber-text font-mono font-bold">
                       KES {adminFee.toLocaleString()}
                     </strong>
-                    <span className="text-[10px] text-[#5F5F5F] block">
+                    <span className="text-[10px] text-sx-muted block">
                       ({totalPot > 0 ? Math.round((adminFee / totalPot) * 100) : 0}% fair deal)
                     </span>
                   </div>
@@ -513,30 +513,30 @@ export default function HostTournamentPage() {
 
                 <div className="pt-2 border-t border-pitch-border flex items-center justify-between">
                   <div>
-                    <span className="font-bold text-[#0F0F0F] block">Net Prize Pool in Escrow:</span>
-                    <span className="text-[10px] text-[#5F5F5F]">Guaranteed in Safaricom Till 1572931</span>
+                    <span className="font-bold text-sx-ink block">Net Prize Pool in Escrow:</span>
+                    <span className="text-[10px] text-sx-muted">Guaranteed in Safaricom Till 1572931</span>
                   </div>
-                  <span className="text-lg font-black text-[#006340] font-mono font-display">
+                  <span className="text-lg font-black text-sx-green-text font-mono font-display">
                     KES {netPrizePool.toLocaleString()}
                   </span>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 pt-1 border-t border-pitch-border/60 text-[11px] text-[#3D3D3D]">
+                <div className="grid grid-cols-2 gap-2 pt-1 border-t border-pitch-border/60 text-[11px] text-sx-ink-soft">
                   <div>
-                    🥇 Winner / 1st:{" "}
-                    <strong className="text-[#92400E] font-mono font-bold">
+                    Winner / 1st:{" "}
+                    <strong className="text-sx-amber-text font-mono font-bold">
                       KES {firstPlace.toLocaleString()}
                     </strong>
                   </div>
                   <div>
-                    🥈 2nd Place:{" "}
-                    <strong className="text-[#1F1F1F] font-mono">
+                    2nd Place:{" "}
+                    <strong className="text-sx-ink-soft font-mono">
                       {secondPlace > 0 ? `KES ${secondPlace.toLocaleString()}` : "Honor / Trophy"}
                     </strong>
                   </div>
                 </div>
 
-                <p className="text-[10px] text-[#5F5F5F] pt-1 leading-relaxed border-t border-pitch-border/60">
+                <p className="text-[10px] text-sx-muted pt-1 leading-relaxed border-t border-pitch-border/60">
                   Players can pay their entry via <strong>Safaricom Till 1572931</strong> or directly from their <strong>eFootballMarket Account Balance</strong>. Prize funds remain safely locked until you approve the match result!
                 </p>
               </div>
@@ -546,11 +546,11 @@ export default function HostTournamentPage() {
           {/* STEP 5: Match Duration & Rules (12-Minute Game Standard) */}
           <div className="p-5 sm:p-6 rounded-3xl bg-pitch-surface border border-pitch-border space-y-4 shadow-xl">
             <div className="flex items-center justify-between">
-              <label className="block text-xs font-bold text-[#1F1F1F] uppercase tracking-wider">
+              <label className="block text-xs font-bold text-sx-ink-soft uppercase tracking-wider">
                 3. Match Duration &amp; Rules
               </label>
-              <span className="text-[10px] text-[#B45309] font-bold font-mono">
-                ⏱️ 12-Minute Match Standard
+              <span className="text-[10px] text-sx-amber-text font-bold font-mono">
+                ⏱12-Minute Match Standard
               </span>
             </div>
 
@@ -560,12 +560,12 @@ export default function HostTournamentPage() {
                 onClick={() => setFormat("Best of 3 Series (12-Minute Matches)")}
                 className={`p-3 rounded-2xl border text-left text-xs transition-all cursor-pointer ${
                   format.includes("Best of 3")
-                    ? "bg-[#FEF3C7] border-amber-500 text-[#92400E] ring-1 ring-amber-500/30 font-bold"
-                    : "bg-pitch-card border-pitch-border text-[#5F5F5F] hover:border-[#C8C8C4]"
+                    ? "bg-sx-amber-tint border-amber-500 text-sx-amber-text ring-1 ring-amber-500/30 font-bold"
+                    : "bg-pitch-card border-pitch-border text-sx-muted hover:border-sx-border-strong"
                 }`}
               >
-                <span className="font-bold text-[#0F0F0F] block text-xs">12-Min Best of 3</span>
-                <span className="text-[10px] text-[#5F5F5F] block mt-0.5">
+                <span className="font-bold text-sx-ink block text-xs">12-Min Best of 3</span>
+                <span className="text-[10px] text-sx-muted block mt-0.5">
                   Standard for 1v1 matches (first to 2 wins)
                 </span>
               </button>
@@ -575,12 +575,12 @@ export default function HostTournamentPage() {
                 onClick={() => setFormat("Single Knockout 1v1 (12-Minute Game + Extra Time & PKs)")}
                 className={`p-3 rounded-2xl border text-left text-xs transition-all cursor-pointer ${
                   format.includes("Single Knockout")
-                    ? "bg-[#FEF3C7] border-amber-500 text-[#92400E] ring-1 ring-amber-500/30 font-bold"
-                    : "bg-pitch-card border-pitch-border text-[#5F5F5F] hover:border-[#C8C8C4]"
+                    ? "bg-sx-amber-tint border-amber-500 text-sx-amber-text ring-1 ring-amber-500/30 font-bold"
+                    : "bg-pitch-card border-pitch-border text-sx-muted hover:border-sx-border-strong"
                 }`}
               >
-                <span className="font-bold text-[#0F0F0F] block text-xs">⏱️ 12-Min Knockout</span>
-                <span className="text-[10px] text-[#5F5F5F] block mt-0.5">
+                <span className="font-bold text-sx-ink block text-xs">⏱12-Min Knockout</span>
+                <span className="text-[10px] text-sx-muted block mt-0.5">
                   Extra Time &amp; PK shootout enabled
                 </span>
               </button>
@@ -590,12 +590,12 @@ export default function HostTournamentPage() {
                 onClick={() => setFormat("Home & Away 1v1 (12-Minute Two-Leg Aggregate)")}
                 className={`p-3 rounded-2xl border text-left text-xs transition-all cursor-pointer ${
                   format.includes("Two-Leg")
-                    ? "bg-[#FEF3C7] border-amber-500 text-[#92400E] ring-1 ring-amber-500/30 font-bold"
-                    : "bg-pitch-card border-pitch-border text-[#5F5F5F] hover:border-[#C8C8C4]"
+                    ? "bg-sx-amber-tint border-amber-500 text-sx-amber-text ring-1 ring-amber-500/30 font-bold"
+                    : "bg-pitch-card border-pitch-border text-sx-muted hover:border-sx-border-strong"
                 }`}
               >
-                <span className="font-bold text-[#0F0F0F] block text-xs">🔁 12-Min Two-Leg</span>
-                <span className="text-[10px] text-[#5F5F5F] block mt-0.5">
+                <span className="font-bold text-sx-ink block text-xs">12-Min Two-Leg</span>
+                <span className="text-[10px] text-sx-muted block mt-0.5">
                   Aggregate score over two 12-min games
                 </span>
               </button>
@@ -626,7 +626,7 @@ export default function HostTournamentPage() {
                   : "Publish Tournament & Become Moderator"}
               </span>
             </Button>
-            <p className="text-center text-[11px] text-[#5F5F5F] mt-2">
+            <p className="text-center text-[11px] text-sx-muted mt-2">
               You will be redirected to your live bracket center to share the WhatsApp invite link with opponents!
             </p>
           </div>

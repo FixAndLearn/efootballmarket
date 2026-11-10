@@ -74,7 +74,7 @@ export function BuyerDashboardView({ orders }: BuyerDashboardViewProps) {
       case "payment_pending":
         return {
           label: "Awaiting M-Pesa Payment",
-          badgeClass: "bg-[#FEF3C7] border-amber-400/40 text-[#92400E] ring-1 ring-amber-400/20",
+          badgeClass: "bg-sx-amber-tint border-amber-400/40 text-sx-amber-text ring-1 ring-amber-400/20",
           icon: CreditCard,
           stepIndex: 1,
           stepNote: "STK prompt pending on your Safaricom phone",
@@ -84,7 +84,7 @@ export function BuyerDashboardView({ orders }: BuyerDashboardViewProps) {
       case "escrow_locked":
         return {
           label: "Funds Locked in Till 1572931",
-          badgeClass: "bg-[#EBF5F0] border-emerald-400/40 text-[#006340] ring-1 ring-emerald-400/20",
+          badgeClass: "bg-sx-green-tint border-emerald-400/40 text-sx-green-text ring-1 ring-emerald-400/20",
           icon: ShieldCheck,
           stepIndex: 2,
           stepNote: "Payment secured. Awaiting seller Konami ID delivery",
@@ -105,7 +105,7 @@ export function BuyerDashboardView({ orders }: BuyerDashboardViewProps) {
       case "completed":
         return {
           label: "Verified & Handed Over",
-          badgeClass: "bg-[#EBF5F0] border-emerald-600/60 text-[#006340]",
+          badgeClass: "bg-sx-green-tint border-emerald-600/60 text-sx-green-text",
           icon: CheckCircle2,
           stepIndex: 4,
           stepNote: "Account secured. Funds disbursed to seller via Till 1572931",
@@ -115,7 +115,7 @@ export function BuyerDashboardView({ orders }: BuyerDashboardViewProps) {
       case "disputed":
         return {
           label: "Dispute in Arbitration",
-          badgeClass: "bg-[#FEE2E2] border-rose-400/40 text-[#B91C1C]",
+          badgeClass: "bg-sx-red-tint border-rose-400/40 text-sx-red-text",
           icon: AlertTriangle,
           stepIndex: 3,
           stepNote: "Administrator Brian Okibo mediating credential audit",
@@ -125,7 +125,7 @@ export function BuyerDashboardView({ orders }: BuyerDashboardViewProps) {
       default:
         return {
           label: status.replace("_", " ").toUpperCase(),
-          badgeClass: "bg-[#F4F3F1] border-[#C8C8C4] text-[#3D3D3D]",
+          badgeClass: "bg-sx-stone border-sx-border-strong text-sx-ink-soft",
           icon: ShieldCheck,
           stepIndex: 1,
           stepNote: "Status updating...",
@@ -147,7 +147,7 @@ export function BuyerDashboardView({ orders }: BuyerDashboardViewProps) {
             className={`px-3.5 py-1.5 rounded-xl font-bold text-xs transition-all whitespace-nowrap flex items-center gap-1.5 ${
               filter === "all"
                 ? "bg-emerald-500 text-slate-950 shadow-md shadow-emerald-500/20"
-                : "bg-pitch-surface border border-pitch-border text-[#3D3D3D] hover:text-[#0F0F0F] hover:bg-pitch-card"
+                : "bg-pitch-surface border border-pitch-border text-sx-ink-soft hover:text-sx-ink hover:bg-pitch-card"
             }`}
           >
             <span>All Purchases</span>
@@ -162,7 +162,7 @@ export function BuyerDashboardView({ orders }: BuyerDashboardViewProps) {
             className={`px-3.5 py-1.5 rounded-xl font-bold text-xs transition-all whitespace-nowrap flex items-center gap-1.5 ${
               filter === "active"
                 ? "bg-amber-400 text-slate-950 shadow-md shadow-amber-500/20"
-                : "bg-pitch-surface border border-pitch-border text-[#3D3D3D] hover:text-[#0F0F0F] hover:bg-pitch-card"
+                : "bg-pitch-surface border border-pitch-border text-sx-ink-soft hover:text-sx-ink hover:bg-pitch-card"
             }`}
           >
             <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
@@ -178,7 +178,7 @@ export function BuyerDashboardView({ orders }: BuyerDashboardViewProps) {
             className={`px-3.5 py-1.5 rounded-xl font-bold text-xs transition-all whitespace-nowrap flex items-center gap-1.5 ${
               filter === "completed"
                 ? "bg-emerald-600 text-white shadow-md shadow-emerald-600/20"
-                : "bg-pitch-surface border border-pitch-border text-[#3D3D3D] hover:text-[#0F0F0F] hover:bg-pitch-card"
+                : "bg-pitch-surface border border-pitch-border text-sx-ink-soft hover:text-sx-ink hover:bg-pitch-card"
             }`}
           >
             <CheckCircle2 className="w-3.5 h-3.5" />
@@ -191,13 +191,13 @@ export function BuyerDashboardView({ orders }: BuyerDashboardViewProps) {
 
         {/* Quick Filter Search */}
         <div className="relative w-full sm:w-64">
-          <Search className="w-3.5 h-3.5 text-[#5F5F5F] absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+          <Search className="w-3.5 h-3.5 text-sx-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
             placeholder="Search by #EFM or title..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-1.5 bg-pitch-card border border-pitch-border rounded-xl text-xs text-[#0F0F0F] placeholder:text-[#767676] focus:outline-none focus:border-emerald-400 shadow-inner"
+            className="w-full pl-9 pr-3 py-1.5 bg-pitch-card border border-pitch-border rounded-xl text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-emerald-400 shadow-inner"
           />
         </div>
       </div>
@@ -218,31 +218,31 @@ export function BuyerDashboardView({ orders }: BuyerDashboardViewProps) {
             return (
               <div
                 key={order.id}
-                className="rounded-3xl bg-gradient-to-br from-[#0D192E] via-[#081224] to-[#0D192E] border border-[#E2E2E0] hover:border-[#BFE0CE] p-5 sm:p-6 shadow-2xl transition-all space-y-5 relative overflow-hidden group"
+                className="rounded-3xl bg-gradient-to-br from-[#0D192E] via-[#081224] to-[#0D192E] border border-sx-border hover:border-sx-green-border p-5 sm:p-6 shadow-2xl transition-all space-y-5 relative overflow-hidden group"
               >
                 {/* Stadium Accent Glow */}
-                <div className="absolute top-0 right-0 w-64 h-32 bg-emerald-500/5 blur-3xl pointer-events-none group-hover:bg-[#EBF5F0] transition-colors" />
+                <div className="absolute top-0 right-0 w-64 h-32 bg-emerald-500/5 blur-3xl pointer-events-none group-hover:bg-sx-green-tint transition-colors" />
 
                 {/* Top Row: Order Code, Timestamp & Dynamic Status Badge */}
-                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-[#E2E2E0]">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-sx-border">
                   <div className="flex items-center gap-2 flex-wrap">
-                    <span className="font-mono text-xs font-bold text-[#006340] bg-[#EBF5F0] border border-[#BFE0CE] px-2.5 py-1 rounded-lg flex items-center gap-1.5">
+                    <span className="font-mono text-xs font-bold text-sx-green-text bg-sx-green-tint border border-sx-green-border px-2.5 py-1 rounded-lg flex items-center gap-1.5">
                       <span>#{order.order_number}</span>
                       <button
                         type="button"
                         onClick={(e) => handleCopyOrderNumber(e, order.order_number)}
-                        className="text-[#006340] hover:text-[#0F0F0F] transition-colors"
+                        className="text-sx-green-text hover:text-sx-ink transition-colors"
                         title="Copy Order Number"
                       >
                         {copiedOrderId === order.order_number ? (
-                          <Check className="w-3 h-3 text-[#006340]" />
+                          <Check className="w-3 h-3 text-sx-green-text" />
                         ) : (
                           <Copy className="w-3 h-3" />
                         )}
                       </button>
                     </span>
 
-                    <span className="text-[11px] text-[#5F5F5F] font-mono">
+                    <span className="text-[11px] text-sx-muted font-mono">
                       {new Date(order.created_at).toLocaleDateString("en-KE", {
                         month: "short",
                         day: "numeric",
@@ -262,7 +262,7 @@ export function BuyerDashboardView({ orders }: BuyerDashboardViewProps) {
                 <div className="grid grid-cols-1 md:grid-cols-12 gap-4 items-center">
                   {/* Left: Squad Thumbnail */}
                   <div className="md:col-span-8 flex items-start gap-4">
-                    <div className="relative w-24 h-16 sm:w-28 sm:h-20 rounded-2xl overflow-hidden bg-[#F9F9F8] border border-[#C8C8C4] shrink-0 shadow-md">
+                    <div className="relative w-24 h-16 sm:w-28 sm:h-20 rounded-2xl overflow-hidden bg-sx-subtle border border-sx-border-strong shrink-0 shadow-md">
                       {primaryImage ? (
                         <Image
                           src={primaryImage}
@@ -271,16 +271,16 @@ export function BuyerDashboardView({ orders }: BuyerDashboardViewProps) {
                           className="object-cover group-hover:scale-105 transition-transform duration-300"
                         />
                       ) : (
-                        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#0F1E38] to-[#0A1426] text-[#006340]">
+                        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-[#0F1E38] to-[#0A1426] text-sx-green-text">
                           <ShieldCheck className="w-6 h-6 mb-1 opacity-80" />
-                          <span className="text-[9px] uppercase font-mono font-bold text-[#5F5F5F]">Squad</span>
+                          <span className="text-[9px] uppercase font-mono font-bold text-sx-muted">Squad</span>
                         </div>
                       )}
 
                       {/* OVR Pill Badge over image */}
                       {order.listing?.overall_team_strength && (
-                        <div className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded-md bg-black/80 backdrop-blur-sm border border-amber-400/50 text-[#92400E] font-mono font-black text-[10px]">
-                          ⚡ {order.listing.overall_team_strength}
+                        <div className="absolute bottom-1 right-1 px-1.5 py-0.5 rounded-md bg-black/80 backdrop-blur-sm border border-amber-400/50 text-sx-amber-text font-mono font-black text-[10px]">
+                          {order.listing.overall_team_strength}
                         </div>
                       )}
                     </div>
@@ -288,43 +288,43 @@ export function BuyerDashboardView({ orders }: BuyerDashboardViewProps) {
                     <div className="space-y-1.5 flex-1 min-w-0">
                       <Link
                         href={`/orders/${order.id}`}
-                        className="text-base sm:text-lg font-bold text-[#0F0F0F] hover:text-[#006340] transition-colors line-clamp-1 font-display"
+                        className="text-base sm:text-lg font-bold text-sx-ink hover:text-sx-green-text transition-colors line-clamp-1 font-display"
                       >
                         {order.listing?.title || "eFootball Mobile Account"}
                       </Link>
 
                       <div className="flex flex-wrap items-center gap-2 text-xs">
                         {order.listing?.platform && (
-                          <span className="px-2 py-0.5 rounded-md bg-[#F9F9F8] border border-[#E2E2E0] text-[#3D3D3D] font-medium">
+                          <span className="px-2 py-0.5 rounded-md bg-sx-subtle border border-sx-border text-sx-ink-soft font-medium">
                             {getPlatformLabel(order.listing.platform)}
                           </span>
                         )}
 
-                        <span className="px-2 py-0.5 rounded-md bg-[#EBF5F0] border border-[#BFE0CE] text-[#006340] text-[11px] font-semibold flex items-center gap-1">
+                        <span className="px-2 py-0.5 rounded-md bg-sx-green-tint border border-sx-green-border text-sx-green-text text-[11px] font-semibold flex items-center gap-1">
                           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
                           Till 1572931 Escrow
                         </span>
 
                         {order.seller?.username && (
-                          <span className="text-[#5F5F5F] text-[11px]">
-                            Seller: <strong className="text-[#3D3D3D] font-medium">@{order.seller.username}</strong>
+                          <span className="text-sx-muted text-[11px]">
+                            Seller: <strong className="text-sx-ink-soft font-medium">@{order.seller.username}</strong>
                           </span>
                         )}
                       </div>
 
-                      <p className="text-[11px] text-[#5F5F5F] italic">
+                      <p className="text-[11px] text-sx-muted italic">
                         {statusConfig.stepNote}
                       </p>
                     </div>
                   </div>
 
                   {/* Right: Settlement Price & Actions */}
-                  <div className="md:col-span-4 flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-[#E2E2E0]">
+                  <div className="md:col-span-4 flex flex-row md:flex-col items-center md:items-end justify-between md:justify-center gap-3 pt-3 md:pt-0 border-t md:border-t-0 border-sx-border">
                     <div className="text-left md:text-right">
-                      <span className="text-[10px] uppercase font-bold text-[#5F5F5F] tracking-wider block">
+                      <span className="text-[10px] uppercase font-bold text-sx-muted tracking-wider block">
                         Settled via Escrow
                       </span>
-                      <span className="text-xl sm:text-2xl font-black text-[#006340] font-mono tracking-tight block">
+                      <span className="text-xl sm:text-2xl font-black text-sx-green-text font-mono tracking-tight block">
                         {formatCurrency(order.total_amount, order.currency)}
                       </span>
                     </div>
@@ -349,46 +349,46 @@ export function BuyerDashboardView({ orders }: BuyerDashboardViewProps) {
                 </div>
 
                 {/* Bottom Row: 4-Step Escrow Pipeline Stepper */}
-                <div className="pt-3 border-t border-[#E2E2E0]">
+                <div className="pt-3 border-t border-sx-border">
                   <div className="grid grid-cols-4 gap-2 text-center text-[10px]">
                     {/* Step 1: M-Pesa Deposit */}
                     <div className={`p-2 rounded-xl border transition-all ${
                       statusConfig.stepIndex >= 1
-                        ? "bg-[#EBF5F0] border-[#BFE0CE] text-[#006340]"
-                        : "bg-[#F9F9F8] border-[#E2E2E0] text-[#767676]"
+                        ? "bg-sx-green-tint border-sx-green-border text-sx-green-text"
+                        : "bg-sx-subtle border-sx-border text-sx-muted"
                     }`}>
                       <span className="block font-bold">1. M-Pesa Deposit</span>
-                      <span className="text-[9px] text-[#5F5F5F] block mt-0.5">Till 1572931</span>
+                      <span className="text-[9px] text-sx-muted block mt-0.5">Till 1572931</span>
                     </div>
 
                     {/* Step 2: Credential Handover */}
                     <div className={`p-2 rounded-xl border transition-all ${
                       statusConfig.stepIndex >= 2
-                        ? "bg-[#EBF5F0] border-[#BFE0CE] text-[#006340]"
-                        : "bg-[#F9F9F8] border-[#E2E2E0] text-[#767676]"
+                        ? "bg-sx-green-tint border-sx-green-border text-sx-green-text"
+                        : "bg-sx-subtle border-sx-border text-sx-muted"
                     }`}>
                       <span className="block font-bold">2. Handover</span>
-                      <span className="text-[9px] text-[#5F5F5F] block mt-0.5">Konami ID Vault</span>
+                      <span className="text-[9px] text-sx-muted block mt-0.5">Konami ID Vault</span>
                     </div>
 
                     {/* Step 3: 24h Inspection */}
                     <div className={`p-2 rounded-xl border transition-all ${
                       statusConfig.stepIndex >= 3
                         ? "bg-cyan-950/40 border-cyan-500/40 text-cyan-300"
-                        : "bg-[#F9F9F8] border-[#E2E2E0] text-[#767676]"
+                        : "bg-sx-subtle border-sx-border text-sx-muted"
                     }`}>
                       <span className="block font-bold">3. 24h Inspection</span>
-                      <span className="text-[9px] text-[#5F5F5F] block mt-0.5">Bind &amp; Secure</span>
+                      <span className="text-[9px] text-sx-muted block mt-0.5">Bind &amp; Secure</span>
                     </div>
 
                     {/* Step 4: Payout Released */}
                     <div className={`p-2 rounded-xl border transition-all ${
                       statusConfig.stepIndex >= 4
-                        ? "bg-[#EBF5F0] border-[#BFE0CE] text-[#006340]"
-                        : "bg-[#F9F9F8] border-[#E2E2E0] text-[#767676]"
+                        ? "bg-sx-green-tint border-sx-green-border text-sx-green-text"
+                        : "bg-sx-subtle border-sx-border text-sx-muted"
                     }`}>
                       <span className="block font-bold">4. Released</span>
-                      <span className="text-[9px] text-[#5F5F5F] block mt-0.5">Final Payout</span>
+                      <span className="text-[9px] text-sx-muted block mt-0.5">Final Payout</span>
                     </div>
                   </div>
                 </div>
@@ -398,11 +398,11 @@ export function BuyerDashboardView({ orders }: BuyerDashboardViewProps) {
         </div>
       ) : (
         <div className="p-10 rounded-3xl bg-pitch-surface border border-pitch-border text-center space-y-4">
-          <div className="w-12 h-12 rounded-2xl bg-[#F4F3F1] text-[#5F5F5F] flex items-center justify-center mx-auto">
+          <div className="w-12 h-12 rounded-2xl bg-sx-stone text-sx-muted flex items-center justify-center mx-auto">
             <ShoppingBag className="w-6 h-6" />
           </div>
-          <h3 className="text-base font-bold text-[#0F0F0F]">No purchases found</h3>
-          <p className="text-xs text-[#5F5F5F] max-w-sm mx-auto">
+          <h3 className="text-base font-bold text-sx-ink">No purchases found</h3>
+          <p className="text-xs text-sx-muted max-w-sm mx-auto">
             {searchQuery
               ? `No orders matching "${searchQuery}". Try clearing your search.`
               : "You do not have any orders matching this tab filter."}

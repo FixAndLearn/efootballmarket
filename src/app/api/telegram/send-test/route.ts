@@ -161,7 +161,7 @@ export async function POST(req: NextRequest) {
       const targetChannel = body.channel || body.customChannel;
       const sampleListing = {
         id: "sample-preview",
-        title: "🔥 Epic Booster Messi (106) + Cruyff (105) 3150 OVR",
+        title: "Epic Booster Messi (106) + Cruyff (105) 3150 OVR",
         collective_strength: "3150",
         price: 3500,
         platform: "Android / iOS",
@@ -189,7 +189,7 @@ export async function POST(req: NextRequest) {
         currency: "KES",
         buyerPhone: "+254794400365",
         receiptNumber: "SLK" + Math.floor(10000000 + Math.random() * 90000000),
-        details: "Telegram connection test initiated from Admin Executive Panel.",
+        details: "Telegram connection test initiated from Admin Console.",
       });
 
       return NextResponse.json({
@@ -204,10 +204,10 @@ export async function POST(req: NextRequest) {
     // Default test notification
     const testContent =
       message ||
-      `🔔 <b>eFootballMarket Telegram Alert Test</b>\n\n` +
-      `✅ <b>Status:</b> Telegram bot is CONNECTED &amp; ACTIVE!\n` +
-      `📱 <b>Admin Recipient:</b> Brian Okibo (+254 794 400 365)\n` +
-      `🛡️ <b>M-Pesa Escrow Till:</b> <code>1572931</code>\n` +
+      `<b>eFootballMarket Telegram Alert Test</b>\n\n` +
+      `<b>Status:</b> Telegram bot is CONNECTED &amp; ACTIVE!\n` +
+      `<b>Admin Recipient:</b> Brian Okibo (+254 794 400 365)\n` +
+      `<b>M-Pesa Escrow Till:</b> <code>1572931</code>\n` +
       `⏰ <b>EAT Time:</b> ${time} EAT\n\n` +
       `All 11 marketplace events (payments, listings, disputes, credentials) will now buzz directly to this chat in real time.`;
 
@@ -216,8 +216,8 @@ export async function POST(req: NextRequest) {
       chatId,
       parseMode: "HTML",
       inlineButtons: [
-        [{ text: "🛡️ Open Admin Hub", url: `${APP_URL}/admin` }],
-        [{ text: "⚽ Browse Squads", url: `${APP_URL}/browse` }],
+        [{ text: "Open Admin Hub", url: `${APP_URL}/admin` }],
+        [{ text: "Browse Squads", url: `${APP_URL}/browse` }],
       ],
     });
 

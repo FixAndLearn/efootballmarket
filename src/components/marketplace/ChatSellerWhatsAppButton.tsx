@@ -61,9 +61,9 @@ export function ChatSellerWhatsAppButton({
 
   const message =
     `Hello ${sellerDisplayName}, I found your squad on eFootballMarket:\n\n` +
-    `🎮 *Squad:* ${listingTitle}${overallTeamStrength ? ` (${overallTeamStrength} OVR)` : ""}\n` +
-    `💰 *Price:* ${formattedPrice}\n` +
-    `🔗 *Listing Link:* ${listingUrl}\n\n` +
+    `*Squad:* ${listingTitle}${overallTeamStrength ? ` (${overallTeamStrength} OVR)` : ""}\n` +
+    `*Price:* ${formattedPrice}\n` +
+    `*Listing Link:* ${listingUrl}\n\n` +
     `I would like to chat about this account. Note: We will complete the payment through eFootballMarket Safaricom Escrow (Till 1572931) for 100% protection.`;
 
   const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
@@ -105,7 +105,7 @@ export function ChatSellerWhatsAppButton({
         target="_blank"
         rel="noopener noreferrer"
         onClick={(e) => e.stopPropagation()}
-        className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#F9F9F8] border border-[#25D366]/40 hover:border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10 font-bold text-xs transition-all shadow-sm active:scale-95 ${className}`}
+        className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sx-subtle border border-[#25D366]/40 hover:border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10 font-bold text-xs transition-all shadow-sm active:scale-95 ${className}`}
       >
         <WhatsAppIcon className="w-4 h-4 fill-[#25D366] shrink-0" />
         <span>{label || `Chat ${sellerDisplayName} on WhatsApp`}</span>

@@ -35,10 +35,10 @@ export function MakeOfferButton({
   if (bargainCheck.reason === "flash_sale") {
     return (
       <div
-        className={`inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#FEF3C7] border border-[#FDE68A] text-[#92400E] text-xs font-bold cursor-not-allowed select-none shadow-sm ${className}`}
+        className={`inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-sx-amber-tint border border-sx-amber-border text-sx-amber-text text-xs font-bold cursor-not-allowed select-none shadow-sm ${className}`}
         title="Bargaining is withdrawn for active Flash Drops. Price is locked at maximum discount."
       >
-        <Flame className="w-3.5 h-3.5 text-[#B45309] fill-amber-400 animate-pulse shrink-0" />
+        <Flame className="w-3.5 h-3.5 text-sx-amber-text fill-amber-400 animate-pulse shrink-0" />
         <span className="truncate">Flash Drop Locked (No Bargaining)</span>
       </div>
     );
@@ -48,9 +48,9 @@ export function MakeOfferButton({
   if (!bargainCheck.allowed) {
     return (
       <div
-        className={`inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#F9F9F8] border border-[#E2E2E0] text-[#5F5F5F] text-xs font-semibold cursor-not-allowed select-none ${className}`}
+        className={`inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-sx-subtle border border-sx-border text-sx-muted text-xs font-semibold cursor-not-allowed select-none ${className}`}
       >
-        <Lock className="w-3.5 h-3.5 text-[#767676] shrink-0" />
+        <Lock className="w-3.5 h-3.5 text-sx-muted shrink-0" />
         <span className="truncate">
           {listing.status === "sold" ? "Account Sold" : "Under Escrow Lock"}
         </span>
@@ -65,9 +65,9 @@ export function MakeOfferButton({
         variant={variant}
         size={size}
         onClick={() => setIsOpen(true)}
-        className={`font-bold border-[#FDE68A] text-[#92400E] hover:bg-[#FEF3C7] hover:border-amber-400 active:scale-95 transition-all whitespace-nowrap ${className}`}
+        className={`font-bold border-sx-amber-border text-sx-amber-text hover:bg-sx-amber-tint hover:border-amber-400 active:scale-95 transition-all whitespace-nowrap ${className}`}
       >
-        <Handshake className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 text-[#B45309] shrink-0" />
+        <Handshake className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 text-sx-amber-text shrink-0" />
         <span>{size === "sm" ? "Bargain" : "Bargain / Make Offer"}</span>
       </Button>
 

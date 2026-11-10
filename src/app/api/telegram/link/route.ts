@@ -97,15 +97,15 @@ export async function POST(req: NextRequest) {
       }
 
       const res = await sendTelegramMessage(
-        `🔔 <b>eFootballMarket Test Alert</b> ⚽\n\n` +
+        `<b>eFootballMarket Test Alert</b> \n\n` +
         `Hello <b>@${profile.username || "Trader"}</b>!\n` +
         `Your Telegram notifications are active and connected with sub-second latency.\n\n` +
         `You will receive instant alerts right here whenever someone purchases your squad or sends an offer!`,
         {
           chatId: profile.telegram_chat_id,
           inlineButtons: [
-            [{ text: "👥 Join Official Group (@efootballmarket254)", url: GROUP_URL }],
-            [{ text: "⚽ Seller Dashboard", url: `${process.env.NEXT_PUBLIC_APP_URL || "https://www.efootballmarket.co.ke"}/dashboard/seller` }],
+            [{ text: "Join Official Group (@efootballmarket254)", url: GROUP_URL }],
+            [{ text: "Seller Dashboard", url: `${process.env.NEXT_PUBLIC_APP_URL || "https://www.efootballmarket.co.ke"}/dashboard/seller` }],
           ],
         }
       );

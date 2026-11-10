@@ -52,7 +52,7 @@ export function GoogleSignInButton({
   return (
     <div className="w-full space-y-2">
       {error && (
-        <div className="p-2.5 rounded-lg bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs text-center">
+        <div className="p-2.5 rounded-lg bg-sx-red-tint border border-sx-red-border text-sx-red-text text-xs text-center">
           {error}
         </div>
       )}
@@ -61,7 +61,7 @@ export function GoogleSignInButton({
         type="button"
         onClick={handleGoogleSignIn}
         disabled={loading}
-        className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl bg-white hover:bg-slate-100 text-slate-900 font-bold text-xs sm:text-sm shadow-md transition-all active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+        className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl bg-sx-canvas hover:bg-slate-100 text-slate-900 font-bold text-xs sm:text-sm shadow-md transition-all active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
       >
         {loading ? (
           <Loader2 className="w-4 h-4 animate-spin text-slate-700" />

@@ -38,10 +38,10 @@ export default async function BuyerDashboardPage() {
       {/* 1. Header & Authority Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-pitch-border/60">
         <div>
-          <h1 className="text-2xl sm:text-3xl font-extrabold text-[#0F0F0F] font-display tracking-tight">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-sx-ink font-display tracking-tight">
             Purchase History &amp; Active Escrow
           </h1>
-          <p className="text-xs sm:text-sm text-[#5F5F5F] mt-1">
+          <p className="text-xs sm:text-sm text-sx-muted mt-1">
             Real-time tracking of Safaricom Till 1572931 escrow custody, credential handover, and 24h inspection.
           </p>
         </div>
@@ -60,58 +60,58 @@ export default async function BuyerDashboardPage() {
       {/* 2. Elevated Metrics Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
         {/* Total Orders */}
-        <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-[#0F1E38] to-[#0A1426] border border-[#C8C8C4] shadow-xl relative overflow-hidden">
+        <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-[#0F1E38] to-[#0A1426] border border-sx-border-strong shadow-xl relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs uppercase font-bold text-[#3D3D3D] tracking-wider">
+            <span className="text-xs uppercase font-bold text-sx-ink-soft tracking-wider">
               Total Purchases
             </span>
-            <div className="w-8 h-8 rounded-xl bg-[#F4F3F1] border border-[#C8C8C4] text-[#3D3D3D] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-sx-stone border border-sx-border-strong text-sx-ink-soft flex items-center justify-center">
               <ShoppingBag className="w-4 h-4" />
             </div>
           </div>
-          <span className="text-3xl sm:text-4xl font-black text-[#0F0F0F] font-display mt-2 block font-mono">
+          <span className="text-3xl sm:text-4xl font-black text-sx-ink font-display mt-2 block font-mono">
             {orders.length}
           </span>
-          <span className="text-[11px] text-[#5F5F5F] mt-1 block">
+          <span className="text-[11px] text-sx-muted mt-1 block">
             All marketplace &amp; middleman trades
           </span>
         </div>
 
         {/* Active in Escrow */}
-        <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-[#1C1808] via-[#0F1B2E] to-[#0A1426] border border-[#FDE68A] shadow-xl relative overflow-hidden">
+        <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-[#1C1808] via-[#0F1B2E] to-[#0A1426] border border-sx-amber-border shadow-xl relative overflow-hidden">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-1.5">
               <span className="w-2 h-2 rounded-full bg-amber-400 animate-pulse" />
-              <span className="text-xs uppercase font-bold text-[#92400E] tracking-wider">
+              <span className="text-xs uppercase font-bold text-sx-amber-text tracking-wider">
                 Active in Escrow
               </span>
             </div>
-            <div className="w-8 h-8 rounded-xl bg-[#FEF3C7] border border-[#FDE68A] text-[#92400E] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-sx-amber-tint border border-sx-amber-border text-sx-amber-text flex items-center justify-center">
               <Lock className="w-4 h-4" />
             </div>
           </div>
-          <span className="text-3xl sm:text-4xl font-black text-[#92400E] font-display mt-2 block font-mono">
+          <span className="text-3xl sm:text-4xl font-black text-sx-amber-text font-display mt-2 block font-mono">
             {activeEscrowOrders.length}
           </span>
-          <span className="text-[11px] text-[#92400E]/80 mt-1 block">
+          <span className="text-[11px] text-sx-amber-text mt-1 block">
             Secured in Till 1572931 custody
           </span>
         </div>
 
         {/* Completed Purchases */}
-        <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-[#08201D] via-[#0D1E2A] to-[#0A1426] border border-[#BFE0CE] shadow-xl relative overflow-hidden">
+        <div className="p-5 sm:p-6 rounded-3xl bg-gradient-to-br from-[#08201D] via-[#0D1E2A] to-[#0A1426] border border-sx-green-border shadow-xl relative overflow-hidden">
           <div className="flex items-center justify-between">
-            <span className="text-xs uppercase font-bold text-[#006340] tracking-wider">
+            <span className="text-xs uppercase font-bold text-sx-green-text tracking-wider">
               Completed Deals
             </span>
-            <div className="w-8 h-8 rounded-xl bg-[#EBF5F0] border border-[#BFE0CE] text-[#006340] flex items-center justify-center">
+            <div className="w-8 h-8 rounded-xl bg-sx-green-tint border border-sx-green-border text-sx-green-text flex items-center justify-center">
               <CheckCircle2 className="w-4 h-4" />
             </div>
           </div>
-          <span className="text-3xl sm:text-4xl font-black text-[#006340] font-display mt-2 block font-mono">
+          <span className="text-3xl sm:text-4xl font-black text-sx-green-text font-display mt-2 block font-mono">
             {completedOrders.length}
           </span>
-          <span className="text-[11px] text-emerald-200/80 mt-1 block">
+          <span className="text-[11px] text-sx-green-text/80 mt-1 block">
             Inspected, transferred &amp; bound
           </span>
         </div>

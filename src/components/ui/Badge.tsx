@@ -15,13 +15,13 @@ export function Badge({ className, variant = "default", size = "sm", children, .
   };
 
   const variantStyles = {
-    default: "bg-[#F4F3F1] text-[#0F0F0F] border border-[#E2E2E0]",
-    success: "bg-[#EBF5F0] text-[#006340] border border-[#BFE0CE]",
-    warning: "bg-[#FEF3C7] text-[#92400E] border border-[#FDE68A]",
-    danger: "bg-[#FEE2E2] text-[#B91C1C] border border-[#FECACA]",
-    brand: "bg-[#EBF5F0] text-[#006340] border border-[#BFE0CE]",
-    gold: "bg-[#F4F3F1] text-[#0F0F0F] border border-[#D4D4D0]",
-    outline: "border border-[#C8C8C4] text-[#0F0F0F] bg-white",
+    default: "bg-sx-stone text-sx-ink border border-sx-border",
+    success: "bg-sx-green-tint text-sx-green-text border border-sx-green-border",
+    warning: "bg-sx-amber-tint text-sx-amber-text border border-sx-amber-border",
+    danger: "bg-sx-red-tint text-sx-red-text border border-sx-red-border",
+    brand: "bg-sx-green-tint text-sx-green-text border border-sx-green-border",
+    gold: "bg-sx-amber-tint text-sx-amber-text border border-sx-amber-border",
+    outline: "border border-sx-border-strong text-sx-ink bg-sx-canvas",
   };
 
   return (

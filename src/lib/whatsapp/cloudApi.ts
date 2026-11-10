@@ -461,7 +461,7 @@ export async function sendWhatsAppButtons({
   }
 
   // Fallback: format buttons as numbered textual reply options
-  const buttonLines = buttons.map((b, idx) => `👉 *${idx + 1}.* ${b.title}`).join("\n");
+  const buttonLines = buttons.map((b, idx) => `*${idx + 1}.* ${b.title}`).join("\n");
   const fallbackMessage = `${bodyText}\n\n${buttonLines}${footerText ? `\n\n_${footerText}_` : ""}`;
 
   return sendWhatsAppMessage({ toPhone: cleanPhone, message: fallbackMessage });

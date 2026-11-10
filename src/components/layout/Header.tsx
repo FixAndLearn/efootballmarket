@@ -58,42 +58,38 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-white border-b border-[#E2E2E0]">
-      {/* Row 1: StockX Signature Top Bar — Wordmark + Wide Stone Search Bar + Nav Actions */}
+    <header className="sticky top-0 z-50 w-full bg-sx-canvas border-b border-sx-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-4 lg:gap-6 h-[68px]">
-          {/* Left: Brand Wordmark */}
           <Logo size="md" />
 
-          {/* Center: StockX Signature Wide Neutral Search Bar */}
           <form
             onSubmit={handleHeaderSearch}
             className="hidden md:flex items-center flex-1 max-w-xl relative"
           >
-            <Search className="w-4 h-4 text-[#5F5F5F] absolute left-3.5 pointer-events-none" />
+            <Search className="w-4 h-4 text-sx-muted absolute left-3.5 pointer-events-none" />
             <input
               type="text"
               value={headerSearch}
               onChange={(e) => setHeaderSearch(e.target.value)}
               placeholder="Search for squad strength, Gullit, Vieira, PS5, Booster Manager..."
               aria-label="Search marketplace squads"
-              className="w-full h-11 pl-10 pr-4 rounded-md bg-[#F4F3F1] border border-transparent hover:border-[#C8C8C4] focus:bg-white focus:border-[#0F0F0F] text-sm text-[#0F0F0F] placeholder:text-[#6B6B6B] focus:outline-none transition-colors"
+              className="w-full h-11 pl-10 pr-4 rounded-md bg-sx-stone border border-transparent hover:border-sx-border-strong focus:bg-sx-canvas focus:border-sx-ink text-sm text-sx-ink placeholder:text-sx-muted focus:outline-none transition-colors"
             />
           </form>
 
-          {/* Right: StockX Editorial Links + Auth + Outlined 'Sell' Pill */}
           <div className="hidden md:flex items-center gap-5 shrink-0">
-            <nav className="hidden xl:flex items-center gap-5 text-sm font-medium text-[#0F0F0F]">
-              <Link href="/browse" className="hover:text-[#006340] transition-colors">
+            <nav className="hidden xl:flex items-center gap-5 text-sm font-medium text-sx-ink">
+              <Link href="/browse" className="hover:text-sx-green-text transition-colors">
                 Browse
               </Link>
-              <Link href="/news" className="hover:text-[#006340] transition-colors">
-                News
+              <Link href="/news" className="hover:text-sx-green-text transition-colors">
+                Guides
               </Link>
-              <Link href="/about" className="hover:text-[#006340] transition-colors">
+              <Link href="/about" className="hover:text-sx-green-text transition-colors">
                 About
               </Link>
-              <Link href="/escrow-guarantee" className="hover:text-[#006340] transition-colors">
+              <Link href="/escrow-guarantee" className="hover:text-sx-green-text transition-colors">
                 Help
               </Link>
             </nav>
@@ -101,7 +97,7 @@ export function Header() {
             <div className="flex items-center gap-2.5">
               <Link
                 href="/seller/create-listing"
-                className="inline-flex items-center justify-center h-9 px-4 rounded-full border border-[#0F0F0F] text-xs font-semibold text-[#0F0F0F] hover:bg-[#0F0F0F] hover:text-white transition-colors"
+                className="inline-flex items-center justify-center h-9 px-4 rounded-full border border-sx-ink text-xs font-semibold text-sx-ink hover:bg-sx-contrast hover:text-sx-contrast-fg transition-colors"
               >
                 Sell
               </Link>
@@ -113,15 +109,15 @@ export function Header() {
                     <button
                       type="button"
                       onClick={() => setProfileDropdownOpen(!profileDropdownOpen)}
-                      className="flex items-center gap-2 h-9 pl-2 pr-3 rounded-full bg-[#F4F3F1] hover:bg-[#E9E8E4] border border-[#E2E2E0] transition-colors cursor-pointer"
+                      className="flex items-center gap-2 h-9 pl-2 pr-3 rounded-full bg-sx-stone hover:bg-sx-elevated border border-sx-border transition-colors cursor-pointer"
                     >
-                      <div className="w-6 h-6 rounded-full bg-[#006340] flex items-center justify-center text-white font-mono font-bold text-[11px]">
+                      <div className="w-6 h-6 rounded-full bg-sx-green flex items-center justify-center text-white font-mono font-bold text-[11px]">
                         {profile?.username ? profile.username.slice(0, 2).toUpperCase() : "ME"}
                       </div>
-                      <span className="text-xs font-semibold text-[#0F0F0F] max-w-[96px] truncate">
+                      <span className="text-xs font-semibold text-sx-ink max-w-[96px] truncate">
                         {profile?.username || "Account"}
                       </span>
-                      <ChevronDown className="w-3.5 h-3.5 text-[#5F5F5F]" />
+                      <ChevronDown className="w-3.5 h-3.5 text-sx-muted" />
                     </button>
 
                     {profileDropdownOpen && (
@@ -130,12 +126,12 @@ export function Header() {
                           className="fixed inset-0 z-10"
                           onClick={() => setProfileDropdownOpen(false)}
                         />
-                        <div className="absolute right-0 mt-2 w-56 rounded-lg bg-white border border-[#E2E2E0] shadow-xl py-1.5 z-20 text-sm">
-                          <div className="px-4 py-2.5 border-b border-[#E2E2E0]">
-                            <p className="font-bold text-[#0F0F0F] text-xs truncate">
+                        <div className="absolute right-0 mt-2 w-56 rounded-lg bg-sx-canvas border border-sx-border shadow-xl py-1.5 z-20 text-sm">
+                          <div className="px-4 py-2.5 border-b border-sx-border">
+                            <p className="font-bold text-sx-ink text-xs truncate">
                               {profile?.username || user.email}
                             </p>
-                            <p className="text-[11px] text-[#5F5F5F] capitalize mt-0.5">
+                            <p className="text-[11px] text-sx-muted capitalize mt-0.5">
                               {isAdmin ? "Administrator" : `${profile?.role || "Verified"} Member`}
                             </p>
                           </div>
@@ -144,18 +140,18 @@ export function Header() {
                             <Link
                               href="/dashboard/buyer"
                               onClick={() => setProfileDropdownOpen(false)}
-                              className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-[#0F0F0F] hover:bg-[#F4F3F1]"
+                              className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-sx-ink hover:bg-sx-stone"
                             >
-                              <ShoppingBag className="w-3.5 h-3.5 text-[#5F5F5F]" />
+                              <ShoppingBag className="w-3.5 h-3.5 text-sx-muted" />
                               <span>Buying &amp; Orders</span>
                             </Link>
 
                             <Link
                               href="/dashboard/seller"
                               onClick={() => setProfileDropdownOpen(false)}
-                              className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-[#0F0F0F] hover:bg-[#F4F3F1]"
+                              className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-sx-ink hover:bg-sx-stone"
                             >
-                              <Store className="w-3.5 h-3.5 text-[#5F5F5F]" />
+                              <Store className="w-3.5 h-3.5 text-sx-muted" />
                               <span>Selling Portfolio</span>
                             </Link>
 
@@ -163,9 +159,9 @@ export function Header() {
                               <Link
                                 href="/seller/earnings"
                                 onClick={() => setProfileDropdownOpen(false)}
-                                className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-[#0F0F0F] hover:bg-[#F4F3F1]"
+                                className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-sx-ink hover:bg-sx-stone"
                               >
-                                <Wallet className="w-3.5 h-3.5 text-[#5F5F5F]" />
+                                <Wallet className="w-3.5 h-3.5 text-sx-muted" />
                                 <span>Payouts &amp; Earnings</span>
                               </Link>
                             )}
@@ -173,9 +169,9 @@ export function Header() {
                             <Link
                               href="/profile"
                               onClick={() => setProfileDropdownOpen(false)}
-                              className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-[#0F0F0F] hover:bg-[#F4F3F1]"
+                              className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-sx-ink hover:bg-sx-stone"
                             >
-                              <Settings className="w-3.5 h-3.5 text-[#5F5F5F]" />
+                              <Settings className="w-3.5 h-3.5 text-sx-muted" />
                               <span>Profile Settings</span>
                             </Link>
 
@@ -183,7 +179,7 @@ export function Header() {
                               <Link
                                 href="/admin"
                                 onClick={() => setProfileDropdownOpen(false)}
-                                className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-[#006340] hover:bg-[#EBF5F0]"
+                                className="flex items-center gap-2.5 px-4 py-2 text-xs font-semibold text-sx-green-text hover:bg-sx-green-tint"
                               >
                                 <ShieldAlert className="w-3.5 h-3.5" />
                                 <span>Admin Console</span>
@@ -191,14 +187,14 @@ export function Header() {
                             )}
                           </div>
 
-                          <div className="border-t border-[#E2E2E0] pt-1">
+                          <div className="border-t border-sx-border pt-1">
                             <button
                               type="button"
                               onClick={() => {
                                 setProfileDropdownOpen(false);
                                 signOut();
                               }}
-                              className="flex w-full items-center gap-2.5 px-4 py-2 text-xs font-medium text-[#C92A2A] hover:bg-[#FEE2E2]/50 cursor-pointer"
+                              className="flex w-full items-center gap-2.5 px-4 py-2 text-xs font-medium text-sx-red-text hover:bg-sx-red-tint cursor-pointer"
                             >
                               <LogOut className="w-3.5 h-3.5" />
                               <span>Log Out</span>
@@ -213,13 +209,13 @@ export function Header() {
                 <>
                   <Link
                     href="/login"
-                    className="inline-flex items-center justify-center h-9 px-3.5 rounded-full border border-[#C8C8C4] text-xs font-semibold text-[#0F0F0F] hover:border-[#0F0F0F] transition-colors"
+                    className="inline-flex items-center justify-center h-9 px-3.5 rounded-full border border-sx-border-strong text-xs font-semibold text-sx-ink hover:border-sx-ink transition-colors"
                   >
                     Log In
                   </Link>
                   <Link
                     href="/register"
-                    className="inline-flex items-center justify-center h-9 px-4 rounded-full bg-[#0F0F0F] text-xs font-semibold text-white hover:bg-[#262626] transition-colors"
+                    className="inline-flex items-center justify-center h-9 px-4 rounded-full bg-sx-contrast text-xs font-semibold text-sx-contrast-fg hover:bg-sx-contrast-hover transition-colors"
                   >
                     Sign Up
                   </Link>
@@ -228,19 +224,18 @@ export function Header() {
             </div>
           </div>
 
-          {/* Mobile Controls */}
           <div className="flex items-center gap-2 md:hidden">
             {user && <NotificationBell />}
             <Link
               href="/seller/create-listing"
-              className="inline-flex items-center justify-center h-8 px-3.5 rounded-full border border-[#0F0F0F] text-xs font-semibold text-[#0F0F0F]"
+              className="inline-flex items-center justify-center h-8 px-3.5 rounded-full border border-sx-ink text-xs font-semibold text-sx-ink"
             >
               Sell
             </Link>
             <button
               type="button"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-md text-[#0F0F0F] hover:bg-[#F4F3F1]"
+              className="p-2 rounded-md text-sx-ink hover:bg-sx-stone"
               aria-label="Toggle menu"
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
@@ -249,8 +244,7 @@ export function Header() {
         </div>
       </div>
 
-      {/* Row 2: StockX Signature Category Strip */}
-      <div className="border-t border-[#E2E2E0] bg-[#F9F9F8]">
+      <div className="border-t border-sx-border bg-sx-subtle">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav
             aria-label="Product Categories"
@@ -268,13 +262,13 @@ export function Header() {
                   href={item.href}
                   className={`relative h-full inline-flex items-center whitespace-nowrap text-[13px] font-medium transition-colors ${
                     isActive
-                      ? "text-[#006340] font-semibold"
-                      : "text-[#3D3D3D] hover:text-[#0F0F0F]"
+                      ? "text-sx-green-text font-semibold"
+                      : "text-sx-muted hover:text-sx-ink"
                   }`}
                 >
                   <span>{item.name}</span>
                   {isActive && (
-                    <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#006340]" />
+                    <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-sx-green-text" />
                   )}
                 </Link>
               );
@@ -283,21 +277,20 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile Search & Menu Drawer */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-white border-t border-[#E2E2E0] px-4 pt-3 pb-5 space-y-4 shadow-lg">
+        <div className="md:hidden bg-sx-canvas border-t border-sx-border px-4 pt-3 pb-5 space-y-4 shadow-lg">
           <form onSubmit={handleHeaderSearch} className="relative flex items-center">
-            <Search className="w-4 h-4 text-[#5F5F5F] absolute left-3.5 pointer-events-none" />
+            <Search className="w-4 h-4 text-sx-muted absolute left-3.5 pointer-events-none" />
             <input
               type="text"
               value={headerSearch}
               onChange={(e) => setHeaderSearch(e.target.value)}
               placeholder="Search squads, players, OVR..."
-              className="w-full h-10 pl-9 pr-20 rounded-md bg-[#F4F3F1] text-xs text-[#0F0F0F] placeholder:text-[#6B6B6B] focus:outline-none focus:ring-1 focus:ring-[#0F0F0F]"
+              className="w-full h-10 pl-9 pr-20 rounded-md bg-sx-stone text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:ring-1 focus:ring-sx-ink"
             />
             <button
               type="submit"
-              className="absolute right-1.5 px-3 py-1 rounded bg-[#0F0F0F] text-white text-xs font-semibold"
+              className="absolute right-1.5 px-3 py-1 rounded bg-sx-contrast text-sx-contrast-fg text-xs font-semibold"
             >
               Search
             </button>
@@ -318,14 +311,14 @@ export function Header() {
                 key={link.href}
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
-                className="px-3 py-2.5 rounded-md bg-[#F4F3F1] text-xs font-semibold text-[#0F0F0F] hover:bg-[#EAE9E6]"
+                className="px-3 py-2.5 rounded-md bg-sx-stone text-xs font-semibold text-sx-ink hover:bg-sx-elevated"
               >
                 {link.name}
               </Link>
             ))}
           </div>
 
-          <div className="pt-2 border-t border-[#E2E2E0]">
+          <div className="pt-2 border-t border-sx-border">
             {user ? (
               <div className="grid grid-cols-2 gap-2">
                 <Link href="/dashboard/buyer" onClick={() => setMobileMenuOpen(false)}>

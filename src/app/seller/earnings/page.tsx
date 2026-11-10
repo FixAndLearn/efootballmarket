@@ -49,17 +49,17 @@ export default async function SellerEarningsPage() {
       <div>
         <Link
           href="/dashboard/seller"
-          className="inline-flex items-center gap-1.5 text-xs font-medium text-[#5F5F5F] hover:text-[#1F1F1F] transition-colors mb-2"
+          className="inline-flex items-center gap-1.5 text-xs font-medium text-sx-muted hover:text-sx-ink transition-colors mb-2"
         >
           <ArrowLeft className="w-4 h-4" />
           <span>Back to Seller Dashboard</span>
         </Link>
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div>
-            <h1 className="text-2xl sm:text-3xl font-bold text-[#0F0F0F] font-display">
+            <h1 className="text-2xl sm:text-3xl font-bold text-sx-ink font-display">
               Seller Earnings &amp; M-Pesa Withdrawals
             </h1>
-            <p className="text-xs sm:text-sm text-[#5F5F5F] mt-1">
+            <p className="text-xs sm:text-sm text-sx-muted mt-1">
               Direct disbursements to your registered Safaricom M-Pesa line.
             </p>
           </div>
@@ -80,68 +80,68 @@ export default async function SellerEarningsPage() {
       {/* Financial Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-6">
         <div className="p-6 rounded-2xl bg-pitch-surface border border-pitch-border shadow-xl">
-          <span className="block text-xs uppercase font-bold text-[#5F5F5F] tracking-wider">
+          <span className="block text-xs uppercase font-bold text-sx-muted tracking-wider">
             Available Balance
           </span>
-          <span className="text-3xl font-extrabold text-[#006340] font-display mt-2 block font-mono">
+          <span className="text-3xl font-extrabold text-sx-green-text font-display mt-2 block font-mono">
             {formatCurrency(availableBalance)}
           </span>
-          <p className="text-[11px] text-[#5F5F5F] mt-2">
+          <p className="text-[11px] text-sx-muted mt-2">
             Cleared funds ready for instant M-Pesa withdrawal.
           </p>
         </div>
 
         <div className="p-6 rounded-2xl bg-pitch-surface border border-pitch-border shadow-xl">
-          <span className="block text-xs uppercase font-bold text-[#B45309] tracking-wider">
+          <span className="block text-xs uppercase font-bold text-sx-amber-text tracking-wider">
             Locked in Escrow
           </span>
-          <span className="text-3xl font-extrabold text-[#B45309] font-display mt-2 block font-mono">
+          <span className="text-3xl font-extrabold text-sx-amber-text font-display mt-2 block font-mono">
             {formatCurrency(escrowBalance)}
           </span>
-          <p className="text-[11px] text-[#5F5F5F] mt-2">
+          <p className="text-[11px] text-sx-muted mt-2">
             Awaiting buyer inspection or order completion.
           </p>
         </div>
 
         <div className="p-6 rounded-2xl bg-pitch-surface border border-pitch-border shadow-xl">
-          <span className="block text-xs uppercase font-bold text-[#4338CA] tracking-wider">
+          <span className="block text-xs uppercase font-bold text-sx-info-text tracking-wider">
             Completed Transfers
           </span>
-          <span className="text-3xl font-extrabold text-[#0F0F0F] font-display mt-2 block">
+          <span className="text-3xl font-extrabold text-sx-ink font-display mt-2 block">
             {completedSales}
           </span>
-          <p className="text-[11px] text-[#5F5F5F] mt-2">
+          <p className="text-[11px] text-sx-muted mt-2">
             Total successful account settlements.
           </p>
         </div>
       </div>
 
       {/* Clear Explanation: What does "Pending" mean? */}
-      <div className="p-5 rounded-2xl bg-pitch-surface border border-[#FDE68A] shadow-xl space-y-3">
-        <div className="flex items-center gap-2 text-[#B45309] font-bold text-sm">
+      <div className="p-5 rounded-2xl bg-pitch-surface border border-sx-amber-border shadow-xl space-y-3">
+        <div className="flex items-center gap-2 text-sx-amber-text font-bold text-sm">
           <Clock className="w-4 h-4" />
           <span>Understanding Withdrawal Status &amp; Processing</span>
         </div>
-        <p className="text-xs text-[#3D3D3D] leading-relaxed">
-          When you submit a withdrawal, it is marked <strong className="text-[#B45309]">PENDING</strong> while our financial administration team prepares the payout from the platform Till to your Safaricom M-Pesa line.
+        <p className="text-xs text-sx-ink-soft leading-relaxed">
+          When you submit a withdrawal, it is marked <strong className="text-sx-amber-text">PENDING</strong> while our financial administration team prepares the payout from the platform Till to your Safaricom M-Pesa line.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
           <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border space-y-1">
-            <span className="font-bold text-[#1F1F1F] block text-[11px]">1. Balance Reserved</span>
-            <p className="text-[11px] text-[#5F5F5F] leading-normal">
+            <span className="font-bold text-sx-ink-soft block text-[11px]">1. Balance Reserved</span>
+            <p className="text-[11px] text-sx-muted leading-normal">
               Your available balance is deducted instantly to prevent double-spending.
             </p>
           </div>
           <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border space-y-1">
-            <span className="font-bold text-[#B45309] block text-[11px]">2. Payout Queued (Pending)</span>
-            <p className="text-[11px] text-[#5F5F5F] leading-normal">
+            <span className="font-bold text-sx-amber-text block text-[11px]">2. Payout Queued (Pending)</span>
+            <p className="text-[11px] text-sx-muted leading-normal">
               Disbursed to your Safaricom M-Pesa phone number (processed within 15–30 minutes).
             </p>
           </div>
           <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border space-y-1">
-            <span className="font-bold text-[#006340] block text-[11px]">3. Status Completed</span>
-            <p className="text-[11px] text-[#5F5F5F] leading-normal">
+            <span className="font-bold text-sx-green-text block text-[11px]">3. Status Completed</span>
+            <p className="text-[11px] text-sx-muted leading-normal">
               Once money reaches your phone, status marks as Paid. If wrong phone number, funds are refunded.
             </p>
           </div>
@@ -150,7 +150,7 @@ export default async function SellerEarningsPage() {
 
       {/* Withdrawal History Table */}
       <div className="bg-pitch-surface border border-pitch-border rounded-2xl p-6 shadow-xl space-y-4">
-        <h2 className="text-base font-bold text-[#0F0F0F] font-display">
+        <h2 className="text-base font-bold text-sx-ink font-display">
           M-Pesa Payout History
         </h2>
 
@@ -165,7 +165,7 @@ export default async function SellerEarningsPage() {
                 <div key={w.id} className="py-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                   <div className="space-y-1">
                     <div className="flex items-center gap-2 flex-wrap">
-                      <span className="font-mono text-xs font-semibold text-[#1F1F1F]">
+                      <span className="font-mono text-xs font-semibold text-sx-ink-soft">
                         To: {formatDisplayPhone(w.phone_number)}
                       </span>
                       {isPending && (
@@ -185,21 +185,21 @@ export default async function SellerEarningsPage() {
                       )}
                     </div>
 
-                    <div className="flex items-center gap-2 text-[11px] text-[#767676]">
+                    <div className="flex items-center gap-2 text-[11px] text-sx-muted">
                       <span>{new Date(w.created_at).toLocaleString()}</span>
                       <span>/</span>
                       {isPending && (
-                        <span className="text-[#B45309]/90 font-medium">
+                        <span className="text-sx-amber-text/90 font-medium">
                           Queued for platform Till payout (15–30 mins)
                         </span>
                       )}
                       {isCompleted && (
-                        <span className="text-[#006340]/90 font-medium">
+                        <span className="text-sx-green-text/90 font-medium">
                           Disbursed to Safaricom line
                         </span>
                       )}
                       {isRejected && (
-                        <span className="text-[#C92A2A]/90 font-medium">
+                        <span className="text-sx-red-text/90 font-medium">
                           {w.failure_reason ? `Reason: ${w.failure_reason}` : "Balance restored"}
                         </span>
                       )}
@@ -207,7 +207,7 @@ export default async function SellerEarningsPage() {
                   </div>
 
                   <div className="text-left sm:text-right">
-                    <span className="text-base font-bold text-[#006340] font-mono">
+                    <span className="text-base font-bold text-sx-green-text font-mono">
                       {formatCurrency(w.amount)}
                     </span>
                   </div>

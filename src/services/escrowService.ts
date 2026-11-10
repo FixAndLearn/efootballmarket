@@ -177,7 +177,7 @@ export class EscrowService {
       }
     }
 
-    // Dispatch automated WhatsApp alert to CEO Brian Okibo (0794400365)
+    // Dispatch automated WhatsApp alert to admin support desk
     dispatchAdminWhatsAppAlert({
       eventType: "CREDENTIALS_DELIVERED",
       orderId,
@@ -441,7 +441,7 @@ export class EscrowService {
       console.warn("Failed to create seller notification:", e);
     }
 
-    // Dispatch automated WhatsApp alert to CEO Brian Okibo (0794400365)
+    // Dispatch automated WhatsApp alert to admin support desk
     dispatchAdminWhatsAppAlert({
       eventType: "ESCROW_RELEASED",
       orderId,
@@ -557,7 +557,7 @@ export class EscrowService {
       }
     }
 
-    // Dispatch automated WhatsApp alert to CEO Brian Okibo (0794400365)
+    // Dispatch automated WhatsApp alert to admin support desk
     dispatchAdminWhatsAppAlert({
       eventType: wasCompleted ? "POST_RELEASE_DISPUTE_OPENED" : "DISPUTE_OPENED",
       orderId,

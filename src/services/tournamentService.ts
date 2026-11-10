@@ -22,6 +22,10 @@ export class TournamentService {
    * Returns empty array if none exist. Never returns fake/mock demo data.
    */
   static async getAllTournaments(): Promise<Tournament[]> {
+    const sbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+    if (!sbUrl || sbUrl.includes("placeholder-project")) {
+      return [...MEMORY_TOURNAMENTS];
+    }
     try {
       const supabase = getSupabase();
       const { data: dbTourneys, error } = await supabase

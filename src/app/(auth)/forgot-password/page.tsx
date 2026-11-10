@@ -149,24 +149,24 @@ function ForgotPasswordForm() {
   return (
     <div className="w-full max-w-md bg-pitch-surface border border-pitch-border rounded-2xl p-6 sm:p-8 shadow-2xl space-y-6">
       <div className="text-center">
-        <div className="w-12 h-12 rounded-2xl bg-[#FEF3C7] border border-[#FDE68A] flex items-center justify-center text-[#B45309] mx-auto mb-3 shadow-inner">
+        <div className="w-12 h-12 rounded-2xl bg-sx-amber-tint border border-sx-amber-border flex items-center justify-center text-sx-amber-text mx-auto mb-3 shadow-inner">
           <KeyRound className="w-6 h-6" />
         </div>
-        <h1 className="text-2xl font-bold text-[#0F0F0F] font-display">Reset Your Password</h1>
-        <p className="text-xs text-[#5F5F5F] mt-1">
+        <h1 className="text-2xl font-bold text-sx-ink font-display">Reset Your Password</h1>
+        <p className="text-xs text-sx-muted mt-1">
           Enter your registered Gmail to receive a password recovery link or code
         </p>
       </div>
 
       {error && (
-        <div className="p-3 rounded-lg bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs flex items-center gap-2">
+        <div className="p-3 rounded-lg bg-sx-red-tint border border-sx-red-border text-sx-red-text text-xs flex items-center gap-2">
           <AlertCircle className="w-4 h-4 shrink-0" />
           <span>{error}</span>
         </div>
       )}
 
       {infoMessage && (
-        <div className="p-3 rounded-lg bg-[#EBF5F0] border border-[#BFE0CE] text-[#006340] text-xs flex items-center gap-2">
+        <div className="p-3 rounded-lg bg-sx-green-tint border border-sx-green-border text-sx-green-text text-xs flex items-center gap-2">
           <CheckCircle2 className="w-4 h-4 shrink-0" />
           <span>{infoMessage}</span>
         </div>
@@ -175,7 +175,7 @@ function ForgotPasswordForm() {
       {!codeSent ? (
         /* Step 1: Request Email */
         <form onSubmit={handleSendResetEmail} className="space-y-4">
-          <div className="p-3 rounded-xl bg-[#F9F9F8] border border-pitch-border/80 text-xs text-[#3D3D3D] leading-relaxed">
+          <div className="p-3 rounded-xl bg-sx-subtle border border-pitch-border/80 text-xs text-sx-ink-soft leading-relaxed">
             We will send a secure password reset link and code to your email. You can either tap the link in your email or enter the code below.
           </div>
 
@@ -198,7 +198,7 @@ function ForgotPasswordForm() {
           <div className="text-center pt-2">
             <Link
               href={`/login?redirect=${encodeURIComponent(redirect)}`}
-              className="inline-flex items-center gap-1.5 text-xs text-[#5F5F5F] hover:text-[#0F0F0F] transition-colors"
+              className="inline-flex items-center gap-1.5 text-xs text-sx-muted hover:text-sx-ink transition-colors"
             >
               <ArrowLeft className="w-3.5 h-3.5" />
               <span>Back to Sign In</span>
@@ -208,15 +208,15 @@ function ForgotPasswordForm() {
       ) : (
         /* Step 2: Code Verification or Direct Email Link */
         <div className="space-y-5">
-          <div className="p-3.5 rounded-xl bg-[#F9F9F8] border border-pitch-border text-xs text-[#3D3D3D] space-y-2">
-            <p className="font-semibold text-[#0F0F0F]">Check your Gmail inbox</p>
-            <p className="text-[#5F5F5F]">
-              We sent a password reset message to <span className="text-[#92400E] font-mono">{email}</span>. You can either tap the link in the email or type the code below:
+          <div className="p-3.5 rounded-xl bg-sx-subtle border border-pitch-border text-xs text-sx-ink-soft space-y-2">
+            <p className="font-semibold text-sx-ink">Check your Gmail inbox</p>
+            <p className="text-sx-muted">
+              We sent a password reset message to <span className="text-sx-amber-text font-mono">{email}</span>. You can either tap the link in the email or type the code below:
             </p>
           </div>
 
           <div className="space-y-2">
-            <label className="text-xs font-semibold text-[#3D3D3D] block text-center">
+            <label className="text-xs font-semibold text-sx-ink-soft block text-center">
               Enter Recovery Code
             </label>
             <OtpCodeInput
@@ -247,7 +247,7 @@ function ForgotPasswordForm() {
             <button
               type="button"
               onClick={handleOpenEmailApp}
-              className="text-[#5F5F5F] hover:text-[#0F0F0F] flex items-center gap-1.5 transition-colors"
+              className="text-sx-muted hover:text-sx-ink flex items-center gap-1.5 transition-colors"
             >
               <Mail className="w-3.5 h-3.5" />
               <span>Launch Mail App</span>
@@ -258,8 +258,8 @@ function ForgotPasswordForm() {
               disabled={resendCooldown > 0 || resending}
               className={`font-medium ${
                 resendCooldown > 0 || resending
-                  ? "text-slate-600 cursor-not-allowed"
-                  : "text-[#B45309] hover:text-[#92400E] hover:underline"
+                  ? "text-sx-muted cursor-not-allowed"
+                  : "text-sx-amber-text hover:text-sx-amber-text hover:underline"
               }`}
             >
               {resending
@@ -278,7 +278,7 @@ function ForgotPasswordForm() {
                 setRecoveryCode("");
                 setError("");
               }}
-              className="text-xs text-[#5F5F5F] hover:text-[#0F0F0F]"
+              className="text-xs text-sx-muted hover:text-sx-ink"
             >
               Change Email Address
             </button>
@@ -292,7 +292,7 @@ function ForgotPasswordForm() {
 export default function ForgotPasswordPage() {
   return (
     <div className="flex-1 flex items-center justify-center p-4 py-12">
-      <Suspense fallback={<div className="text-[#5F5F5F] text-sm">Loading recovery...</div>}>
+      <Suspense fallback={<div className="text-sx-muted text-sm">Loading recovery...</div>}>
         <ForgotPasswordForm />
       </Suspense>
     </div>

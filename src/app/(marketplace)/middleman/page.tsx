@@ -135,13 +135,13 @@ function MiddlemanContent() {
   const generatedInviteUrl = `${appBaseUrl}/middleman?title=${encodeURIComponent(effectiveGenTitle || "eFootball Deal")}${effectiveGenAmount ? `&amount=${encodeURIComponent(effectiveGenAmount)}` : ""}${genSellerPhone ? `&seller=${encodeURIComponent(genSellerPhone)}` : ""}${genBuyerPhone ? `&buyer=${encodeURIComponent(genBuyerPhone)}` : ""}`;
 
   const generatedWhatsAppGroupMessage =
-    `🔒 *OFFICIAL ESCROW TRADE CONTRACT*\n\n` +
-    `🎮 *Squad / Item:* ${effectiveGenTitle || "eFootball Account"}\n` +
-    `💰 *Agreed Price:* ${displayAmount}\n` +
-    `🛡️ *Escrow Vault:* Safaricom Till 1572931 (EFootballMarket)\n` +
-    `👤 *Escrow Officer:* Brian Okibo (+254 794 400 365)\n\n` +
-    `⚠️ *Protection Policy:* Funds remain locked until the buyer inspects squad players, coins, and changes Konami ID credentials.\n\n` +
-    `👉 *Open & Lock Contract:* ${generatedInviteUrl}`;
+    `*OFFICIAL ESCROW TRADE CONTRACT*\n\n` +
+    `*Squad / Item:* ${effectiveGenTitle || "eFootball Account"}\n` +
+    `*Agreed Price:* ${displayAmount}\n` +
+    `*Escrow Vault:* Safaricom Till 1572931 (EFootballMarket)\n` +
+    `*Escrow Officer:* Brian Okibo (+254 794 400 365)\n\n` +
+    `*Protection Policy:* Funds remain locked until the buyer inspects squad players, coins, and changes Konami ID credentials.\n\n` +
+    `*Open & Lock Contract:* ${generatedInviteUrl}`;
 
   const handleCreateDeal = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -227,14 +227,14 @@ function MiddlemanContent() {
         <div className="absolute inset-0 bg-gradient-to-r from-[#0D1117] via-[#0D1117]/90 to-[#0D1117]/60 pointer-events-none" />
 
         <div className="relative z-10 space-y-3 max-w-2xl">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-[#EBF5F0] border border-emerald-500/35 text-[11px] font-mono font-bold text-[#006340] uppercase">
+          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-sx-green-tint border border-emerald-500/35 text-[11px] font-mono font-bold text-sx-green-text uppercase">
             Off-Platform Trade Protection
           </span>
-          <h1 className="text-2xl sm:text-4xl font-bold text-[#0F0F0F] font-display tracking-tight">
+          <h1 className="text-2xl sm:text-4xl font-bold text-sx-ink font-display tracking-tight">
             Middleman Escrow for WhatsApp &amp; Facebook Deals
           </h1>
 
-          <p className="text-xs sm:text-sm text-[#3D3D3D] leading-relaxed">
+          <p className="text-xs sm:text-sm text-sx-ink-soft leading-relaxed">
             Agreed on a price in a WhatsApp group or Facebook DM? Generate a tracked contract code below—the buyer deposits into <strong>Safaricom Till 1572931</strong>, the seller delivers Konami ID details, and payout releases after buyer confirmation.
           </p>
         </div>
@@ -250,26 +250,26 @@ function MiddlemanContent() {
         ].map((s) => (
           <div key={s.num} className="p-4 rounded-xl store-panel space-y-2">
             <div className="flex items-center justify-between">
-              <span className="px-1.5 py-0.5 rounded bg-[#F4F3F1] border border-[#DCDCD8] font-mono text-[11px] font-bold text-[#006340]">
+              <span className="px-1.5 py-0.5 rounded bg-sx-stone border border-sx-border font-mono text-[11px] font-bold text-sx-green-text">
                 {s.num}
               </span>
-              <span className="text-[10px] font-mono uppercase text-[#5F5F5F]">{s.tag}</span>
+              <span className="text-[10px] font-mono uppercase text-sx-muted">{s.tag}</span>
             </div>
-            <h3 className="text-xs font-bold text-[#0F0F0F] font-display">{s.title}</h3>
-            <p className="text-[11px] text-[#5F5F5F] leading-relaxed">{s.desc}</p>
+            <h3 className="text-xs font-bold text-sx-ink font-display">{s.title}</h3>
+            <p className="text-[11px] text-sx-muted leading-relaxed">{s.desc}</p>
           </div>
         ))}
       </div>
 
       {/* Tabs */}
-      <div className="flex flex-wrap items-center gap-2 border-b border-[#E2E2E0] pb-3">
+      <div className="flex flex-wrap items-center gap-2 border-b border-sx-border pb-3">
         <button
           type="button"
           onClick={() => setActiveTab("create")}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
             activeTab === "create"
-              ? "bg-[#006340] hover:bg-[#004D32] text-[#0F0F0F] font-bold"
-              : "bg-white border border-[#E2E2E0] text-[#3D3D3D] hover:text-[#0F0F0F]"
+              ? "bg-sx-green hover:bg-sx-green-hover text-sx-ink font-bold"
+              : "bg-sx-canvas border border-sx-border text-sx-ink-soft hover:text-sx-ink"
           }`}
         >
           <Handshake className="w-3.5 h-3.5" />
@@ -281,8 +281,8 @@ function MiddlemanContent() {
           onClick={() => setActiveTab("generator")}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
             activeTab === "generator"
-              ? "bg-[#006340] hover:bg-[#004D32] text-[#0F0F0F] font-bold"
-              : "bg-white border border-[#E2E2E0] text-[#3D3D3D] hover:text-[#0F0F0F]"
+              ? "bg-sx-green hover:bg-sx-green-hover text-sx-ink font-bold"
+              : "bg-sx-canvas border border-sx-border text-sx-ink-soft hover:text-sx-ink"
           }`}
         >
           <Share2 className="w-3.5 h-3.5" />
@@ -294,8 +294,8 @@ function MiddlemanContent() {
           onClick={() => setActiveTab("track")}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
             activeTab === "track"
-              ? "bg-[#006340] hover:bg-[#004D32] text-[#0F0F0F] font-bold"
-              : "bg-white border border-[#E2E2E0] text-[#3D3D3D] hover:text-[#0F0F0F]"
+              ? "bg-sx-green hover:bg-sx-green-hover text-sx-ink font-bold"
+              : "bg-sx-canvas border border-sx-border text-sx-ink-soft hover:text-sx-ink"
           }`}
         >
           <Search className="w-3.5 h-3.5" />
@@ -311,13 +311,13 @@ function MiddlemanContent() {
             <div className="bg-pitch-surface border border-emerald-500/60 rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl">
               <div className="flex items-start justify-between gap-4 border-b border-pitch-border pb-5">
                 <div>
-                  <span className="px-3 py-1 rounded-full bg-[#EBF5F0] text-[#006340] text-xs font-bold border border-[#BFE0CE]">
+                  <span className="px-3 py-1 rounded-full bg-sx-green-tint text-sx-green-text text-xs font-bold border border-sx-green-border">
                     Escrow Contract Generated
                   </span>
-                  <h2 className="text-2xl font-bold text-[#0F0F0F] mt-2 font-display">
+                  <h2 className="text-2xl font-bold text-sx-ink mt-2 font-display">
                     Deal Code: {createdDeal.deal_code}
                   </h2>
-                  <p className="text-xs text-[#5F5F5F] mt-0.5">
+                  <p className="text-xs text-sx-muted mt-0.5">
                     Account: <strong>{createdDeal.deal_title}</strong>
                   </p>
                 </div>
@@ -336,57 +336,57 @@ function MiddlemanContent() {
               {/* Deal Breakdown Card */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div className="p-4 rounded-2xl bg-pitch-card border border-pitch-border space-y-1">
-                  <span className="text-xs text-[#5F5F5F]">Seller Payout</span>
-                  <p className="text-xl font-bold text-[#0F0F0F] font-display">
+                  <span className="text-xs text-sx-muted">Seller Payout</span>
+                  <p className="text-xl font-bold text-sx-ink font-display">
                     {formatCurrency(createdDeal.item_amount_kes, "KES")}
                   </p>
-                  <span className="text-[11px] text-[#5F5F5F] block">
+                  <span className="text-[11px] text-sx-muted block">
                     Seller: {createdDeal.seller_name} ({createdDeal.seller_phone})
                   </span>
                 </div>
 
                 <div className="p-4 rounded-2xl bg-pitch-card border border-pitch-border space-y-1">
-                  <span className="text-xs text-[#5F5F5F]">Escrow Security Fee (5%)</span>
-                  <p className="text-xl font-bold text-[#B45309] font-display">
+                  <span className="text-xs text-sx-muted">Escrow Security Fee (5%)</span>
+                  <p className="text-xl font-bold text-sx-amber-text font-display">
                     {formatCurrency(createdDeal.escrow_fee_kes, "KES")}
                   </p>
-                  <span className="text-[11px] text-[#5F5F5F] block">
+                  <span className="text-[11px] text-sx-muted block">
                     Includes Konami 2FA verification & dispute cover
                   </span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-[#EBF5F0] border border-[#BFE0CE] space-y-1">
-                  <span className="text-xs text-[#006340]">Total Payable to Till</span>
-                  <p className="text-2xl font-black text-[#006340] font-display">
+                <div className="p-4 rounded-2xl bg-sx-green-tint border border-sx-green-border space-y-1">
+                  <span className="text-xs text-sx-green-text">Total Payable to Till</span>
+                  <p className="text-2xl font-black text-sx-green-text font-display">
                     {formatCurrency(createdDeal.total_amount_kes, "KES")}
                   </p>
-                  <span className="text-[11px] text-emerald-200 block font-semibold">
+                  <span className="text-[11px] text-sx-green-text block font-semibold">
                     Buy Goods Till: 1572931
                   </span>
                 </div>
               </div>
 
               {/* Step-by-Step Execution Guide */}
-              <div className="p-5 rounded-2xl bg-[#F9F9F8] border border-[#E2E2E0] space-y-3">
-                <h4 className="text-sm font-bold text-[#0F0F0F] flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-[#006340]" />
+              <div className="p-5 rounded-2xl bg-sx-subtle border border-sx-border space-y-3">
+                <h4 className="text-sm font-bold text-sx-ink flex items-center gap-2">
+                  <ShieldCheck className="w-4 h-4 text-sx-green-text" />
                   <span>How This Trade is Executed Safely</span>
                 </h4>
-                <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs text-[#3D3D3D] pt-1">
+                <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs text-sx-ink-soft pt-1">
                   <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border">
-                    <strong className="text-[#006340] block mb-1">1. Buyer Pays Till</strong>
+                    <strong className="text-sx-green-text block mb-1">1. Buyer Pays Till</strong>
                     Buyer sends KES {createdDeal.total_amount_kes} to Till <strong>1572931</strong>.
                   </div>
                   <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border">
-                    <strong className="text-[#006340] block mb-1">2. Funds Locked</strong>
+                    <strong className="text-sx-green-text block mb-1">2. Funds Locked</strong>
                     Officer Brian Okibo verifies funds are locked in Escrow.
                   </div>
                   <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border">
-                    <strong className="text-[#006340] block mb-1">3. Konami Handover</strong>
+                    <strong className="text-sx-green-text block mb-1">3. Konami Handover</strong>
                     Seller delivers email/pass. Buyer changes email & enables 2FA.
                   </div>
                   <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border">
-                    <strong className="text-[#006340] block mb-1">4. Payout to Seller</strong>
+                    <strong className="text-sx-green-text block mb-1">4. Payout to Seller</strong>
                     Buyer confirms ownership &rarr; KES {createdDeal.item_amount_kes} sent to seller M-Pesa.
                   </div>
                 </div>
@@ -396,7 +396,7 @@ function MiddlemanContent() {
               <div className="flex flex-col sm:flex-row items-center gap-3 pt-2">
                 <a
                   href={`https://wa.me/?text=${encodeURIComponent(
-                    `🤝 *eFootballMarket Safe Escrow Deal [${createdDeal.deal_code}]*\n🎮 *Account*: ${createdDeal.deal_title}\n💰 *Escrow Amount*: KES ${createdDeal.item_amount_kes}\n🛡️ *Funds Locked In*: Till 1572931 (EFootballMarket)\n👤 *Escrow Officer*: Brian Okibo (0794400365)\n🔗 *Track Contract*: https://www.efootballmarket.co.ke/middleman?code=${createdDeal.deal_code}`
+                    `*eFootballMarket Safe Escrow Deal [${createdDeal.deal_code}]*\n*Account*: ${createdDeal.deal_title}\n*Escrow Amount*: KES ${createdDeal.item_amount_kes}\n*Funds Locked In*: Till 1572931 (EFootballMarket)\n*Escrow Officer*: Brian Okibo (0794400365)\n*Track Contract*: https://www.efootballmarket.co.ke/middleman?code=${createdDeal.deal_code}`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
@@ -412,7 +412,7 @@ function MiddlemanContent() {
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#F4F3F1] hover:bg-slate-700 text-[#0F0F0F] font-bold text-xs border border-[#C8C8C4] transition-all"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-sx-stone hover:bg-slate-700 text-sx-ink font-bold text-xs border border-sx-border-strong transition-all"
                 >
                   <span>Notify Officer Brian (0794400365)</span>
                 </a>
@@ -434,16 +434,16 @@ function MiddlemanContent() {
               className="bg-pitch-surface border border-pitch-border rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl"
             >
               <div className="border-b border-pitch-border pb-4">
-                <h3 className="text-lg font-bold text-[#0F0F0F] font-display">
+                <h3 className="text-lg font-bold text-sx-ink font-display">
                   Initiate a Private Middleman Escrow Deal
                 </h3>
-                <p className="text-xs text-[#5F5F5F] mt-0.5">
+                <p className="text-xs text-sx-muted mt-0.5">
                   Input details agreed with your counterparty. A neutral contract will be created instantly.
                 </p>
               </div>
 
               {formError && (
-                <div className="p-3 rounded-xl bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs flex items-center gap-2">
+                <div className="p-3 rounded-xl bg-sx-red-tint border border-sx-red-border text-sx-red-text text-xs flex items-center gap-2">
                   <AlertTriangle className="w-4 h-4 shrink-0" />
                   <span>{formError}</span>
                 </div>
@@ -451,12 +451,12 @@ function MiddlemanContent() {
 
               {/* Counterparty Information */}
               <div className="space-y-4">
-                <h4 className="text-xs font-bold uppercase text-[#5F5F5F] tracking-wider">
+                <h4 className="text-xs font-bold uppercase text-sx-muted tracking-wider">
                   1. Participants Contact
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div className="p-4 rounded-2xl bg-pitch-card border border-pitch-border space-y-3">
-                    <span className="text-xs font-bold text-[#006340] block">Buyer (Sending M-Pesa)</span>
+                    <span className="text-xs font-bold text-sx-green-text block">Buyer (Sending M-Pesa)</span>
                     <Input
                       label="Buyer Name"
                       placeholder="e.g. Dennis K."
@@ -474,7 +474,7 @@ function MiddlemanContent() {
                   </div>
 
                   <div className="p-4 rounded-2xl bg-pitch-card border border-pitch-border space-y-3">
-                    <span className="text-xs font-bold text-[#B45309] block">Seller (Handing over Konami ID)</span>
+                    <span className="text-xs font-bold text-sx-amber-text block">Seller (Handing over Konami ID)</span>
                     <Input
                       label="Seller Name"
                       placeholder="e.g. Eric M."
@@ -494,7 +494,7 @@ function MiddlemanContent() {
 
               {/* Deal Specifics */}
               <div className="space-y-4">
-                <h4 className="text-xs font-bold uppercase text-[#5F5F5F] tracking-wider">
+                <h4 className="text-xs font-bold uppercase text-sx-muted tracking-wider">
                   2. Deal Details & Agreed Amount
                 </h4>
 
@@ -518,15 +518,15 @@ function MiddlemanContent() {
 
                   {/* Live Calculation Preview */}
                   <div className="p-3.5 rounded-xl bg-pitch-card border border-pitch-border flex flex-col justify-center">
-                    <div className="flex items-center justify-between text-xs text-[#3D3D3D]">
+                    <div className="flex items-center justify-between text-xs text-sx-ink-soft">
                       <span>Agreed Seller Price:</span>
-                      <strong className="text-[#0F0F0F]">KES {numAmount}</strong>
+                      <strong className="text-sx-ink">KES {numAmount}</strong>
                     </div>
-                    <div className="flex items-center justify-between text-xs text-[#3D3D3D] mt-1">
+                    <div className="flex items-center justify-between text-xs text-sx-ink-soft mt-1">
                       <span>Escrow Protection Fee (5%):</span>
-                      <strong className="text-[#B45309]">KES {escrowFee}</strong>
+                      <strong className="text-sx-amber-text">KES {escrowFee}</strong>
                     </div>
-                    <div className="flex items-center justify-between text-xs text-[#006340] font-bold border-t border-[#C8C8C4] pt-1 mt-1">
+                    <div className="flex items-center justify-between text-xs text-sx-green-text font-bold border-t border-sx-border-strong pt-1 mt-1">
                       <span>Total to Till 1572931:</span>
                       <span className="text-base font-extrabold">KES {totalPayable}</span>
                     </div>
@@ -534,7 +534,7 @@ function MiddlemanContent() {
                 </div>
 
                 <div>
-                  <label className="block text-xs font-medium text-[#3D3D3D] mb-1">
+                  <label className="block text-xs font-medium text-sx-ink-soft mb-1">
                     Special Transfer Conditions (Optional)
                   </label>
                   <textarea
@@ -542,7 +542,7 @@ function MiddlemanContent() {
                     placeholder="e.g. Seller agreed to provide first email creation proof and test match access."
                     value={dealDescription}
                     onChange={(e) => setDealDescription(e.target.value)}
-                    className="w-full bg-pitch-card border border-pitch-border rounded-lg p-3 text-xs text-[#1F1F1F]"
+                    className="w-full bg-pitch-card border border-pitch-border rounded-lg p-3 text-xs text-sx-ink-soft"
                   />
                 </div>
               </div>
@@ -566,12 +566,12 @@ function MiddlemanContent() {
 
       {/* Tab: WhatsApp Group Link Generator */}
       {activeTab === "generator" && (
-        <div className="bg-pitch-surface border border-[#BFE0CE] rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl">
+        <div className="bg-pitch-surface border border-sx-green-border rounded-3xl p-6 sm:p-8 space-y-6 shadow-2xl">
           <div className="border-b border-pitch-border/80 pb-4">
-            <h3 className="text-xl font-bold text-[#0F0F0F] font-display">
+            <h3 className="text-xl font-bold text-sx-ink font-display">
               Generate 1-Click WhatsApp Escrow Contract Invite
             </h3>
-            <p className="text-xs text-[#3D3D3D] mt-1 max-w-2xl leading-relaxed">
+            <p className="text-xs text-sx-ink-soft mt-1 max-w-2xl leading-relaxed">
               Drop a formatted escrow invitation into your WhatsApp gaming groups or send it directly to a buyer/seller. When they tap the link, the contract opens pre-filled and ready to lock funds via <strong>Safaricom Till 1572931</strong>!
             </p>
           </div>
@@ -580,34 +580,34 @@ function MiddlemanContent() {
             {/* Form Inputs */}
             <div className="space-y-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#1F1F1F] block">
-                  Squad / Deal Title <span className="text-[#B45309]">*</span>
+                <label className="text-xs font-semibold text-sx-ink-soft block">
+                  Squad / Deal Title <span className="text-sx-amber-text">*</span>
                 </label>
                 <input
                   type="text"
                   value={genTitle}
                   onChange={(e) => setGenTitle(e.target.value)}
                   placeholder="e.g. 3120 OVR Epic Neymar + Rummenigge Account"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-pitch-card border border-pitch-border text-xs text-[#0F0F0F] placeholder:text-[#767676] focus:outline-none focus:border-emerald-500"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-pitch-card border border-pitch-border text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-emerald-500"
                 />
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-semibold text-[#1F1F1F] block">
-                  Agreed Price (KES) <span className="text-[#B45309]">*</span>
+                <label className="text-xs font-semibold text-sx-ink-soft block">
+                  Agreed Price (KES) <span className="text-sx-amber-text">*</span>
                 </label>
                 <input
                   type="number"
                   value={genAmount}
                   onChange={(e) => setGenAmount(e.target.value)}
                   placeholder="e.g. 2500"
-                  className="w-full px-3.5 py-2.5 rounded-xl bg-pitch-card border border-pitch-border text-xs text-[#0F0F0F] placeholder:text-[#767676] focus:outline-none focus:border-emerald-500 font-mono"
+                  className="w-full px-3.5 py-2.5 rounded-xl bg-pitch-card border border-pitch-border text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-emerald-500 font-mono"
                 />
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-[#1F1F1F] block">
+                  <label className="text-xs font-semibold text-sx-ink-soft block">
                     Seller Phone (Optional)
                   </label>
                   <input
@@ -615,12 +615,12 @@ function MiddlemanContent() {
                     value={genSellerPhone}
                     onChange={(e) => setGenSellerPhone(e.target.value)}
                     placeholder="0712345678"
-                    className="w-full px-3.5 py-2 rounded-xl bg-pitch-card border border-pitch-border text-xs text-[#0F0F0F] font-mono focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3.5 py-2 rounded-xl bg-pitch-card border border-pitch-border text-xs text-sx-ink font-mono focus:outline-none focus:border-emerald-500"
                   />
                 </div>
 
                 <div className="space-y-1.5">
-                  <label className="text-xs font-semibold text-[#1F1F1F] block">
+                  <label className="text-xs font-semibold text-sx-ink-soft block">
                     Buyer Phone (Optional)
                   </label>
                   <input
@@ -628,7 +628,7 @@ function MiddlemanContent() {
                     value={genBuyerPhone}
                     onChange={(e) => setGenBuyerPhone(e.target.value)}
                     placeholder="0798765432"
-                    className="w-full px-3.5 py-2 rounded-xl bg-pitch-card border border-pitch-border text-xs text-[#0F0F0F] font-mono focus:outline-none focus:border-emerald-500"
+                    className="w-full px-3.5 py-2 rounded-xl bg-pitch-card border border-pitch-border text-xs text-sx-ink font-mono focus:outline-none focus:border-emerald-500"
                   />
                 </div>
               </div>
@@ -655,7 +655,7 @@ function MiddlemanContent() {
                   }}
                   className="w-full sm:w-auto text-xs"
                 >
-                  {copiedInviteUrl ? <Check className="w-3.5 h-3.5 mr-1 text-[#006340]" /> : <Link2 className="w-3.5 h-3.5 mr-1" />}
+                  {copiedInviteUrl ? <Check className="w-3.5 h-3.5 mr-1 text-sx-green-text" /> : <Link2 className="w-3.5 h-3.5 mr-1" />}
                   {copiedInviteUrl ? "Copied Link!" : "Copy Link"}
                 </Button>
               </div>
@@ -664,10 +664,10 @@ function MiddlemanContent() {
             {/* Live Message Preview Card */}
             <div className="p-5 rounded-2xl bg-pitch-card border border-pitch-border space-y-3 flex flex-col justify-between">
               <div className="space-y-2">
-                <span className="text-[11px] font-bold text-[#006340] uppercase tracking-wider block">
+                <span className="text-[11px] font-bold text-sx-green-text uppercase tracking-wider block">
                   WhatsApp Preview (Formatted for Kenyan Gaming Groups)
                 </span>
-                <div className="p-3.5 rounded-xl bg-white border border-pitch-border text-xs text-[#1F1F1F] font-mono whitespace-pre-wrap leading-relaxed select-all">
+                <div className="p-3.5 rounded-xl bg-sx-canvas border border-pitch-border text-xs text-sx-ink-soft font-mono whitespace-pre-wrap leading-relaxed select-all">
                   {generatedWhatsAppGroupMessage}
                 </div>
               </div>
@@ -717,7 +717,7 @@ function MiddlemanContent() {
           </form>
 
           {trackError && (
-            <div className="p-4 rounded-xl bg-[#F9F9F8] border border-[#E2E2E0] text-[#5F5F5F] text-xs text-center">
+            <div className="p-4 rounded-xl bg-sx-subtle border border-sx-border text-sx-muted text-xs text-center">
               {trackError}
             </div>
           )}
@@ -731,29 +731,29 @@ function MiddlemanContent() {
                 >
                   <div className="flex items-center justify-between">
                     <div>
-                      <span className="font-mono text-sm font-bold text-[#B45309]">{deal.deal_code}</span>
-                      <h4 className="text-base font-bold text-[#0F0F0F] mt-0.5">{deal.deal_title}</h4>
+                      <span className="font-mono text-sm font-bold text-sx-amber-text">{deal.deal_code}</span>
+                      <h4 className="text-base font-bold text-sx-ink mt-0.5">{deal.deal_title}</h4>
                     </div>
                     <Badge variant={deal.status === "completed" ? "success" : "brand"} size="sm">
                       {deal.status.replace("_", " ").toUpperCase()}
                     </Badge>
                   </div>
 
-                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-[#3D3D3D]">
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs text-sx-ink-soft">
                     <div>
-                      <span className="text-[#767676] block">Buyer</span>
+                      <span className="text-sx-muted block">Buyer</span>
                       <strong>{deal.buyer_name}</strong>
                     </div>
                     <div>
-                      <span className="text-[#767676] block">Seller</span>
+                      <span className="text-sx-muted block">Seller</span>
                       <strong>{deal.seller_name}</strong>
                     </div>
                     <div>
-                      <span className="text-[#767676] block">Escrow Amount</span>
-                      <strong className="text-[#006340]">KES {deal.item_amount_kes}</strong>
+                      <span className="text-sx-muted block">Escrow Amount</span>
+                      <strong className="text-sx-green-text">KES {deal.item_amount_kes}</strong>
                     </div>
                     <div>
-                      <span className="text-[#767676] block">Till Number</span>
+                      <span className="text-sx-muted block">Till Number</span>
                       <strong>{deal.till_number}</strong>
                     </div>
                   </div>
@@ -776,7 +776,7 @@ export default function MiddlemanPage() {
       fallback={
         <div className="py-24 text-center space-y-3">
           <div className="w-8 h-8 rounded-full border-2 border-brand-400 border-t-transparent animate-spin mx-auto" />
-          <p className="text-xs text-[#5F5F5F]">Loading escrow contract room...</p>
+          <p className="text-xs text-sx-muted">Loading escrow contract room...</p>
         </div>
       }
     >

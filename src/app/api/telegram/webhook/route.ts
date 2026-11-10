@@ -103,11 +103,11 @@ export async function POST(req: NextRequest) {
         process.env.TELEGRAM_ADMIN_CHAT_ID ||
         "8418652559";
 
-      // Security check: Only CEO Brian Okibo can execute administrative actions
+      // Security check: Only authorized administrators can run admin actions.
       if (fromId !== adminChatId) {
         await answerTelegramCallbackQuery(
           queryId,
-          "⚠️ Unauthorized: Only CEO Brian Okibo can execute admin actions.",
+          "Unauthorized: Only authorized administrators can run admin actions.",
           true
         );
         return NextResponse.json({ ok: true });
@@ -126,12 +126,12 @@ export async function POST(req: NextRequest) {
           .single();
 
         if (fetchErr || !withdrawal) {
-          await answerTelegramCallbackQuery(queryId, "⚠️ Withdrawal record not found.", true);
+          await answerTelegramCallbackQuery(queryId, "Withdrawal record not found.", true);
           return NextResponse.json({ ok: true });
         }
 
         if (withdrawal.status === "completed") {
-          await answerTelegramCallbackQuery(queryId, "ℹ️ Withdrawal is already marked as completed.");
+          await answerTelegramCallbackQuery(queryId, "ℹWithdrawal is already marked as completed.");
           return NextResponse.json({ ok: true });
         }
 
@@ -172,17 +172,17 @@ export async function POST(req: NextRequest) {
 
         await answerTelegramCallbackQuery(
           queryId,
-          `✅ Disbursed KES ${Number(withdrawal.amount).toLocaleString()} for @${withdrawal.seller?.username || "seller"}!`
+          `Disbursed KES ${Number(withdrawal.amount).toLocaleString()} for @${withdrawal.seller?.username || "seller"}!`
         );
 
         if (chatId && messageId) {
           const updatedText =
             `${escapeHtml(originalText)}\n\n` +
-            `✅ <b>DISBURSED &amp; APPROVED BY BRIAN OKIBO</b>\n` +
+            `<b>DISBURSED &amp; APPROVED BY BRIAN OKIBO</b>\n` +
             `⏰ <i>Executed at ${time} EAT via Telegram 1-Tap Action</i>`;
 
           await editTelegramMessageText(chatId, messageId, updatedText, [
-            [{ text: "🏦 Open Withdrawals in Admin", url: `${APP_URL}/admin?tab=withdrawals` }],
+            [{ text: "Open Withdrawals in Admin", url: `${APP_URL}/admin?tab=withdrawals` }],
           ]);
         }
 
@@ -213,7 +213,7 @@ export async function POST(req: NextRequest) {
             .from("seller_withdrawals")
             .update({
               status: "rejected",
-              failure_reason: "Rejected by CEO review via Telegram 1-Tap Action",
+              failure_reason: "Rejected during admin review",
               reviewed_by: "Brian Okibo (Telegram Admin)",
               updated_at: new Date().toISOString(),
             })
@@ -237,17 +237,17 @@ export async function POST(req: NextRequest) {
 
           await answerTelegramCallbackQuery(
             queryId,
-            `❌ Withdrawal rejected and KES ${Number(withdrawal.amount).toLocaleString()} refunded to seller balance.`
+            `Withdrawal rejected and KES ${Number(withdrawal.amount).toLocaleString()} refunded to seller balance.`
           );
 
           if (chatId && messageId) {
             const updatedText =
               `${escapeHtml(originalText)}\n\n` +
-              `❌ <b>REJECTED &amp; REFUNDED TO WALLET</b>\n` +
+              `<b>REJECTED &amp; REFUNDED TO WALLET</b>\n` +
               `⏰ <i>Executed by Brian Okibo at ${time} EAT</i>`;
 
             await editTelegramMessageText(chatId, messageId, updatedText, [
-              [{ text: "🏦 Review in Admin", url: `${APP_URL}/admin?tab=withdrawals` }],
+              [{ text: "Review in Admin", url: `${APP_URL}/admin?tab=withdrawals` }],
             ]);
           }
         } else {
@@ -276,22 +276,22 @@ export async function POST(req: NextRequest) {
           await adminSupabase.from("notifications").insert({
             recipient_id: listing.seller_id,
             type: "listing_moderated",
-            title: "⚠️ Listing Brought Down by Administration",
-            message: `Your squad listing "${listing.title}" was suspended by CEO review for non-conformance.`,
+            title: "Listing Brought Down by Administration",
+            message: `Your squad listing "${listing.title}" was unpublished during moderation review.`,
             action_url: "/seller/guidelines",
             is_read: false,
           });
 
-          await answerTelegramCallbackQuery(queryId, "🚨 Listing taken down from marketplace catalog.");
+          await answerTelegramCallbackQuery(queryId, "Listing taken down from marketplace catalog.");
 
           if (chatId && messageId) {
             const updatedText =
               `${escapeHtml(originalText)}\n\n` +
-              `🚨 <b>BROUGHT DOWN &amp; SUSPENDED</b>\n` +
+              `<b>BROUGHT DOWN &amp; SUSPENDED</b>\n` +
               `⏰ <i>Executed by Brian Okibo at ${time} EAT</i>`;
 
             await editTelegramMessageText(chatId, messageId, updatedText, [
-              [{ text: "⚽ Review in Admin", url: `${APP_URL}/admin?tab=listings` }],
+              [{ text: "Review in Admin", url: `${APP_URL}/admin?tab=listings` }],
             ]);
           }
         } else {
@@ -314,7 +314,7 @@ export async function POST(req: NextRequest) {
         if (listing) {
           const bRes = await broadcastListingToTelegramChannel(listing);
           if (bRes.success) {
-            await answerTelegramCallbackQuery(queryId, "📢 Deal broadcasted to Telegram Deals Channel! 🎉");
+            await answerTelegramCallbackQuery(queryId, "Deal broadcasted to Telegram Deals Channel! ");
           } else {
             await answerTelegramCallbackQuery(queryId, `Broadcast note: ${bRes.error || "Broadcast sent"}`);
           }
@@ -362,15 +362,15 @@ export async function POST(req: NextRequest) {
 
       if (profErr || !profile) {
         const errorReply =
-          `⚠️ <b>Account Link Notice</b>\n\n` +
+          `<b>Account Link Notice</b>\n\n` +
           `Could not locate user account with ID <code>${escapeHtml(targetUserId)}</code>.\n\n` +
           `Please log into <a href="${APP_URL}">eFootballMarket.co.ke</a>, go to your <b>Seller Dashboard</b>, and tap <b>"Connect Telegram Alerts"</b> to connect with 1-click.`;
 
         await sendTelegramMessage(errorReply, {
           chatId,
           inlineButtons: [
-            [{ text: "⚽ Log in to eFootballMarket", url: `${APP_URL}/login` }],
-            [{ text: "👥 Join Official Group (@efootballmarket254)", url: "https://t.me/efootballmarket254" }],
+            [{ text: "Log in to eFootballMarket", url: `${APP_URL}/login` }],
+            [{ text: "Join Official Group (@efootballmarket254)", url: "https://t.me/efootballmarket254" }],
           ],
         });
         return NextResponse.json({ ok: true });
@@ -388,20 +388,20 @@ export async function POST(req: NextRequest) {
         .eq("id", targetUserId);
 
       const successReply =
-        `🎉 <b>TELEGRAM ALERTS ACTIVATED!</b> ⚽\n\n` +
+        `<b>TELEGRAM ALERTS ACTIVATED!</b> \n\n` +
         `Welcome <b>${escapeHtml(profile.username || profile.first_name || "Creator")}</b>! Your Telegram account has been linked to your eFootballMarket profile.\n\n` +
-        `🔔 <b>Instant Alerts Enabled:</b>\n` +
-        `✅ <b>Squad Purchases:</b> Instant pings when escrow payment is confirmed at Till 1572931.\n` +
-        `✅ <b>Price Offers:</b> Instant alerts when buyers propose cash offers.\n` +
-        `✅ <b>Escrow Messages:</b> Direct pings when buyers send messages in the order room.\n\n` +
-        `📢 <b>Official Community Group:</b> Connect with Kenyan eFootball traders and creators in @efootballmarket254!`;
+        `<b>Instant Alerts Enabled:</b>\n` +
+        `<b>Squad Purchases:</b> Instant pings when escrow payment is confirmed at Till 1572931.\n` +
+        `<b>Price Offers:</b> Instant alerts when buyers propose cash offers.\n` +
+        `<b>Escrow Messages:</b> Direct pings when buyers send messages in the order room.\n\n` +
+        `<b>Official Community Group:</b> Connect with Kenyan eFootball traders and creators in @efootballmarket254!`;
 
       await sendTelegramMessage(successReply, {
         chatId,
         inlineButtons: [
-          [{ text: "📊 Open Seller Dashboard", url: `${APP_URL}/dashboard/seller` }],
-          [{ text: "👥 Join Official Group (@efootballmarket254)", url: "https://t.me/efootballmarket254" }],
-          [{ text: "⚽ Browse Squads", url: `${APP_URL}/browse` }],
+          [{ text: "Open Seller Dashboard", url: `${APP_URL}/dashboard/seller` }],
+          [{ text: "Join Official Group (@efootballmarket254)", url: "https://t.me/efootballmarket254" }],
+          [{ text: "Browse Squads", url: `${APP_URL}/browse` }],
         ],
       });
 
@@ -411,26 +411,26 @@ export async function POST(req: NextRequest) {
     // 1. /start or /help or greetings
     if (lower === "/start" || lower === "/help" || lower === "hi" || lower === "hello") {
       const reply =
-        `👋 <b>Hello ${escapeHtml(senderName)}!</b>\n\n` +
-        `Welcome to the official <b>eFootballMarket Executive &amp; Alerts Bot</b>.\n\n` +
+        `<b>Hello ${escapeHtml(senderName)}!</b>\n\n` +
+        `Welcome to the official <b>eFootballMarket Alerts</b>.\n\n` +
         `🆔 <b>Your Chat ID:</b> <code>${chatId}</code>\n` +
-        `🛡️ <b>M-Pesa Escrow Till:</b> <code>1572931</code> (EFootballMarket)\n` +
-        `👥 <b>Community Group:</b> @efootballmarket254\n` +
-        `📱 <b>Admin Hotline:</b> +254 794 400 365\n\n` +
-        `✅ <b>Bot Status:</b> Active &amp; Ready!\n` +
+        `<b>M-Pesa Escrow Till:</b> <code>1572931</code> (EFootballMarket)\n` +
+        `<b>Community Group:</b> @efootballmarket254\n` +
+        `<b>Admin Hotline:</b> +254 794 400 365\n\n` +
+        `<b>Bot Status:</b> Active &amp; Ready!\n` +
         `Platform transactions, payments, credentials, and deal notifications are processed automatically.\n\n` +
         `<b>Available Commands:</b>\n` +
-        `⚡ /status — Check platform &amp; escrow health\n` +
-        `💳 /till — Safaricom Till 1572931 instructions\n` +
-        `🛡️ /admin — Open Executive Admin Panel\n` +
-        `📶 /ping — Sub-second latency ping test`;
+        `/status — Check platform &amp; escrow health\n` +
+        `/till — Safaricom Till 1572931 instructions\n` +
+        `/admin — Open Admin Console\n` +
+        `/ping — Sub-second latency ping test`;
 
       await sendTelegramMessage(reply, {
         chatId,
         inlineButtons: [
-          [{ text: "👥 Join Official Group (@efootballmarket254)", url: "https://t.me/efootballmarket254" }],
-          [{ text: "⚽ Browse Squads", url: `${APP_URL}/browse` }],
-          [{ text: "🛡️ Admin Panel", url: `${APP_URL}/admin` }],
+          [{ text: "Join Official Group (@efootballmarket254)", url: "https://t.me/efootballmarket254" }],
+          [{ text: "Browse Squads", url: `${APP_URL}/browse` }],
+          [{ text: "Admin Panel", url: `${APP_URL}/admin` }],
         ],
       });
 
@@ -440,17 +440,17 @@ export async function POST(req: NextRequest) {
     // 2. /status command
     if (lower === "/status") {
       const reply =
-        `📊 <b>eFootballMarket Platform Status</b>\n\n` +
-        `🟢 <b>System Health:</b> 100% Operational\n` +
-        `🛡️ <b>Escrow Till:</b> <code>1572931</code> (Lipa na M-Pesa Buy Goods)\n` +
-        `🔐 <b>Vault Encryption:</b> AES-256-GCM Secure\n` +
-        `⏱️ <b>Nairobi Time:</b> ${time} EAT\n` +
+        `<b>eFootballMarket Platform Status</b>\n\n` +
+        `<b>System Health:</b> 100% Operational\n` +
+        `<b>Escrow Till:</b> <code>1572931</code> (Lipa na M-Pesa Buy Goods)\n` +
+        `<b>Vault Encryption:</b> AES-256-GCM Secure\n` +
+        `⏱<b>Nairobi Time:</b> ${time} EAT\n` +
         `🆔 <b>Your Chat ID:</b> <code>${chatId}</code>\n\n` +
         `Ready for automated notifications.`;
 
       await sendTelegramMessage(reply, {
         chatId,
-        inlineButtons: [[{ text: "🛡️ Admin Dashboard", url: `${APP_URL}/admin` }]],
+        inlineButtons: [[{ text: "Admin Dashboard", url: `${APP_URL}/admin` }]],
       });
 
       return NextResponse.json({ ok: true });
@@ -459,12 +459,12 @@ export async function POST(req: NextRequest) {
     // 3. /till or /payment command
     if (lower === "/till" || lower === "/payment" || lower === "till") {
       const reply =
-        `💰 <b>Official M-Pesa Till Details</b>\n\n` +
-        `🏪 <b>Buy Goods Till:</b> <code>1572931</code>\n` +
-        `🏷️ <b>Store Name:</b> <code>EFootballMarket</code>\n` +
-        `🛡️ <b>Escrow Protection:</b> Guaranteed\n\n` +
+        `<b>Official M-Pesa Till Details</b>\n\n` +
+        `<b>Buy Goods Till:</b> <code>1572931</code>\n` +
+        `<b>Store Name:</b> <code>EFootballMarket</code>\n` +
+        `<b>Escrow Protection:</b> Guaranteed\n\n` +
         `<b>Payment Steps:</b>\n` +
-        `1. Open M-Pesa menu ➔ Lipa na M-Pesa\n` +
+        `1. Open M-Pesa menu Lipa na M-Pesa\n` +
         `2. Select <b>Buy Goods and Services</b>\n` +
         `3. Enter Till: <code>1572931</code>\n` +
         `4. Enter Amount &amp; PIN\n` +
@@ -477,26 +477,26 @@ export async function POST(req: NextRequest) {
     // 4. /admin command
     if (lower === "/admin") {
       const reply =
-        `🏛️ <b>eFootballMarket Executive Administration</b>\n\n` +
+        `<b>eFootballMarket Administration</b>\n\n` +
         `Manage listings, review escrow transactions, approve payouts, and verify user accounts in the executive suite.`;
 
       await sendTelegramMessage(reply, {
         chatId,
-        inlineButtons: [[{ text: "🛡️ Open Admin Portal", url: `${APP_URL}/admin` }]],
+        inlineButtons: [[{ text: "Open Admin Portal", url: `${APP_URL}/admin` }]],
       });
       return NextResponse.json({ ok: true });
     }
 
     // 5. /ping command
     if (lower === "/ping") {
-      const reply = `🏓 <b>Pong!</b> Connection verified. Your Chat ID is <code>${chatId}</code>.`;
+      const reply = `<b>Pong!</b> Connection verified. Your Chat ID is <code>${chatId}</code>.`;
       await sendTelegramMessage(reply, { chatId });
       return NextResponse.json({ ok: true });
     }
 
     // 6. Generic conversational fallback
     const reply =
-      `🤖 <b>eFootballMarket Bot</b>\n\n` +
+      `<b>eFootballMarket Bot</b>\n\n` +
       `Received: <i>"${escapeHtml(text)}"</i>\n\n` +
       `🆔 <b>Your Telegram Chat ID:</b> <code>${chatId}</code>\n` +
       `<i>(Keep this ID in your .env.local as TELEGRAM_CHAT_ID)</i>\n\n` +
@@ -505,8 +505,8 @@ export async function POST(req: NextRequest) {
     await sendTelegramMessage(reply, {
       chatId,
       inlineButtons: [
-        [{ text: "🛡️ Executive Panel", url: `${APP_URL}/admin` }],
-        [{ text: "⚽ Browse Squads", url: `${APP_URL}/browse` }],
+        [{ text: "Admin Console", url: `${APP_URL}/admin` }],
+        [{ text: "Browse Squads", url: `${APP_URL}/browse` }],
       ],
     });
 

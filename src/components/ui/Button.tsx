@@ -11,7 +11,7 @@ export interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   ({ className, variant = "primary", size = "md", isLoading = false, children, disabled, ...props }, ref) => {
     const baseStyles =
-      "inline-flex items-center justify-center font-semibold rounded-full transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-white disabled:opacity-50 disabled:cursor-not-allowed select-none cursor-pointer";
+      "inline-flex items-center justify-center font-semibold rounded-full transition-colors duration-150 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-sx-canvas disabled:opacity-50 disabled:cursor-not-allowed select-none cursor-pointer";
 
     const sizeStyles = {
       sm: "text-xs px-4 py-1.5 h-8 gap-1.5",
@@ -21,17 +21,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variantStyles = {
       primary:
-        "bg-[#006340] text-white hover:bg-[#004D32] focus:ring-[#006340]",
+        "bg-sx-green text-white hover:bg-sx-green-hover focus:ring-sx-green",
       secondary:
-        "bg-[#0F0F0F] text-white hover:bg-[#262626] focus:ring-[#0F0F0F]",
+        "bg-sx-contrast text-sx-contrast-fg hover:bg-sx-contrast-hover focus:ring-sx-ink",
       outline:
-        "border border-[#0F0F0F] bg-white text-[#0F0F0F] hover:bg-[#F4F3F1] focus:ring-[#0F0F0F]",
+        "border border-sx-border-strong bg-sx-canvas text-sx-ink hover:bg-sx-stone hover:border-sx-ink focus:ring-sx-ink",
       ghost:
-        "text-[#0F0F0F] hover:bg-[#F4F3F1] focus:ring-[#0F0F0F]",
+        "text-sx-ink hover:bg-sx-stone focus:ring-sx-ink",
       danger:
-        "bg-[#C92A2A] text-white hover:bg-[#A61E1E] focus:ring-[#C92A2A]",
+        "bg-sx-red text-white hover:opacity-90 focus:ring-sx-red",
       gold:
-        "bg-[#006340] text-white hover:bg-[#004D32] focus:ring-[#006340]",
+        "bg-sx-green text-white hover:bg-sx-green-hover focus:ring-sx-green",
     };
 
     return (

@@ -155,21 +155,21 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
       {/* Dispute Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-pitch-border/60 pb-4">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#FEE2E2] border border-[#FECACA] flex items-center justify-center text-[#C92A2A] shrink-0">
+          <div className="w-10 h-10 rounded-xl bg-sx-red-tint border border-sx-red-border flex items-center justify-center text-sx-red-text shrink-0">
             <ShieldAlert className="w-5 h-5" />
           </div>
           <div>
             <div className="flex items-center gap-2">
-              <h3 className="text-base font-bold text-[#0F0F0F]">Escrow Dispute Evidence Locker</h3>
+              <h3 className="text-base font-bold text-sx-ink">Escrow Dispute Evidence Locker</h3>
               <span className={`text-[10px] font-bold uppercase px-2 py-0.5 rounded border ${
                 isPostRelease
-                  ? "bg-[#FEF3C7] border-amber-700 text-[#92400E]"
-                  : "bg-[#FEE2E2] border-[#FECACA] text-[#B91C1C]"
+                  ? "bg-sx-amber-tint border-amber-700 text-sx-amber-text"
+                  : "bg-sx-red-tint border-sx-red-border text-sx-red-text"
               }`}>
                 {isPostRelease ? "Post-Release Freeze Active" : "Audit Active"}
               </span>
             </div>
-            <p className="text-xs text-[#5F5F5F] mt-0.5">
+            <p className="text-xs text-sx-muted mt-0.5">
               Both parties must provide photographic verification for administrator review.
             </p>
           </div>
@@ -178,7 +178,7 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
         <button
           type="button"
           onClick={fetchDisputeData}
-          className="text-xs text-[#5F5F5F] hover:text-[#1F1F1F] flex items-center gap-1.5 transition-colors self-start sm:self-auto"
+          className="text-xs text-sx-muted hover:text-sx-ink flex items-center gap-1.5 transition-colors self-start sm:self-auto"
         >
           <RefreshCw className={`w-3.5 h-3.5 ${loading ? "animate-spin" : ""}`} />
           <span>Refresh Locker</span>
@@ -187,12 +187,12 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
 
       {/* Post-Release Dispute Notice */}
       {isPostRelease && (
-        <div className="p-3.5 rounded-xl bg-[#FEF3C7] border border-[#FDE68A] text-xs text-[#92400E] space-y-1">
-          <div className="flex items-center gap-2 font-bold text-[#92400E]">
-            <ShieldAlert className="w-4 h-4 text-[#B45309] shrink-0" />
+        <div className="p-3.5 rounded-xl bg-sx-amber-tint border border-sx-amber-border text-xs text-sx-amber-text space-y-1">
+          <div className="flex items-center gap-2 font-bold text-sx-amber-text">
+            <ShieldAlert className="w-4 h-4 text-sx-amber-text shrink-0" />
             <span>Post-Release Breach Arbitration (Seller Payout Frozen)</span>
           </div>
-          <p className="text-[11px] text-[#92400E]/90 leading-relaxed">
+          <p className="text-[11px] text-sx-amber-text/90 leading-relaxed">
             This dispute was raised after order funds were initially released. The seller available balance is frozen until platform administration verifies Konami account recovery logs, Google Play link status, or game integrity records.
           </p>
         </div>
@@ -201,10 +201,10 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
       {/* Primary Dispute Summary */}
       {dispute && (
         <div className="p-4 rounded-xl bg-pitch-card/70 border border-pitch-border space-y-2 text-xs">
-          <div className="flex items-center justify-between text-[#5F5F5F]">
+          <div className="flex items-center justify-between text-sx-muted">
             <span>
               Dispute Reason:{" "}
-              <strong className="text-[#92400E] capitalize">
+              <strong className="text-sx-amber-text capitalize">
                 {dispute.reason === "google_linked_breach"
                   ? "Google Play Link Found (Anti-Googling Breach)"
                   : dispute.reason === "account_banned_or_deducted"
@@ -216,7 +216,7 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
               Opened {new Date(dispute.created_at).toLocaleDateString()}
             </span>
           </div>
-          <p className="text-[#3D3D3D] bg-[#F9F9F8] p-3 rounded-lg border border-[#E2E2E0] leading-relaxed">
+          <p className="text-sx-ink-soft bg-sx-subtle p-3 rounded-lg border border-sx-border leading-relaxed">
             "{dispute.description}"
           </p>
         </div>
@@ -225,17 +225,17 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
       {/* Evidence Gallery */}
       <div className="space-y-3">
         <div className="flex items-center justify-between">
-          <h4 className="text-xs uppercase font-bold text-[#3D3D3D] tracking-wider">
+          <h4 className="text-xs uppercase font-bold text-sx-ink-soft tracking-wider">
             Uploaded Evidence Screenshots ({evidenceList.length})
           </h4>
-          <span className="text-[11px] text-[#5F5F5F]">Tap to expand full screen</span>
+          <span className="text-[11px] text-sx-muted">Tap to expand full screen</span>
         </div>
 
         {evidenceList.length === 0 ? (
-          <div className="p-8 rounded-xl bg-pitch-card/40 border border-pitch-border/60 text-center text-xs text-[#5F5F5F]">
-            <ImageIcon className="w-8 h-8 text-slate-600 mx-auto mb-2" />
+          <div className="p-8 rounded-xl bg-pitch-card/40 border border-pitch-border/60 text-center text-xs text-sx-muted">
+            <ImageIcon className="w-8 h-8 text-sx-muted mx-auto mb-2" />
             <p>No proof screenshots attached yet.</p>
-            <p className="text-[11px] text-[#767676] mt-1">
+            <p className="text-[11px] text-sx-muted mt-1">
               Upload Konami ID error prompts, security emails, or in-game verification below.
             </p>
           </div>
@@ -245,7 +245,7 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
               <div
                 key={idx}
                 onClick={() => setZoomImage(item.url)}
-                className="group relative rounded-xl overflow-hidden border border-pitch-border bg-[#F9F9F8] cursor-zoom-in aspect-[4/3] transition-all hover:border-amber-400/80 shadow-md"
+                className="group relative rounded-xl overflow-hidden border border-pitch-border bg-sx-subtle cursor-zoom-in aspect-[4/3] transition-all hover:border-amber-400/80 shadow-md"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
@@ -259,17 +259,17 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
                     className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
                       item.uploaderRole === "Buyer"
                         ? "bg-sky-950/90 text-sky-300 border border-sky-600/50"
-                        : "bg-[#EBF5F0] text-[#006340] border border-emerald-600/50"
+                        : "bg-sx-green-tint text-sx-green-text border border-emerald-600/50"
                     }`}
                   >
                     {item.uploaderRole} Evidence
                   </span>
                 </div>
                 <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
-                  <span className="text-[10px] font-semibold text-[#0F0F0F] truncate max-w-[85%]">
+                  <span className="text-[10px] font-semibold text-sx-ink truncate max-w-[85%]">
                     {item.title}
                   </span>
-                  <Maximize2 className="w-3 h-3 text-[#5F5F5F] group-hover:text-[#0F0F0F] shrink-0" />
+                  <Maximize2 className="w-3 h-3 text-sx-muted group-hover:text-sx-ink shrink-0" />
                 </div>
               </div>
             ))}
@@ -279,26 +279,26 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
 
       {/* Upload Additional Proof Box */}
       <form onSubmit={handleUploadEvidence} className="p-4 rounded-xl bg-pitch-card/80 border border-pitch-border space-y-3">
-        <h4 className="text-xs font-bold text-[#0F0F0F] flex items-center gap-1.5">
-          <Upload className="w-3.5 h-3.5 text-[#B45309]" />
+        <h4 className="text-xs font-bold text-sx-ink flex items-center gap-1.5">
+          <Upload className="w-3.5 h-3.5 text-sx-amber-text" />
           <span>Upload Your Evidence ({userRole})</span>
         </h4>
 
         {error && (
-          <div className="p-2.5 rounded-lg bg-[#FEE2E2] border border-[#FECACA] text-[#B91C1C] text-xs">
+          <div className="p-2.5 rounded-lg bg-sx-red-tint border border-sx-red-border text-sx-red-text text-xs">
             {error}
           </div>
         )}
 
         {successMsg && (
-          <div className="p-2.5 rounded-lg bg-[#EBF5F0] border border-[#BFE0CE] text-[#006340] text-xs">
+          <div className="p-2.5 rounded-lg bg-sx-green-tint border border-sx-green-border text-sx-green-text text-xs">
             {successMsg}
           </div>
         )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
           <div>
-            <label className="block text-[11px] font-medium text-[#3D3D3D] mb-1">
+            <label className="block text-[11px] font-medium text-sx-ink-soft mb-1">
               Evidence Label / Context
             </label>
             <input
@@ -306,19 +306,19 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
               value={evidenceTitle}
               onChange={(e) => setEvidenceTitle(e.target.value)}
               placeholder="e.g. Konami Login Error Screen"
-              className="w-full bg-[#F9F9F8] border border-[#C8C8C4] rounded-lg px-3 py-2 text-xs text-[#1F1F1F] focus:outline-none focus:border-brand-500"
+              className="w-full bg-sx-subtle border border-sx-border-strong rounded-lg px-3 py-2 text-xs text-sx-ink-soft focus:outline-none focus:border-brand-500"
             />
           </div>
 
           <div>
-            <label className="block text-[11px] font-medium text-[#3D3D3D] mb-1">
+            <label className="block text-[11px] font-medium text-sx-ink-soft mb-1">
               Select Screenshot (PNG/JPG up to 10MB)
             </label>
             <input
               type="file"
               accept="image/*"
               onChange={handleFileSelect}
-              className="w-full text-xs text-[#5F5F5F] file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-[#F4F3F1] file:text-[#1F1F1F] hover:file:bg-slate-700"
+              className="w-full text-xs text-sx-muted file:mr-2 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-sx-stone file:text-sx-ink-soft hover:file:bg-slate-700"
             />
           </div>
         </div>
@@ -333,7 +333,7 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
                 setSelectedFile(null);
                 setPreviewUrl(null);
               }}
-              className="absolute top-1 right-1 p-0.5 rounded bg-black/80 text-[#C92A2A]"
+              className="absolute top-1 right-1 p-0.5 rounded bg-black/80 text-sx-red-text"
             >
               <X className="w-3.5 h-3.5" />
             </button>
@@ -354,7 +354,7 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
       </form>
 
       {/* WhatsApp Escalation Action */}
-      <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-[#5F5F5F] border-t border-pitch-border/60">
+      <div className="pt-2 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs text-sx-muted border-t border-pitch-border/60">
         <p>
           Need urgent mediation? Escrow Director Brian Okibo inspects evidence directly on WhatsApp.
         </p>
@@ -364,7 +364,7 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
           )}`}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-[#EBF5F0] hover:bg-[#EBF5F0] border border-[#BFE0CE] text-[#006340] font-bold text-xs transition-colors shrink-0"
+          className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-sx-green-tint hover:bg-sx-green-tint border border-sx-green-border text-sx-green-text font-bold text-xs transition-colors shrink-0"
         >
           <MessageCircle className="w-3.5 h-3.5 fill-emerald-400" />
           <span>Notify Brian on WhatsApp</span>
@@ -380,7 +380,7 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
           <button
             type="button"
             onClick={() => setZoomImage(null)}
-            className="absolute top-4 right-4 p-2 rounded-xl bg-[#F4F3F1] text-[#3D3D3D] hover:text-[#0F0F0F]"
+            className="absolute top-4 right-4 p-2 rounded-xl bg-sx-stone text-sx-ink-soft hover:text-sx-ink"
           >
             <X className="w-6 h-6" />
           </button>

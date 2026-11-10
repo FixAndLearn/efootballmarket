@@ -1,6 +1,6 @@
 /**
  * Admin Notification & WhatsApp Automated Dispatcher
- * Directly routes all high-priority platform events to Brian Okibo (CEO) at +254 794 400 365.
+ * Directly routes all high-priority platform events to admin support desk at +254 794 400 365.
  */
 
 import { formatDisplayPhone, formatInternationalPhone } from "@/lib/utils/phone";
@@ -48,153 +48,153 @@ export interface AdminAlertPayload {
 export type OrderAlertPayload = AdminAlertPayload;
 
 /**
- * Formats a clean, high-priority WhatsApp notification for Brian Okibo (CEO).
+ * Formats a clean, high-priority WhatsApp notification for admin support desk.
  */
 export function formatAdminWhatsAppMessage(payload: AdminAlertPayload): string {
   const currency = payload.currency || "KES";
   const formattedAmount = payload.amount !== undefined ? `${currency} ${Number(payload.amount).toLocaleString()}` : "";
   const time = new Date().toLocaleTimeString("en-KE", { timeZone: "Africa/Nairobi", hour: "2-digit", minute: "2-digit" });
 
-  let header = "🔔 *eFootballMarket Alert*";
+  let header = "*eFootballMarket Alert*";
   let lines: string[] = [];
 
   switch (payload.eventType) {
     case "PAYMENT_RECEIVED":
-      header = "💰 *M-PESA PAYMENT SECURED (TILL 1572931)*";
+      header = "*M-PESA PAYMENT SECURED (TILL 1572931)*";
       lines = [
-        `📦 *Order:* ${payload.orderNumber || "Direct"}`,
-        `🎮 *Squad:* ${payload.listingTitle || "eFootball Account"}`,
-        `💵 *Amount:* ${formattedAmount}`,
-        payload.receiptNumber ? `🧾 *Receipt:* ${payload.receiptNumber}` : "",
-        payload.buyerPhone ? `📱 *Buyer:* ${formatDisplayPhone(payload.buyerPhone)}` : "",
-        `🛡️ *Status:* Funds in Escrow. Seller notified to deliver Konami ID.`,
+        `*Order:* ${payload.orderNumber || "Direct"}`,
+        `*Squad:* ${payload.listingTitle || "eFootball Account"}`,
+        `*Amount:* ${formattedAmount}`,
+        payload.receiptNumber ? `*Receipt:* ${payload.receiptNumber}` : "",
+        payload.buyerPhone ? `*Buyer:* ${formatDisplayPhone(payload.buyerPhone)}` : "",
+        `*Status:* Funds in Escrow. Seller notified to deliver Konami ID.`,
       ];
       break;
 
     case "NEW_USER_REGISTERED":
-      header = "👤 *NEW USER REGISTRATION*";
+      header = "*NEW USER REGISTRATION*";
       lines = [
-        `🎮 *Username:* @${payload.username || "Trader"}`,
-        payload.userEmail ? `📧 *Email:* ${payload.userEmail}` : "",
-        payload.buyerPhone ? `📱 *Phone:* ${formatDisplayPhone(payload.buyerPhone)}` : "",
+        `*Username:* @${payload.username || "Trader"}`,
+        payload.userEmail ? `*Email:* ${payload.userEmail}` : "",
+        payload.buyerPhone ? `*Phone:* ${formatDisplayPhone(payload.buyerPhone)}` : "",
         `⏰ *Time:* ${time} EAT`,
       ];
       break;
 
     case "NEW_LISTING_CREATED":
-      header = "⚽ *NEW ACCOUNT LISTED FOR SALE*";
+      header = "*NEW ACCOUNT LISTED FOR SALE*";
       lines = [
-        `🎮 *Squad:* ${payload.listingTitle || "Account"}`,
-        `💰 *Price:* ${formattedAmount}`,
-        payload.username ? `👤 *Seller:* @${payload.username}` : "",
-        payload.sellerPhone ? `📱 *Seller Phone:* ${formatDisplayPhone(payload.sellerPhone)}` : "",
+        `*Squad:* ${payload.listingTitle || "Account"}`,
+        `*Price:* ${formattedAmount}`,
+        payload.username ? `*Seller:* @${payload.username}` : "",
+        payload.sellerPhone ? `*Seller Phone:* ${formatDisplayPhone(payload.sellerPhone)}` : "",
         `⏰ *Time:* ${time} EAT`,
       ];
       break;
 
     case "CREDENTIALS_DELIVERED":
-      header = "🔑 *SELLER DELIVERED KONAMI ID*";
+      header = "*SELLER DELIVERED KONAMI ID*";
       lines = [
-        `📦 *Order:* ${payload.orderNumber}`,
-        `🎮 *Squad:* ${payload.listingTitle}`,
+        `*Order:* ${payload.orderNumber}`,
+        `*Squad:* ${payload.listingTitle}`,
         `⏳ *Buyer Window:* 24-hr inspection timer running.`,
       ];
       break;
 
     case "ESCROW_RELEASED":
-      header = "✅ *ESCROW COMPLETED & RELEASED*";
+      header = "*ESCROW COMPLETED & RELEASED*";
       lines = [
-        `📦 *Order:* ${payload.orderNumber}`,
-        `🎮 *Squad:* ${payload.listingTitle}`,
-        `💵 *Net to Seller:* ${formattedAmount}`,
-        `🎉 *Result:* Deal complete without disputes!`,
+        `*Order:* ${payload.orderNumber}`,
+        `*Squad:* ${payload.listingTitle}`,
+        `*Net to Seller:* ${formattedAmount}`,
+        `*Result:* Deal complete without disputes!`,
       ];
       break;
 
     case "DISPUTE_OPENED":
-      header = "🚨 *ESCROW DISPUTE OPENED (ACTION REQUIRED)*";
+      header = "*ESCROW DISPUTE OPENED (ACTION REQUIRED)*";
       lines = [
-        `📦 *Order:* ${payload.orderNumber}`,
-        `🎮 *Squad:* ${payload.listingTitle}`,
-        `⚠️ *Conflict:* Buyer or seller opened dispute. Mediation needed.`,
+        `*Order:* ${payload.orderNumber}`,
+        `*Squad:* ${payload.listingTitle}`,
+        `*Conflict:* Buyer or seller opened dispute. Mediation needed.`,
       ];
       break;
 
     case "POST_RELEASE_DISPUTE_OPENED":
-      header = "🚨 *POST-RELEASE DISPUTE OPENED (FUNDS FROZEN)*";
+      header = "*POST-RELEASE DISPUTE OPENED (FUNDS FROZEN)*";
       lines = [
-        `📦 *Order:* ${payload.orderNumber}`,
-        `🎮 *Squad:* ${payload.listingTitle}`,
-        payload.amount !== undefined ? `💵 *Disputed Amount:* ${formattedAmount}` : "",
-        `⚠️ *Conflict:* Post-handover dispute raised by buyer after fund release.`,
-        `🔒 *Action Taken:* Seller wallet balance frozen. Immediate Konami account audit required.`,
-        payload.details ? `📝 *Details:* ${payload.details}` : "",
+        `*Order:* ${payload.orderNumber}`,
+        `*Squad:* ${payload.listingTitle}`,
+        payload.amount !== undefined ? `*Disputed Amount:* ${formattedAmount}` : "",
+        `*Conflict:* Post-handover dispute raised by buyer after fund release.`,
+        `*Action Taken:* Seller wallet balance frozen. Immediate Konami account audit required.`,
+        payload.details ? `*Details:* ${payload.details}` : "",
       ];
       break;
 
     case "NEW_OFFER_SUBMITTED":
-      header = "🤝 *NEW BUYER COUNTER-OFFER*";
+      header = "*NEW BUYER COUNTER-OFFER*";
       lines = [
-        `🎮 *Squad:* ${payload.listingTitle}`,
-        `💰 *Offered Price:* ${formattedAmount}`,
-        payload.buyerPhone ? `📱 *Buyer Phone:* ${formatDisplayPhone(payload.buyerPhone)}` : "",
-        payload.details ? `💬 *Note:* "${payload.details}"` : "",
+        `*Squad:* ${payload.listingTitle}`,
+        `*Offered Price:* ${formattedAmount}`,
+        payload.buyerPhone ? `*Buyer Phone:* ${formatDisplayPhone(payload.buyerPhone)}` : "",
+        payload.details ? `*Note:* "${payload.details}"` : "",
       ];
       break;
 
     case "MIDDLEMAN_DEAL_CREATED":
-      header = "🤝 *NEW BYOD MIDDLEMAN DEAL*";
+      header = "*NEW BYOD MIDDLEMAN DEAL*";
       lines = [
-        `🏷️ *Deal Code:* ${payload.orderNumber}`,
-        `🎮 *Item:* ${payload.listingTitle}`,
-        `💰 *Volume:* ${formattedAmount}`,
-        payload.buyerPhone ? `📱 *Buyer:* ${formatDisplayPhone(payload.buyerPhone)}` : "",
-        payload.sellerPhone ? `📱 *Seller:* ${formatDisplayPhone(payload.sellerPhone)}` : "",
+        `*Deal Code:* ${payload.orderNumber}`,
+        `*Item:* ${payload.listingTitle}`,
+        `*Volume:* ${formattedAmount}`,
+        payload.buyerPhone ? `*Buyer:* ${formatDisplayPhone(payload.buyerPhone)}` : "",
+        payload.sellerPhone ? `*Seller:* ${formatDisplayPhone(payload.sellerPhone)}` : "",
       ];
       break;
 
     case "WANTED_REQUEST_POSTED":
-      header = "🎯 *NEW WANTED SQUAD REQUEST*";
+      header = "*NEW WANTED SQUAD REQUEST*";
       lines = [
-        `🎮 *Request:* ${payload.listingTitle}`,
-        `💵 *Budget:* ${formattedAmount}`,
-        payload.buyerPhone ? `📱 *Buyer:* ${formatDisplayPhone(payload.buyerPhone)}` : "",
+        `*Request:* ${payload.listingTitle}`,
+        `*Budget:* ${formattedAmount}`,
+        payload.buyerPhone ? `*Buyer:* ${formatDisplayPhone(payload.buyerPhone)}` : "",
       ];
       break;
 
     case "WITHDRAWAL_REQUESTED":
-      header = "🏦 *SELLER M-PESA WITHDRAWAL REQUEST*";
+      header = "*SELLER M-PESA WITHDRAWAL REQUEST*";
       lines = [
-        payload.username ? `👤 *Seller:* @${payload.username}` : "",
-        `💵 *Amount:* ${formattedAmount}`,
-        payload.sellerPhone ? `📱 *M-Pesa:* ${formatDisplayPhone(payload.sellerPhone)}` : "",
+        payload.username ? `*Seller:* @${payload.username}` : "",
+        `*Amount:* ${formattedAmount}`,
+        payload.sellerPhone ? `*M-Pesa:* ${formatDisplayPhone(payload.sellerPhone)}` : "",
       ];
       break;
 
     case "TOURNAMENT_REGISTRATION":
-      header = "🏆 *NEW TOURNAMENT REGISTRATION*";
+      header = "*NEW TOURNAMENT REGISTRATION*";
       lines = [
-        `🎮 *Tournament:* ${payload.listingTitle || "eFootball Cup"}`,
-        payload.amount ? `💵 *Entry Fee:* ${formattedAmount}` : "💵 *Entry Fee:* Free Entry",
-        payload.buyerPhone ? `📱 *Player Phone:* ${formatDisplayPhone(payload.buyerPhone)}` : "",
-        payload.details ? `👤 *Player Info:* ${payload.details}` : "",
-        `⚡ *Action:* Add to Match Room brackets & confirm M-Pesa entry fee.`,
+        `*Tournament:* ${payload.listingTitle || "eFootball Cup"}`,
+        payload.amount ? `*Entry Fee:* ${formattedAmount}` : "*Entry Fee:* Free Entry",
+        payload.buyerPhone ? `*Player Phone:* ${formatDisplayPhone(payload.buyerPhone)}` : "",
+        payload.details ? `*Player Info:* ${payload.details}` : "",
+        `*Action:* Add to Match Room brackets & confirm M-Pesa entry fee.`,
       ];
       break;
 
     case "TOURNAMENT_WINNER_CROWNED":
-      header = "🏆 *TOURNAMENT CHAMPION CROWNED!*";
+      header = "*TOURNAMENT CHAMPION CROWNED!*";
       lines = [
-        `🎮 *Tournament:* ${payload.listingTitle || "eFootball Tournament"}`,
-        payload.username ? `🥇 *Champion:* ${payload.username}` : "",
-        payload.amount !== undefined ? `💰 *1st Place Prize:* ${formattedAmount}` : "",
-        payload.details ? `📝 *Details:* ${payload.details}` : "",
-        `📲 *Action:* Disburse prize money via Safaricom Till 1572931 / M-Pesa.`,
+        `*Tournament:* ${payload.listingTitle || "eFootball Tournament"}`,
+        payload.username ? `*Champion:* ${payload.username}` : "",
+        payload.amount !== undefined ? `*1st Place Prize:* ${formattedAmount}` : "",
+        payload.details ? `*Details:* ${payload.details}` : "",
+        `*Action:* Disburse prize money via Safaricom Till 1572931 / M-Pesa.`,
       ];
       break;
 
     default:
-      header = "🔔 *eFootballMarket Update*";
+      header = "*eFootballMarket Update*";
       lines = [payload.details || payload.listingTitle || "Activity recorded."];
       break;
   }
@@ -203,7 +203,7 @@ export function formatAdminWhatsAppMessage(payload: AdminAlertPayload): string {
   return (
     `${header}\n\n` +
     `${cleanLines}\n\n` +
-    `🔗 *Admin Panel:* https://www.efootballmarket.co.ke/admin`
+    `*Admin Panel:* https://www.efootballmarket.co.ke/admin`
   );
 }
 

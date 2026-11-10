@@ -32,7 +32,7 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
     listing.images?.find((img) => img.is_primary)?.image_url ||
     listing.images?.[0]?.image_url;
 
-  const viralText = `🔥 *HOT eFootball Account for Sale on EFootballMarket!* 🇰🇪\n\n🎮 *Squad*: ${listing.title}\n⭐ *Team OVR*: ${listing.overall_team_strength}\n💎 *Epic / Boosters*: ${listing.epic_players_count} cards\n🏆 *Current Division*: Div ${listing.current_division}\n💰 *Price*: ${formatCurrency(listing.price, listing.currency)}\n\n🛡️ *Escrow Protected by Safaricom Till 1572931*\nFunds held safely until credentials are verified!\n\n🔗 *View Photos & Buy*: https://www.efootballmarket.co.ke/listings/${listing.id}`;
+  const viralText = `*HOT eFootball Account for Sale on EFootballMarket!* 🇰🇪\n\n*Squad*: ${listing.title}\n⭐ *Team OVR*: ${listing.overall_team_strength}\n*Epic / Boosters*: ${listing.epic_players_count} cards\n*Current Division*: Div ${listing.current_division}\n*Price*: ${formatCurrency(listing.price, listing.currency)}\n\n*Escrow Protected by Safaricom Till 1572931*\nFunds held safely until credentials are verified!\n\n*View Photos & Buy*: https://www.efootballmarket.co.ke/listings/${listing.id}`;
 
   const drawFlyer = () => {
     const canvas = canvasRef.current;
@@ -70,7 +70,7 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
     // 2. Top Header Ribbon
     ctx.fillStyle = "#10B981";
     ctx.font = "900 38px system-ui, sans-serif";
-    ctx.fillText("🛡️ EFOOTBALLMARKET.CO.KE", 70, 90);
+    ctx.fillText("EFOOTBALLMARKET.CO.KE", 70, 90);
 
     ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
     ctx.font = "700 24px system-ui, sans-serif";
@@ -87,10 +87,10 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
     // Badges Row
     ctx.fillStyle = "#F59E0B";
     ctx.font = "800 28px system-ui, sans-serif";
-    ctx.fillText(`⚡ OVR ${listing.overall_team_strength}`, 70, 220);
+    ctx.fillText(`OVR ${listing.overall_team_strength}`, 70, 220);
 
     ctx.fillStyle = "#38BDF8";
-    ctx.fillText(`🎮 ${getPlatformLabel(listing.platform).toUpperCase()}`, 270, 220);
+    ctx.fillText(`${getPlatformLabel(listing.platform).toUpperCase()}`, 270, 220);
 
     ctx.fillStyle = "#A7F3D0";
     ctx.fillText(`⭐ ${listing.epic_players_count} EPICS`, 580, 220);
@@ -200,18 +200,18 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
         {/* Header */}
         <div className="p-6 border-b border-pitch-border bg-pitch-card/60 flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-xl bg-[#FEF3C7] text-[#B45309] flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-sx-amber-tint text-sx-amber-text flex items-center justify-center">
               <Sparkles className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-[#0F0F0F]">WhatsApp Group Promo Flyer</h3>
-              <p className="text-xs text-[#5F5F5F]">Post into Kenyan eFootball WhatsApp groups to sell fast.</p>
+              <h3 className="text-base font-bold text-sx-ink">WhatsApp Group Promo Flyer</h3>
+              <p className="text-xs text-sx-muted">Post into Kenyan eFootball WhatsApp groups to sell fast.</p>
             </div>
           </div>
           <button
             type="button"
             onClick={onClose}
-            className="p-1.5 rounded-lg text-[#5F5F5F] hover:text-[#0F0F0F] hover:bg-[#F4F3F1]"
+            className="p-1.5 rounded-lg text-sx-muted hover:text-sx-ink hover:bg-sx-stone"
           >
             <X className="w-4 h-4" />
           </button>
@@ -220,10 +220,10 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
         {/* Content */}
         <div className="p-6 overflow-y-auto space-y-6 flex-1">
           {/* Canvas Poster Preview */}
-          <div className="aspect-square max-w-[380px] mx-auto rounded-2xl overflow-hidden border border-pitch-border shadow-2xl bg-white relative">
+          <div className="aspect-square max-w-[380px] mx-auto rounded-2xl overflow-hidden border border-pitch-border shadow-2xl bg-sx-canvas relative">
             <canvas ref={canvasRef} className="w-full h-full object-contain" />
             {generating && (
-              <div className="absolute inset-0 bg-white flex items-center justify-center text-xs text-[#92400E]">
+              <div className="absolute inset-0 bg-sx-canvas flex items-center justify-center text-xs text-sx-amber-text">
                 Generating High-Resolution Poster...
               </div>
             )}
@@ -232,16 +232,16 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
           {/* Viral WhatsApp Text Box */}
           <div className="space-y-2">
             <div className="flex items-center justify-between">
-              <label className="text-xs font-bold text-[#3D3D3D] flex items-center gap-1.5">
-                <MessageCircle className="w-3.5 h-3.5 text-[#006340]" />
+              <label className="text-xs font-bold text-sx-ink-soft flex items-center gap-1.5">
+                <MessageCircle className="w-3.5 h-3.5 text-sx-green-text" />
                 <span>Pre-formatted WhatsApp Pitch Text:</span>
               </label>
               <button
                 type="button"
                 onClick={handleCopyPitch}
-                className="text-xs text-[#B45309] hover:text-[#92400E] font-semibold flex items-center gap-1"
+                className="text-xs text-sx-amber-text hover:text-sx-amber-text font-semibold flex items-center gap-1"
               >
-                {copiedText ? <Check className="w-3.5 h-3.5 text-[#006340]" /> : <Copy className="w-3.5 h-3.5" />}
+                {copiedText ? <Check className="w-3.5 h-3.5 text-sx-green-text" /> : <Copy className="w-3.5 h-3.5" />}
                 <span>{copiedText ? "Copied!" : "Copy Text"}</span>
               </button>
             </div>
@@ -250,7 +250,7 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
               readOnly
               rows={5}
               value={viralText}
-              className="w-full p-3 rounded-xl bg-pitch-card border border-pitch-border text-xs text-[#1F1F1F] font-mono select-all"
+              className="w-full p-3 rounded-xl bg-pitch-card border border-pitch-border text-xs text-sx-ink-soft font-mono select-all"
             />
           </div>
         </div>
@@ -261,7 +261,7 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
             <a
               href={downloadUrl}
               download={`efootball_squad_${listing.id.slice(0, 8)}.png`}
-              className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#006340] hover:bg-[#004D32] text-[#0F0F0F] font-bold text-xs shadow-lg transition-all"
+              className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sx-green hover:bg-sx-green-hover text-sx-ink font-bold text-xs shadow-lg transition-all"
             >
               <Download className="w-4 h-4" />
               <span>Download Poster Image</span>

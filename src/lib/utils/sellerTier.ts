@@ -22,14 +22,14 @@ export function getSellerTier(salesCount: number = 0, rating: number = 5.0): Sel
       label: "Top Rated Trader",
       shortLabel: "Top Rated",
       badgeClass:
-        "bg-gradient-to-r from-amber-500/30 via-yellow-400/25 to-amber-600/30 border-amber-400/80 text-amber-200 shadow-lg shadow-amber-500/20 ring-1 ring-amber-400/50",
+        "bg-sx-amber-tint border-sx-amber-border text-sx-amber-text",
       iconType: "crown",
       salesRequiredForNext: 0,
       nextTierLabel: null,
       description: "High-volume seller with 10+ completed escrow account transfers and strong buyer feedback.",
       perks: [
         "Top Rated Trader badge on all listings",
-        "Top-priority search ranking & browse visibility",
+        "Priority browse visibility",
         "Fast-track M-Pesa withdrawal processing",
         "Direct trade support channel",
       ],
@@ -43,7 +43,7 @@ export function getSellerTier(salesCount: number = 0, rating: number = 5.0): Sel
       label: "Experienced Trader",
       shortLabel: "Experienced",
       badgeClass:
-        "bg-emerald-950/90 border-emerald-500/70 text-emerald-300 shadow-md shadow-emerald-500/15",
+        "bg-sx-green-tint border-sx-green-border text-sx-green-text",
       iconType: "shield-check",
       salesRequiredForNext: remaining,
       nextTierLabel: "Top Rated Trader",
@@ -62,15 +62,15 @@ export function getSellerTier(salesCount: number = 0, rating: number = 5.0): Sel
     label: "New Trader",
     shortLabel: "New",
     badgeClass:
-      "bg-slate-900/90 border-slate-700 text-slate-300 shadow-sm",
+      "bg-sx-stone border-sx-border text-sx-muted",
     iconType: "shield",
     salesRequiredForNext: remaining,
     nextTierLabel: "Experienced Trader",
     description: "Seller trading under standard 24-hour Safaricom Till 1572931 Escrow Protection.",
     perks: [
       "Escrow Protection via Till 1572931",
-      "Lowest 5% escrow commission (KES 50 - 500)",
-      "Automatic promotion after 3 completed sales",
+      "Transparent platform escrow commission",
+      "Automatic tier upgrade after 3 completed sales",
     ],
   };
 }
