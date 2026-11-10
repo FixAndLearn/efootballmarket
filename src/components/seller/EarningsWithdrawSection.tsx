@@ -20,7 +20,7 @@ export function EarningsWithdrawSection({
   const [isOpen, setIsOpen] = useState(false);
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-2xl bg-gradient-to-r from-emerald-950/40 via-pitch-surface to-pitch-surface border border-emerald-900/40 shadow-xl">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-6 rounded-xl bg-sx-canvas border border-sx-green-border">
       <div className="space-y-1">
         <div className="flex items-center gap-2 flex-wrap">
           <span className="text-xs uppercase font-bold text-sx-muted tracking-wider">

@@ -54,6 +54,7 @@ const config: Config = {
           950: "#001c12",
         },
         pitch: {
+          DEFAULT: "var(--sx-canvas)",
           dark: "var(--sx-canvas)",
           surface: "var(--sx-canvas)",
           card: "var(--sx-stone)",

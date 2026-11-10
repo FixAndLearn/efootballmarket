@@ -162,7 +162,7 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
                 onClick={() => handleNavClick(item.id)}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap border transition-all cursor-pointer ${
                   isSelected
-                    ? "bg-[#11213D] border-emerald-500/70 text-sx-green-text shadow-md shadow-emerald-500/10 ring-1 ring-emerald-500/40"
+                    ? "bg-sx-green-tint border-emerald-500/70 text-sx-green-text shadow-md shadow-emerald-500/10 ring-1 ring-emerald-500/40"
                     : "bg-sx-canvas border-transparent text-sx-muted hover:text-sx-ink"
                 }`}
               >
@@ -190,8 +190,8 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
                 onClick={() => handleNavClick(item.id)}
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition-all border text-left cursor-pointer ${
                   isSelected
-                    ? "bg-[#11213D] border-emerald-500/60 text-sx-ink shadow-[0_0_20px_rgba(16,185,129,0.15)] ring-1 ring-emerald-500/40"
-                    : "border-transparent text-sx-ink-soft hover:text-sx-ink hover:bg-[#11213D]/70 hover:border-sx-border"
+                    ? "bg-sx-green-tint border-emerald-500/60 text-sx-ink shadow-[0_0_20px_rgba(16,185,129,0.15)] ring-1 ring-emerald-500/40"
+                    : "border-transparent text-sx-ink-soft hover:text-sx-ink hover:bg-sx-stone hover:border-sx-border"
                 }`}
               >
                 <div className="flex items-center gap-2.5 min-w-0">

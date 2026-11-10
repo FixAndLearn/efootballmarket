@@ -140,7 +140,7 @@ export default function WantedBoardPage() {
           className="absolute inset-0 bg-cover bg-center opacity-20 pointer-events-none"
           style={{ backgroundImage: "url('/images/cat-budget.jpg')" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0D1117] via-[#0D1117]/90 to-[#0D1117]/60 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-sx-canvas via-sx-canvas/95 to-sx-canvas/80 pointer-events-none" />
 
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="max-w-2xl space-y-2.5">

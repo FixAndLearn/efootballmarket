@@ -350,7 +350,7 @@ export default function EditListingPage() {
           <span>Back to Seller Dashboard</span>
         </Link>
 
-        <div className="rounded-3xl bg-gradient-to-br from-[#0D192E] via-pitch-surface to-[#0A1220] border border-sx-border p-6 sm:p-8 shadow-2xl text-center space-y-5">
+        <div className="rounded-3xl bg-sx-canvas border border-sx-border p-6 sm:p-8 shadow-2xl text-center space-y-5">
           <div className="w-16 h-16 rounded-3xl bg-sx-stone border border-sx-border-strong flex items-center justify-center mx-auto text-sx-green-text shadow-inner">
             <Lock className="w-8 h-8 text-sx-green-text" />
           </div>
@@ -512,7 +512,7 @@ export default function EditListingPage() {
                   onClick={() => setPrice("2500")}
                   className={`text-[10px] px-2 py-0.5 rounded border transition-all ${
                     price === "2500"
-                      ? "bg-amber-400 text-slate-950 font-bold border-amber-300"
+                      ? "bg-sx-contrast text-sx-contrast-fg font-bold border-sx-contrast"
                       : "bg-pitch-card border-pitch-border text-sx-ink-soft hover:border-amber-400/50"
                   }`}
                 >
@@ -523,7 +523,7 @@ export default function EditListingPage() {
                   onClick={() => setPrice("4500")}
                   className={`text-[10px] px-2 py-0.5 rounded border transition-all ${
                     price === "4500"
-                      ? "bg-amber-400 text-slate-950 font-bold border-amber-300"
+                      ? "bg-sx-contrast text-sx-contrast-fg font-bold border-sx-contrast"
                       : "bg-pitch-card border-pitch-border text-sx-ink-soft hover:border-amber-400/50"
                   }`}
                 >
@@ -759,7 +759,7 @@ export default function EditListingPage() {
 
                   {/* Primary Cover Badge */}
                   {idx === 0 ? (
-                    <span className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-md bg-emerald-600 text-slate-950 font-black text-[9px] flex items-center gap-1 shadow-md">
+                    <span className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-md bg-sx-green text-white font-black text-[9px] flex items-center gap-1 shadow-md">
                       <Star className="w-2.5 h-2.5 fill-current" />
                       <span>Cover</span>
                     </span>
@@ -767,7 +767,7 @@ export default function EditListingPage() {
                     <button
                       type="button"
                       onClick={() => handleSetPrimaryCover(idx)}
-                      className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-md bg-black/80 hover:bg-emerald-600 text-white hover:text-slate-950 font-bold text-[9px] opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-md bg-black/80 hover:bg-sx-green text-white font-bold text-[9px] opacity-0 group-hover:opacity-100 transition-opacity"
                     >
                       Set Cover
                     </button>
@@ -801,7 +801,7 @@ export default function EditListingPage() {
             size="lg"
             disabled={saving || uploadingImages}
             isLoading={saving}
-            className="bg-emerald-600 hover:bg-emerald-500 text-slate-950 font-extrabold text-sm px-6 py-3 rounded-xl shadow-lg shadow-emerald-950/40"
+            className="bg-sx-green hover:bg-sx-green-hover text-white font-extrabold text-sm px-6 py-3 rounded-xl shadow-lg shadow-emerald-950/40"
           >
             <Save className="w-4 h-4 mr-2" />
             {saving ? "Saving Changes..." : "Save Changes"}

@@ -335,7 +335,7 @@ export default function TournamentsPage() {
 
             <Link
               href="/tournaments/host?type=tournament"
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-sx-stone hover:bg-[#19212E] border border-sx-border text-sx-ink font-semibold text-xs transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-sx-stone hover:bg-sx-elevated border border-sx-border text-sx-ink font-semibold text-xs transition-colors"
             >
               <Trophy className="w-4 h-4 text-sx-amber-text" />
               <span>Host 4–16 Player Cup</span>
@@ -371,7 +371,7 @@ export default function TournamentsPage() {
             </Link>
             <Link
               href="/login?redirect=/tournaments"
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-sx-stone hover:bg-[#19212E] text-sx-ink-soft border border-sx-border font-semibold text-xs transition-colors"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-sx-stone hover:bg-sx-elevated text-sx-ink-soft border border-sx-border font-semibold text-xs transition-colors"
             >
               <LogIn className="w-3.5 h-3.5" />
               <span>Sign In</span>
@@ -411,7 +411,7 @@ export default function TournamentsPage() {
               </Link>
               <Link
                 href="/tournaments/host?type=tournament"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-sx-stone hover:bg-[#19212E] border border-sx-border text-sx-ink font-semibold text-xs transition-colors"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-sx-stone hover:bg-sx-elevated border border-sx-border text-sx-ink font-semibold text-xs transition-colors"
               >
                 <Trophy className="w-3.5 h-3.5 text-sx-amber-text" />
                 <span>Host Knockout Cup</span>

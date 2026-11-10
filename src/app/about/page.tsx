@@ -77,7 +77,7 @@ export default function AboutPage() {
         <section className="pt-2 flex flex-wrap items-center gap-3 text-xs font-medium">
           <Link
             href="/contact"
-            className="px-4 py-2 rounded-lg bg-sx-green hover:bg-sx-green-hover text-sx-ink font-semibold transition-colors"
+            className="px-4 py-2 rounded-full bg-sx-green hover:bg-sx-green-hover text-white font-semibold transition-colors"
           >
             Contact Support
           </Link>

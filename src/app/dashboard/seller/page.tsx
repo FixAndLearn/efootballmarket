@@ -1,7 +1,10 @@
+import Link from "next/link";
+import { redirect } from "next/navigation";
+import { PlusCircle } from "lucide-react";
+import { Button } from "@/components/ui/Button";
 import { SellerDashboardView } from "@/components/seller/SellerDashboardView";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { Listing, Order } from "@/types/database";
-import { redirect } from "next/navigation";
 
 export const revalidate = 0;
 
@@ -18,24 +21,27 @@ export default async function SellerDashboardPage() {
   // Fetch seller profile
   const { data: profile } = await supabase
     .from("profiles")
-    .select("available_balance, escrow_balance, completed_sales_count, seller_rating, is_verified_seller, telegram_username, telegram_chat_id")
+    .select(
+      "available_balance, escrow_balance, completed_sales_count, seller_rating, is_verified_seller, telegram_username, telegram_chat_id"
+    )
     .eq("id", user.id)
     .single();
 
-  // Fetch seller listings
+  // Fetch seller listings WITH images so thumbnails & WhatsApp flyers render cleanly
   const { data: listings } = await supabase
     .from("listings")
-    .select("*")
+    .select("*, images:listing_images(*)")
     .eq("seller_id", user.id)
     .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
-  // Fetch pending orders requiring delivery
+  // Fetch ALL active escrow orders (awaiting credentials, in 24h OTP handover/inspection, or disputed)
   const { data: pendingOrders } = await supabase
     .from("orders")
-    .select("*, listing:listings(title)")
+    .select("*, listing:listings(id, title, platform, overall_team_strength)")
     .eq("seller_id", user.id)
-    .eq("status", "escrow_locked");
+    .in("status", ["escrow_locked", "seller_delivered", "buyer_reviewing", "disputed"])
+    .order("created_at", { ascending: false });
 
   // Fetch incoming buyer price offers for this seller
   const { data: incomingOffers } = await supabase
@@ -55,14 +61,26 @@ export default async function SellerDashboardPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full">
-      <div className="mb-8">
-        <h1 className="text-2xl sm:text-3xl font-bold text-sx-ink font-display">
-          Seller Control Center
-        </h1>
-        <p className="text-xs sm:text-sm text-sx-muted mt-1">
-          Manage your account inventory, track escrow balances, and disburse M-Pesa earnings.
-        </p>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-5 border-b border-sx-border">
+        <div>
+          <span className="text-xs font-bold uppercase tracking-wider text-sx-green-text">
+            Seller Control Center
+          </span>
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-sx-ink font-display tracking-tight mt-0.5">
+            Inventory, Escrow &amp; M-Pesa Payouts
+          </h1>
+          <p className="text-xs sm:text-sm text-sx-muted mt-1">
+            Share direct M-Pesa checkout links, complete Konami ID handovers, and withdraw earnings.
+          </p>
+        </div>
+
+        <Link href="/seller/create-listing" className="shrink-0">
+          <Button variant="primary" size="md">
+            <PlusCircle className="w-4 h-4" />
+            <span>List Squad</span>
+          </Button>
+        </Link>
       </div>
 
       <SellerDashboardView

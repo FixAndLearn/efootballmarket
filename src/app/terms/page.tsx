@@ -113,7 +113,7 @@ export default function TermsPage() {
             <strong>Server Receipt Verification:</strong> An order moves to <em>Escrow Funded</em> status only when our payment gateway confirms the exact KES amount and unique M-Pesa transaction code (`Receipt Number`). Edited or forwarded SMS text messages are never accepted as proof of payment.
           </li>
           <li>
-            <strong>Platform Escrow &amp; Service Fees:</strong> Publishing a standard squad listing is free. Upon successful order completion, eFootballMarket deducts the disclosed platform escrow service fee (displayed on the seller listing creation screen and order breakdown—standard marketplace commission is <strong>8% to 10%</strong> depending on order tier, or the flat Middleman fee shown prior to checkout) before crediting net proceeds to the seller&apos;s payout balance. Standard Safaricom M-Pesa carrier tariff charges apply to mobile money transfers.
+            <strong>Platform Escrow &amp; Service Fees:</strong> Publishing a standard squad listing is free, and buyers pay <strong>KES 0</strong> in added platform fees on top of the Ask/Offer price. Upon successful order completion, eFootballMarket deducts a <strong>5% seller escrow commission (minimum KES 50, capped at maximum KES 500)</strong>—or the flat Middleman fee shown prior to checkout—before crediting net proceeds to the seller&apos;s payout balance. Standard Safaricom M-Pesa carrier tariff charges apply to mobile money transfers.
           </li>
         </ul>
       </section>

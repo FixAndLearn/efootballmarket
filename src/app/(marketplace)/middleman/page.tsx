@@ -224,7 +224,7 @@ function MiddlemanContent() {
           className="absolute inset-0 bg-cover bg-center opacity-20 pointer-events-none"
           style={{ backgroundImage: "url('/images/cat-middleman.jpg')" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-[#0D1117] via-[#0D1117]/90 to-[#0D1117]/60 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-sx-canvas via-sx-canvas/95 to-sx-canvas/80 pointer-events-none" />
 
         <div className="relative z-10 space-y-3 max-w-2xl">
           <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-sx-green-tint border border-emerald-500/35 text-[11px] font-mono font-bold text-sx-green-text uppercase">

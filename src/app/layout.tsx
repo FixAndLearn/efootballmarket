@@ -8,7 +8,6 @@ import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { CookieConsentBanner } from "@/components/common/CookieConsentBanner";
 import { AdSenseScript } from "@/components/common/AdSenseScript";
 import { SupportHubWidget } from "@/components/support/SupportHubWidget";
-import { LanguageProvider } from "@/context/LanguageContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -198,15 +197,13 @@ export default function RootLayout({
         )}
       </head>
       <body className="font-sans antialiased flex flex-col min-h-screen bg-sx-canvas text-sx-ink selection:bg-sx-green selection:text-white">
-        <LanguageProvider>
-          <Header />
-          <main className="flex-1 flex flex-col pb-20 md:pb-0">{children}</main>
-          <Footer />
-          <MobileBottomNav />
-          <CookieConsentBanner />
-          <SupportHubWidget />
-          <AdSenseScript clientId={adsenseId} />
-        </LanguageProvider>
+        <Header />
+        <main className="flex-1 flex flex-col pb-20 md:pb-0">{children}</main>
+        <Footer />
+        <MobileBottomNav />
+        <CookieConsentBanner />
+        <SupportHubWidget />
+        <AdSenseScript clientId={adsenseId} />
       </body>
     </html>
   );

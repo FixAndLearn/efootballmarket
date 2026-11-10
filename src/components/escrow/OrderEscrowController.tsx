@@ -221,7 +221,7 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
 
       {/* Stage 1: Payment Pending (Buyer STK Push Trigger) */}
       {currentStatus === "payment_pending" && (
-        <div className="bg-gradient-to-br from-[#0D192E] via-pitch-surface to-[#0A1220] border border-sx-amber-border rounded-2xl p-5 sm:p-6 shadow-xl space-y-4 relative overflow-hidden">
+        <div className="bg-sx-canvas border border-sx-amber-border rounded-2xl p-5 sm:p-6 shadow-xl space-y-4 relative overflow-hidden">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-3 border-b border-pitch-border/80">
             <div className="flex items-center gap-3">
               <div className="w-11 h-11 rounded-2xl bg-sx-amber-tint border border-sx-amber-border flex items-center justify-center text-sx-amber-text shrink-0 shadow-inner">
@@ -300,7 +300,7 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
           ) : (
             <div className="bg-pitch-surface border border-pitch-border rounded-2xl p-6 space-y-4 shadow-xl">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-950/60 border border-indigo-800/60 flex items-center justify-center text-sx-info-text">
+                <div className="w-10 h-10 rounded-xl bg-sx-info-tint border border-sx-info-border flex items-center justify-center text-sx-info-text">
                   <Lock className="w-5 h-5" />
                 </div>
                 <div>
@@ -460,7 +460,7 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
               <div className="p-4 rounded-xl bg-pitch-card border border-pitch-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h4 className="text-sm font-bold text-sx-ink flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-brand-500/20 text-sx-green-text text-xs flex items-center justify-center font-bold">1</span>
+                    <span className="w-5 h-5 rounded-full bg-sx-green-tint text-sx-green-text text-xs flex items-center justify-center font-bold">1</span>
                     Opening Credentials Vault
                   </h4>
                   <p className="text-xs text-sx-muted mt-0.5">
@@ -481,7 +481,7 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
               <div className="p-4 rounded-xl bg-pitch-card border border-pitch-border flex items-center justify-between">
                 <div>
                   <h4 className="text-sm font-bold text-sx-ink flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-brand-500/20 text-sx-green-text text-xs flex items-center justify-center font-bold">2</span>
+                    <span className="w-5 h-5 rounded-full bg-sx-green-tint text-sx-green-text text-xs flex items-center justify-center font-bold">2</span>
                     Request 2FA / OTP in Chat
                   </h4>
                   <p className="text-xs text-sx-muted mt-0.5">
@@ -497,7 +497,7 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
               <div className="p-4 rounded-xl bg-pitch-card border border-pitch-border space-y-3.5">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                   <h4 className="text-sm font-bold text-sx-ink flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-full bg-brand-500/20 text-sx-green-text text-xs flex items-center justify-center font-bold">3</span>
+                    <span className="w-5 h-5 rounded-full bg-sx-green-tint text-sx-green-text text-xs flex items-center justify-center font-bold">3</span>
                     Konami ID Handover Safety Checklist
                   </h4>
                   <button

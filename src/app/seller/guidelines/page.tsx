@@ -80,7 +80,7 @@ export default function SellerGuidelinesPage() {
             <strong>Ask Price &amp; Live Offers:</strong> Set your Ask Price in Kenyan Shillings (`KES`). Buyers can either purchase immediately at your Ask Price or submit a binding KES Offer on your listing page. Accepting an offer notifies the buyer to fund Till `1572931`.
           </li>
           <li>
-            <strong>Commission Transparency:</strong> When an escrow order completes, eFootballMarket deducts the standard platform service &amp; escrow fee (**8%–10%** as shown on your Seller Dashboard breakdown before publishing) to cover payment verification, credential encryption, and human arbitration. You see your exact net KES payout before accepting any sale.
+            <strong>Commission Transparency:</strong> Buyers pay zero extra escrow fees at checkout. When an order completes, eFootballMarket deducts a <strong>5% seller commission (minimum KES 50, capped at maximum KES 500)</strong> to cover Till 1572931 payment verification, AES-256-GCM credential vaulting, and human arbitration. Your exact net KES payout is calculated live as you type your price.
           </li>
         </ul>
       </section>

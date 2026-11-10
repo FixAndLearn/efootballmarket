@@ -75,7 +75,7 @@ export function EscrowStatusStepper({ state }: EscrowStatusStepperProps) {
               <div
                 className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all shadow-md ${
                   isDone
-                    ? "bg-emerald-500 text-slate-950"
+                    ? "bg-sx-green text-white"
                     : isCurrent
                     ? "bg-brand-600 text-white ring-4 ring-brand-500/20"
                     : "bg-sx-stone border border-sx-border-strong text-sx-muted"
