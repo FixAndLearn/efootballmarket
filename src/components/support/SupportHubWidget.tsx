@@ -21,8 +21,14 @@ export function SupportHubWidget() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  // Hide floating help pill inside Order Rooms & Dedicated Order Chat so it never blocks send buttons
-  if (pathname?.startsWith("/orders/")) {
+  // Hide floating help pill inside Order Rooms & Auth forms so it never blocks mobile inputs or submit buttons
+  if (
+    pathname?.startsWith("/orders/") ||
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname?.startsWith("/forgot-password") ||
+    pathname?.startsWith("/reset-password")
+  ) {
     return null;
   }
 

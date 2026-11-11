@@ -68,11 +68,12 @@ function ResetPasswordForm() {
             Your account password has been updated. Redirecting you to sign in...
           </p>
         </div>
-        <Link href="/login">
-          <Button variant="primary" size="lg" className="w-full font-bold">
-            Sign In Now
-            <ArrowRight className="w-4 h-4 ml-1.5" />
-          </Button>
+        <Link
+          href="/login"
+          className="w-full inline-flex items-center justify-center gap-1.5 min-h-11 px-6 py-2.5 rounded-full bg-sx-green hover:bg-sx-green-hover text-white text-sm font-bold transition-colors"
+        >
+          <span>Sign In Now</span>
+          <ArrowRight className="w-4 h-4" />
         </Link>
       </div>
     );

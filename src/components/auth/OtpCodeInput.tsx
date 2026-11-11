@@ -110,7 +110,7 @@ export function OtpCodeInput({
   };
 
   return (
-    <div className="flex items-center justify-center gap-1 sm:gap-2 max-w-md mx-auto">
+    <div className="grid grid-cols-8 gap-1 sm:gap-2 w-full max-w-sm mx-auto">
       {digits.map((digit, idx) => (
         <input
           key={idx}
@@ -119,6 +119,7 @@ export function OtpCodeInput({
           }}
           type="text"
           inputMode="numeric"
+          autoComplete={idx === 0 ? "one-time-code" : "off"}
           pattern="[0-9]*"
           maxLength={1}
           value={digit}
@@ -127,10 +128,10 @@ export function OtpCodeInput({
           onKeyDown={(e) => handleKeyDown(idx, e)}
           onPaste={handlePaste}
           onFocus={(e) => e.target.select()}
-          className={`w-9 h-12 sm:w-11 sm:h-14 text-center text-lg sm:text-xl font-extrabold font-mono rounded-lg sm:rounded-xl bg-pitch-card border transition-all outline-none ${
+          className={`w-full h-11 sm:h-13 text-center text-base sm:text-xl font-extrabold font-mono rounded-lg sm:rounded-xl bg-sx-stone border transition-all outline-none ${
             digit
-              ? "border-emerald-500 text-sx-ink bg-sx-green-tint shadow-sm"
-              : "border-pitch-border text-sx-ink-soft focus:border-amber-400 focus:ring-2 focus:ring-amber-400/20"
+              ? "border-sx-green text-sx-ink bg-sx-green-tint shadow-sm"
+              : "border-sx-border-strong text-sx-ink focus:border-sx-ink focus:ring-1 focus:ring-sx-ink"
           } ${disabled ? "opacity-50 cursor-not-allowed" : ""}`}
         />
       ))}

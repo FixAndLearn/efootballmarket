@@ -2,10 +2,18 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { CookieConsentState, updateGoogleConsent, trackEvent } from "@/lib/analytics";
 
 export function CookieConsentBanner() {
+  const pathname = usePathname();
   const [isVisible, setIsVisible] = useState(false);
+
+  const isAuthPage =
+    pathname === "/login" ||
+    pathname === "/register" ||
+    pathname?.startsWith("/forgot-password") ||
+    pathname?.startsWith("/reset-password");
 
   useEffect(() => {
     try {
@@ -55,7 +63,7 @@ export function CookieConsentBanner() {
     });
   };
 
-  if (!isVisible) return null;
+  if (!isVisible || isAuthPage) return null;
 
   return (
     <aside

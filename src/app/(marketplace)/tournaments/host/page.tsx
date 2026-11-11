@@ -219,15 +219,17 @@ export default function HostTournamentPage() {
               </div>
             </div>
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Link href="/register?redirect=/tournaments/host" className="flex-1 sm:flex-initial">
-                <Button variant="gold" size="sm" className="w-full font-bold">
-                  Register Free
-                </Button>
+              <Link
+                href="/register?redirect=/tournaments/host"
+                className="flex-1 sm:flex-initial inline-flex items-center justify-center min-h-9 px-4 rounded-full bg-sx-green text-white text-xs font-bold"
+              >
+                Register Free
               </Link>
-              <Link href="/login?redirect=/tournaments/host" className="flex-1 sm:flex-initial">
-                <Button variant="secondary" size="sm" className="w-full font-bold">
-                  Sign In
-                </Button>
+              <Link
+                href="/login?redirect=/tournaments/host"
+                className="flex-1 sm:flex-initial inline-flex items-center justify-center min-h-9 px-4 rounded-full bg-sx-contrast text-sx-contrast-fg text-xs font-bold"
+              >
+                Sign In
               </Link>
             </div>
           </div>

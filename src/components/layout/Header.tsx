@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
@@ -29,6 +29,11 @@ export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const [headerSearch, setHeaderSearch] = useState("");
+
+  useEffect(() => {
+    setMobileMenuOpen(false);
+    setProfileDropdownOpen(false);
+  }, [pathname]);
 
   const isSeller = profile?.role === "seller" || profile?.role === "admin";
   const isAdmin = profile?.role === "admin" || isSuperAdminEmail(user?.email);
@@ -60,7 +65,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full bg-sx-canvas border-b border-sx-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-5 lg:gap-8 h-16">
+        <div className="flex items-center justify-between gap-2 sm:gap-5 lg:gap-8 h-16">
           <Logo size="md" />
 
           <form
@@ -234,25 +239,44 @@ export function Header() {
             </div>
           </div>
 
-          <div className="flex items-center gap-1.5 md:hidden">
-            {user && <NotificationBell />}
-            <Link
-              href="/browse"
-              className="inline-flex items-center justify-center h-9 px-3 rounded-full bg-sx-green text-xs font-bold text-white"
-            >
-              Browse
-            </Link>
-            <Link
-              href="/seller/create-listing"
-              className="inline-flex items-center justify-center h-9 px-3 rounded-full border border-sx-border-strong text-xs font-semibold text-sx-ink"
-            >
-              Sell
-            </Link>
+          <div className="flex items-center gap-1.5 md:hidden shrink-0">
+            {user ? (
+              <>
+                <NotificationBell />
+                <Link
+                  href="/dashboard/buyer"
+                  className="inline-flex items-center gap-1.5 h-9 px-2.5 rounded-full bg-sx-stone border border-sx-border text-xs font-semibold text-sx-ink"
+                >
+                  <span className="w-5 h-5 rounded-full bg-sx-green flex items-center justify-center text-white font-mono font-bold text-[10px]">
+                    {profile?.username ? profile.username.slice(0, 2).toUpperCase() : "ME"}
+                  </span>
+                  <span className="max-w-[68px] truncate">
+                    {profile?.username || "Account"}
+                  </span>
+                </Link>
+              </>
+            ) : (
+              <>
+                <Link
+                  href="/login"
+                  className="inline-flex items-center justify-center h-9 px-3 rounded-full border border-sx-border-strong text-xs font-semibold text-sx-ink active:bg-sx-stone whitespace-nowrap"
+                >
+                  Log In
+                </Link>
+                <Link
+                  href="/register"
+                  className="inline-flex items-center justify-center h-9 px-3 rounded-full bg-sx-green text-xs font-bold text-white active:bg-sx-green-hover whitespace-nowrap"
+                >
+                  Sign Up
+                </Link>
+              </>
+            )}
             <button
               type="button"
-              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-              className="p-2 rounded-md text-sx-ink hover:bg-sx-stone"
+              onClick={() => setMobileMenuOpen((prev) => !prev)}
+              className="w-9 h-9 inline-flex items-center justify-center rounded-md text-sx-ink hover:bg-sx-stone"
               aria-label="Toggle menu"
+              aria-expanded={mobileMenuOpen}
             >
               {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </button>
@@ -302,11 +326,11 @@ export function Header() {
               value={headerSearch}
               onChange={(e) => setHeaderSearch(e.target.value)}
               placeholder="Search squads, players, OVR..."
-              className="w-full h-10 pl-9 pr-20 rounded-md bg-sx-stone text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:ring-1 focus:ring-sx-ink"
+              className="w-full h-11 pl-9 pr-20 rounded-md bg-sx-stone text-base text-sx-ink placeholder:text-sx-muted focus:outline-none focus:ring-1 focus:ring-sx-ink"
             />
             <button
               type="submit"
-              className="absolute right-1.5 px-3 py-1 rounded bg-sx-contrast text-sx-contrast-fg text-xs font-semibold"
+              className="absolute right-1.5 px-3 py-1.5 rounded bg-sx-contrast text-sx-contrast-fg text-xs font-semibold"
             >
               Search
             </button>
@@ -315,8 +339,8 @@ export function Header() {
           <div className="grid grid-cols-2 gap-2">
             {[
               { name: "Browse Market", href: "/browse" },
+              { name: "Sell Your Squad", href: "/seller/create-listing" },
               { name: "Blog & Guides", href: "/news" },
-              { name: "What's Coming", href: "/news?category=upcoming" },
               { name: "Middleman Escrow", href: "/middleman" },
               { name: "Scammer Check", href: "/scammer-check" },
               { name: "1v1 Tournaments", href: "/tournaments" },
@@ -326,7 +350,6 @@ export function Header() {
               <Link
                 key={link.href}
                 href={link.href}
-                onClick={() => setMobileMenuOpen(false)}
                 className="px-3 py-2.5 rounded-md bg-sx-stone text-xs font-semibold text-sx-ink hover:bg-sx-elevated"
               >
                 {link.name}
@@ -336,29 +359,54 @@ export function Header() {
 
           <div className="pt-2 border-t border-sx-border">
             {user ? (
-              <div className="grid grid-cols-2 gap-2">
-                <Link href="/dashboard/buyer" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="outline" size="sm" className="w-full">
+              <div className="space-y-2">
+                <div className="grid grid-cols-2 gap-2">
+                  <Link
+                    href="/dashboard/buyer"
+                    className="inline-flex items-center justify-center min-h-[42px] px-4 rounded-full border border-sx-border-strong bg-sx-canvas text-sx-ink text-xs font-semibold"
+                  >
                     My Orders
-                  </Button>
-                </Link>
-                <Link href="/dashboard/seller" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="secondary" size="sm" className="w-full">
+                  </Link>
+                  <Link
+                    href="/dashboard/seller"
+                    className="inline-flex items-center justify-center min-h-[42px] px-4 rounded-full bg-sx-contrast text-sx-contrast-fg text-xs font-semibold"
+                  >
                     Selling Hub
-                  </Button>
-                </Link>
+                  </Link>
+                </div>
+                <div className="grid grid-cols-2 gap-2">
+                  <Link
+                    href="/profile"
+                    className="inline-flex items-center justify-center min-h-[38px] px-3 rounded-full bg-sx-stone text-sx-ink text-xs font-semibold"
+                  >
+                    Profile Settings
+                  </Link>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setMobileMenuOpen(false);
+                      signOut();
+                    }}
+                    className="inline-flex items-center justify-center gap-1.5 min-h-[38px] px-3 rounded-full bg-sx-red-tint border border-sx-red-border text-sx-red-text text-xs font-semibold"
+                  >
+                    <LogOut className="w-3.5 h-3.5" />
+                    <span>Log Out</span>
+                  </button>
+                </div>
               </div>
             ) : (
               <div className="grid grid-cols-2 gap-2">
-                <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="outline" size="sm" className="w-full">
-                    Log In
-                  </Button>
+                <Link
+                  href="/login"
+                  className="inline-flex items-center justify-center min-h-[44px] px-4 rounded-full border border-sx-border-strong bg-sx-canvas text-sx-ink text-xs font-bold active:bg-sx-stone"
+                >
+                  Log In
                 </Link>
-                <Link href="/register" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="secondary" size="sm" className="w-full">
-                    Sign Up
-                  </Button>
+                <Link
+                  href="/register"
+                  className="inline-flex items-center justify-center min-h-[44px] px-4 rounded-full bg-sx-green text-white text-xs font-bold active:bg-sx-green-hover"
+                >
+                  Sign Up
                 </Link>
               </div>
             )}

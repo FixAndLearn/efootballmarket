@@ -335,15 +335,17 @@ function NotificationsContent() {
             </div>
           </div>
           <div className="flex items-center gap-2 shrink-0">
-            <Link href="/login?redirect=/notifications">
-              <Button variant="secondary" size="sm">
-                Log In
-              </Button>
+            <Link
+              href="/login?redirect=/notifications"
+              className="inline-flex items-center justify-center min-h-9 px-4 rounded-full bg-sx-contrast text-sx-contrast-fg text-xs font-semibold"
+            >
+              Log In
             </Link>
-            <Link href="/register?redirect=/notifications">
-              <Button variant="gold" size="sm" className="font-semibold shadow-md">
-                Create Account
-              </Button>
+            <Link
+              href="/register?redirect=/notifications"
+              className="inline-flex items-center justify-center min-h-9 px-4 rounded-full bg-sx-green text-white text-xs font-semibold shadow-sm"
+            >
+              Create Account
             </Link>
           </div>
         </div>

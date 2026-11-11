@@ -367,15 +367,17 @@ export default function CreateListingPage() {
           Create a free account in 20 seconds so we can send instant M-Pesa payouts when your squad sells.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
-          <Link href="/auth/login?redirect=/seller/create-listing">
-            <Button variant="primary" size="lg">
-              Sign In
-            </Button>
+          <Link
+            href="/login?redirect=/seller/create-listing"
+            className="inline-flex items-center justify-center min-h-11 px-6 py-2.5 rounded-full bg-sx-green hover:bg-sx-green-hover text-white text-sm font-bold transition-colors"
+          >
+            Sign In
           </Link>
-          <Link href="/auth/register?redirect=/seller/create-listing">
-            <Button variant="outline" size="lg">
-              Create Free Account
-            </Button>
+          <Link
+            href="/register?redirect=/seller/create-listing"
+            className="inline-flex items-center justify-center min-h-11 px-6 py-2.5 rounded-full border border-sx-border-strong bg-sx-canvas hover:bg-sx-stone text-sx-ink text-sm font-bold transition-colors"
+          >
+            Create Free Account
           </Link>
         </div>
       </div>

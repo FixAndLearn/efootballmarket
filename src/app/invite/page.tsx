@@ -136,17 +136,19 @@ function InviteContent() {
         </div>
 
         <div className="space-y-3">
-          <Link href={`/register?ref=${encodeURIComponent(refCode)}`}>
-            <Button variant="primary" size="lg" className="w-full font-bold">
-              Accept Invitation &amp; Register
-              <ArrowRight className="w-4 h-4 ml-1.5" />
-            </Button>
+          <Link
+            href={`/register?ref=${encodeURIComponent(refCode)}`}
+            className="w-full inline-flex items-center justify-center gap-1.5 min-h-11 px-6 py-2.5 rounded-full bg-sx-green hover:bg-sx-green-hover text-white text-sm font-bold transition-colors"
+          >
+            <span>Accept Invitation &amp; Register</span>
+            <ArrowRight className="w-4 h-4" />
           </Link>
 
-          <Link href={`/login?redirect=/browse`}>
-            <Button variant="secondary" size="lg" className="w-full font-semibold bg-sx-subtle border-pitch-border text-sx-ink-soft hover:text-sx-ink">
-              Already have an account? Sign In
-            </Button>
+          <Link
+            href="/login?redirect=/browse"
+            className="w-full inline-flex items-center justify-center min-h-11 px-6 py-2.5 rounded-full bg-sx-subtle border border-sx-border text-sx-ink-soft hover:text-sx-ink text-sm font-semibold transition-colors"
+          >
+            Already have an account? Sign In
           </Link>
         </div>
       </div>

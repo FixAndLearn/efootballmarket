@@ -21,6 +21,17 @@ export function GoogleSignInButton({
     setError("");
 
     try {
+      if (typeof navigator !== "undefined") {
+        const ua = navigator.userAgent || "";
+        if (/FBAN|FBAV|Instagram|BytedanceWebview|musical_ly|TikTok/i.test(ua)) {
+          setError(
+            "Google blocks sign-in inside social app browsers. Tap ⋮ → Open in Chrome/Safari, or sign in with Email below."
+          );
+          setLoading(false);
+          return;
+        }
+      }
+
       const supabase = createClient();
       const origin =
         typeof window !== "undefined"
@@ -34,8 +45,7 @@ export function GoogleSignInButton({
         options: {
           redirectTo,
           queryParams: {
-            access_type: "offline",
-            prompt: "consent",
+            prompt: "select_account",
           },
         },
       });
@@ -61,7 +71,7 @@ export function GoogleSignInButton({
         type="button"
         onClick={handleGoogleSignIn}
         disabled={loading}
-        className="w-full flex items-center justify-center gap-3 py-3 px-4 rounded-xl bg-sx-canvas hover:bg-slate-100 text-slate-900 font-bold text-xs sm:text-sm shadow-md transition-all active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
+        className="w-full min-h-[44px] flex items-center justify-center gap-3 py-2.5 px-4 rounded-xl bg-white hover:bg-neutral-100 text-neutral-900 border border-sx-border-strong font-bold text-sm shadow-sm transition-all active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed cursor-pointer"
       >
         {loading ? (
           <Loader2 className="w-4 h-4 animate-spin text-slate-700" />

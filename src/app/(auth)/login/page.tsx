@@ -3,22 +3,52 @@
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { createClient } from "@/lib/supabase/client";
-import { Lock, Mail, AlertCircle, KeyRound, CheckCircle2, Wand2 } from "lucide-react";
+import {
+  Lock,
+  Mail,
+  AlertCircle,
+  KeyRound,
+  CheckCircle2,
+  Wand2,
+  Eye,
+  EyeOff,
+} from "lucide-react";
 import { OtpCodeInput } from "@/components/auth/OtpCodeInput";
 import { GoogleSignInButton } from "@/components/auth/GoogleSignInButton";
 import Link from "next/link";
-import { useRouter, useSearchParams } from "next/navigation";
+import { useSearchParams } from "next/navigation";
 import { Suspense, useState, useEffect } from "react";
 
+function getSafeRedirectPath(raw: string | null): string {
+  const cleaned = (raw || "").trim();
+  if (
+    cleaned &&
+    cleaned.startsWith("/") &&
+    !cleaned.startsWith("//") &&
+    !cleaned.includes("\\")
+  ) {
+    return cleaned;
+  }
+  return "/dashboard/buyer";
+}
+
+function getCurrentAppOrigin(): string {
+  if (typeof window !== "undefined" && window.location?.origin) {
+    return window.location.origin;
+  }
+  return process.env.NEXT_PUBLIC_APP_URL || "https://www.efootballmarket.co.ke";
+}
+
 function LoginForm() {
-  const router = useRouter();
   const searchParams = useSearchParams();
-  const redirect = searchParams.get("redirect") || "/dashboard/buyer";
+  const redirect = getSafeRedirectPath(searchParams.get("redirect"));
   const messageParam = searchParams.get("message");
+  const prefilledEmail = searchParams.get("email") || "";
 
   const [authMethod, setAuthMethod] = useState<"password" | "magic-link" | "otp">("password");
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState(prefilledEmail);
   const [password, setPassword] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
@@ -34,6 +64,25 @@ function LoginForm() {
   const [resendCooldown, setResendCooldown] = useState(45);
   const [resending, setResending] = useState(false);
 
+  // Restore pending OTP state if mobile browser reloaded the tab while user checked Gmail
+  useEffect(() => {
+    try {
+      const raw = sessionStorage.getItem("efm_pending_login_otp");
+      if (raw) {
+        const saved = JSON.parse(raw);
+        if (saved?.email && Date.now() - Number(saved.ts || 0) < 15 * 60 * 1000) {
+          setEmail(saved.email);
+          setAuthMethod(saved.method === "magic-link" ? "magic-link" : "otp");
+          setOtpSent(true);
+        } else {
+          sessionStorage.removeItem("efm_pending_login_otp");
+        }
+      }
+    } catch {
+      // Ignore storage access errors
+    }
+  }, []);
+
   useEffect(() => {
     if (!otpSent || resendCooldown <= 0) return;
     const timer = setInterval(() => {
@@ -42,31 +91,49 @@ function LoginForm() {
     return () => clearInterval(timer);
   }, [otpSent, resendCooldown]);
 
+  const completeSignInRedirect = async () => {
+    try {
+      sessionStorage.removeItem("efm_pending_login_otp");
+      await fetch("/api/auth/sync-profile", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({}),
+      }).catch(() => {});
+    } catch {
+      // Non-blocking
+    }
+    window.location.assign(redirect);
+  };
+
   const handlePasswordLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     setError("");
 
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail || !password) {
+      setError("Please enter both your email address and password.");
+      setLoading(false);
+      return;
+    }
+
     try {
       const supabase = createClient();
       const { error: authError } = await supabase.auth.signInWithPassword({
-        email: email.trim(),
+        email: normalizedEmail,
         password,
       });
 
       if (authError) {
-        if (
-          authError.message.toLowerCase().includes("email not confirmed") ||
-          authError.message.toLowerCase().includes("unconfirmed")
-        ) {
+        const lowerMsg = authError.message.toLowerCase();
+        if (lowerMsg.includes("email not confirmed") || lowerMsg.includes("unconfirmed")) {
           try {
-            const canonicalAppUrl =
-              process.env.NEXT_PUBLIC_APP_URL || window.location.origin || "https://www.efootballmarket.co.ke";
+            const appOrigin = getCurrentAppOrigin();
             await supabase.auth.resend({
               type: "signup",
-              email: email.trim(),
+              email: normalizedEmail,
               options: {
-                emailRedirectTo: `${canonicalAppUrl}/auth/callback?redirect=${encodeURIComponent(redirect)}`,
+                emailRedirectTo: `${appOrigin}/auth/callback?redirect=${encodeURIComponent(redirect)}`,
               },
             });
           } catch {
@@ -75,24 +142,37 @@ function LoginForm() {
           setAuthMethod("otp");
           setOtpSent(true);
           setResendCooldown(45);
-          setInfoMessage("Your email is not verified yet. Enter the 8-digit code dispatched to your inbox below.");
+          try {
+            sessionStorage.setItem(
+              "efm_pending_login_otp",
+              JSON.stringify({ email: normalizedEmail, method: "otp", ts: Date.now() })
+            );
+          } catch {}
+          setInfoMessage(
+            "Your email is not verified yet. Enter the 8-digit code sent to your inbox below."
+          );
+          setLoading(false);
           return;
+        }
+        if (lowerMsg.includes("invalid login credentials")) {
+          throw new Error(
+            "Incorrect email or password. Tap 'Show' to check your password, or use 'OTP Code' above to sign in without a password."
+          );
         }
         throw new Error(authError.message);
       }
 
-      router.push(redirect);
-      router.refresh();
+      await completeSignInRedirect();
     } catch (err: any) {
       setError(err.message || "Invalid email or password.");
-    } finally {
       setLoading(false);
     }
   };
 
   const handleSendMagicLink = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) {
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail) {
       setError("Please provide your email address to receive the magic link.");
       return;
     }
@@ -102,13 +182,12 @@ function LoginForm() {
     setInfoMessage("");
 
     try {
-      const canonicalAppUrl =
-        process.env.NEXT_PUBLIC_APP_URL || window.location.origin || "https://www.efootballmarket.co.ke";
-      const emailRedirectTo = `${canonicalAppUrl}/auth/callback?redirect=${encodeURIComponent(redirect)}`;
+      const appOrigin = getCurrentAppOrigin();
+      const emailRedirectTo = `${appOrigin}/auth/callback?redirect=${encodeURIComponent(redirect)}`;
 
       const supabase = createClient();
       const { error: magicError } = await supabase.auth.signInWithOtp({
-        email: email.trim(),
+        email: normalizedEmail,
         options: {
           shouldCreateUser: false,
           emailRedirectTo,
@@ -120,13 +199,19 @@ function LoginForm() {
           magicError.message.toLowerCase().includes("user not found") ||
           magicError.message.toLowerCase().includes("signups not allowed")
         ) {
-          throw new Error("No account found with this email. Please create an account first.");
+          throw new Error("No account found with this email. Tap 'Create Account' below to sign up.");
         }
         throw new Error(magicError.message);
       }
 
       setOtpSent(true);
       setResendCooldown(45);
+      try {
+        sessionStorage.setItem(
+          "efm_pending_login_otp",
+          JSON.stringify({ email: normalizedEmail, method: "magic-link", ts: Date.now() })
+        );
+      } catch {}
       setInfoMessage("Magic link & 8-digit code sent! Tap the link in your inbox or enter the code below.");
     } catch (err: any) {
       setError(err.message || "Could not dispatch magic link. Please try again.");
@@ -137,7 +222,8 @@ function LoginForm() {
 
   const handleSendOtp = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email.trim()) {
+    const normalizedEmail = email.trim().toLowerCase();
+    if (!normalizedEmail) {
       setError("Please provide your email address.");
       return;
     }
@@ -147,14 +233,13 @@ function LoginForm() {
     setInfoMessage("");
 
     try {
-      const canonicalAppUrl =
-        process.env.NEXT_PUBLIC_APP_URL || window.location.origin || "https://www.efootballmarket.co.ke";
+      const appOrigin = getCurrentAppOrigin();
       const supabase = createClient();
       const { error: otpError } = await supabase.auth.signInWithOtp({
-        email: email.trim(),
+        email: normalizedEmail,
         options: {
           shouldCreateUser: false,
-          emailRedirectTo: `${canonicalAppUrl}/auth/callback?redirect=${encodeURIComponent(redirect)}`,
+          emailRedirectTo: `${appOrigin}/auth/callback?redirect=${encodeURIComponent(redirect)}`,
         },
       });
 
@@ -163,13 +248,19 @@ function LoginForm() {
           otpError.message.toLowerCase().includes("user not found") ||
           otpError.message.toLowerCase().includes("signups not allowed")
         ) {
-          throw new Error("No account found with this email. Please register first.");
+          throw new Error("No account found with this email. Tap 'Create Account' below to register.");
         }
         throw new Error(otpError.message);
       }
 
       setOtpSent(true);
       setResendCooldown(45);
+      try {
+        sessionStorage.setItem(
+          "efm_pending_login_otp",
+          JSON.stringify({ email: normalizedEmail, method: "otp", ts: Date.now() })
+        );
+      } catch {}
       setInfoMessage("An 8-digit login code has been sent to your email!");
     } catch (err: any) {
       setError(err.message || "Could not dispatch code. Please try again.");
@@ -189,16 +280,17 @@ function LoginForm() {
     setError("");
 
     try {
+      const normalizedEmail = email.trim().toLowerCase();
       const supabase = createClient();
       let { error: verifyErr } = await supabase.auth.verifyOtp({
-        email: email.trim(),
+        email: normalizedEmail,
         token,
         type: "email",
       });
 
       if (verifyErr) {
         const signupFallback = await supabase.auth.verifyOtp({
-          email: email.trim(),
+          email: normalizedEmail,
           token,
           type: "signup",
         });
@@ -212,11 +304,9 @@ function LoginForm() {
         throw new Error(verifyErr.message || "Invalid or expired code. Please check your email and try again.");
       }
 
-      router.push(redirect);
-      router.refresh();
+      await completeSignInRedirect();
     } catch (err: any) {
       setError(err.message || "Verification failed. Please try again.");
-    } finally {
       setVerifying(false);
     }
   };
@@ -228,14 +318,13 @@ function LoginForm() {
     setInfoMessage("");
 
     try {
-      const canonicalAppUrl =
-        process.env.NEXT_PUBLIC_APP_URL || window.location.origin || "https://www.efootballmarket.co.ke";
+      const appOrigin = getCurrentAppOrigin();
       const supabase = createClient();
       const { error: resendErr } = await supabase.auth.signInWithOtp({
-        email: email.trim(),
+        email: email.trim().toLowerCase(),
         options: {
           shouldCreateUser: false,
-          emailRedirectTo: `${canonicalAppUrl}/auth/callback?redirect=${encodeURIComponent(redirect)}`,
+          emailRedirectTo: `${appOrigin}/auth/callback?redirect=${encodeURIComponent(redirect)}`,
         },
       });
 
@@ -254,24 +343,11 @@ function LoginForm() {
 
   const handleOpenEmailApp = () => {
     if (typeof window === "undefined") return;
-    const ua = navigator.userAgent || "";
-    const isAndroid = /Android/i.test(ua);
-    const isIOS = /iPhone|iPad|iPod/i.test(ua);
-
-    if (isAndroid) {
-      window.location.href = "intent:#Intent;action=android.intent.action.MAIN;category=android.intent.category.APP_EMAIL;end";
-    } else if (isIOS) {
-      window.location.href = "message://";
-      setTimeout(() => {
-        window.location.href = "https://mail.google.com";
-      }, 1000);
-    } else {
-      window.open("https://mail.google.com", "_blank", "noopener,noreferrer");
-    }
+    window.open("https://mail.google.com", "_blank", "noopener,noreferrer");
   };
 
   return (
-    <div className="w-full max-w-md bg-sx-canvas border border-sx-border rounded-2xl p-6 sm:p-8 shadow-sx-elevated space-y-5">
+    <div className="w-full max-w-md bg-sx-canvas border border-sx-border rounded-2xl p-5 sm:p-8 shadow-panel space-y-5">
       <div className="space-y-1">
         <span className="text-[11px] font-mono uppercase tracking-wider text-sx-green-text font-bold">
           Trader Sign In
@@ -301,15 +377,16 @@ function LoginForm() {
           type="button"
           onClick={() => {
             setAuthMethod("password");
+            setOtpSent(false);
             setError("");
           }}
-          className={`flex items-center justify-center gap-1.5 py-2 font-bold rounded-lg transition-all ${
+          className={`flex items-center justify-center gap-1 py-2.5 font-bold rounded-lg transition-all ${
             authMethod === "password"
-              ? "bg-sx-canvas text-sx-ink shadow-sx-card border border-sx-border"
+              ? "bg-sx-canvas text-sx-ink shadow-card border border-sx-border"
               : "text-sx-muted hover:text-sx-ink"
           }`}
         >
-          <Lock className="w-3.5 h-3.5" />
+          <Lock className="w-3.5 h-3.5 shrink-0" />
           <span>Password</span>
         </button>
         <button
@@ -318,13 +395,13 @@ function LoginForm() {
             setAuthMethod("magic-link");
             setError("");
           }}
-          className={`flex items-center justify-center gap-1.5 py-2 font-bold rounded-lg transition-all ${
+          className={`flex items-center justify-center gap-1 py-2.5 font-bold rounded-lg transition-all ${
             authMethod === "magic-link"
-              ? "bg-sx-canvas text-sx-green-text shadow-sx-card border border-sx-green-border"
+              ? "bg-sx-canvas text-sx-green-text shadow-card border border-sx-green-border"
               : "text-sx-muted hover:text-sx-ink"
           }`}
         >
-          <Wand2 className="w-3.5 h-3.5" />
+          <Wand2 className="w-3.5 h-3.5 shrink-0" />
           <span>Magic Link</span>
         </button>
         <button
@@ -333,28 +410,28 @@ function LoginForm() {
             setAuthMethod("otp");
             setError("");
           }}
-          className={`flex items-center justify-center gap-1.5 py-2 font-bold rounded-lg transition-all ${
+          className={`flex items-center justify-center gap-1 py-2.5 font-bold rounded-lg transition-all ${
             authMethod === "otp"
-              ? "bg-sx-canvas text-sx-amber-text shadow-sx-card border border-sx-amber-border"
+              ? "bg-sx-canvas text-sx-amber-text shadow-card border border-sx-amber-border"
               : "text-sx-muted hover:text-sx-ink"
           }`}
         >
-          <KeyRound className="w-3.5 h-3.5" />
+          <KeyRound className="w-3.5 h-3.5 shrink-0" />
           <span>OTP Code</span>
         </button>
       </div>
 
       {error && (
-        <div className="p-3 rounded-lg bg-sx-red-tint border border-sx-red-border text-sx-red-text text-xs flex items-center gap-2">
-          <AlertCircle className="w-4 h-4 shrink-0" />
-          <span>{error}</span>
+        <div className="p-3 rounded-lg bg-sx-red-tint border border-sx-red-border text-sx-red-text text-xs flex items-start gap-2">
+          <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+          <span className="leading-relaxed">{error}</span>
         </div>
       )}
 
       {infoMessage && (
-        <div className="p-3 rounded-lg bg-sx-green-tint border border-sx-green-border text-sx-green-text text-xs flex items-center gap-2">
-          <CheckCircle2 className="w-4 h-4 shrink-0" />
-          <span>{infoMessage}</span>
+        <div className="p-3 rounded-lg bg-sx-green-tint border border-sx-green-border text-sx-green-text text-xs flex items-start gap-2">
+          <CheckCircle2 className="w-4 h-4 shrink-0 mt-0.5" />
+          <span className="leading-relaxed">{infoMessage}</span>
         </div>
       )}
 
@@ -365,6 +442,9 @@ function LoginForm() {
             type="email"
             inputMode="email"
             autoComplete="email"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
             placeholder="you@domain.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -374,16 +454,29 @@ function LoginForm() {
 
           <div>
             <div className="flex items-center justify-between mb-1.5">
-              <label className="text-xs font-semibold text-sx-ink">Password</label>
-              <Link
-                href={`/forgot-password?redirect=${encodeURIComponent(redirect)}`}
-                className="text-xs font-semibold text-sx-green-text hover:underline"
-              >
-                Forgot password?
-              </Link>
+              <label htmlFor="login-password" className="text-xs font-semibold text-sx-ink">
+                Password
+              </label>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="inline-flex items-center gap-1 text-[11px] font-semibold text-sx-muted hover:text-sx-ink py-0.5"
+                >
+                  {showPassword ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                  <span>{showPassword ? "Hide" : "Show"}</span>
+                </button>
+                <Link
+                  href={`/forgot-password?redirect=${encodeURIComponent(redirect)}`}
+                  className="text-xs font-semibold text-sx-green-text hover:underline py-0.5"
+                >
+                  Forgot?
+                </Link>
+              </div>
             </div>
             <Input
-              type="password"
+              id="login-password"
+              type={showPassword ? "text" : "password"}
               autoComplete="current-password"
               placeholder="Enter your password"
               value={password}
@@ -393,7 +486,7 @@ function LoginForm() {
             />
           </div>
 
-          <label className="flex items-center gap-2 cursor-pointer text-xs text-sx-ink-soft">
+          <label className="flex items-center gap-2.5 py-1 cursor-pointer text-xs text-sx-ink-soft">
             <input
               type="checkbox"
               checked={rememberMe}
@@ -418,6 +511,9 @@ function LoginForm() {
             type="email"
             inputMode="email"
             autoComplete="email"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
             placeholder="you@domain.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -440,6 +536,9 @@ function LoginForm() {
             type="email"
             inputMode="email"
             autoComplete="email"
+            autoCapitalize="none"
+            autoCorrect="off"
+            spellCheck={false}
             placeholder="you@domain.com"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
@@ -455,14 +554,14 @@ function LoginForm() {
         <div className="space-y-5">
           <div className="p-3.5 rounded-xl bg-sx-stone border border-sx-border text-xs text-sx-ink-soft space-y-1.5">
             <p className="font-bold text-sx-ink">Check Your Inbox</p>
-            <p className="text-sx-muted">
-              Sent to <span className="text-sx-ink font-mono font-semibold">{email}</span>. Tap the link or enter the 8-digit code below:
+            <p className="text-sx-muted break-all">
+              Sent to <span className="text-sx-ink font-mono font-semibold">{email}</span>. Tap the link or enter the code below:
             </p>
           </div>
 
           <div className="space-y-2">
             <label className="text-xs font-semibold text-sx-ink block text-center">
-              Enter 8-Digit Code
+              Enter Verification Code
             </label>
             <OtpCodeInput
               value={otpCode}
@@ -495,7 +594,7 @@ function LoginForm() {
                 type="button"
                 onClick={handleResendOtp}
                 disabled={resendCooldown > 0 || resending}
-                className={`font-semibold ${
+                className={`font-semibold py-1 ${
                   resendCooldown > 0 || resending
                     ? "text-sx-muted cursor-not-allowed"
                     : "text-sx-green-text hover:underline"
@@ -513,10 +612,10 @@ function LoginForm() {
               <button
                 type="button"
                 onClick={handleOpenEmailApp}
-                className="text-sx-muted hover:text-sx-ink flex items-center gap-1.5 transition-colors"
+                className="text-sx-muted hover:text-sx-ink flex items-center gap-1.5 py-1 transition-colors"
               >
                 <Mail className="w-3.5 h-3.5" />
-                <span>Launch Mail App</span>
+                <span>Open Gmail in New Tab</span>
               </button>
               <button
                 type="button"
@@ -524,8 +623,11 @@ function LoginForm() {
                   setOtpSent(false);
                   setOtpCode("");
                   setError("");
+                  try {
+                    sessionStorage.removeItem("efm_pending_login_otp");
+                  } catch {}
                 }}
-                className="text-sx-muted hover:text-sx-ink transition-colors"
+                className="text-sx-muted hover:text-sx-ink py-1 transition-colors"
               >
                 Change Email
               </button>
@@ -536,7 +638,10 @@ function LoginForm() {
 
       <div className="text-center text-xs text-sx-muted border-t border-sx-border pt-4">
         New to eFootballMarket?{" "}
-        <Link href={`/register?redirect=${encodeURIComponent(redirect)}`} className="text-sx-green-text hover:underline font-bold">
+        <Link
+          href={`/register?redirect=${encodeURIComponent(redirect)}`}
+          className="inline-block py-1 text-sx-green-text hover:underline font-bold"
+        >
           Create Account
         </Link>
       </div>
@@ -546,8 +651,8 @@ function LoginForm() {
 
 export default function LoginPage() {
   return (
-    <div className="flex-1 flex items-center justify-center p-4 py-10">
-      <Suspense fallback={<div className="text-sx-muted text-sm">Loading sign in...</div>}>
+    <div className="flex-1 flex items-start sm:items-center justify-center px-4 py-6 sm:py-10">
+      <Suspense fallback={<div className="text-sx-muted text-sm py-12">Loading sign in...</div>}>
         <LoginForm />
       </Suspense>
     </div>
