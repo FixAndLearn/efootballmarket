@@ -343,7 +343,7 @@ export function AdminBloggerStudio({
                 </span>
               </h3>
               <p className="text-xs text-sx-muted mt-0.5">
-                Supports Markdown headings (`##`), bold text, bullet lists, and inline screenshots.
+                Supports Markdown headings (<code>##</code>), bold text, bullet lists, and inline screenshots.
               </p>
             </div>
 

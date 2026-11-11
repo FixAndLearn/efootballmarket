@@ -51,6 +51,25 @@ export async function POST(req: NextRequest) {
 
     const adminSupabase = createAdminClient();
     const primaryClient = hasServiceRoleKey() ? adminSupabase : supabase;
+
+    // Verify caller owns the order before initiating STK Push
+    const { data: orderOwnerCheck } = await primaryClient
+      .from("orders")
+      .select("buyer_id")
+      .eq("id", parsed.data.orderId)
+      .maybeSingle();
+
+    if (!orderOwnerCheck) {
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+
+    if (orderOwnerCheck.buyer_id !== user.id) {
+      return NextResponse.json(
+        { error: "Forbidden: Only the order buyer can initiate M-Pesa payment." },
+        { status: 403 }
+      );
+    }
+
     const paymentService = new PaymentService(primaryClient);
     const result = await paymentService.initiateOrderPayment(
       parsed.data.orderId,

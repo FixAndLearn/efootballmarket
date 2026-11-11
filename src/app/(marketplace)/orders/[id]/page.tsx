@@ -159,9 +159,6 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
   const counterpartyName = isBuyer
     ? order.seller?.username || "Verified Seller"
     : order.buyer?.username || "Verified Buyer";
-  const counterpartyPhone = isBuyer
-    ? order.seller?.phone_number
-    : order.buyer?.phone_number;
 
   const currentStageMeta = (() => {
     switch (order.status) {
@@ -190,7 +187,7 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
           label: "24-Hour Buyer Inspection Active",
           actor: "Buyer",
           deadline: "24 hours from credential delivery timestamp",
-          evidence: "Record one uncut screen video from Title Screen -> Data Transfer through Extras -> Support -> Link Data and Game Plan.",
+          evidence: "Record one uncut screen video from Title Screen → Data Transfer through Extras → Support → Link Data and Game Plan.",
           nextStep: "Tap Confirm & Release once your own email & 2FA are bound—or tap Open Dispute below before 24 hours ends to pause payout.",
         };
       case "disputed":
@@ -426,21 +423,17 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
               <ArrowRight className="w-4 h-4" />
             </Link>
 
-            {counterpartyPhone && (
-              <a
-                href={`https://wa.me/${formatWhatsAppPhone(counterpartyPhone)}?text=${encodeURIComponent(
-                  isBuyer
-                    ? `Hello ${order.seller?.username || "Seller"}, I am ready inside our eFootballMarket Order Chat (#${order.order_number}): ${orderUrl}/chat`
-                    : `Hello ${order.buyer?.username || "Buyer"}, I am inside our eFootballMarket Order Chat (#${order.order_number}) ready to share the Konami OTP: ${orderUrl}/chat`
-                )}`}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="w-full h-9 rounded-xl bg-sx-canvas hover:bg-sx-stone border border-sx-border text-sx-ink font-semibold text-xs inline-flex items-center justify-center gap-2 transition-colors"
-              >
-                <MessageCircle className="w-3.5 h-3.5 text-sx-green-text" />
-                <span>Nudge {isBuyer ? "Seller" : "Buyer"} on WhatsApp</span>
-              </a>
-            )}
+            <a
+              href={`https://wa.me/254794400365?text=${encodeURIComponent(
+                `Hello eFootballMarket Escrow Desk, please ping @${counterpartyName} to check our Order Chat (#${order.order_number}): ${orderUrl}/chat`
+              )}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-full h-9 rounded-xl bg-sx-canvas hover:bg-sx-stone border border-sx-border text-sx-ink font-semibold text-xs inline-flex items-center justify-center gap-2 transition-colors"
+            >
+              <MessageCircle className="w-3.5 h-3.5 text-sx-green-text" />
+              <span>Ask Escrow Desk to Ping {isBuyer ? "Seller" : "Buyer"}</span>
+            </a>
 
             <p className="text-[11px] text-sx-muted flex items-start gap-1.5 leading-relaxed">
               <Check className="w-3.5 h-3.5 text-sx-green-text shrink-0 mt-0.5" />

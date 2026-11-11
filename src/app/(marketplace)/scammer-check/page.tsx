@@ -23,7 +23,7 @@ export default function ScammerCheckPage() {
           Check a Phone Number or Handle Before You Pay
         </h1>
         <p className="text-xs sm:text-sm text-sx-muted max-w-2xl leading-relaxed">
-          Search any Kenyan `07...` / `01...` phone number or social handle against confirmed escrow dispute bans and community fraud reports.
+          Search any Kenyan <span className="font-mono font-semibold text-sx-ink">07...</span> or <span className="font-mono font-semibold text-sx-ink">01...</span> phone number or social handle against confirmed escrow dispute bans and community fraud reports.
         </p>
       </div>
 

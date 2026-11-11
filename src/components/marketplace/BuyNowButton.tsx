@@ -74,12 +74,14 @@ export function BuyNowButton({ listingId, priceFormatted, compact = false }: Buy
       <Button
         variant="gold"
         size="lg"
-        className="w-full font-bold text-base shadow-xl shadow-amber-500/10"
+        className="w-full font-bold text-sm whitespace-nowrap shadow-xl shadow-amber-500/10"
         onClick={handleBuyNow}
         isLoading={loading}
       >
-        <ShoppingCart className="w-5 h-5 mr-2" />
-        {isAuthenticated ? `Buy Now & Lock Escrow (${priceFormatted})` : `Log In to Purchase (${priceFormatted})`}
+        <ShoppingCart className="w-4 h-4 shrink-0" />
+        <span>
+          {isAuthenticated ? `Buy Now · ${priceFormatted}` : `Log In to Buy · ${priceFormatted}`}
+        </span>
       </Button>
 
       {error && (
@@ -92,24 +94,24 @@ export function BuyNowButton({ listingId, priceFormatted, compact = false }: Buy
 
       {/* Guest guidance: tells visitor when & why to sign in or create an account */}
       {!isAuthenticated && !authLoading && (
-        <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border/80 space-y-2">
+        <div className="p-3 rounded-xl bg-sx-stone border border-sx-border space-y-2">
           <div className="flex items-center gap-1.5 text-xs font-semibold text-sx-amber-text">
             <Sparkles className="w-3.5 h-3.5" />
-            <span>Guest Buyer Recommendation:</span>
+            <span>Guest Buyer Tip</span>
           </div>
-          <p className="text-[11px] text-sx-ink-soft">
-            Create an account or log in to secure your M-Pesa payment in escrow and view encrypted account login credentials safely.
+          <p className="text-[11px] text-sx-ink-soft leading-relaxed">
+            Sign in or create a free account to lock your M-Pesa payment via Till&nbsp;1572931 and receive encrypted login credentials in your Order Room.
           </p>
           <div className="flex items-center gap-2 pt-0.5">
             <Link
               href={`/login?redirect=/listings/${listingId}`}
-              className="text-xs px-2.5 py-1 rounded-md bg-pitch-surface border border-pitch-border text-sx-ink-soft hover:text-sx-ink transition-colors"
+              className="text-xs px-2.5 py-1 rounded-md bg-sx-canvas border border-sx-border text-sx-ink-soft hover:text-sx-ink transition-colors"
             >
               Log In
             </Link>
             <Link
               href={`/register?redirect=/listings/${listingId}`}
-              className="text-xs px-2.5 py-1 rounded-md bg-brand-500/20 border border-brand-500/40 text-sx-green-text hover:bg-brand-500/30 font-semibold transition-colors"
+              className="text-xs px-2.5 py-1 rounded-md bg-sx-green-tint border border-sx-green-border text-sx-green-text font-semibold transition-colors"
             >
               Create Free Account
             </Link>

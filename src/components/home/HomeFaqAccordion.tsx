@@ -17,7 +17,7 @@ const FAQS: FaqItem[] = [
   {
     question: "What should I check during my 24-hour inspection?",
     answer:
-      "Import the account from the eFootball Title Screen (Data Transfer) and check that permanent OVR, Epic/Big Time players, and Coins match the screenshots. Open Extras -> Support -> Link Data and confirm Google Play and Apple ID both say 'Not Linked'. Then sign in to my.konami.net and change the email, password, and 2-Step Verification to your own.",
+      "Import the account from the eFootball Title Screen (Data Transfer) and check that permanent OVR, Epic/Big Time players, and Coins match the screenshots. Open Extras → Support → Link Data and confirm Google Play and Apple ID both say 'Not Linked'. Then sign in to my.konami.net and change the email, password, and 2-Step Verification to your own.",
   },
   {
     question: "What if the login fails or the squad doesn't match the listing?",

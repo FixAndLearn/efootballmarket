@@ -1,4 +1,4 @@
-import { isSuperAdminEmail, isUserAdmin, PRIMARY_SUPER_ADMIN_EMAIL } from "@/lib/security/adminAuth";
+import { isSuperAdminEmail, isUserAdmin } from "@/lib/security/adminAuth";
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
@@ -23,11 +23,11 @@ export async function GET(req: NextRequest) {
     // Check caller privileges
     const { data: callerProfile } = await primaryClient
       .from("profiles")
-      .select("role")
+      .select("role, is_suspended")
       .eq("id", user.id)
       .single();
 
-    if (!isUserAdmin(user.email, callerProfile?.role)) {
+    if (!isUserAdmin(user.email, callerProfile?.role, callerProfile?.is_suspended)) {
       return NextResponse.json({ error: "Forbidden: Admin access required." }, { status: 403 });
     }
 
@@ -91,12 +91,16 @@ export async function PATCH(req: NextRequest) {
 
     const { data: callerProfile } = await primaryClient
       .from("profiles")
-      .select("role")
+      .select("role, is_suspended")
       .eq("id", user.id)
       .single();
 
     const isCallerSuperAdmin = isSuperAdminEmail(user.email);
-    const isCallerAdmin = isUserAdmin(user.email, callerProfile?.role);
+    const isCallerAdmin = isUserAdmin(
+      user.email,
+      callerProfile?.role,
+      callerProfile?.is_suspended
+    );
 
     if (!isCallerAdmin) {
       return NextResponse.json({ error: "Forbidden: Admin privileges required." }, { status: 403 });
@@ -120,10 +124,10 @@ export async function PATCH(req: NextRequest) {
       // Ignore
     }
 
-    // IMMUTABLE PROTECTION: Super Admin brianokibo@gmail.com cannot be dismissed or banned!
+    // IMMUTABLE PROTECTION: Primary Super Admin cannot be dismissed or banned!
     if (isSuperAdminEmail(targetEmail)) {
       return NextResponse.json(
-        { error: "Action rejected: Primary Super Admin (brianokibo@gmail.com) privileges cannot be altered." },
+        { error: "Action rejected: Primary Super Admin privileges cannot be altered." },
         { status: 400 }
       );
     }
@@ -131,7 +135,7 @@ export async function PATCH(req: NextRequest) {
     // Only Super Admin can grant or dismiss admin privileges!
     if ((action === "grant_admin" || action === "dismiss_admin") && !isCallerSuperAdmin) {
       return NextResponse.json(
-        { error: "Forbidden: Only Primary Super Admin (brianokibo@gmail.com) can manage admin privileges." },
+        { error: "Forbidden: Only the Primary Super Admin can manage admin privileges." },
         { status: 403 }
       );
     }
@@ -179,12 +183,12 @@ export async function PATCH(req: NextRequest) {
         .update({ is_suspended: true })
         .eq("id", targetUserId);
 
-      // Unpublish all their active listings
+      // Unpublish all their published/active listings
       await primaryClient
         .from("listings")
-        .update({ status: "suspended" })
+        .update({ status: "archived" })
         .eq("seller_id", targetUserId)
-        .eq("status", "active");
+        .in("status", ["published", "active"]);
 
       await primaryClient.from("notifications").insert({
         recipient_id: targetUserId,

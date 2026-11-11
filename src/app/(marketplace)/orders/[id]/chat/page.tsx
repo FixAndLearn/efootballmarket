@@ -56,9 +56,6 @@ export default async function OrderDedicatedChatPage({
   const counterpartyName = isBuyer
     ? order.seller?.username || "Seller"
     : order.buyer?.username || "Buyer";
-  const counterpartyPhone = isBuyer
-    ? order.seller?.phone_number
-    : order.buyer?.phone_number;
 
   const messageService = new MessageService(primaryClient);
   const conversation = await messageService.getOrCreateOrderConversation(
@@ -115,20 +112,18 @@ export default async function OrderDedicatedChatPage({
             </span>
           </div>
 
-          {counterpartyPhone && (
-            <a
-              href={`https://wa.me/${formatWhatsAppPhone(counterpartyPhone)}?text=${encodeURIComponent(
-                `Hello @${counterpartyName}, I sent you a message in our eFootballMarket Order Chat (#${order.order_number}): ${orderUrl}`
-              )}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-sx-subtle hover:bg-sx-stone border border-sx-border text-xs font-semibold text-sx-ink transition-colors"
-              title="Nudge partner on WhatsApp to check Order Chat"
-            >
-              <MessageCircle className="w-3.5 h-3.5 text-sx-green-text" />
-              <span className="hidden md:inline">Nudge on WhatsApp</span>
-            </a>
-          )}
+          <a
+            href={`https://wa.me/254794400365?text=${encodeURIComponent(
+              `Hello eFootballMarket Escrow Desk, I need assistance in Order Chat (#${order.order_number}) with @${counterpartyName}: ${orderUrl}`
+            )}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-xl bg-sx-subtle hover:bg-sx-stone border border-sx-border text-xs font-semibold text-sx-ink transition-colors"
+            title="Contact Escrow Desk on WhatsApp"
+          >
+            <MessageCircle className="w-3.5 h-3.5 text-sx-green-text" />
+            <span className="hidden md:inline">Escrow Desk</span>
+          </a>
         </div>
       </div>
 

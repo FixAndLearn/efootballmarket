@@ -21,7 +21,7 @@ const CHECKLIST_STEPS: ChecklistStep[] = [
   {
     id: "step_email",
     title: "2. Change Konami ID Email to Your Own",
-    instruction: "Navigate to Account Management -> 'View / Edit Email Address'. Enter your personal email address. Konami sends a 6-digit confirmation code to your new inbox. Ask seller for the old email OTP in chat if prompted.",
+    instruction: "Navigate to Account Management → 'View / Edit Email Address'. Enter your personal email address. Konami sends a 6-digit confirmation code to your new inbox. Ask seller for the old email OTP in chat if prompted.",
     criticalTip: "Once you enter the 6-digit confirmation code, the seller permanently loses login capability through their previous email.",
   },
   {
@@ -33,19 +33,19 @@ const CHECKLIST_STEPS: ChecklistStep[] = [
   {
     id: "step_2fa",
     title: "4. Enable Two-Factor Authentication (2FA)",
-    instruction: "Go to Security -> Two-Step Verification. Link your email or an Authenticator App (Google Authenticator / Authy).",
+    instruction: "Go to Security → Two-Step Verification. Link your email or an Authenticator App (Google Authenticator / Authy).",
     criticalTip: "2FA ensures that even if anyone knew the past password, nobody can log in without your phone.",
   },
   {
     id: "step_unlink",
     title: "5. Verify Google Play is NOT Linked (STRICT RULE)",
-    instruction: "Open eFootball Mobile on your phone -> Extras -> Support -> Link Data. Check Google Play Games. It MUST state 'Not Linked'. If Google Play is linked ('Googling'), STOP IMMEDIATELY! Never accept the account—open a dispute right away.",
+    instruction: "Open eFootball Mobile on your phone → Extras → Support → Link Data. Check Google Play Games. It MUST state 'Not Linked'. If Google Play is linked ('Googling'), STOP IMMEDIATELY! Never accept the account—open a dispute right away.",
     criticalTip: "CRITICAL: In eFootball, Google Play links cannot be transferred. A Google-linked account allows the seller to pull back the account at any time. Zero Google-linked accounts are permitted.",
   },
   {
     id: "step_ingame",
     title: "6. Launch Game & Confirm Squad In-App",
-    instruction: "Open eFootball Mobile on your phone -> Extras -> Support -> Data Transfer -> Transfer using Konami ID. Log in and verify all Epic Boosters, Division status, and Coin balances match the listing.",
+    instruction: "Open eFootball Mobile on your phone → Extras → Support → Data Transfer → Transfer using Konami ID. Log in and verify all Epic Boosters, Division status, and Coin balances match the listing.",
     criticalTip: "If any player or currency is missing or if Google Play was linked, click 'Report Problem / Dispute' immediately before releasing funds.",
   },
 ];

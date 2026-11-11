@@ -47,7 +47,15 @@ export async function GET(req: NextRequest) {
     const rawPhone = searchParams.get("phone");
 
     const code = sanitizeTransactionId(rawCode).toUpperCase();
-    const cleanPhone = rawPhone ? rawPhone.replace(/[^0-9+]/g, "").slice(0, 16) : "";
+    const normPhone = rawPhone ? normalizePhoneNumber(rawPhone) : null;
+    const cleanPhone = normPhone?.isValid ? normPhone.international : "";
+
+    if (rawPhone && !cleanPhone) {
+      return NextResponse.json(
+        { deals: [], message: "Enter a full 10-digit Kenyan phone number or EFM contract code." },
+        { status: 200 }
+      );
+    }
 
     // Prevent unauthenticated bulk enumeration: require exact deal code unless caller is Admin
     if (!code && !cleanPhone) {
@@ -104,9 +112,8 @@ export async function GET(req: NextRequest) {
     if (code) {
       results = results.filter((d) => d.deal_code.toUpperCase() === code);
     } else if (cleanPhone) {
-      const digits = cleanPhone.replace(/\D/g, "");
       results = results.filter(
-        (d) => d.buyer_phone.includes(digits) || d.seller_phone.includes(digits)
+        (d) => d.buyer_phone === cleanPhone || d.seller_phone === cleanPhone
       );
     }
 

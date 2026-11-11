@@ -187,7 +187,9 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 lg:pb-12 w-full space-y-8">
       <script
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(productJsonLd).replace(/</g, "\\u003c"),
+        }}
       />
       {/* Top Breadcrumb Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-sx-border">
@@ -423,7 +425,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                   {
                     step: "02",
                     title: "Check Link Data Screen",
-                    body: "Open Extras -> Support -> Link Data and verify Google Play and Game Center both show Not Linked.",
+                    body: "Open Extras → Support → Link Data and verify Google Play and Game Center both show Not Linked.",
                   },
                   {
                     step: "03",
@@ -550,7 +552,6 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                   priceFormatted={formatCurrency(listing.price, listing.currency)}
                 />
                 <ChatSellerWhatsAppButton
-                  sellerPhone={listing.seller?.phone_number}
                   sellerUsername={listing.seller?.username}
                   listingId={listing.id}
                   listingTitle={displayTitle}
@@ -567,7 +568,6 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                 />
                 <MakeOfferButton listing={listing} className="w-full" />
                 <ChatSellerWhatsAppButton
-                  sellerPhone={listing.seller?.phone_number}
                   sellerUsername={listing.seller?.username}
                   listingId={listing.id}
                   listingTitle={displayTitle}
@@ -610,7 +610,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="w-3.5 h-3.5 text-sx-green-text shrink-0 mt-0.5" />
                 <span>
-                  <strong>KES 0 added buyer fee</strong> — Safaricom M-Pesa sends your payment to eFootballMarket&apos;s Till <strong>1572931</strong>, where we hold it during inspection
+                  <strong>KES&nbsp;0 added buyer fee</strong> — Safaricom M-Pesa sends your payment to eFootballMarket&apos;s <strong className="whitespace-nowrap">Till&nbsp;1572931</strong>, where we hold it during inspection
                 </span>
               </div>
               <div className="flex items-start gap-2">

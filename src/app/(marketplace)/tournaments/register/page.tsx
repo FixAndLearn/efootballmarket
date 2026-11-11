@@ -517,8 +517,8 @@ export default function RegisterTournamentPage() {
                 isLoading={checkingNow}
                 onClick={handleCheckPaymentNow}
               >
-                <Zap className="w-4 h-4 fill-black" />
-                <span>I Have Entered PIN — Confirm Payment Now</span>
+                <Zap className="w-4 h-4 shrink-0" />
+                <span>I Entered PIN · Confirm Payment</span>
               </Button>
             </div>
 
@@ -732,7 +732,7 @@ export default function RegisterTournamentPage() {
 
                 <Input
                   label="eFootball Mobile Friend ID"
-                  placeholder="e.g. 123-456-789 (Find in Extras -> User Details)"
+                  placeholder="e.g. 123-456-789 (Find in Extras → User Details)"
                   value={friendId}
                   onChange={(e) => setFriendId(e.target.value)}
                   required

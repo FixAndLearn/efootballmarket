@@ -11,7 +11,13 @@ export async function GET(request: NextRequest) {
   const type = requestUrl.searchParams.get("type");
   const next = requestUrl.searchParams.get("redirect") || "/dashboard/buyer";
 
-  let redirectTarget = next.startsWith("/") ? next : `/${next}`;
+  const cleanedNext = next.trim();
+  let redirectTarget =
+    cleanedNext.startsWith("/") &&
+    !cleanedNext.startsWith("//") &&
+    !cleanedNext.includes("\\")
+      ? cleanedNext
+      : "/dashboard/buyer";
   if (type === "recovery") {
     redirectTarget = "/reset-password";
   }
@@ -73,17 +79,20 @@ export async function GET(request: NextRequest) {
           .toLowerCase()
           .replace(/[^a-z0-9_]/g, "");
 
-        await supabase.from("profiles").upsert({
-          id: user.id,
-          username: baseUsername,
-          first_name: firstName,
-          last_name: lastName,
-          phone_number: metadata.phone_number || "+254700000000",
-          country: "KEN",
-          is_verified_seller: false,
-          available_balance: 0.0,
-          escrow_balance: 0.0,
-        });
+        await supabase.from("profiles").upsert(
+          {
+            id: user.id,
+            username: baseUsername,
+            first_name: firstName,
+            last_name: lastName,
+            phone_number: metadata.phone_number || "+254700000000",
+            country: "KEN",
+            is_verified_seller: false,
+            available_balance: 0.0,
+            escrow_balance: 0.0,
+          },
+          { onConflict: "id", ignoreDuplicates: true }
+        );
 
         await supabase.from("user_roles").upsert({
           user_id: user.id,

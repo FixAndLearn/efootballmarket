@@ -1,5 +1,7 @@
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { isSuperAdminEmail, isUserAdmin } from "@/lib/security/adminAuth";
+import { isValidUuid } from "@/lib/security/guards";
 import { EscrowService } from "@/services/escrowService";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -37,13 +39,42 @@ export async function GET(req: NextRequest) {
     const { searchParams } = new URL(req.url);
     const orderId = searchParams.get("orderId");
 
-    if (!orderId) {
-      return NextResponse.json({ error: "orderId is required" }, { status: 400 });
+    if (!orderId || !isValidUuid(orderId)) {
+      return NextResponse.json({ error: "Valid orderId is required" }, { status: 400 });
     }
 
     const adminSupabase = createAdminClient();
     const serviceRoleConfigured = hasServiceRoleKey();
     const client = serviceRoleConfigured ? adminSupabase : supabase;
+
+    // Authorization check: only the order buyer, seller, or platform admin can read dispute evidence
+    const { data: order } = await client
+      .from("orders")
+      .select("id, buyer_id, seller_id")
+      .eq("id", orderId)
+      .maybeSingle();
+
+    if (!order) {
+      return NextResponse.json({ error: "Order not found" }, { status: 404 });
+    }
+
+    if (order.buyer_id !== user.id && order.seller_id !== user.id) {
+      let isAdmin = isSuperAdminEmail(user.email);
+      if (!isAdmin) {
+        const { data: prof } = await client
+          .from("profiles")
+          .select("role, is_suspended")
+          .eq("id", user.id)
+          .maybeSingle();
+        isAdmin = isUserAdmin(user.email, prof?.role, prof?.is_suspended);
+      }
+      if (!isAdmin) {
+        return NextResponse.json(
+          { error: "Forbidden: Only parties to this order can view dispute records." },
+          { status: 403 }
+        );
+      }
+    }
 
     const { data: dispute, error } = await client
       .from("disputes")

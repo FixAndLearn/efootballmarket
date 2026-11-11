@@ -1,6 +1,7 @@
 import { EscrowAccount, Listing, Order, Profile } from "@/types/database";
 import { SupabaseClient } from "@supabase/supabase-js";
 import { calculateEscrowCommission } from "@/lib/utils/commission";
+import { PUBLIC_SELLER_PROFILE_SELECT } from "@/lib/security/publicSanitizer";
 
 export class OrderService {
   constructor(private supabase: SupabaseClient) {}
@@ -115,7 +116,10 @@ export class OrderService {
             .in("id", listingIds)
         : Promise.resolve({ data: [] as any[] }),
       profileIds.length > 0
-        ? this.supabase.from("profiles").select("*").in("id", profileIds)
+        ? this.supabase
+            .from("profiles")
+            .select(PUBLIC_SELLER_PROFILE_SELECT)
+            .in("id", profileIds)
         : Promise.resolve({ data: [] as any[] }),
       orderIds.length > 0
         ? this.supabase

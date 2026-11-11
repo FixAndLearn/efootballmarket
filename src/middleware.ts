@@ -1,6 +1,6 @@
 import { createServerClient } from "@supabase/ssr";
 import { NextResponse, type NextRequest } from "next/server";
-import { PRIMARY_SUPER_ADMIN_EMAIL } from "./lib/security/adminAuth";
+import { isSuperAdminEmail } from "./lib/security/adminAuth";
 
 const EXTERNAL_WEBHOOK_PATHS = [
   "/api/payments/mpesa/callback",
@@ -104,10 +104,9 @@ export async function middleware(request: NextRequest) {
       return NextResponse.redirect(loginUrl);
     }
 
-    const isSuperAdminEmail =
-      user.email?.trim().toLowerCase() === PRIMARY_SUPER_ADMIN_EMAIL.toLowerCase();
+    const isSuperAdmin = isSuperAdminEmail(user.email);
 
-    if (!isSuperAdminEmail) {
+    if (!isSuperAdmin) {
       const { data: profile, error: profileError } = await supabase
         .from("profiles")
         .select("role, is_suspended")

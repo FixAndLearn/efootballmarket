@@ -14,17 +14,30 @@ export async function POST(req: NextRequest) {
     } = await supabase.auth.getUser();
 
     const body = await req.json();
-    const { tournament_id, gamer_tag, friend_id, phone_number, user_id } = body;
+    const { tournament_id, gamer_tag, friend_id, phone_number } = body;
 
-    const verifiedUserId = authUser?.id || (user_id ? String(user_id).trim() : null);
+    const verifiedUserId = authUser?.id || null;
 
     if (!verifiedUserId) {
       return NextResponse.json(
         {
           error:
-            "Community Membership Required: Only registered members can join tournaments. Please log in or register first.",
+            "Community Membership Required: Only signed-in members can join tournaments. Please log in or register first.",
         },
         { status: 401 }
+      );
+    }
+
+    const { data: callerProf } = await supabase
+      .from("profiles")
+      .select("is_suspended")
+      .eq("id", verifiedUserId)
+      .maybeSingle();
+
+    if (callerProf?.is_suspended) {
+      return NextResponse.json(
+        { error: "Your account is suspended and cannot join tournaments." },
+        { status: 403 }
       );
     }
 

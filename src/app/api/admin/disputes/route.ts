@@ -108,6 +108,29 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Order not found" }, { status: 404 });
     }
 
+    // Prevent replay / double-settlement of already finalized disputes or orders
+    const { data: currentDispute } = await client
+      .from("disputes")
+      .select("id, status, order_id")
+      .eq("id", disputeId)
+      .eq("order_id", orderId)
+      .maybeSingle();
+
+    if (!currentDispute) {
+      return NextResponse.json({ error: "Dispute record not found for this order" }, { status: 404 });
+    }
+
+    if (
+      currentDispute.status !== "open" ||
+      order.status === "completed" ||
+      order.status === "refunded"
+    ) {
+      return NextResponse.json(
+        { error: "This dispute or order has already been settled and cannot be credited twice." },
+        { status: 409 }
+      );
+    }
+
     const newDisputeStatus =
       action === "release_to_seller"
         ? "resolved_seller_release"
@@ -115,11 +138,13 @@ export async function PATCH(req: NextRequest) {
         ? "resolved_buyer_refund"
         : "closed_dismissed";
 
-    const newOrderStatus = action === "release_to_seller" ? "completed" : "refunded";
-    const newEscrowState = action === "release_to_seller" ? "completed" : "refunded";
+    const newOrderStatus =
+      action === "refund_buyer" ? "refunded" : "completed";
+    const newEscrowState =
+      action === "refund_buyer" ? "refunded" : "completed";
 
-    // 1. Update dispute
-    await client
+    // 1. Update dispute (Compare-And-Swap on status = 'open')
+    const { data: updatedDispute } = await client
       .from("disputes")
       .update({
         status: newDisputeStatus,
@@ -128,7 +153,17 @@ export async function PATCH(req: NextRequest) {
         resolved_at: new Date().toISOString(),
         updated_at: new Date().toISOString(),
       })
-      .eq("id", disputeId);
+      .eq("id", disputeId)
+      .eq("status", "open")
+      .select("id")
+      .maybeSingle();
+
+    if (!updatedDispute) {
+      return NextResponse.json(
+        { error: "Dispute was already resolved by another administrator." },
+        { status: 409 }
+      );
+    }
 
     // 2. Update order and escrow state
     await client
@@ -147,26 +182,36 @@ export async function PATCH(req: NextRequest) {
       })
       .eq("order_id", orderId);
 
-    // 3. Financial settlement if releasing to seller
-    if (action === "release_to_seller") {
-      const netAmount = Number(order.seller_net_amount || order.total_amount);
-      const sellerId = order.seller_id;
+    // 3. Financial settlement on seller balances
+    const netAmount = Number(order.seller_net_amount || order.total_amount);
+    const sellerId = order.seller_id;
 
-      if (sellerId) {
-        const { data: sellerProf } = await client
-          .from("profiles")
-          .select("available_balance, completed_sales_count")
-          .eq("id", sellerId)
-          .single();
+    if (sellerId) {
+      const { data: sellerProf } = await client
+        .from("profiles")
+        .select("available_balance, escrow_balance, completed_sales_count")
+        .eq("id", sellerId)
+        .single();
 
-        const currentBal = Number(sellerProf?.available_balance || 0);
-        const currentSales = Number(sellerProf?.completed_sales_count || 0);
+      const currentBal = Number(sellerProf?.available_balance || 0);
+      const currentEscrow = Number(sellerProf?.escrow_balance || 0);
+      const currentSales = Number(sellerProf?.completed_sales_count || 0);
 
+      if (action === "release_to_seller" || action === "dismiss") {
         await client
           .from("profiles")
           .update({
             available_balance: currentBal + netAmount,
+            escrow_balance: Math.max(0, currentEscrow - netAmount),
             completed_sales_count: currentSales + 1,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", sellerId);
+      } else if (action === "refund_buyer") {
+        await client
+          .from("profiles")
+          .update({
+            escrow_balance: Math.max(0, currentEscrow - netAmount),
             updated_at: new Date().toISOString(),
           })
           .eq("id", sellerId);

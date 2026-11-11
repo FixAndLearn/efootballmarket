@@ -22,11 +22,11 @@ export async function GET(req: NextRequest) {
 
     const { data: callerProfile } = await primaryClient
       .from("profiles")
-      .select("role")
+      .select("role, is_suspended")
       .eq("id", user.id)
       .single();
 
-    if (!isUserAdmin(user.email, callerProfile?.role)) {
+    if (!isUserAdmin(user.email, callerProfile?.role, callerProfile?.is_suspended)) {
       return NextResponse.json({ error: "Forbidden: Admin access required." }, { status: 403 });
     }
 
@@ -65,11 +65,11 @@ export async function PATCH(req: NextRequest) {
 
     const { data: callerProfile } = await primaryClient
       .from("profiles")
-      .select("role")
+      .select("role, is_suspended")
       .eq("id", user.id)
       .single();
 
-    if (!isUserAdmin(user.email, callerProfile?.role)) {
+    if (!isUserAdmin(user.email, callerProfile?.role, callerProfile?.is_suspended)) {
       return NextResponse.json({ error: "Forbidden: Admin access required." }, { status: 403 });
     }
 

@@ -10,7 +10,7 @@ import { sendSmsAlert } from "./smsAlert";
 export const ADMIN_PHONE_NUMBER = "0794400365";
 export const ADMIN_WHATSAPP_NUMBER = "254794400365";
 export const ADMIN_INTERNATIONAL_PHONE = "+254794400365";
-export const ADMIN_EMAIL = "brianokibo@gmail.com";
+export const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "support@efootballmarket.co.ke";
 
 export type AdminEventType =
   | "PAYMENT_RECEIVED"

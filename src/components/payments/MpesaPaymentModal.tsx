@@ -381,8 +381,8 @@ export function MpesaPaymentModal({
                 isLoading={isCheckingManual}
                 onClick={handleManualCheck}
               >
-                <RefreshCw className="w-3.5 h-3.5 mr-1.5" />
-                I have entered PIN — Confirm Status Now
+                <RefreshCw className="w-3.5 h-3.5 shrink-0" />
+                <span>I Entered PIN · Check Status</span>
               </Button>
             </div>
 

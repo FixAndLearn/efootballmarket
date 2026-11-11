@@ -69,18 +69,20 @@ export async function GET(req: NextRequest) {
 
       order = orderData;
 
-      // Require caller to either own the order or provide a checkoutRequestId
-      if (
-        order &&
-        user &&
-        order.buyer_id !== user.id &&
-        order.seller_id !== user.id &&
-        !checkoutRequestId
-      ) {
-        return NextResponse.json(
-          { error: "Forbidden order status lookup" },
-          { status: 403, headers: NO_CACHE_HEADERS }
-        );
+      // Require caller to either own the order (authenticated) or supply the matching checkoutRequestId
+      if (!checkoutRequestId) {
+        if (!user) {
+          return NextResponse.json(
+            { error: "Authentication or checkoutRequestId required for status lookup" },
+            { status: 401, headers: NO_CACHE_HEADERS }
+          );
+        }
+        if (order && order.buyer_id !== user.id && order.seller_id !== user.id) {
+          return NextResponse.json(
+            { error: "Forbidden order status lookup" },
+            { status: 403, headers: NO_CACHE_HEADERS }
+          );
+        }
       }
 
       if (order && order.status !== "payment_pending") {
@@ -129,10 +131,17 @@ export async function GET(req: NextRequest) {
     }
 
     if (payment && payment.status === "completed") {
+      const safeReceipt = user
+        ? payment.mpesa_receipt_number || "CONFIRMED"
+        : payment.mpesa_receipt_number
+        ? `${String(payment.mpesa_receipt_number).slice(0, 3)}****${String(
+            payment.mpesa_receipt_number
+          ).slice(-2)}`
+        : "CONFIRMED";
       return NextResponse.json(
         {
           status: "completed",
-          receiptNumber: payment.mpesa_receipt_number || "CONFIRMED",
+          receiptNumber: safeReceipt,
           resultCode: 0,
           resultDesc: "Payment completed successfully",
         },

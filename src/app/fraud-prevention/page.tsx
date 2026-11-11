@@ -76,7 +76,7 @@ export default function FraudPreventionPage() {
           <Link href="/scammer-check" className="text-sx-green-text underline font-semibold">
             Scammer Check
           </Link>{" "}
-          tool lets players check Kenyan `07...` / `01...` numbers and handles before trading off-platform:
+          tool lets players check Kenyan <strong>07...</strong> and <strong>01...</strong> numbers and handles before trading off-platform:
         </p>
         <ul className="list-disc pl-5 space-y-2">
           <li>

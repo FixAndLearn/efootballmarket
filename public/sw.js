@@ -10,8 +10,14 @@ self.addEventListener("activate", (event) => {
 
 self.addEventListener("notificationclick", (event) => {
   event.notification.close();
+  const rawUrl =
+    event.notification.data && typeof event.notification.data.url === "string"
+      ? event.notification.data.url.trim()
+      : "/notifications";
   const targetUrl =
-    (event.notification.data && event.notification.data.url) || "/notifications";
+    rawUrl.startsWith("/") && !rawUrl.startsWith("//") && !rawUrl.includes("\\")
+      ? rawUrl
+      : "/notifications";
 
   event.waitUntil(
     self.clients

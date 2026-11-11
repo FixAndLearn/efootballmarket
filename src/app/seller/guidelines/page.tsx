@@ -63,7 +63,7 @@ export default function SellerGuidelinesPage() {
             <strong>Link Data Proof Screenshot:</strong> Upload a screenshot of <em>Extras &rarr; Support &rarr; Link Data</em> showing Clean Konami ID status (mask or crop out your personal email address or Konami ID string if visible—never expose login credentials in public images).
           </li>
           <li>
-            <strong>Accurate Native OS Coin Count:</strong> State the exact platform (`Android` or `iOS`) where your eFootball Coins were earned/purchased, since coins do not carry across Android &harr; iOS.
+            <strong>Accurate Native OS Coin Count:</strong> State the exact platform (<strong>Android</strong> or <strong>iOS</strong>) where your eFootball Coins were earned/purchased, since coins do not carry across Android &harr; iOS.
           </li>
         </ul>
       </section>
@@ -77,7 +77,7 @@ export default function SellerGuidelinesPage() {
             <strong>Free Listing Creation:</strong> Creating, editing, or delisting an unsold squad costs <strong>KES 0</strong>.
           </li>
           <li>
-            <strong>Ask Price &amp; Live Offers:</strong> Set your Ask Price in Kenyan Shillings (`KES`). Buyers can either purchase immediately at your Ask Price or submit a binding KES Offer on your listing page. Accepting an offer notifies the buyer to fund Till `1572931`.
+            <strong>Ask Price &amp; Live Offers:</strong> Set your Ask Price in Kenyan Shillings (<strong>KES</strong>). Buyers can either purchase immediately at your Ask Price or submit a binding KES Offer on your listing page. Accepting an offer notifies the buyer to fund Till <strong>1572931</strong>.
           </li>
           <li>
             <strong>Commission Transparency:</strong> Buyers pay zero extra escrow fees at checkout. When an order completes, eFootballMarket deducts a <strong>5% seller commission (minimum KES 50, capped at maximum KES 500)</strong> to cover Till 1572931 payment verification, AES-256-GCM credential vaulting, and human arbitration. Your exact net KES payout is calculated live as you type your price.
@@ -121,7 +121,7 @@ export default function SellerGuidelinesPage() {
           <Link href="/seller/earnings" className="text-sx-green-text underline font-semibold">
             Seller Earnings
           </Link>
-          . M-Pesa payouts are sent directly to your registered Kenyan mobile number (`07...` / `01...`) within <strong>1 to 12 hours</strong> during daily settlement windows.
+          . M-Pesa payouts are sent directly to your registered Kenyan mobile number (<strong>07...</strong> or <strong>01...</strong>) within <strong>1 to 12 hours</strong> during daily settlement windows.
         </p>
       </section>
 

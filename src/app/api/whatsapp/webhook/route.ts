@@ -18,10 +18,9 @@ export async function GET(req: NextRequest) {
   const token = searchParams.get("hub.verify_token");
   const challenge = searchParams.get("hub.challenge");
 
-  const expectedToken =
-    process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN || "efootball_market_webhook_verify";
+  const expectedToken = process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN?.trim();
 
-  if (mode === "subscribe" && token === expectedToken) {
+  if (expectedToken && mode === "subscribe" && timingSafeCompare(token, expectedToken)) {
     console.log("[WhatsApp:Webhook] Meta Webhook verified successfully!");
     return new NextResponse(challenge, { status: 200 });
   }
@@ -135,26 +134,25 @@ export async function POST(req: NextRequest) {
         .trim()
         .replace(/^STATUS\s*/i, "")
         .replace(/[^a-zA-Z0-9_-]/g, "")
+        .toUpperCase()
         .slice(0, 40);
-      if (!orderRef || orderRef.length < 4) {
+      if (!orderRef || orderRef.length < 8) {
         return NextResponse.json({ status: "ignored_short_ref" });
       }
       const supabase = createAdminClient();
 
+      // Require exact order_number match so partial substrings cannot enumerate orders
       const { data: order } = await supabase
         .from("orders")
-        .select("order_number, status, total_amount, listing:listings(title)")
-        .or(`order_number.ilike.%${orderRef}%,id.eq.${orderRef}`)
-        .limit(1)
+        .select("order_number, status")
+        .eq("order_number", orderRef)
         .maybeSingle();
 
       if (order) {
         const orderReply =
           `*ORDER #${order.order_number} STATUS*\n\n` +
-          `*Squad:* ${(order.listing as any)?.title || "Account"}\n` +
-          `*Amount:* KES ${Number(order.total_amount).toLocaleString()}\n` +
           `*Status:* *${order.status.toUpperCase().replace(/_/g, " ")}*\n\n` +
-          `*View Order Portal:* https://www.efootballmarket.co.ke/orders/${order.order_number}`;
+          `*Sign in to view full details:* https://www.efootballmarket.co.ke/orders/${order.order_number}`;
 
         await sendWhatsAppMessage({ toPhone: cleanSender, message: orderReply });
       } else {

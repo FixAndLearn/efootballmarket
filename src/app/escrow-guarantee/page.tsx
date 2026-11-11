@@ -20,7 +20,7 @@ export default function EscrowGuaranteePage() {
       subtitle="Clear, plain-language explanation of who receives your M-Pesa payment, what is automated vs administrator-reviewed, when the 24-hour inspection clock starts, and every fee across Marketplace, Middleman, and Tournaments."
       summaryPoints={[
         "Who holds funds: Safaricom M-Pesa processes your transfer into eFootballMarket Kenya's business Buy Goods Till 1572931. eFootballMarket holds the funds while your order is open.",
-        "12h Delivery -> 24h Inspection: Seller has 12 hours after payment confirmation to submit logins. Your 24-hour inspection clock starts only when credentials are submitted.",
+        "12h Delivery → 24h Inspection: Seller has 12 hours after payment confirmation to submit logins. Your 24-hour inspection clock starts only when credentials are submitted.",
         "Automated vs Admin: Payment matching, timer starts, and uncontested 24h completion run automatically; disputes, refunds, and M-Pesa payouts (1–12h) are admin-reviewed.",
         "Transparent Fees: Buyers pay KES 0 added fee on Marketplace & Middleman orders; sellers pay 5% (min KES 50, max KES 500) deducted from net payout.",
       ]}
@@ -38,7 +38,7 @@ export default function EscrowGuaranteePage() {
         </p>
         <ul className="list-disc pl-5 space-y-2">
           <li>
-            <strong>Payment Account (`Till 1572931`):</strong> Buyers pay via Safaricom Lipa Na M-Pesa into <strong>Buy Goods Till 1572931</strong>, the registered business till of eFootballMarket Kenya.
+            <strong>Payment Account (Till 1572931):</strong> Buyers pay via Safaricom Lipa Na M-Pesa into <strong>Buy Goods Till 1572931</strong>, the registered business till of eFootballMarket Kenya.
           </li>
           <li>
             <strong>Safaricom PLC&apos;s Role:</strong> Safaricom is the licensed mobile-money payment processor that moves your payment from your M-Pesa wallet to Till 1572931. Safaricom does <strong>not</strong> act as an escrow agent, hold a separate bank trust, or review game-account disputes.
@@ -101,7 +101,7 @@ export default function EscrowGuaranteePage() {
             {
               stage: "Stage 3 · Buyer Login & Rebinding Window (24-Hour Clock)",
               detail:
-                "Your 24-hour inspection clock starts when credentials are delivered—not when you paid. Record your screen, sign in from the eFootball Title Screen -> Data Transfer, check permanent cards and Link Data = Not Linked, then change the email, password, and 2FA at my.konami.net.",
+                "Your 24-hour inspection clock starts when credentials are delivered—not when you paid. Record your screen, sign in from the eFootball Title Screen → Data Transfer, check permanent cards and Link Data = Not Linked, then change the email, password, and 2FA at my.konami.net.",
             },
             {
               stage: "Stage 4 · Release Payout or Open Dispute",
@@ -149,7 +149,7 @@ export default function EscrowGuaranteePage() {
                 <td className="p-3">100% of escrowed price refunded if seller misses 12h delivery or buyer dispute is upheld</td>
               </tr>
               <tr>
-                <td className="p-3 font-semibold text-sx-ink">Middleman Deal (`/middleman`)</td>
+                <td className="p-3 font-semibold text-sx-ink">Middleman Deal (/middleman)</td>
                 <td className="p-3">Agreed price (<strong>KES 0</strong> extra buyer fee)</td>
                 <td className="p-3"><strong>5%</strong> deducted from seller payout (min <strong>KES 50</strong>, max <strong>KES 500</strong>)</td>
                 <td className="p-3">100% of escrowed price refunded if cancelled before delivery or buyer dispute is upheld</td>

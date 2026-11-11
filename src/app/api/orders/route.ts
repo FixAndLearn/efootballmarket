@@ -61,11 +61,11 @@ export async function POST(req: NextRequest) {
       escrow_balance: 0.0,
     };
 
-    // Ensure buyer profile exists (admin client bypasses RLS)
+    // Ensure buyer profile exists WITHOUT overwriting existing seller balances/flags
     try {
       await adminSupabase
         .from("profiles")
-        .upsert(profileData, { onConflict: "id" });
+        .upsert(profileData, { onConflict: "id", ignoreDuplicates: true });
     } catch (err) {
       console.warn("adminSupabase buyer profile upsert notice:", err);
     }

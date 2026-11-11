@@ -1191,7 +1191,7 @@ export default function TournamentsPage() {
 
                   <Input
                     label="eFootball Mobile Friend ID"
-                    placeholder="e.g. 123-456-789 (Find in Extras -> User Details)"
+                    placeholder="e.g. 123-456-789 (Find in Extras → User Details)"
                     value={friendId}
                     onChange={(e) => setFriendId(e.target.value)}
                     required

@@ -106,7 +106,9 @@ async function fetchSellerByUsername(rawUsername: string) {
           escrow_balance: 0,
           is_suspended: false,
         };
-        await client.from("profiles").upsert(newProfile, { onConflict: "id" });
+        await client
+          .from("profiles")
+          .upsert(newProfile, { onConflict: "id", ignoreDuplicates: true });
         seller = {
           ...newProfile,
           role: "seller",

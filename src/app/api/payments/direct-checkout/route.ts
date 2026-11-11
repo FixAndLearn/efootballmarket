@@ -134,7 +134,9 @@ export async function POST(req: NextRequest) {
       };
 
       try {
-        await adminSupabase.from("profiles").upsert(guestProfile, { onConflict: "id" });
+        await adminSupabase
+          .from("profiles")
+          .upsert(guestProfile, { onConflict: "id", ignoreDuplicates: true });
       } catch (err) {
         console.warn("Guest profile creation note:", err);
       }

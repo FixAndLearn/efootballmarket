@@ -22,6 +22,12 @@ function getClient() {
 
 export async function GET(req: NextRequest) {
   try {
+    const ip = getClientIp(req);
+    const rate = checkRateLimit(`offer_get:${ip}`, 45, 60000);
+    if (!rate.success) {
+      return NextResponse.json({ error: "Too many requests" }, { status: 429 });
+    }
+
     const { searchParams } = new URL(req.url);
     const offerId = searchParams.get("offerId");
     const listingId = searchParams.get("listingId");
@@ -33,7 +39,52 @@ export async function GET(req: NextRequest) {
     const {
       data: { user: viewer },
     } = await userSupabase.auth.getUser();
-    const viewerIsAdmin = isUserAdmin(viewer?.email);
+    const supabase = getClient();
+
+    let viewerIsAdmin = isUserAdmin(viewer?.email);
+    if (viewer && !viewerIsAdmin) {
+      const { data: prof } = await supabase
+        .from("profiles")
+        .select("role, is_suspended")
+        .eq("id", viewer.id)
+        .maybeSingle();
+      viewerIsAdmin = isUserAdmin(viewer.email, prof?.role, prof?.is_suspended);
+    }
+
+    // Block unauthenticated bulk scraping of offers across the marketplace
+    if (!offerId) {
+      if (!viewer) {
+        return NextResponse.json({ offers: [] }, { status: 401 });
+      }
+      if (!viewerIsAdmin) {
+        if (!listingId && !sellerId && !buyerId) {
+          return NextResponse.json({ offers: [] }, { status: 403 });
+        }
+        if (sellerId && sellerId !== viewer.id) {
+          return NextResponse.json({ offers: [] }, { status: 403 });
+        }
+        if (buyerId && buyerId !== viewer.id) {
+          return NextResponse.json({ offers: [] }, { status: 403 });
+        }
+        if (listingId) {
+          const { data: ownedListing } = await supabase
+            .from("listings")
+            .select("seller_id")
+            .eq("id", listingId)
+            .maybeSingle();
+          if (ownedListing && ownedListing.seller_id !== viewer.id) {
+            // Non-owner authenticated viewer can only see their own offers on this listing
+            const { data: ownOffers } = await supabase
+              .from("listing_offers")
+              .select("*, listing:listings(id, title, price, platform, overall_team_strength, manager_name, images:listing_images(image_url))")
+              .eq("listing_id", listingId)
+              .eq("buyer_id", viewer.id)
+              .order("created_at", { ascending: false });
+            return NextResponse.json({ offers: ownOffers || [] });
+          }
+        }
+      }
+    }
 
     const redactOfferForViewer = (o: any) => {
       const canViewFullPhone =
@@ -42,11 +93,10 @@ export async function GET(req: NextRequest) {
       if (canViewFullPhone) return o;
       return {
         ...o,
+        buyer_name: "Buyer",
         buyer_phone: maskPhoneNumber(o.buyer_phone),
       };
     };
-
-    const supabase = getClient();
 
     // 1. Fetch from Supabase
     try {
@@ -270,12 +320,11 @@ export async function POST(req: NextRequest) {
       ).catch((err) => console.warn("Seller offer SMS failed:", err));
     }
 
-    // 5. Build optional WhatsApp link for buyer courtesy ping
-    const cleanSellerPhone = formatWhatsAppPhone(rawSellerPhone || "254794400365") || "254794400365";
+    // 5. Route WhatsApp follow-up through official Escrow Support Desk (never leak raw seller phone)
     const waText = encodeURIComponent(
-      `Hello! I just submitted an offer of KES ${offerNum.toLocaleString()} (${discountPercentage}% off) for your eFootball squad "${listing.title}" on eFootballMarket.\n\nSquad Link: https://www.efootballmarket.co.ke/listings/${listing.id}\nMy Name: ${buyer_name}\nMy Phone: ${internationalBuyerPhone}\nEscrow Guaranteed via Till 1572931!`
+      `Hello eFootballMarket Support! I submitted an offer of KES ${offerNum.toLocaleString()} (${discountPercentage}% off) for "${listing.title}" (https://www.efootballmarket.co.ke/listings/${listing.id}). Escrow via Till 1572931.`
     );
-    const whatsappUrl = `https://wa.me/${cleanSellerPhone}?text=${waText}`;
+    const whatsappUrl = `https://wa.me/254794400365?text=${waText}`;
 
     // Admin WhatsApp alert
     dispatchAdminWhatsAppAlert({

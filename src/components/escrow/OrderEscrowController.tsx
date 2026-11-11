@@ -603,8 +603,8 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
                   isLoading={releasingFunds}
                   disabled={!stepLogin || !stepPassword || !stepEmail || !step2FA || !stepUnlink}
                 >
-                  <ShieldCheck className="w-5 h-5 mr-2" />
-                  Complete Handover & Release Funds to Seller
+                  <ShieldCheck className="w-4 h-4 shrink-0" />
+                  <span>Confirm &amp; Release Payout</span>
                 </Button>
 
                 <Button

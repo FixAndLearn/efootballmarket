@@ -85,7 +85,7 @@ export default function TermsPage() {
             <strong>Accurate Permanent Stats:</strong> Screenshots and entered stats (OVR, Epic/Big Time cards, Managers, GP, and Coins) must show permanent items owned by the squad—not temporary <em>My League</em> loan players or edited images.
           </li>
           <li>
-            <strong>Correct Platform for Coins:</strong> Because Konami separates Android and iOS coin balances, sellers must list the platform (`Android`, `iOS`, `PlayStation`, `Xbox`, or `PC/Steam`) where the stated coin balance is usable.
+            <strong>Correct Platform for Coins:</strong> Because Konami separates Android and iOS coin balances, sellers must list the platform (<strong>Android</strong>, <strong>iOS</strong>, <strong>PlayStation</strong>, <strong>Xbox</strong>, or <strong>PC/Steam</strong>) where the stated coin balance is usable.
           </li>
           <li>
             <strong>Available Data Transfers:</strong> Mobile accounts have a Konami limit of 10 Data Transfers per calendar month. Listed accounts must have at least 2 transfers remaining in the current month so the buyer can sign in.
@@ -103,7 +103,7 @@ export default function TermsPage() {
             <strong>Step 1 — Payment Hold (Till 1572931):</strong> Buyers pay through Safaricom M-Pesa Buy Goods Till <strong>1572931</strong> (via STK Push or verified Till receipt). Orders unlock only when our server confirms the M-Pesa receipt—never from pasted SMS screenshots. Payments sent directly to a seller&apos;s personal number are outside our control and are not covered.
           </li>
           <li>
-            <strong>Step 2 — Seller Delivery (Within 12 Hours):</strong> After payment is confirmed, the seller has up to <strong>12 hours</strong> to submit the Konami ID / console login in the Order Room and share any one-time email-change code (`OTP`). If the seller does not deliver within 12 hours, the buyer can cancel for a full refund.
+            <strong>Step 2 — Seller Delivery (Within 12 Hours):</strong> After payment is confirmed, the seller has up to <strong>12 hours</strong> to submit the Konami ID / console login in the Order Room and share any one-time email-change code (OTP). If the seller does not deliver within 12 hours, the buyer can cancel for a full refund.
           </li>
           <li>
             <strong>Step 3 — Buyer Inspection (24 Hours):</strong> Once credentials are delivered, the buyer has <strong>24 hours</strong> to sign in from the eFootball Title Screen, confirm that permanent cards, OVR, Coins, and <em>Link Data = Not Linked</em> match the listing, and change the Konami ID email, password, and 2-Step Verification at <code>my.konami.net</code>.

@@ -4,6 +4,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { checkRateLimit } from "@/lib/security/rateLimiter";
 import { getClientIp, isValidUuid } from "@/lib/security/guards";
+import { isSuperAdminEmail, isUserAdmin } from "@/lib/security/adminAuth";
 
 export const dynamic = "force-dynamic";
 
@@ -31,6 +32,31 @@ export async function GET(
     }
 
     const client = hasServiceRoleKey() ? createAdminClient() : supabase;
+
+    const { data: order } = await client
+      .from("orders")
+      .select("id, buyer_id, seller_id")
+      .eq("id", params.id)
+      .maybeSingle();
+
+    if (!order) {
+      return NextResponse.json({ rated: false }, { status: 404 });
+    }
+
+    if (order.buyer_id !== user.id && order.seller_id !== user.id) {
+      let isAdmin = isSuperAdminEmail(user.email);
+      if (!isAdmin) {
+        const { data: prof } = await client
+          .from("profiles")
+          .select("role, is_suspended")
+          .eq("id", user.id)
+          .maybeSingle();
+        isAdmin = isUserAdmin(user.email, prof?.role, prof?.is_suspended);
+      }
+      if (!isAdmin) {
+        return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+      }
+    }
 
     const { data: existingLog } = await client
       .from("audit_logs")

@@ -716,7 +716,7 @@ export function DirectCheckoutForm({
           <span>24-Hour Buyer Inspection Guarantee</span>
         </p>
         <p>
-          Sellers receive zero funds until you verify Clean Konami ID ownership (`Google Play & Apple ID: Not Linked`) or 24 uncontested hours pass after credential delivery. Independent marketplace—please note Konami&apos;s user terms restrict account transfers.
+          Sellers receive zero funds until you verify Clean Konami ID ownership (<strong>Google Play &amp; Apple ID: Not Linked</strong>) or 24 uncontested hours pass after credential delivery. Independent marketplace—please note Konami&apos;s user terms restrict account transfers.
         </p>
       </div>
     </div>

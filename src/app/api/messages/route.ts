@@ -5,15 +5,31 @@ import { MessageService } from "@/services/messageService";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
+const safeAttachmentUrl = z
+  .string()
+  .max(2048)
+  .refine(
+    (u) =>
+      u.startsWith("https://") ||
+      u.startsWith("/uploads/") ||
+      u.startsWith("data:image/"),
+    "Invalid attachment URL"
+  );
+
 const sendMessageSchema = z.object({
   conversationId: z.string().uuid(),
-  content: z.string().min(1, "Message cannot be empty"),
-  messageType: z.enum(["text", "image", "system", "credential_alert"]).default("text"),
-  attachments: z.array(z.object({
-    url: z.string(),
-    name: z.string(),
-    size: z.number(),
-  })).default([]),
+  content: z.string().min(1, "Message cannot be empty").max(4000),
+  messageType: z.enum(["text", "image"]).default("text"),
+  attachments: z
+    .array(
+      z.object({
+        url: safeAttachmentUrl,
+        name: z.string().max(180),
+        size: z.number().nonnegative().max(15 * 1024 * 1024),
+      })
+    )
+    .max(5)
+    .default([]),
 });
 
 export async function GET(req: NextRequest) {

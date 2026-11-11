@@ -41,10 +41,10 @@ export default function DisputePolicyPage() {
         <p>You receive a 100% refund of the escrowed purchase price if any of the following apply:</p>
         <ol className="list-decimal pl-5 space-y-2">
           <li>
-            <strong>Missed 12-Hour Delivery:</strong> More than 12 hours pass after payment confirmation and the seller has not submitted working credentials or shared the required `my.konami.net` email-change code.
+            <strong>Missed 12-Hour Delivery:</strong> More than 12 hours pass after payment confirmation and the seller has not submitted working credentials or shared the required <code>my.konami.net</code> email-change code.
           </li>
           <li>
-            <strong>Invalid or Locked Login:</strong> The login details do not work, require a 2FA code the seller does not provide, or have `0` remaining monthly Data Transfers.
+            <strong>Invalid or Locked Login:</strong> The login details do not work, require a 2FA code the seller does not provide, or have <strong>0</strong> remaining monthly Data Transfers.
           </li>
           <li>
             <strong>Google Play or Apple ID Still Linked:</strong> <em>Extras &rarr; Support &rarr; Link Data</em> shows Google Play or Apple ID / Game Center is still linked.
@@ -68,7 +68,7 @@ export default function DisputePolicyPage() {
             <strong>Change of Mind:</strong> Deciding you no longer want a squad that matches all listed cards, stats, and Clean Konami ID rules.
           </li>
           <li>
-            <strong>Android vs iOS Coin Separation:</strong> Logging into an Android listing on an iPhone (or vice versa) and seeing `0` coins on the other OS—because Konami stores Android and iOS coins separately.
+            <strong>Android vs iOS Coin Separation:</strong> Logging into an Android listing on an iPhone (or vice versa) and seeing <strong>0</strong> coins on the other OS—because Konami stores Android and iOS coins separately.
           </li>
           <li>
             <strong>Altering the Squad Before Requesting a Refund:</strong> Spending coins or GP, releasing players, or running Legacy Transfers during inspection. A returned squad must be unaltered.

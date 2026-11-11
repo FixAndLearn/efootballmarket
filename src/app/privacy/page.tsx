@@ -45,19 +45,19 @@ export default function PrivacyPage() {
         <p>We collect only the minimum data needed to run verified account trades, settle M-Pesa payments, moderate fraud, and serve editorial pages:</p>
         <ul className="list-disc pl-5 space-y-2">
           <li>
-            <strong>Account &amp; Profile Data:</strong> Username, email address, hashed authentication credentials, role (`buyer` / `seller`), optional WhatsApp contact phone number, and profile timestamps.
+            <strong>Account &amp; Profile Data:</strong> Username, email address, hashed authentication credentials, role (buyer or seller), optional WhatsApp contact phone number, and profile timestamps.
           </li>
           <li>
             <strong>Seller KYC &amp; Payout Verification Data:</strong> Where Seller Verification or withdrawal checks apply, legal name matching your M-Pesa registration, Kenyan mobile payout number, and verification status records.
           </li>
           <li>
-            <strong>M-Pesa Escrow &amp; Ledger Records:</strong> Order ID, KES amount, Safaricom M-Pesa transaction receipt code (e.g., `SJK...`), masked/payer phone number returned by the payment callback, Till `1572931` settlement timestamps, commission fee records, and seller payout logs. <strong>We never collect or see your M-Pesa PIN.</strong>
+            <strong>M-Pesa Escrow &amp; Ledger Records:</strong> Order ID, KES amount, Safaricom M-Pesa transaction receipt code (e.g., <code>SJK...</code>), masked/payer phone number returned by the payment callback, Till <strong>1572931</strong> settlement timestamps, commission fee records, and seller payout logs. <strong>We never collect or see your M-Pesa PIN.</strong>
           </li>
           <li>
             <strong>Encrypted Order Handover Data:</strong> Temporary Konami ID or console handover credentials submitted by sellers inside an active escrow order, order chat messages, and dispute evidence uploads (screenshots or screen-recording links).
           </li>
           <li>
-            <strong>Technical, Security &amp; Cookie Data:</strong> IP address, browser/OS user agent, device color-scheme rendering (`prefers-color-scheme` stays client-side in your browser CSS engine), security rate-limit counters, and cookie consent preferences stored in `localStorage` (`efootball_cookie_consent`).
+            <strong>Technical, Security &amp; Cookie Data:</strong> IP address, browser/OS user agent, device color-scheme rendering (<code>prefers-color-scheme</code> stays client-side in your browser CSS engine), security rate-limit counters, and cookie consent preferences stored in <code>localStorage</code> (<code>efootball_cookie_consent</code>).
           </li>
         </ul>
       </section>
@@ -78,7 +78,7 @@ export default function PrivacyPage() {
             <strong>Legitimate Interests in Platform Security:</strong> Detecting spoofed M-Pesa receipts, blocking phishing links in order chat, preventing duplicate scammer accounts, and maintaining our public Scammer Phone/Handle Lookup registry based on verified fraud reports.
           </li>
           <li>
-            <strong>Explicit Consent:</strong> Activating optional analytics and personalized advertising cookies (`analytics_storage`, `ad_storage`, `ad_user_data`, `ad_personalization`) only when you click <strong>Accept All</strong> on our Cookie Banner.
+            <strong>Explicit Consent:</strong> Activating optional analytics and personalized advertising cookies (<code>analytics_storage</code>, <code>ad_storage</code>, <code>ad_user_data</code>, <code>ad_personalization</code>) only when you click <strong>Accept All</strong> on our Cookie Banner.
           </li>
         </ol>
       </section>
@@ -88,10 +88,10 @@ export default function PrivacyPage() {
           4. Encryption &amp; Handling of Game Handover Credentials
         </h2>
         <p>
-          Game login credentials submitted inside an Order Room are never displayed publicly and are never sent in plain-text emails. Credentials are encrypted at the application layer using <strong>AES-256-GCM authenticated encryption</strong> with unique initialization vectors (`IV`) prior to database storage.
+          Game login credentials submitted inside an Order Room are never displayed publicly and are never sent in plain-text emails. Credentials are encrypted at the application layer using <strong>AES-256-GCM authenticated encryption</strong> with unique initialization vectors (IV) prior to database storage.
         </p>
         <p>
-          Every credential reveal event by a buyer or authorized dispute moderator is recorded in an immutable audit log (`viewer_id`, `role`, `timestamp`). Once the buyer completes email/password/2FA rebinding at <code>my.konami.net</code> during the 24-hour inspection window, the temporary handover password becomes obsolete immediately.
+          Every credential reveal event by a buyer or authorized dispute moderator is recorded in an immutable audit log (<code>viewer_id</code>, <code>role</code>, <code>timestamp</code>). Once the buyer completes email/password/2FA rebinding at <code>my.konami.net</code> during the 24-hour inspection window, the temporary handover password becomes obsolete immediately.
         </p>
       </section>
 
@@ -104,13 +104,13 @@ export default function PrivacyPage() {
         </p>
         <ul className="list-disc pl-5 space-y-2">
           <li>
-            <strong>Strictly Necessary Cookies &amp; Storage:</strong> Supabase authentication session cookies (`sb-*`) keep you signed in securely across pages, and `efootball_cookie_consent` in `localStorage` remembers your privacy choice. These cannot be switched off without breaking core login functionality.
+            <strong>Strictly Necessary Cookies &amp; Storage:</strong> Supabase authentication session cookies (<code>sb-*</code>) keep you signed in securely across pages, and <code>efootball_cookie_consent</code> in <code>localStorage</code> remembers your privacy choice. These cannot be switched off without breaking core login functionality.
           </li>
           <li>
-            <strong>Google AdSense &amp; DoubleClick Cookies (`ca-pub-5924764989915276`):</strong> Third-party vendors, including <strong>Google</strong>, use cookies (such as the DoubleClick/AdSense cookie) to serve ads based on a user&apos;s prior visits to this website or other websites on the internet. Google&apos;s use of advertising cookies enables it and its partners to serve ads to users based on their visit to eFootballMarket and/or other sites on the internet.
+            <strong>Google AdSense &amp; DoubleClick Cookies (<code>ca-pub-5924764989915276</code>):</strong> Third-party vendors, including <strong>Google</strong>, use cookies (such as the DoubleClick/AdSense cookie) to serve ads based on a user&apos;s prior visits to this website or other websites on the internet. Google&apos;s use of advertising cookies enables it and its partners to serve ads to users based on their visit to eFootballMarket and/or other sites on the internet.
           </li>
           <li>
-            <strong>Default Denied Until Consent:</strong> Before any Google tag runs, our Consent Mode bootstrap sets `ad_storage`, `ad_user_data`, `ad_personalization`, and `analytics_storage` to `denied` unless you have clicked <strong>Accept All</strong>. Selecting <strong>Essential Only</strong> keeps personalized ad and analytics cookies disabled.
+            <strong>Default Denied Until Consent:</strong> Before any Google tag runs, our Consent Mode bootstrap sets <code>ad_storage</code>, <code>ad_user_data</code>, <code>ad_personalization</code>, and <code>analytics_storage</code> to <code>denied</code> unless you have clicked <strong>Accept All</strong>. Selecting <strong>Essential Only</strong> keeps personalized ad and analytics cookies disabled.
           </li>
           <li>
             <strong>How to Opt Out of Personalized Advertising:</strong> You may opt out of personalized advertising at any time by visiting{" "}
@@ -131,7 +131,7 @@ export default function PrivacyPage() {
             >
               www.aboutads.info/choices
             </a>
-            , or by clearing `efootball_cookie_consent` in your browser storage to re-open our Cookie Banner.
+            , or by clearing <code>efootball_cookie_consent</code> in your browser storage to re-open our Cookie Banner.
           </li>
         </ul>
       </section>
@@ -145,7 +145,7 @@ export default function PrivacyPage() {
         </p>
         <ul className="list-disc pl-5 space-y-1.5">
           <li><strong>Supabase:</strong> Managed PostgreSQL database, row-level security authentication, and squad screenshot object storage.</li>
-          <li><strong>Safaricom M-Pesa / UnifiedPay Gateway:</strong> Processing STK Push requests and verifying Till `1572931` payment callbacks.</li>
+          <li><strong>Safaricom M-Pesa / UnifiedPay Gateway:</strong> Processing STK Push requests and verifying Till <strong>1572931</strong> payment callbacks.</li>
           <li><strong>Resend:</strong> Transactional order status, password reset, and dispute notification emails.</li>
           <li><strong>Google LLC:</strong> Google AdSense ad delivery and aggregate Google Analytics 4 traffic measurement (subject to your Consent Mode v2 state).</li>
         </ul>
@@ -160,7 +160,7 @@ export default function PrivacyPage() {
         </h2>
         <ul className="list-disc pl-5 space-y-2">
           <li><strong>Active User Profiles:</strong> Retained while your account remains active and deleted or anonymized within <strong>30 days</strong> of a verified account deletion request (provided no active escrow order or unresolved fraud claim is open).</li>
-          <li><strong>Encrypted Order Handover Payloads:</strong> Retained only during the active order and post-order dispute window, after which historical credentials are purged or rotated out by the buyer&apos;s `my.konami.net` rebind.</li>
+          <li><strong>Encrypted Order Handover Payloads:</strong> Retained only during the active order and post-order dispute window, after which historical credentials are purged or rotated out by the buyer&apos;s <code>my.konami.net</code> rebind.</li>
           <li><strong>Financial Escrow &amp; M-Pesa Ledgers:</strong> Retained for up to <strong>7 years</strong> where required under Kenyan tax and financial record-keeping statutes.</li>
           <li><strong>Scammer Registry Entries:</strong> Verified fraud phone numbers and handles submitted with corroborated evidence remain searchable to protect Kenyan players unless overturned via formal appeal.</li>
         </ul>
@@ -177,7 +177,7 @@ export default function PrivacyPage() {
           <li>Request rectification of inaccurate, outdated, or incomplete personal data;</li>
           <li>Request deletion/erasure of personal data that is no longer required for contractual or statutory retention purposes;</li>
           <li>Object to or restrict certain processing, and withdraw optional cookie consent at any time;</li>
-          <li>Lodge a complaint with the <strong>Office of the Data Protection Commissioner (ODPC)</strong> in Kenya (`www.odpc.go.ke`) if you believe a privacy concern has not been resolved satisfactorily by our team.</li>
+          <li>Lodge a complaint with the <strong>Office of the Data Protection Commissioner (ODPC)</strong> in Kenya (<strong>www.odpc.go.ke</strong>) if you believe a privacy concern has not been resolved satisfactorily by our team.</li>
         </ul>
       </section>
 

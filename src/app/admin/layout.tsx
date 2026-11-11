@@ -1,7 +1,7 @@
 import React from "react";
 import { redirect } from "next/navigation";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { PRIMARY_SUPER_ADMIN_EMAIL } from "@/lib/security/adminAuth";
+import { isSuperAdminEmail } from "@/lib/security/adminAuth";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 
 interface AdminLayoutProps {
@@ -26,20 +26,20 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
     redirect("/login?redirect=/admin");
   }
 
-  const isSuperAdminEmail =
-    user.email?.trim().toLowerCase() === PRIMARY_SUPER_ADMIN_EMAIL.toLowerCase();
+  const isSuperAdmin = isSuperAdminEmail(user.email);
 
-  let hasAdminAccess = isSuperAdminEmail;
+  let hasAdminAccess = isSuperAdmin;
 
   if (!hasAdminAccess) {
     const { data: profile } = await supabase
       .from("profiles")
-      .select("role")
+      .select("role, is_suspended")
       .eq("id", user.id)
       .single();
 
     const role = profile?.role;
-    hasAdminAccess = role === "admin" || role === "super_admin";
+    hasAdminAccess =
+      !profile?.is_suspended && (role === "admin" || role === "super_admin");
   }
 
   if (!hasAdminAccess) {

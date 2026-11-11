@@ -293,6 +293,19 @@ export class EscrowService {
       }
     }
 
+    const isCallerAdmin =
+      order.buyer_id !== buyerId ? await this.checkIsAdmin(buyerId) : false;
+
+    const releasableStatuses = isCallerAdmin
+      ? ["seller_delivered", "buyer_reviewing", "escrow_locked"]
+      : ["seller_delivered", "buyer_reviewing"];
+
+    if (!releasableStatuses.includes(order.status)) {
+      throw new Error(
+        `Cannot release funds while order is in '${order.status}' status. Payment must be locked and credentials delivered first.`
+      );
+    }
+
     let rpcSucceeded = false;
     try {
       const { error: rpcError } = await this.supabase.rpc("release_escrow_funds", {
@@ -347,8 +360,31 @@ export class EscrowService {
         throw new Error("Escrow account not found for order.");
       }
 
-      if (escrow.escrow_state !== "completed") {
+      const validEscrowStates = isCallerAdmin
+        ? ["seller_delivered", "waiting_for_seller"]
+        : ["seller_delivered"];
+
+      if (validEscrowStates.includes(escrow.escrow_state)) {
         const netAmount = Number(escrow.net_amount || 0);
+        const nowIso = new Date().toISOString();
+
+        // Compare-And-Swap lock on escrow_state so concurrent calls cannot double-credit
+        const { data: casEscrow, error: casError } = await this.supabase
+          .from("escrow_accounts")
+          .update({
+            escrow_state: "completed",
+            released_at: nowIso,
+            completed_at: nowIso,
+            updated_at: nowIso,
+          })
+          .eq("id", escrow.id)
+          .neq("escrow_state", "completed")
+          .select("id")
+          .maybeSingle();
+
+        if (casError || !casEscrow) {
+          throw new Error("Escrow funds have already been released.");
+        }
 
         const { data: sellerProf } = await this.supabase
           .from("profiles")
@@ -366,25 +402,15 @@ export class EscrowService {
             available_balance: currentAvail + netAmount,
             escrow_balance: Math.max(0, currentEscrow - netAmount),
             completed_sales_count: salesCount + 1,
-            updated_at: new Date().toISOString(),
+            updated_at: nowIso,
           })
           .eq("id", order.seller_id);
-
-        await this.supabase
-          .from("escrow_accounts")
-          .update({
-            escrow_state: "completed",
-            released_at: new Date().toISOString(),
-            completed_at: new Date().toISOString(),
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", escrow.id);
 
         await this.supabase
           .from("orders")
           .update({
             status: "completed",
-            updated_at: new Date().toISOString(),
+            updated_at: nowIso,
           })
           .eq("id", orderId);
 
@@ -393,7 +419,7 @@ export class EscrowService {
             .from("listings")
             .update({
               status: "sold",
-              updated_at: new Date().toISOString(),
+              updated_at: nowIso,
             })
             .eq("id", order.listing_id);
         }

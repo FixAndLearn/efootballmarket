@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { AdminBloggerStudio } from "@/components/admin/AdminBloggerStudio";
 import { AdminPaymentsAndMiddlemanTab } from "@/components/admin/AdminPaymentsAndMiddlemanTab";
 import { useAuth } from "@/hooks/useAuth";
-import { isSuperAdminEmail, isUserAdmin, PRIMARY_SUPER_ADMIN_EMAIL } from "@/lib/security/adminAuth";
+import { isSuperAdminEmail, isUserAdmin } from "@/lib/security/adminAuth";
 import { formatCurrency } from "@/lib/utils";
 import { formatDisplayPhone, formatWhatsAppPhone } from "@/lib/utils/phone";
 import { Listing, NewsArticle, NewsCategory } from "@/types/database";
@@ -422,7 +422,7 @@ function AdminControlCenterContent() {
         </div>
         <h2 className="text-xl font-bold text-sx-ink">Administrative Access Restricted</h2>
         <p className="text-xs text-sx-muted leading-relaxed">
-          This portal is reserved strictly for Super Administrator <strong className="text-sx-ink-soft">{PRIMARY_SUPER_ADMIN_EMAIL}</strong> and authorized platform moderators.
+          This portal is reserved strictly for verified eFootballMarket Kenya administrators and escrow moderators.
         </p>
         <Link href="/">
           <Button variant="secondary" size="sm" className="w-full mt-2">
@@ -498,7 +498,7 @@ function AdminControlCenterContent() {
             Admin Console
           </h1>
           <p className="text-xs text-sx-muted mt-1">
-            Administrator: <strong className="text-sx-ink-soft">{PRIMARY_SUPER_ADMIN_EMAIL}</strong> (Brian Okibo)
+            Signed in as: <strong className="text-sx-ink-soft">{user?.email || "Platform Administrator"}</strong>
           </p>
         </div>
 

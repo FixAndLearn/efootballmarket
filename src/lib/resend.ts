@@ -2,7 +2,7 @@ import { Resend } from "resend";
 
 export const RESEND_CONFIG = {
   fromAddress: process.env.RESEND_FROM_EMAIL || "eFootballMarket <notifications@efootballmarket.co.ke>",
-  supportAddress: "brianokibo@gmail.com",
+  supportAddress: process.env.SUPPORT_EMAIL || "support@efootballmarket.co.ke",
   domain: "efootballmarket.co.ke",
 };
 

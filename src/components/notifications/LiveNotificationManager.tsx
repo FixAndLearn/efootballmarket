@@ -58,17 +58,25 @@ export function LiveNotificationManager() {
   const toastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const triggerPopup = useCallback((item: PopupToastItem) => {
-    setActiveToast(item);
+    const safeUrl =
+      typeof item.actionUrl === "string" &&
+      item.actionUrl.startsWith("/") &&
+      !item.actionUrl.startsWith("//") &&
+      !item.actionUrl.includes("\\")
+        ? item.actionUrl
+        : "/notifications";
+    const safeItem: PopupToastItem = { ...item, actionUrl: safeUrl };
+    setActiveToast(safeItem);
     if (toastTimerRef.current) clearTimeout(toastTimerRef.current);
     toastTimerRef.current = setTimeout(() => {
       setActiveToast(null);
     }, 9000);
 
     showNativeBrowserNotification({
-      title: item.title,
-      body: item.message,
-      url: item.actionUrl,
-      tag: `efm-notif-${item.id}`,
+      title: safeItem.title,
+      body: safeItem.message,
+      url: safeItem.actionUrl,
+      tag: `efm-notif-${safeItem.id}`,
     }).catch(() => {});
   }, []);
 
