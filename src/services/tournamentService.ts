@@ -253,15 +253,24 @@ export class TournamentService {
           };
         }
 
-        // Deduct entry fee
-        updatedAvailBalance = currentBal - tourney.entry_fee_kes;
-        const { error: deductErr } = await supabase
+        // Atomic Compare-And-Swap (CAS) wallet deduction: blocks parallel double-spend race conditions
+        updatedAvailBalance = Math.round((currentBal - tourney.entry_fee_kes) * 100) / 100;
+        const { data: casUpdated, error: deductErr } = await supabase
           .from("profiles")
-          .update({ available_balance: updatedAvailBalance })
-          .eq("id", user_id);
+          .update({
+            available_balance: updatedAvailBalance,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", user_id)
+          .eq("available_balance", currentBal)
+          .gte("available_balance", tourney.entry_fee_kes)
+          .select("id");
 
-        if (deductErr) {
-          return { success: false, error: "Failed to process wallet payment. Please try again." };
+        if (deductErr || !casUpdated || casUpdated.length === 0) {
+          return {
+            success: false,
+            error: "Concurrent balance update detected or insufficient wallet balance. Please try again.",
+          };
         }
 
         initialPaymentStatus = "paid";

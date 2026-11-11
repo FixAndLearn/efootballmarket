@@ -24,12 +24,22 @@ export async function middleware(request: NextRequest) {
     MUTATING_METHODS.has(request.method) &&
     !EXTERNAL_WEBHOOK_PATHS.some((p) => pathname.startsWith(p))
   ) {
-    const hasBearerSecret = request.headers.get("authorization")?.startsWith("Bearer ");
+    const isServerBearerRoute =
+      (pathname.startsWith("/api/cron/") || pathname.startsWith("/api/admin/")) &&
+      Boolean(request.headers.get("authorization")?.startsWith("Bearer "));
     const originHeader = request.headers.get("origin");
+    const secFetchSite = request.headers.get("sec-fetch-site");
     const hostHeader =
       request.headers.get("x-forwarded-host") || request.headers.get("host");
 
-    if (!hasBearerSecret && originHeader && hostHeader) {
+    if (!isServerBearerRoute && secFetchSite === "cross-site") {
+      return NextResponse.json(
+        { error: "Forbidden: Cross-site request blocked by Edge Fetch-Metadata policy." },
+        { status: 403 }
+      );
+    }
+
+    if (!isServerBearerRoute && originHeader && hostHeader) {
       try {
         const originHost = new URL(originHeader).host.toLowerCase();
         const expectedHosts = hostHeader

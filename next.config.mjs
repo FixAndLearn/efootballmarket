@@ -10,7 +10,10 @@ const nextConfig = {
         : false,
   },
   images: {
-    formats: ['image/avif', 'image/webp'],
+    formats: ['image/webp'],
+    dangerouslyAllowSVG: false,
+    contentDispositionType: 'attachment',
+    contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
     deviceSizes: [360, 420, 640, 768, 1024, 1280],
     imageSizes: [64, 96, 160, 256, 384],
     minimumCacheTTL: 86400,

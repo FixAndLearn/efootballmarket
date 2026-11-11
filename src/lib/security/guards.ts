@@ -145,9 +145,9 @@ export async function verifyAdminOrSecret(req: NextRequest): Promise<{
 
   const { data: roleRows } = await client
     .from("user_roles")
-    .select("role")
+    .select("role_id")
     .eq("user_id", user.id)
-    .in("role", ["admin", "super_admin"]);
+    .in("role_id", ["admin", "super_admin"]);
 
   if (roleRows && roleRows.length > 0) {
     return { authorized: true, userId: user.id, email: user.email };

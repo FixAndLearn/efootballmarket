@@ -1,4 +1,4 @@
-import { isUserAdmin } from "@/lib/security/adminAuth";
+import { verifyAdminOrSecret } from "@/lib/security/guards";
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { NextRequest, NextResponse } from "next/server";
@@ -8,30 +8,15 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   try {
-    const supabase = createServerSupabaseClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await verifyAdminOrSecret(req);
+    if (!auth.authorized) {
+      return NextResponse.json({ error: "Forbidden: Admin access required." }, { status: 403 });
     }
 
+    const supabase = createServerSupabaseClient();
     const adminSupabase = createAdminClient();
     const serviceRoleConfigured = hasServiceRoleKey();
     const client = serviceRoleConfigured ? adminSupabase : supabase;
-
-    const { data: userRole } = await client
-      .from("user_roles")
-      .select("role_id")
-      .eq("user_id", user.id)
-      .in("role_id", ["admin", "super_admin"])
-      .limit(1);
-
-    const isAdmin = Boolean((userRole && userRole.length > 0) || isUserAdmin(user.email));
-    if (!isAdmin) {
-      return NextResponse.json({ error: "Forbidden: Admin access required." }, { status: 403 });
-    }
 
     const { data: disputes, error } = await client
       .from("disputes")
@@ -94,21 +79,14 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const auth = await verifyAdminOrSecret(req);
+    if (!auth.authorized) {
+      return NextResponse.json({ error: "Forbidden: Admin access required." }, { status: 403 });
+    }
+
     const adminSupabase = createAdminClient();
     const serviceRoleConfigured = hasServiceRoleKey();
     const client = serviceRoleConfigured ? adminSupabase : supabase;
-
-    const { data: userRole } = await client
-      .from("user_roles")
-      .select("role_id")
-      .eq("user_id", user.id)
-      .in("role_id", ["admin", "super_admin"])
-      .limit(1);
-
-    const isAdmin = Boolean((userRole && userRole.length > 0) || isUserAdmin(user.email));
-    if (!isAdmin) {
-      return NextResponse.json({ error: "Forbidden: Admin access required." }, { status: 403 });
-    }
 
     const json = await req.json();
     const parsed = resolveDisputeSchema.safeParse(json);

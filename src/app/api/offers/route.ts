@@ -78,13 +78,13 @@ export async function GET(req: NextRequest) {
       console.warn("Supabase offers query fallback:", e);
     }
 
-    // 2. In-memory fallback
+    // 2. In-memory fallback (always redact phone numbers for unauthorized viewers)
     if (offerId) {
       const found = MEMORY_OFFERS.find((o) => o.id === offerId);
       if (!found) {
         return NextResponse.json({ error: "Offer not found or expired" }, { status: 404 });
       }
-      return NextResponse.json({ offer: found });
+      return NextResponse.json({ offer: redactOfferForViewer(found) });
     }
 
     let filtered = [...MEMORY_OFFERS];
@@ -110,7 +110,7 @@ export async function GET(req: NextRequest) {
       return o;
     });
 
-    return NextResponse.json({ offers: filtered });
+    return NextResponse.json({ offers: filtered.map(redactOfferForViewer) });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

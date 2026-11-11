@@ -1,4 +1,4 @@
-import { isUserAdmin } from "@/lib/security/adminAuth";
+import { verifyAdminOrSecret } from "@/lib/security/guards";
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { sendSellerWithdrawalStatusSms } from "@/lib/notifications/smsAlert";
@@ -10,31 +10,15 @@ export const dynamic = "force-dynamic";
 
 export async function GET(req: NextRequest) {
   try {
-    const supabase = createServerSupabaseClient();
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
-
-    if (!user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const auth = await verifyAdminOrSecret(req);
+    if (!auth.authorized) {
+      return NextResponse.json({ error: "Forbidden: Admin access required." }, { status: 403 });
     }
 
+    const supabase = createServerSupabaseClient();
     const adminSupabase = createAdminClient();
     const serviceRoleConfigured = hasServiceRoleKey();
     const primaryClient = serviceRoleConfigured ? adminSupabase : supabase;
-
-    // Check admin via user_roles or email
-    const { data: userRole } = await primaryClient
-      .from("user_roles")
-      .select("role_id")
-      .eq("user_id", user.id)
-      .in("role_id", ["admin", "super_admin"])
-      .limit(1);
-
-    const isAdmin = Boolean((userRole && userRole.length > 0) || isUserAdmin(user.email));
-    if (!isAdmin) {
-      return NextResponse.json({ error: "Forbidden: Admin access required." }, { status: 403 });
-    }
 
     // Resilient multi-tier query:
     // NOTE: profiles table does NOT have an 'email' column (email lives in auth.users).
@@ -138,21 +122,14 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    const auth = await verifyAdminOrSecret(req);
+    if (!auth.authorized) {
+      return NextResponse.json({ error: "Forbidden: Admin access required." }, { status: 403 });
+    }
+
     const adminSupabase = createAdminClient();
     const serviceRoleConfigured = hasServiceRoleKey();
     const primaryClient = serviceRoleConfigured ? adminSupabase : supabase;
-
-    const { data: userRole } = await primaryClient
-      .from("user_roles")
-      .select("role_id")
-      .eq("user_id", user.id)
-      .in("role_id", ["admin", "super_admin"])
-      .limit(1);
-
-    const isAdmin = Boolean((userRole && userRole.length > 0) || isUserAdmin(user.email));
-    if (!isAdmin) {
-      return NextResponse.json({ error: "Forbidden: Admin access required." }, { status: 403 });
-    }
 
     const json = await req.json();
     const parsed = updateWithdrawalSchema.safeParse(json);
