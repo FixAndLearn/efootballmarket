@@ -34,7 +34,12 @@ export function MobileBottomNav() {
     { label: "Home", href: "/", icon: Home, isActive: pathname === "/" },
     { label: "Browse", href: "/browse", icon: Search, isActive: pathname.startsWith("/browse") },
     { label: "Sell", href: "/seller/create-listing", icon: Plus, highlight: true, isActive: pathname.startsWith("/seller") },
-    { label: "Guides", href: "/news", icon: BookOpen, isActive: pathname.startsWith("/news") },
+    {
+      label: "Blog",
+      href: "/news",
+      icon: BookOpen,
+      isActive: pathname.startsWith("/news") || pathname.startsWith("/blog"),
+    },
     { label: "Check", href: "/scammer-check", icon: ShieldAlert, isActive: pathname.startsWith("/scammer-check") },
   ];
 

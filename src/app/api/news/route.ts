@@ -84,6 +84,72 @@ export async function POST(req: NextRequest) {
   }
 }
 
+const updateNewsSchema = z.object({
+  id: z.string().min(1, "Article ID is required"),
+  title: z.string().min(5).optional(),
+  category: z
+    .enum(["scammer_alert", "efootball_news", "escrow_guide", "announcement", "update"])
+    .optional(),
+  summary: z.string().min(10).optional(),
+  content: z.string().min(20).optional(),
+  cover_image_url: z.string().nullable().optional(),
+  author_name: z.string().optional(),
+  is_pinned: z.boolean().optional(),
+  is_published: z.boolean().optional(),
+});
+
+export async function PATCH(req: NextRequest) {
+  try {
+    const supabase = createServerSupabaseClient();
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const adminSupabase = createAdminClient();
+    const primaryClient = hasServiceRoleKey() ? adminSupabase : supabase;
+
+    const { data: userRole } = await primaryClient
+      .from("user_roles")
+      .select("role_id")
+      .eq("user_id", user.id)
+      .in("role_id", ["admin", "super_admin"])
+      .limit(1);
+
+    const isAdmin = Boolean((userRole && userRole.length > 0) || isUserAdmin(user.email));
+    if (!isAdmin) {
+      return NextResponse.json(
+        { error: "Forbidden: Administrator privileges required." },
+        { status: 403 }
+      );
+    }
+
+    const json = await req.json();
+    const parsed = updateNewsSchema.safeParse(json);
+    if (!parsed.success) {
+      return NextResponse.json(
+        { error: "Invalid update payload", details: parsed.error.format() },
+        { status: 400 }
+      );
+    }
+
+    const { id, ...updates } = parsed.data;
+    const service = new NewsService(primaryClient);
+    const article = await service.updateArticle(id, updates as any);
+
+    return NextResponse.json({ success: true, article });
+  } catch (error: any) {
+    console.error("News PATCH error:", error);
+    return NextResponse.json(
+      { error: error.message || "Failed to update blog article." },
+      { status: 500 }
+    );
+  }
+}
+
 export async function DELETE(req: NextRequest) {
   try {
     const supabase = createServerSupabaseClient();

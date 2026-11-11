@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/Button";
+import { AdminBloggerStudio } from "@/components/admin/AdminBloggerStudio";
 import { AdminPaymentsAndMiddlemanTab } from "@/components/admin/AdminPaymentsAndMiddlemanTab";
 import { useAuth } from "@/hooks/useAuth";
 import { isSuperAdminEmail, isUserAdmin, PRIMARY_SUPER_ADMIN_EMAIL } from "@/lib/security/adminAuth";
@@ -1363,169 +1364,13 @@ function AdminControlCenterContent() {
         </div>
       )}
 
-      {/* TAB 3: POST NEWS & SCAMMER ALERTS */}
+      {/* TAB 3: BLOGGER & GUIDES STUDIO */}
       {activeTab === "news" && (
-        <div className="space-y-6">
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column: Post Form */}
-          <div className="lg:col-span-2 bg-pitch-surface border border-pitch-border rounded-3xl p-6 sm:p-8 shadow-xl space-y-6">
-            <div>
-              <h2 className="text-xl font-bold text-sx-ink font-display">
-                Publish Official Community Bulletin
-              </h2>
-              <p className="text-xs text-sx-muted mt-0.5">
-                Post scammer alerts, eFootball game updates, and escrow guides. Sends broadcast notifications to all traders.
-              </p>
-            </div>
-
-            <form onSubmit={handleCreateNews} className="space-y-4">
-              <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-sx-ink-soft">
-                  Article Title <span className="text-sx-red-text">*</span>
-                </label>
-                <input
-                  type="text"
-                  value={newsTitle}
-                  onChange={(e) => setNewsTitle(e.target.value)}
-                  placeholder="e.g. SCAMMER ALERT: Blacklist of Impersonator Phone Numbers"
-                  className="w-full rounded-xl bg-pitch-card border border-pitch-border px-3.5 py-2.5 text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-brand-500"
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-sx-ink-soft">Category</label>
-                  <select
-                    value={newsCategory}
-                    onChange={(e) => setNewsCategory(e.target.value as NewsCategory)}
-                    className="w-full rounded-xl bg-pitch-card border border-pitch-border px-3.5 py-2.5 text-xs text-sx-ink focus:outline-none focus:border-brand-500"
-                  >
-                    <option value="scammer_alert">Scammer Alert (High Priority)</option>
-                    <option value="efootball_news">eFootball News & Updates</option>
-                    <option value="escrow_guide">Escrow Guide & Tips</option>
-                    <option value="announcement">Official Marketplace Notice</option>
-                  </select>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="block text-xs font-semibold text-sx-ink-soft">
-                    Cover Image URL (Optional)
-                  </label>
-                  <input
-                    type="url"
-                    value={newsCoverImage}
-                    onChange={(e) => setNewsCoverImage(e.target.value)}
-                    placeholder="https://images.unsplash.com/..."
-                    className="w-full rounded-xl bg-pitch-card border border-pitch-border px-3.5 py-2.5 text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-brand-500"
-                  />
-                </div>
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-sx-ink-soft">
-                  Short Summary <span className="text-sx-red-text">*</span>
-                </label>
-                <textarea
-                  value={newsSummary}
-                  onChange={(e) => setNewsSummary(e.target.value)}
-                  placeholder="Brief 1-2 sentence overview shown in notifications and cards..."
-                  rows={2}
-                  className="w-full rounded-xl bg-pitch-card border border-pitch-border px-3.5 py-2 text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-brand-500"
-                  required
-                />
-              </div>
-
-              <div className="space-y-1.5">
-                <label className="block text-xs font-semibold text-sx-ink-soft">
-                  Full Bulletin Content (Markdown supported) <span className="text-sx-red-text">*</span>
-                </label>
-                <textarea
-                  value={newsContent}
-                  onChange={(e) => setNewsContent(e.target.value)}
-                  placeholder="Write the complete bulletin details, scammer evidence, or eFootball patch analysis..."
-                  rows={8}
-                  className="w-full rounded-xl bg-pitch-card border border-pitch-border px-3.5 py-2.5 text-xs text-sx-ink placeholder:text-sx-muted font-mono focus:outline-none focus:border-brand-500 leading-relaxed"
-                  required
-                />
-              </div>
-
-              <div className="p-3.5 rounded-xl bg-pitch-card border border-pitch-border flex items-center justify-between">
-                <div>
-                  <p className="text-xs font-bold text-sx-ink">Broadcast Push Notification Alert</p>
-                  <p className="text-[11px] text-sx-muted">
-                    Immediately send an in-app notification to all registered buyers & sellers.
-                  </p>
-                </div>
-                <input
-                  type="checkbox"
-                  checked={broadcastNotif}
-                  onChange={(e) => setBroadcastNotif(e.target.checked)}
-                  className="w-4 h-4 rounded text-brand-500 focus:ring-brand-500 bg-pitch-surface border-pitch-border cursor-pointer"
-                />
-              </div>
-
-              <Button
-                type="submit"
-                variant="gold"
-                size="lg"
-                className="w-full font-bold shadow-xl"
-                isLoading={actionLoading}
-              >
-                Publish & Alert Community
-              </Button>
-            </form>
-          </div>
-
-          {/* Right Column: Published Articles Manager */}
-          <div className="lg:col-span-1 space-y-4">
-            <h3 className="text-xs uppercase font-bold text-sx-muted tracking-wider">
-              Published Bulletins ({articles.length})
-            </h3>
-
-            <div className="space-y-3 max-h-[640px] overflow-y-auto">
-              {articles.map((item) => (
-                <div
-                  key={item.id}
-                  className="p-4 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 relative group"
-                >
-                  <div className="flex items-center justify-between gap-2">
-                    <span
-                      className={`text-[9px] font-extrabold uppercase px-2 py-0.5 rounded-full ${
-                        item.category === "scammer_alert"
-                          ? "bg-sx-red-tint text-sx-red-text border border-sx-red-border"
-                          : "bg-brand-500/20 text-sx-green-text border border-brand-500/30"
-                      }`}
-                    >
-                      {item.category.replace("_", " ")}
-                    </span>
-
-                    <button
-                      type="button"
-                      onClick={() => handleDeleteNews(item.id)}
-                      className="p-1 rounded-lg text-sx-muted hover:text-sx-red-text hover:bg-sx-red-tint transition-colors"
-                      title="Delete article"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-
-                  <h4 className="text-xs font-bold text-sx-ink line-clamp-2">
-                    <Link href={`/news/${item.slug}`} className="hover:text-sx-amber-text">
-                      {item.title}
-                    </Link>
-                  </h4>
-
-                  <div className="flex items-center justify-between text-[10px] text-sx-muted pt-1">
-                    <span>{new Date(item.created_at).toLocaleDateString()}</span>
-                    <span>{item.views_count} views</span>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </div>
+        <AdminBloggerStudio
+          articles={articles}
+          onRefresh={loadAdminData}
+          onFeedback={setFeedback}
+        />
       )}
 
       {/* SECTION 4: SELLER WITHDRAWALS (M-PESA PAYOUTS) */}

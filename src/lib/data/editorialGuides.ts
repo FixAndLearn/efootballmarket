@@ -18,9 +18,13 @@ export function getCategoryLabel(category: NewsCategory | string) {
         color: "bg-sx-stone border-sx-border-strong text-sx-ink",
       };
     case "announcement":
+      return {
+        label: "What's Coming",
+        color: "bg-sx-amber-tint border-sx-amber-border text-sx-amber-text",
+      };
     case "update":
       return {
-        label: "Platform Update",
+        label: "Upcoming & Patches",
         color: "bg-sx-amber-tint border-sx-amber-border text-sx-amber-text",
       };
     default:
@@ -32,6 +36,12 @@ export function getCategoryLabel(category: NewsCategory | string) {
 }
 
 const ARTICLE_REAL_PHOTO_BY_SLUG: Record<string, string> = {
+  "whats-coming-efootballmarket-kenya-2026-roadmap":
+    "/images/articles/escrow-vault-lock.jpg",
+  "upcoming-efootball-thursday-pack-drops-and-season-carryover-watch":
+    "/images/articles/live-update-condition-night.jpg",
+  "new-video-guide-konami-id-email-2fa-mpesa-escrow-masterclass":
+    "/images/articles/konami-id-two-step-pin.jpg",
   "efootball-2026-team-playstyles-meta-guide":
     "/images/articles/team-playstyles-stadium.jpg",
   "booster-managers-88-proficiency-stat-breakpoints":
@@ -638,5 +648,120 @@ One of the biggest pricing mistakes first-time sellers make is pricing an accoun
     views_count: 0,
     created_at: "2026-09-29T09:00:00.000Z",
     updated_at: "2026-10-25T09:00:00.000Z",
+  },
+  {
+    id: "update-whats-coming-efootballmarket-roadmap-2026",
+    title:
+      "What's Coming Next on eFootballMarket Kenya: Verified Squad Swap Escrow, Weekend Cash Cups & Video Roster Proofs",
+    slug: "whats-coming-efootballmarket-kenya-2026-roadmap",
+    category: "announcement",
+    summary:
+      "A look at the upcoming features rolling out on eFootballMarket—including protected two-way Konami ID swap rooms, M-Pesa automated weekend 1v1 brackets, and 15-second in-app squad video verification.",
+    content: `## Building Kenya's Complete eFootball Exchange & Community Hub
+
+Over the past months, our primary focus at **eFootballMarket Kenya** has been making **Clean Konami ID + Safaricom M-Pesa Till 1572931 Escrow** the safest way to buy and sell squads without WhatsApp middleman risk. Now, here is everything coming next to the platform over our upcoming releases.
+
+## 1. Protected Squad-for-Squad Swap Rooms (With Cash Top-Up Escrow)
+
+Many Kenyan players already own a clean 3150+ OVR squad and want to **trade up** (for example, swapping a 3160 Quick Counter squad + KES 2,500 M-Pesa top-up for a 3220 Double-Booster Epic roster).
+
+- Listings that accept swaps already display the **Swap** badge on marketplace cards.
+- Next up, we are launching **Guided Two-Way Swap Rooms** where both traders submit Link Data verification (**Google Play / Game Center: Not Linked**) and any cash difference is locked in **Till 1572931** until both Konami IDs are verified on **my.konami.net**.
+
+## 2. Automated Weekend 1v1 Cash Cups & Instant Bracket Seeding
+
+Our **Community Tournaments** hub is expanding with recurring Friday Night & Sunday Afternoon knockout cups:
+
+- **Automated Room Code Check-In**: Players check in 15 minutes before kickoff and submit match score screenshots directly inside the bracket match card.
+- **Verified Prize Pool Custody**: Tournament entry pools are held in escrow and disbursed straight to verified M-Pesa numbers immediately after finals verification.
+- **Division & Strength Brackets**: Separate **Open Whale Cups** (unlimited Epic rosters) and **U-3120 Tactical Cups** so skill and tactical discipline shine.
+
+## 3. 15-Second Roster Scroll Video Proofs on High-Value Listings
+
+Screenshots show the starting XI, but high-tier buyers also want to inspect reserve Show Time cards, Booster Managers, and live **Link Data** status in motion. Sellers listing squads above **KES 10,000** will soon be able to attach a short **15-second screen recording** scrolling from Game Plan -> Reserve Players -> Link Data.
+
+## 4. Seller Price Benchmarks & Instant WhatsApp Deal Alerts
+
+- **Live OVR & Epic Valuation Hints**: When creating a listing, sellers will see recent Kenyan market clearing ranges based on Epic count, 88+ Booster Managers, and Team Strength so squads are priced to sell fast.
+- **Saved Search Alerts**: Watchlist specific legends (**Gullit**, **Vieira**, **Maldini**, **Blitz Curler Messi**) and get notified the moment a matching Clean Konami ID squad drops under your target KES budget.
+
+Have a feature request or tournament format you want to see next? Reach our team anytime via the [Contact Desk](/contact) or check out active squads on the [Live Marketplace](/browse).`,
+    author_name: "eFootballMarket Product Team",
+    cover_image_url: "/images/articles/escrow-vault-lock.jpg",
+    is_pinned: true,
+    is_published: true,
+    views_count: 0,
+    created_at: "2026-11-10T09:00:00.000Z",
+    updated_at: "2026-11-10T09:00:00.000Z",
+  },
+  {
+    id: "update-thursday-pack-drops-season-carryover-watch",
+    title:
+      "Upcoming eFootball Thursday Pack Drops, Season Carryover Rules & Double-Booster Meta Watch",
+    slug: "upcoming-efootball-thursday-pack-drops-and-season-carryover-watch",
+    category: "update",
+    summary:
+      "How weekly Thursday UTC maintenance updates affect squad prices in Kenya, what always carries over across major eFootball version updates, and which upcoming Double-Booster archetypes hold long-term value.",
+    content: `## Why Thursday Maintenance Shapes the Kenyan Squad Market
+
+Every Thursday between **05:00 EAT and 11:00 EAT** (02:00–08:00 UTC), Konami runs weekly eFootball maintenance—refreshing **Live Update Condition Ratings (A–E)**, rotating **150-player Epic / Show Time boxes**, and introducing **POTW (Players of the Week)** selections. Understanding this rhythm helps both buyers and sellers time the market smartly.
+
+## 1. What Upcoming Pack Cycles Mean for Squad Value
+
+Not all 103–106 rated cards hold secondary-market value equally over time:
+
+- **Endgame Defensive & Midfield Anchors Hold Highest Value**: Double-Booster ** Vieira, Rijkaard, Maldini, Thuram, Araujo, Gullit, Schmeichel, and Cech** consistently retain top resale demand in Kenya even months after their banner ends because physical model + leg coverage + Permanent **B Condition** never go out of meta.
+- **Show Time Skills That Move Prices**: Cards carrying **Blitz Curler**, **Phenomenal Finishing**, **Momentum Dribbling**, **Fortress**, and **Visionary Pass** command a noticeable premium on [eFootballMarket](/browse) whenever their banner rotates out of the store.
+- **88+ Dual-Proficiency Booster Managers**: Keep a close eye on upcoming club & national pack managers offering **88 proficiency in two playstyles** (such as Quick Counter + Long Ball Counter) paired with **+1 Speed** or **+1 Acceleration**—once those packs expire, accounts holding them become scarce.
+
+## 2. Major Version Carryover Checklist: What Buyers Keep Forever
+
+Whenever Konami prepares a major seasonal title update, new buyers often ask whether their purchased squad carries over intact. Based on Konami's established carryover architecture:
+
+- **eFootball Coins & GP**: Carry over **100%** (remembering that Coins remain bound to the OS family—Android vs iOS vs PlayStation/Steam—where they were acquired).
+- **Epic, Big Time, Show Time & Legend Cards**: Carry over **intact** with Permanent B Condition and no contract-renewal lockouts in modern eFootball builds.
+- **Booster Managers, Skill Tokens & Position Trainers**: Carry over with your Dream Team inventory unless an individual manager license expires (in which case Konami issues standard compensation).
+- **Clean Konami ID Binding**: Once transferred to your personal email and 2FA on **my.konami.net**, your ownership persists seamlessly across every future season update.
+
+## 3. Thursday Pre-Maintenance Safety Tip for Traders
+
+Never initiate an in-game **Data Transfer** during Konami's Thursday **05:00–11:00 EAT** server maintenance window, because the eFootball title screen cannot complete **Link Data** verification until servers come back online. If you purchase a squad during Thursday morning maintenance, your M-Pesa payment remains safely locked in **Till 1572931** while you wait for servers to reopen and complete your 24-hour inspection.`,
+    author_name: "eFootballMarket Meta Desk",
+    cover_image_url: "/images/articles/live-update-condition-night.jpg",
+    is_pinned: false,
+    is_published: true,
+    views_count: 0,
+    created_at: "2026-11-08T14:00:00.000Z",
+    updated_at: "2026-11-10T08:00:00.000Z",
+  },
+  {
+    id: "update-new-konami-id-video-masterclass-guide",
+    title:
+      "New Release: Watch Our Full 4-Minute Konami ID Email & 2FA Escrow Masterclass (Till 1572931)",
+    slug: "new-video-guide-konami-id-email-2fa-mpesa-escrow-masterclass",
+    category: "escrow_guide",
+    summary:
+      "We just published our complete real-screenshot video walkthrough showing every click of an eFootballMarket escrow trade—from checking Link Data and paying Safaricom Till 1572931 to changing the email, password, and 2FA on my.konami.net.",
+    content: `## Every Step of a Safe Konami ID Handover—On Real Screens
+
+Whether you are buying your first **KES 2,500** starter team or selling a **KES 25,000** stacked Division 1 roster, knowing the exact sequence of a **Clean Konami ID transfer** guarantees zero mistakes and zero recovery risk.
+
+Our new **4-minute narrated video masterclass** (embedded directly above and on our [Escrow Guarantee](/escrow-guarantee) page) walks through actual eFootball Mobile and **my.konami.net** screens with zoomed-in highlights on every security setting.
+
+## Quick Chapter Breakdown of the Video Masterclass
+
+1. **Pre-Trade Link Check (0:00 – 0:45)**: How to verify inside **Extras -> Support -> Link Data** that **Konami ID** says *Linked* while **Google Play / Apple Game Center** says *Not Linked*.
+2. **Locking Escrow via Safaricom Till 1572931 (0:45 – 1:15)**: Why paying into eFootballMarket escrow protects both the buyer's cash and the seller's squad before any OTP is shared.
+3. **Title Screen Data Transfer & Roster Audit (1:15 – 2:30)**: Logging in from the **bottom-right menu icon on the eFootball title screen** (never inside the in-game Extras menu!) to inspect Team Strength, Epic reserves, and Link Data live.
+4. **Securing Full Ownership at my.konami.net (2:30 – 4:25)**: Replacing the seller's **Email Address**, setting a fresh **Password**, and activating **Two-Step Verification (2FA)** before tapping **Confirm & Release Payout**.
+
+Ready to put it into practice? Browse verified Clean Konami ID rosters on the [Marketplace](/browse) or protect an off-platform WhatsApp deal using [Middleman Escrow](/middleman).`,
+    author_name: "eFootballMarket Trust & Safety",
+    cover_image_url: "/images/articles/konami-id-two-step-pin.jpg",
+    is_pinned: false,
+    is_published: true,
+    views_count: 0,
+    created_at: "2026-11-09T16:30:00.000Z",
+    updated_at: "2026-11-10T09:30:00.000Z",
   },
 ];

@@ -8,10 +8,12 @@ import { NewsService } from "@/services/newsService";
 import { Listing, NewsArticle, Tournament } from "@/types/database";
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import { HomeFaqAccordion } from "@/components/home/HomeFaqAccordion";
+import { getCategoryLabel } from "@/lib/data/editorialGuides";
 import { Button } from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/utils";
 import {
   ArrowRight,
+  BookOpen,
   Check,
   CheckCircle2,
   Clock,
@@ -20,6 +22,7 @@ import {
   ShieldAlert,
   ShieldCheck,
   Smartphone,
+  Sparkles,
   Trophy,
   X,
 } from "lucide-react";
@@ -44,10 +47,18 @@ export default async function HomePage() {
 
     listings = listingsResult.listings || [];
     tournaments = tourneysResult || [];
-    articles = (articlesResult || []).slice(0, 6);
+    articles = (articlesResult || []).slice(0, 7);
   } catch (err) {
     console.error("HomePage query error:", err);
   }
+
+  const featuredBlogPost =
+    articles.find((a) => a.is_pinned) ||
+    articles.find((a) => a.category === "announcement" || a.category === "update") ||
+    articles[0];
+  const remainingPosts = articles.filter((a) => a.id !== featuredBlogPost?.id);
+  const upcomingBriefings = remainingPosts.slice(0, 3);
+  const guideCards = remainingPosts.slice(3, 6);
 
   return (
     <div className="min-h-screen bg-sx-canvas text-sx-ink">
@@ -93,7 +104,7 @@ export default async function HomePage() {
                     { label: "Gullit", href: "/browse?search=Gullit" },
                     { label: "Vieira", href: "/browse?search=Vieira" },
                     { label: "Under KES 5K", href: "/browse?maxPrice=5000" },
-                    { label: "Meta Guides", href: "/news" },
+                    { label: "Blog & What's Coming", href: "/news" },
                   ].map((pill) => (
                     <Link
                       key={pill.label}
@@ -384,94 +395,229 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* 6. EDITORIAL & META GUIDES SHELF */}
+      {/* 6. BLOG, GUIDES & WHAT'S COMING HUB */}
       {articles.length > 0 && (
         <section className="py-10 sm:py-12 border-t border-sx-border">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            <div className="flex items-baseline justify-between gap-4">
-              <div>
-                <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display tracking-tight">
-                  Editorial: eFootball 2026 Tactics &amp; Trading Guides
+            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+              <div className="space-y-1.5">
+                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-sx-green-text">
+                  <BookOpen className="w-3.5 h-3.5" />
+                  <span>eFootballMarket Blogger &amp; Guides</span>
+                </span>
+                <h2 className="text-xl sm:text-2xl font-extrabold text-sx-ink font-display tracking-tight">
+                  Guides, Meta Tactics &amp; What&apos;s Coming Next
                 </h2>
-                <p className="text-xs sm:text-sm text-sx-muted mt-0.5">
-                  Team playstyles, 88+ manager stat breakpoints, custom progression builds, 60 FPS mobile tuning &amp; Konami ID safety.
+                <p className="text-xs sm:text-sm text-sx-muted max-w-2xl">
+                  Upcoming eFootball pack drops, new platform features, 88+ manager stat breakpoints, custom builds, and Clean Konami ID escrow walkthroughs.
                 </p>
               </div>
-              <Link
-                href="/news"
-                className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-sx-green-text hover:underline shrink-0"
-              >
-                <span>Read All Guides</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
+
+              <div className="flex flex-wrap items-center gap-2 shrink-0">
+                {[
+                  { label: "What's Coming", href: "/news?category=upcoming" },
+                  { label: "Meta & Tactics", href: "/news?category=efootball_news" },
+                  { label: "Konami ID & Escrow", href: "/news?category=escrow_guide" },
+                ].map((tab) => (
+                  <Link
+                    key={tab.href}
+                    href={tab.href}
+                    className="px-3 py-1.5 rounded-full bg-sx-subtle border border-sx-border hover:border-sx-green-border text-xs font-semibold text-sx-ink transition-colors"
+                  >
+                    {tab.label}
+                  </Link>
+                ))}
+                <Link
+                  href="/news"
+                  className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-sx-green hover:bg-sx-green-hover text-xs font-bold text-white transition-colors"
+                >
+                  <span>Full Blog</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </Link>
+              </div>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              {articles.map((article) => {
-                const isAlert = article.category === "scammer_alert";
-                const isMeta = article.category === "efootball_news";
-                const readMin = Math.max(
-                  3,
-                  Math.ceil((article.content || "").split(/\s+/).length / 195)
-                );
-                return (
-                  <Link
-                    key={article.id}
-                    href={`/news/${article.slug}`}
-                    className="group flex flex-col justify-between rounded-lg border border-sx-border hover:border-sx-ink bg-sx-canvas overflow-hidden transition-colors"
-                  >
-                    <div>
-                      <div className="relative h-44 w-full bg-sx-stone overflow-hidden border-b border-sx-border">
-                        {article.cover_image_url ? (
-                          <Image
-                            src={article.cover_image_url}
-                            alt={article.title}
-                            fill
-                            sizes="(max-width: 768px) 100vw, 33vw"
-                            unoptimized={!article.cover_image_url.startsWith("/")}
-                            className="object-cover group-hover:scale-[1.03] transition-transform duration-300"
-                          />
-                        ) : null}
+            {/* Top Split: Featured What's Coming Spotlight + Latest Updates Feed */}
+            {featuredBlogPost && (
+              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
+                <Link
+                  href={`/news/${featuredBlogPost.slug}`}
+                  className="lg:col-span-7 group rounded-xl bg-sx-subtle border border-sx-border hover:border-sx-green-border overflow-hidden flex flex-col justify-between transition-all shadow-sm hover:shadow-md"
+                >
+                  <div>
+                    {featuredBlogPost.cover_image_url && (
+                      <div className="relative h-52 sm:h-64 w-full bg-sx-stone overflow-hidden border-b border-sx-border">
+                        <Image
+                          src={featuredBlogPost.cover_image_url}
+                          alt={featuredBlogPost.title}
+                          fill
+                          sizes="(max-width: 1024px) 100vw, 58vw"
+                          unoptimized={!featuredBlogPost.cover_image_url.startsWith("/")}
+                          className="object-cover group-hover:scale-[1.03] transition-transform duration-300"
+                        />
+                      </div>
+                    )}
+                    <div className="p-5 sm:p-6 space-y-3">
+                      <div className="flex flex-wrap items-center gap-2 text-[11px]">
+                        <span
+                          className={`px-2.5 py-0.5 rounded-md border font-bold ${
+                            getCategoryLabel(featuredBlogPost.category).color
+                          }`}
+                        >
+                          {getCategoryLabel(featuredBlogPost.category).label}
+                        </span>
+                        <span className="px-2 py-0.5 rounded-md bg-sx-green text-white font-bold">
+                          Featured Post
+                        </span>
+                        <span className="text-sx-muted flex items-center gap-1">
+                          <Clock className="w-3 h-3" />
+                          {Math.max(
+                            3,
+                            Math.ceil(
+                              (featuredBlogPost.content || "").split(/\s+/).length / 195
+                            )
+                          )}{" "}
+                          min read
+                        </span>
                       </div>
 
-                      <div className="p-5 space-y-2">
-                        <div className="flex items-center justify-between text-[11px] font-semibold">
-                          <span
-                            className={
-                              isAlert
-                                ? "text-sx-red-text"
-                                : "text-sx-green-text"
-                            }
+                      <h3 className="text-lg sm:text-xl font-extrabold font-display text-sx-ink group-hover:text-sx-green-text transition-colors leading-snug">
+                        {featuredBlogPost.title}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-sx-ink-soft leading-relaxed line-clamp-3">
+                        {featuredBlogPost.summary}
+                      </p>
+                    </div>
+                  </div>
+
+                  <div className="px-5 sm:px-6 pb-4 pt-3 border-t border-sx-border flex items-center justify-between text-xs font-bold text-sx-green-text">
+                    <span>Read Featured Post</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </div>
+                </Link>
+
+                {/* Right Column: What's Coming & Latest Briefings */}
+                <div className="lg:col-span-5 rounded-xl bg-sx-subtle border border-sx-border p-5 flex flex-col justify-between space-y-4">
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between pb-3 border-b border-sx-border">
+                      <span className="inline-flex items-center gap-1.5 text-xs font-bold text-sx-ink uppercase tracking-wider">
+                        <Sparkles className="w-3.5 h-3.5 text-sx-amber-text" />
+                        <span>Latest Updates &amp; Walkthroughs</span>
+                      </span>
+                      <Link
+                        href="/news?category=upcoming"
+                        className="text-[11px] font-semibold text-sx-green-text hover:underline"
+                      >
+                        See All
+                      </Link>
+                    </div>
+
+                    <div className="divide-y divide-sx-border">
+                      {upcomingBriefings.map((item) => {
+                        const badge = getCategoryLabel(item.category);
+                        return (
+                          <Link
+                            key={item.id}
+                            href={`/news/${item.slug}`}
+                            className="group block py-3.5 first:pt-0 last:pb-0 space-y-1.5"
                           >
-                            {isAlert
-                              ? "SAFETY ADVISORY"
-                              : isMeta
-                              ? "META & TACTICS"
-                              : "VERIFICATION GUIDE"}
-                          </span>
-                          <span className="text-sx-muted flex items-center gap-1 font-normal">
-                            <Clock className="w-3 h-3" />
-                            {readMin} min
-                          </span>
+                            <div className="flex items-center justify-between gap-2 text-[10.5px]">
+                              <span
+                                className={`px-2 py-0.5 rounded border font-bold ${badge.color}`}
+                              >
+                                {badge.label}
+                              </span>
+                              <span className="text-sx-muted">
+                                {new Date(item.created_at).toLocaleDateString(
+                                  "en-US",
+                                  { month: "short", day: "numeric" }
+                                )}
+                              </span>
+                            </div>
+                            <h4 className="text-sm font-bold text-sx-ink group-hover:text-sx-green-text transition-colors font-display leading-snug line-clamp-2">
+                              {item.title}
+                            </h4>
+                            <p className="text-xs text-sx-muted line-clamp-2 leading-relaxed">
+                              {item.summary}
+                            </p>
+                          </Link>
+                        );
+                      })}
+                    </div>
+                  </div>
+
+                  <div className="pt-3 border-t border-sx-border">
+                    <Link href="/news" className="block">
+                      <Button variant="outline" size="sm" className="w-full">
+                        <BookOpen className="w-3.5 h-3.5 text-sx-green-text" />
+                        <span>Browse All {articles.length}+ Guides &amp; Posts</span>
+                      </Button>
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Bottom 3 Essential Guides */}
+            {guideCards.length > 0 && (
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+                {guideCards.map((article) => {
+                  const badge = getCategoryLabel(article.category);
+                  const readMin = Math.max(
+                    3,
+                    Math.ceil((article.content || "").split(/\s+/).length / 195)
+                  );
+                  return (
+                    <Link
+                      key={article.id}
+                      href={`/news/${article.slug}`}
+                      className="group flex flex-col justify-between rounded-xl border border-sx-border hover:border-sx-green-border hover:-translate-y-0.5 bg-sx-subtle overflow-hidden transition-all shadow-sm hover:shadow-md"
+                    >
+                      <div>
+                        <div className="relative h-44 w-full bg-sx-stone overflow-hidden border-b border-sx-border">
+                          {article.cover_image_url ? (
+                            <Image
+                              src={article.cover_image_url}
+                              alt={article.title}
+                              fill
+                              sizes="(max-width: 768px) 100vw, 33vw"
+                              unoptimized={!article.cover_image_url.startsWith("/")}
+                              className="object-cover group-hover:scale-[1.04] transition-transform duration-300"
+                            />
+                          ) : null}
                         </div>
 
-                        <h3 className="text-base font-bold font-display text-sx-ink group-hover:underline line-clamp-2 leading-snug">
-                          {article.title}
-                        </h3>
-                        <p className="text-xs text-sx-muted line-clamp-2 leading-relaxed">
-                          {article.summary}
-                        </p>
-                      </div>
-                    </div>
+                        <div className="p-5 space-y-2">
+                          <div className="flex items-center justify-between text-[11px] font-semibold">
+                            <span
+                              className={`px-2 py-0.5 rounded-md border font-bold ${badge.color}`}
+                            >
+                              {badge.label}
+                            </span>
+                            <span className="text-sx-muted flex items-center gap-1 font-normal">
+                              <Clock className="w-3 h-3" />
+                              {readMin} min
+                            </span>
+                          </div>
 
-                    <div className="px-5 pb-4 pt-3 border-t border-sx-border flex items-center justify-between text-xs font-semibold text-sx-ink group-hover:text-sx-green-text">
-                      <span>Read Article</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </div>
-                  </Link>
-                );
-              })}
-            </div>
+                          <h3 className="text-[15.5px] font-bold font-display text-sx-ink group-hover:text-sx-green-text transition-colors line-clamp-2 leading-snug">
+                            {article.title}
+                          </h3>
+                          <p className="text-xs text-sx-muted line-clamp-2 leading-relaxed">
+                            {article.summary}
+                          </p>
+                        </div>
+                      </div>
+
+                      <div className="px-5 pb-4 pt-3 border-t border-sx-border flex items-center justify-between text-xs font-bold text-sx-green-text">
+                        <span>Read Guide</span>
+                        <ArrowRight className="w-3.5 h-3.5" />
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
           </div>
         </section>
       )}

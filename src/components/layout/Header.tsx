@@ -39,6 +39,7 @@ export function Header() {
     { name: "Android", href: "/browse?platform=android" },
     { name: "iOS", href: "/browse?platform=ios" },
     { name: "PS5 & PC", href: "/browse?platform=playstation_5" },
+    { name: "Blog & Guides", href: "/news" },
     { name: "Friday Drops", href: "/friday-drops" },
     { name: "Middleman", href: "/middleman" },
     { name: "Tournaments", href: "/tournaments" },
@@ -80,7 +81,7 @@ export function Header() {
           <div className="hidden md:flex items-center gap-4 lg:gap-5 shrink-0">
             <nav className="hidden lg:flex items-center gap-5 text-[13px] font-medium text-sx-muted">
               <Link href="/news" className="hover:text-sx-ink transition-colors">
-                Guides
+                Blog &amp; Guides
               </Link>
               <Link href="/escrow-guarantee" className="hover:text-sx-ink transition-colors">
                 Escrow Help
@@ -303,11 +304,11 @@ export function Header() {
           <div className="grid grid-cols-2 gap-2">
             {[
               { name: "Browse Market", href: "/browse" },
-              { name: "Guides & Tactics", href: "/news" },
+              { name: "Blog & Guides", href: "/news" },
+              { name: "What's Coming", href: "/news?category=upcoming" },
               { name: "Middleman Escrow", href: "/middleman" },
               { name: "Scammer Check", href: "/scammer-check" },
               { name: "1v1 Tournaments", href: "/tournaments" },
-              { name: "Wanted Board", href: "/wanted" },
               { name: "How Escrow Works", href: "/escrow-guarantee" },
               { name: "Contact Support", href: "/contact" },
             ].map((link) => (
