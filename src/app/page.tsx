@@ -26,39 +26,6 @@ import {
 
 export const revalidate = 0;
 
-const STOCKX_CATEGORIES = [
-  {
-    title: "Double-Booster Epics",
-    subtitle: "Show Time, Big Time & 88 Managers",
-    image: "/images/sx-cat-epic.jpg",
-    href: "/browse?minStrength=3150",
-  },
-  {
-    title: "Mobile Squads",
-    subtitle: "Clean Konami ID Android & iOS",
-    image: "/images/sx-cat-mobile.jpg",
-    href: "/browse?platform=android",
-  },
-  {
-    title: "PlayStation & PC",
-    subtitle: "PS5, PS4 & Steam rosters",
-    image: "/images/sx-cat-console.jpg",
-    href: "/browse?platform=playstation_5",
-  },
-  {
-    title: "Under KES 5,000",
-    subtitle: "Verified starter & budget squads",
-    image: "/images/sx-cat-budget.jpg",
-    href: "/browse?maxPrice=5000",
-  },
-  {
-    title: "Middleman Escrow",
-    subtitle: "Verify WhatsApp & FB deals",
-    image: "/images/sx-cat-middleman.jpg",
-    href: "/middleman",
-  },
-];
-
 export default async function HomePage() {
   const supabase = createServerSupabaseClient();
   const listingService = new ListingService(supabase);
@@ -154,47 +121,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 2. BROWSE BY CATEGORY SHELF */}
-      <section className="py-6 sm:py-8">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
-          <div className="flex items-baseline justify-between">
-            <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display tracking-tight">
-              Browse by Category
-            </h2>
-            <Link
-              href="/browse"
-              className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-sx-green-text hover:underline"
-            >
-              <span>See All</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
-          </div>
-
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-4">
-            {STOCKX_CATEGORIES.map((cat) => (
-              <Link key={cat.title} href={cat.href} className="group block space-y-2.5">
-                <div className="relative aspect-square w-full rounded-md bg-sx-stone border border-sx-border group-hover:border-sx-ink overflow-hidden transition-colors">
-                  <Image
-                    src={cat.image}
-                    alt={cat.title}
-                    fill
-                    sizes="(max-width: 640px) 50vw, 20vw"
-                    className="object-cover group-hover:scale-[1.04] transition-transform duration-300"
-                  />
-                </div>
-                <div>
-                  <h3 className="text-sm font-bold text-sx-ink group-hover:text-sx-green-text transition-colors">
-                    {cat.title}
-                  </h3>
-                  <p className="text-xs text-sx-muted">{cat.subtitle}</p>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* 3. RECENTLY VERIFIED SQUADS SHELF */}
+      {/* 2. RECENTLY VERIFIED SQUADS SHELF */}
       <section className="py-8 sm:py-10 border-t border-sx-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
           <div className="flex items-baseline justify-between gap-4">
