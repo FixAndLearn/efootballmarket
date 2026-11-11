@@ -75,7 +75,7 @@ export function CookieConsentBanner() {
         <p className="text-xs text-sx-ink-soft leading-relaxed">
           We use cookies for login sessions, analytics, and Google AdSense. Choose below or read our{" "}
           <Link
-            href="/policies#privacy"
+            href="/privacy"
             target="_blank"
             rel="noopener noreferrer"
             className="text-sx-green-text underline font-semibold"

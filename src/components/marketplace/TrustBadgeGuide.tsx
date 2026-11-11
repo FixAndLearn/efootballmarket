@@ -25,7 +25,7 @@ export function TrustBadgeGuide() {
         </span>
       </div>
 
-      <DetailTabLink href="/policies#escrow">
+      <DetailTabLink href="/escrow-guarantee">
         Badge &amp; Escrow Details
       </DetailTabLink>
     </div>

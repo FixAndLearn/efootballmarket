@@ -29,7 +29,7 @@ export default function ScammerCheckPage() {
           </p>
         </div>
 
-        <DetailTabLink href="/policies#anti-fraud" variant="pill">
+        <DetailTabLink href="/fraud-prevention" variant="pill">
           Anti-Fraud &amp; Free Appeals
         </DetailTabLink>
       </div>

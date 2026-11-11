@@ -4,9 +4,14 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Home, Search, BookOpen, ShieldAlert, Plus } from "lucide-react";
+import { isStandaloneDocPath } from "@/components/legal/StandaloneDocLayout";
 
 export function MobileBottomNav() {
   const pathname = usePathname() || "/";
+
+  if (isStandaloneDocPath(pathname)) {
+    return null;
+  }
 
   const isAuthRoute =
     pathname === "/login" ||

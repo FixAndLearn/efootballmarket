@@ -242,10 +242,10 @@ function MiddlemanContent() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 shrink-0">
-            <DetailTabLink href="/policies#escrow" variant="pill">
+            <DetailTabLink href="/escrow-guarantee" variant="pill">
               Escrow Rules &amp; Fees
             </DetailTabLink>
-            <DetailTabLink href="/policies#disputes" variant="pill">
+            <DetailTabLink href="/dispute-policy" variant="pill">
               Refund Policy
             </DetailTabLink>
           </div>

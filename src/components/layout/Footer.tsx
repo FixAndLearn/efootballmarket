@@ -1,9 +1,19 @@
+"use client";
+
 import React from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { ArrowUpRight } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
+import { isStandaloneDocPath } from "@/components/legal/StandaloneDocLayout";
 
 export function Footer() {
+  const pathname = usePathname();
+
+  if (isStandaloneDocPath(pathname)) {
+    return null;
+  }
+
   return (
     <footer
       role="contentinfo"
@@ -123,23 +133,12 @@ export function Footer() {
 
           <div className="space-y-2.5">
             <h3 className="text-xs font-bold uppercase tracking-wider text-sx-ink">
-              Policies &amp; Terms
+              Standalone Policies
             </h3>
             <ul className="space-y-2">
               <li>
                 <Link
-                  href="/policies#escrow"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-0.5 hover:text-sx-ink transition-colors"
-                >
-                  <span>Escrow Rules &amp; Fees</span>
-                  <ArrowUpRight className="w-3 h-3 opacity-70" />
-                </Link>
-              </li>
-              <li>
-                <Link
-                  href="/policies#terms"
+                  href="/terms"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-0.5 hover:text-sx-ink transition-colors"
@@ -150,7 +149,18 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/policies#disputes"
+                  href="/privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-0.5 hover:text-sx-ink transition-colors"
+                >
+                  <span>Privacy &amp; Cookies</span>
+                  <ArrowUpRight className="w-3 h-3 opacity-70" />
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/dispute-policy"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-0.5 hover:text-sx-ink transition-colors"
@@ -161,7 +171,18 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/policies#seller-standards"
+                  href="/escrow-guarantee"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-0.5 hover:text-sx-ink transition-colors"
+                >
+                  <span>Escrow &amp; Fees</span>
+                  <ArrowUpRight className="w-3 h-3 opacity-70" />
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/seller/guidelines"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-0.5 hover:text-sx-ink transition-colors"
@@ -172,12 +193,12 @@ export function Footer() {
               </li>
               <li>
                 <Link
-                  href="/policies#privacy"
+                  href="/fraud-prevention"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="inline-flex items-center gap-0.5 hover:text-sx-ink transition-colors"
                 >
-                  <span>Privacy &amp; Cookies</span>
+                  <span>Anti-Fraud Policy</span>
                   <ArrowUpRight className="w-3 h-3 opacity-70" />
                 </Link>
               </li>

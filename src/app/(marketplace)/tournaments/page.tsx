@@ -390,7 +390,7 @@ export default function TournamentsPage() {
             <strong className="text-sx-ink">Free cups: KES 0</strong> · Paid pots held on Till 1572931 · 100% refund if cancelled before bracket start
           </span>
         </span>
-        <DetailTabLink href="/policies#fees" variant="pill">
+        <DetailTabLink href="/escrow-guarantee#fees" variant="pill">
           Cup Rules &amp; Fee Table
         </DetailTabLink>
       </div>

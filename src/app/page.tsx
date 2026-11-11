@@ -152,7 +152,7 @@ export default async function HomePage() {
                       <strong className="text-sx-ink">M-Pesa Till 1572931 Hold</strong> · KES 0 Buyer Fee · 24h Login Check
                     </span>
                   </span>
-                  <DetailTabLink href="/policies#escrow">
+                  <DetailTabLink href="/escrow-guarantee">
                     Detailed Escrow Info
                   </DetailTabLink>
                 </div>
@@ -328,10 +328,10 @@ export default async function HomePage() {
               </h2>
             </div>
             <div className="flex flex-wrap items-center gap-2 text-xs">
-              <DetailTabLink href="/policies#escrow" variant="pill">
+              <DetailTabLink href="/escrow-guarantee" variant="pill">
                 Full Rules &amp; Fee Table
               </DetailTabLink>
-              <DetailTabLink href="/policies#disputes" variant="pill">
+              <DetailTabLink href="/dispute-policy" variant="pill">
                 Refund Guarantee
               </DetailTabLink>
             </div>
@@ -600,10 +600,10 @@ export default async function HomePage() {
             </div>
 
             <div className="flex flex-wrap items-center gap-2">
-              <DetailTabLink href="/policies#escrow" variant="pill">
+              <DetailTabLink href="/escrow-guarantee" variant="pill">
                 Escrow &amp; Fee Table
               </DetailTabLink>
-              <DetailTabLink href="/policies#disputes" variant="pill">
+              <DetailTabLink href="/dispute-policy" variant="pill">
                 Refund &amp; Dispute Rules
               </DetailTabLink>
               <DetailTabLink
@@ -612,11 +612,14 @@ export default async function HomePage() {
               >
                 Clean Konami ID Guide
               </DetailTabLink>
-              <DetailTabLink href="/policies#seller-standards" variant="pill">
+              <DetailTabLink href="/seller/guidelines" variant="pill">
                 Seller Payout Rules
               </DetailTabLink>
-              <DetailTabLink href="/policies#terms" variant="pill">
-                Terms &amp; Privacy
+              <DetailTabLink href="/terms" variant="pill">
+                Terms of Service
+              </DetailTabLink>
+              <DetailTabLink href="/privacy" variant="pill">
+                Privacy Policy
               </DetailTabLink>
             </div>
           </div>

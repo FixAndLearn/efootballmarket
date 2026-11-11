@@ -552,7 +552,7 @@ function RegisterForm() {
           <span className="text-xs text-sx-muted leading-relaxed">
             I agree to the{" "}
             <Link
-              href="/policies#terms"
+              href="/terms"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sx-green-text font-semibold hover:underline"
@@ -561,7 +561,7 @@ function RegisterForm() {
             </Link>{" "}
             and{" "}
             <Link
-              href="/policies#escrow"
+              href="/escrow-guarantee"
               target="_blank"
               rel="noopener noreferrer"
               className="text-sx-green-text font-semibold hover:underline"

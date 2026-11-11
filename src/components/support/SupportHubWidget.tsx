@@ -14,6 +14,7 @@ import {
   Target,
   ExternalLink,
 } from "lucide-react";
+import { isStandaloneDocPath } from "@/components/legal/StandaloneDocLayout";
 
 const WHATSAPP_NUMBER =
   process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP || "254794400365";
@@ -22,8 +23,9 @@ export function SupportHubWidget() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
-  // Hide floating help pill inside Order Rooms & Auth forms so it never blocks mobile inputs or submit buttons
+  // Hide floating help pill inside Order Rooms, Auth forms & Standalone Policy pages
   if (
+    isStandaloneDocPath(pathname) ||
     pathname?.startsWith("/orders/") ||
     pathname === "/login" ||
     pathname === "/register" ||
@@ -113,7 +115,7 @@ export function SupportHubWidget() {
             </Link>
 
             <Link
-              href="/policies"
+              href="/escrow-guarantee"
               target="_blank"
               rel="noopener noreferrer"
               onClick={() => setOpen(false)}
@@ -121,7 +123,7 @@ export function SupportHubWidget() {
             >
               <span className="flex items-center gap-2.5 text-xs font-semibold text-sx-ink">
                 <Scale className="w-4 h-4 text-sx-muted shrink-0" />
-                Policies, Fees &amp; Refunds
+                Escrow &amp; Fee Rules
               </span>
               <span className="text-[11px] text-sx-muted group-hover:text-sx-ink">
                 Read &nearr;

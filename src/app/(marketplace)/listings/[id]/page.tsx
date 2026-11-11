@@ -320,7 +320,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                   Seller stats are verified in-game by you before payout.
                 </span>
               </span>
-              <DetailTabLink href="/policies#escrow">
+              <DetailTabLink href="/escrow-guarantee">
                 What We Check
               </DetailTabLink>
             </div>
@@ -401,8 +401,8 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                 >
                   Clean ID Checklist
                 </DetailTabLink>
-                <DetailTabLink href="/policies#disputes" variant="pill">
-                  Refund &amp; Escrow Rules
+                <DetailTabLink href="/dispute-policy" variant="pill">
+                  Refund &amp; Dispute Rules
                 </DetailTabLink>
               </div>
             </div>
@@ -566,7 +566,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
               </div>
               <div className="flex items-center justify-between gap-2 text-[11px]">
                 <span>Independent marketplace (publisher rules apply)</span>
-                <DetailTabLink href="/policies#escrow">
+                <DetailTabLink href="/escrow-guarantee">
                   Full Rules
                 </DetailTabLink>
               </div>

@@ -720,7 +720,7 @@ export function DirectCheckoutForm({
             <strong className="text-sx-ink">24h Buyer Check:</strong> Seller paid only after you verify Clean ID in-game.
           </span>
         </span>
-        <DetailTabLink href="/policies#disputes">
+        <DetailTabLink href="/dispute-policy">
           Refund &amp; Publisher Rules
         </DetailTabLink>
       </div>

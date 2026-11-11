@@ -8,6 +8,7 @@ import { isSuperAdminEmail } from "@/lib/security/adminAuth";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/brand/Logo";
 import { NotificationBell } from "@/components/layout/NotificationBell";
+import { isStandaloneDocPath } from "@/components/legal/StandaloneDocLayout";
 import {
   Menu,
   X,
@@ -34,6 +35,10 @@ export function Header() {
     setMobileMenuOpen(false);
     setProfileDropdownOpen(false);
   }, [pathname]);
+
+  if (isStandaloneDocPath(pathname)) {
+    return null;
+  }
 
   const isSeller = profile?.role === "seller" || profile?.role === "admin";
   const isAdmin = profile?.role === "admin" || isSuperAdminEmail(user?.email);
@@ -89,12 +94,12 @@ export function Header() {
                 Browse Squads
               </Link>
               <Link
-                href="/policies"
+                href="/escrow-guarantee"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-sx-ink transition-colors"
               >
-                Escrow &amp; Policies &nearr;
+                How Escrow Works &nearr;
               </Link>
               <Link href="/news" className="hover:text-sx-ink transition-colors">
                 Guides
@@ -349,7 +354,7 @@ export function Header() {
               { name: "Middleman Escrow", href: "/middleman", newTab: false },
               { name: "Scammer Check", href: "/scammer-check", newTab: false },
               { name: "1v1 Tournaments", href: "/tournaments", newTab: false },
-              { name: "Escrow & Policies ↗", href: "/policies", newTab: true },
+              { name: "How Escrow Works ↗", href: "/escrow-guarantee", newTab: true },
               { name: "Services & Support", href: "/contact", newTab: false },
             ].map((link) => (
               <Link

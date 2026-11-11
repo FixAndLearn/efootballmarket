@@ -72,8 +72,13 @@ export default function AboutPage() {
           </li>
           <li>
             <strong>eFootballMarket&apos;s Role:</strong> eFootballMarket Kenya holds the received funds in its platform settlement account while your order is open and administers seller payouts or buyer refunds according to our{" "}
-            <Link href="/policies#disputes" className="text-sx-green-text underline font-semibold">
-              Refund &amp; Dispute Policy
+            <Link
+              href="/dispute-policy"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sx-green-text underline font-semibold"
+            >
+              Refund &amp; Dispute Policy &nearr;
             </Link>
             .
           </li>
@@ -126,8 +131,22 @@ export default function AboutPage() {
         <p className="font-semibold text-sx-ink">Independent Platform &amp; Publisher Rules Notice</p>
         <p>
           eFootballMarket Kenya is an independent marketplace and is not affiliated with, endorsed by, or sponsored by Konami Digital Entertainment Co., Ltd. or Safaricom PLC. Konami&apos;s Terms of Use restrict account transfers, and Konami can modify game features or restrict accounts under its own rules. Read our{" "}
-          <Link href="/policies" className="text-sx-green-text underline font-semibold">
-            Unified Policies, Fees &amp; Terms Center
+          <Link
+            href="/escrow-guarantee"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sx-green-text underline font-semibold"
+          >
+            Payment Protection &amp; Fee Guide &nearr;
+          </Link>{" "}
+          and{" "}
+          <Link
+            href="/terms"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sx-green-text underline font-semibold"
+          >
+            Terms of Service &nearr;
           </Link>{" "}
           before trading.
         </p>

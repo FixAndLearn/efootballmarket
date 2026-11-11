@@ -396,7 +396,7 @@ export default function CreateListingPage() {
             <ArrowLeft className="w-3.5 h-3.5" />
             <span>Back to Seller Hub</span>
           </Link>
-          <DetailTabLink href="/policies#seller-standards" variant="pill">
+          <DetailTabLink href="/seller/guidelines" variant="pill">
             Seller Rules &amp; Payouts
           </DetailTabLink>
         </div>
@@ -437,7 +437,7 @@ export default function CreateListingPage() {
             <span>
               <strong>Privacy tip:</strong> Mask or crop out personal emails, phone numbers, and passwords before uploading.
             </span>
-            <DetailTabLink href="/policies#seller-standards" className="text-sx-ink">
+            <DetailTabLink href="/seller/guidelines" className="text-sx-ink">
               Screenshot Standards
             </DetailTabLink>
           </div>
