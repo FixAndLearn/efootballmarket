@@ -4,6 +4,7 @@ import { ScammerLookupTool } from "@/components/scammer/ScammerLookupTool";
 import { ShieldCheck, MessageCircle, Handshake } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
+import { DetailTabLink } from "@/components/ui/DetailTabLink";
 
 export const metadata: Metadata = {
   title: "Scammer Phone & Handle Check",
@@ -15,16 +16,22 @@ export default function ScammerCheckPage() {
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 w-full space-y-10">
       {/* Header */}
-      <div className="space-y-2 border-b border-sx-border pb-6">
-        <span className="inline-block text-[11px] font-mono uppercase tracking-wider text-sx-red-text font-bold">
-          Fraud Incident Lookup
-        </span>
-        <h1 className="text-2xl sm:text-4xl font-bold text-sx-ink font-display tracking-tight">
-          Check a Phone Number or Handle Before You Pay
-        </h1>
-        <p className="text-xs sm:text-sm text-sx-muted max-w-2xl leading-relaxed">
-          Search any Kenyan <span className="font-mono font-semibold text-sx-ink">07...</span> or <span className="font-mono font-semibold text-sx-ink">01...</span> phone number or social handle against confirmed escrow dispute bans and community fraud reports.
-        </p>
+      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-sx-border pb-6">
+        <div className="space-y-2">
+          <span className="inline-block text-[11px] font-mono uppercase tracking-wider text-sx-red-text font-bold">
+            Fraud Incident Lookup
+          </span>
+          <h1 className="text-2xl sm:text-4xl font-bold text-sx-ink font-display tracking-tight">
+            Check a Phone Number or Handle Before You Pay
+          </h1>
+          <p className="text-xs sm:text-sm text-sx-muted max-w-2xl leading-relaxed">
+            Search any Kenyan <span className="font-mono font-semibold text-sx-ink">07...</span> or <span className="font-mono font-semibold text-sx-ink">01...</span> phone number or handle against verified fraud reports.
+          </p>
+        </div>
+
+        <DetailTabLink href="/policies#anti-fraud" variant="pill">
+          Anti-Fraud &amp; Free Appeals
+        </DetailTabLink>
       </div>
 
       {/* Lookup Panel */}

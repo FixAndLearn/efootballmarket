@@ -1,5 +1,6 @@
 import React from "react";
 import Link from "next/link";
+import { ArrowUpRight } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 
 export function Footer() {
@@ -126,28 +127,58 @@ export function Footer() {
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/policies#escrow" className="hover:text-sx-ink transition-colors">
-                  Escrow Rules &amp; Fees
+                <Link
+                  href="/policies#escrow"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-0.5 hover:text-sx-ink transition-colors"
+                >
+                  <span>Escrow Rules &amp; Fees</span>
+                  <ArrowUpRight className="w-3 h-3 opacity-70" />
                 </Link>
               </li>
               <li>
-                <Link href="/policies#terms" className="hover:text-sx-ink transition-colors">
-                  Terms of Service
+                <Link
+                  href="/policies#terms"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-0.5 hover:text-sx-ink transition-colors"
+                >
+                  <span>Terms of Service</span>
+                  <ArrowUpRight className="w-3 h-3 opacity-70" />
                 </Link>
               </li>
               <li>
-                <Link href="/policies#disputes" className="hover:text-sx-ink transition-colors">
-                  Refunds &amp; Disputes
+                <Link
+                  href="/policies#disputes"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-0.5 hover:text-sx-ink transition-colors"
+                >
+                  <span>Refunds &amp; Disputes</span>
+                  <ArrowUpRight className="w-3 h-3 opacity-70" />
                 </Link>
               </li>
               <li>
-                <Link href="/policies#seller-standards" className="hover:text-sx-ink transition-colors">
-                  Seller Standards
+                <Link
+                  href="/policies#seller-standards"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-0.5 hover:text-sx-ink transition-colors"
+                >
+                  <span>Seller Standards</span>
+                  <ArrowUpRight className="w-3 h-3 opacity-70" />
                 </Link>
               </li>
               <li>
-                <Link href="/policies#privacy" className="hover:text-sx-ink transition-colors">
-                  Privacy &amp; Cookies
+                <Link
+                  href="/policies#privacy"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-0.5 hover:text-sx-ink transition-colors"
+                >
+                  <span>Privacy &amp; Cookies</span>
+                  <ArrowUpRight className="w-3 h-3 opacity-70" />
                 </Link>
               </li>
             </ul>

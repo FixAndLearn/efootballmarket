@@ -73,9 +73,14 @@ export function CookieConsentBanner() {
     >
       <div className="p-4 rounded-lg bg-sx-canvas border border-sx-border-strong shadow-xl text-sx-ink space-y-3">
         <p className="text-xs text-sx-ink-soft leading-relaxed">
-          We use cookies for login sessions, analytics, and Google AdSense advertising. Choose your preference below or review our{" "}
-          <Link href="/privacy" className="text-sx-green-text underline font-semibold">
-            Privacy &amp; Cookie Policy
+          We use cookies for login sessions, analytics, and Google AdSense. Choose below or read our{" "}
+          <Link
+            href="/policies#privacy"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-sx-green-text underline font-semibold"
+          >
+            Privacy &amp; Cookie Policy &nearr;
           </Link>
           .
         </p>

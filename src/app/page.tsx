@@ -8,10 +8,10 @@ import { TournamentService } from "@/services/tournamentService";
 import { NewsService } from "@/services/newsService";
 import { Listing, NewsArticle, Tournament, WantedRequest } from "@/types/database";
 import { ListingCard } from "@/components/marketplace/ListingCard";
-import { HomeFaqAccordion } from "@/components/home/HomeFaqAccordion";
 import { QuietAlertOptIn } from "@/components/common/QuietAlertOptIn";
 import { getCategoryLabel } from "@/lib/data/editorialGuides";
 import { Button } from "@/components/ui/Button";
+import { DetailTabLink } from "@/components/ui/DetailTabLink";
 import { formatCurrency, getPlatformLabel } from "@/lib/utils";
 import {
   ArrowLeftRight,
@@ -144,16 +144,17 @@ export default async function HomePage() {
                   </Link>
                 </div>
 
-                {/* Short, Plain-Language Payment Protection Summary */}
-                <div className="p-3.5 rounded-xl bg-sx-canvas border border-sx-border flex items-start gap-2.5 text-xs text-sx-ink-soft leading-relaxed">
-                  <Lock className="w-4 h-4 text-sx-green-text shrink-0 mt-0.5" />
-                  <p>
-                    <strong className="text-sx-ink">How payment protection works:</strong>{" "}
-                    You pay into Safaricom M-Pesa Buy Goods Till <strong>1572931</strong> — not directly to the seller. We hold your money while you log in, check the squad and <em>Link Data = Not Linked</em> for <strong>24 hours</strong>, and move the Konami ID to your own email before the seller is paid.{" "}
-                    <Link href="/policies#escrow" className="text-sx-green-text font-semibold hover:underline">
-                      View policies &amp; fees
-                    </Link>
-                  </p>
+                {/* Crisp 1-Line Escrow Trust Bar + New-Tab Detail Link */}
+                <div className="px-3.5 py-2.5 rounded-xl bg-sx-canvas border border-sx-border flex flex-wrap items-center justify-between gap-2 text-xs text-sx-ink-soft">
+                  <span className="inline-flex items-center gap-2">
+                    <Lock className="w-3.5 h-3.5 text-sx-green-text shrink-0" />
+                    <span>
+                      <strong className="text-sx-ink">M-Pesa Till 1572931 Hold</strong> · KES 0 Buyer Fee · 24h Login Check
+                    </span>
+                  </span>
+                  <DetailTabLink href="/policies#escrow">
+                    Detailed Escrow Info
+                  </DetailTabLink>
                 </div>
               </div>
             </div>
@@ -317,58 +318,59 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 3. UNIFIED PLAIN-LANGUAGE ESCROW EXPLANATION */}
-      <section className="py-9 sm:py-11 border-t border-sx-border bg-sx-subtle">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+      {/* 3. COMPACT 4-STEP ESCROW STRIP */}
+      <section className="py-8 sm:py-9 border-t border-sx-border bg-sx-subtle">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
             <div>
               <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display">
                 How Buying &amp; Selling Works
               </h2>
-              <p className="text-xs text-sx-muted mt-0.5">
-                Same clear rules on every marketplace listing and Middleman order.
-              </p>
             </div>
-            <div className="flex items-center gap-3 text-xs">
-              <Link href="/middleman" className="inline-flex items-center gap-1 font-semibold text-sx-green-text hover:underline">
-                <Handshake className="w-3.5 h-3.5" />
-                <span>Use Middleman for a WhatsApp deal</span>
-              </Link>
-              <span className="text-sx-border-strong">·</span>
-              <Link href="/scammer-check" className="inline-flex items-center gap-1 font-semibold text-sx-ink hover:underline">
-                <ShieldAlert className="w-3.5 h-3.5 text-sx-amber-text" />
-                <span>Check a Phone Number</span>
-              </Link>
+            <div className="flex flex-wrap items-center gap-2 text-xs">
+              <DetailTabLink href="/policies#escrow" variant="pill">
+                Full Rules &amp; Fee Table
+              </DetailTabLink>
+              <DetailTabLink href="/policies#disputes" variant="pill">
+                Refund Guarantee
+              </DetailTabLink>
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {[
               {
-                step: "1. Pay into Escrow",
-                desc: "Pay the squad price into M-Pesa Buy Goods Till 1572931. Buyers pay KES 0 extra fee, and the seller does not receive the money yet.",
+                num: "01",
+                step: "Pay Till 1572931",
+                desc: "KES 0 extra buyer fee. Funds lock on the platform.",
               },
               {
-                step: "2. Delivery in 12 Hours",
-                desc: "The seller has up to 12 hours to submit the Konami ID login and share the email-change code in the Order Room, or you can cancel for a full refund.",
+                num: "02",
+                step: "12h Seller Delivery",
+                desc: "Logins & OTP delivered inside encrypted Order Room.",
               },
               {
-                step: "3. 24-Hour Buyer Check",
-                desc: "Log in from the eFootball Title Screen, confirm permanent OVR/cards and Link Data = Not Linked, and move the Konami ID to your own email and password.",
+                num: "03",
+                step: "24h Login Check",
+                desc: "Verify squad & Link Data = Not Linked, then rebind email.",
               },
               {
-                step: "4. Payout or Dispute",
-                desc: "Tap Confirm & Release to pay the seller (minus our 5% seller fee, KES 50–500). If the squad doesn't match, open a dispute within 24 hours to freeze the money for review.",
+                num: "04",
+                step: "Release or Refund",
+                desc: "Confirm to pay seller, or tap Open Dispute for review.",
               },
             ].map((item) => (
               <div
                 key={item.step}
-                className="p-5 rounded-xl bg-sx-canvas border border-sx-border space-y-1.5"
+                className="p-4 rounded-xl bg-sx-canvas border border-sx-border space-y-1"
               >
-                <h3 className="text-sm font-bold text-sx-ink font-display">
+                <span className="text-[10px] font-mono font-bold text-sx-green-text">
+                  STEP {item.num}
+                </span>
+                <h3 className="text-xs sm:text-sm font-bold text-sx-ink font-display">
                   {item.step}
                 </h3>
-                <p className="text-xs text-sx-muted leading-relaxed">
+                <p className="text-[11px] sm:text-xs text-sx-muted leading-snug">
                   {item.desc}
                 </p>
               </div>
@@ -571,34 +573,51 @@ export default async function HomePage() {
         </section>
       )}
 
-      {/* 6. FAQ & SUPPORT DESK */}
-      <section className="py-9 sm:py-11 border-t border-sx-border">
+      {/* 6. CLEAN QUICK-REFERENCE & SUPPORT STRIP (Opens Detailed Info in New Tab) */}
+      <section className="py-8 sm:py-10 border-t border-sx-border bg-sx-subtle">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-            <div className="lg:col-span-4 space-y-4">
-              <h2 className="text-xl font-bold text-sx-ink font-display">
-                Common Questions
-              </h2>
-              <p className="text-xs sm:text-sm text-sx-muted leading-relaxed">
-                Clear answers on payment hold, the 24-hour login check, refunds, and seller payouts.
-              </p>
-              <div className="rounded-xl bg-sx-subtle border border-sx-border p-4 space-y-2 text-xs">
-                <div className="flex items-center gap-2 text-sx-ink font-bold">
-                  <Smartphone className="w-4 h-4 text-sx-green-text" />
-                  <span>Need Order Help?</span>
-                </div>
-                <p className="text-sx-muted leading-relaxed">
-                  Message our Nairobi support desk on WhatsApp at{" "}
-                  <strong className="text-sx-ink">0794 400 365</strong>.
-                </p>
-                <Link href="/contact" className="inline-block text-sx-green-text hover:underline font-semibold pt-0.5">
-                  Support hours &amp; contact details &rarr;
-                </Link>
+          <div className="rounded-2xl bg-sx-canvas border border-sx-border p-5 sm:p-7 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+            <div className="space-y-1.5 max-w-xl">
+              <div className="flex items-center gap-2 text-xs font-bold text-sx-green-text uppercase tracking-wider">
+                <ShieldCheck className="w-4 h-4" />
+                <span>Detailed Guides, Fees &amp; Human Support</span>
               </div>
+              <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display">
+                Need detailed rules or live handover help?
+              </h2>
+              <p className="text-xs sm:text-sm text-sx-muted">
+                Every guide and policy opens in a separate reference tab so you never lose your place. Nairobi desk:{" "}
+                <a
+                  href="https://wa.me/254794400365"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="font-bold text-sx-ink underline hover:text-sx-green-text"
+                >
+                  WhatsApp 0794 400 365
+                </a>{" "}
+                (8 AM – 10 PM EAT).
+              </p>
             </div>
 
-            <div className="lg:col-span-8">
-              <HomeFaqAccordion />
+            <div className="flex flex-wrap items-center gap-2">
+              <DetailTabLink href="/policies#escrow" variant="pill">
+                Escrow &amp; Fee Table
+              </DetailTabLink>
+              <DetailTabLink href="/policies#disputes" variant="pill">
+                Refund &amp; Dispute Rules
+              </DetailTabLink>
+              <DetailTabLink
+                href="/news/how-to-verify-clean-konami-id-before-releasing-escrow"
+                variant="pill"
+              >
+                Clean Konami ID Guide
+              </DetailTabLink>
+              <DetailTabLink href="/policies#seller-standards" variant="pill">
+                Seller Payout Rules
+              </DetailTabLink>
+              <DetailTabLink href="/policies#terms" variant="pill">
+                Terms &amp; Privacy
+              </DetailTabLink>
             </div>
           </div>
         </div>

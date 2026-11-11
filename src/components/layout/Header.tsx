@@ -88,8 +88,13 @@ export function Header() {
               <Link href="/browse" className="text-sx-ink font-semibold hover:text-sx-green-text transition-colors">
                 Browse Squads
               </Link>
-              <Link href="/policies" className="hover:text-sx-ink transition-colors">
-                Escrow &amp; Policies
+              <Link
+                href="/policies"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="hover:text-sx-ink transition-colors"
+              >
+                Escrow &amp; Policies &nearr;
               </Link>
               <Link href="/news" className="hover:text-sx-ink transition-colors">
                 Guides
@@ -338,18 +343,21 @@ export function Header() {
 
           <div className="grid grid-cols-2 gap-2">
             {[
-              { name: "Browse Market", href: "/browse" },
-              { name: "Sell Your Squad", href: "/seller/create-listing" },
-              { name: "Blog & Guides", href: "/news" },
-              { name: "Middleman Escrow", href: "/middleman" },
-              { name: "Scammer Check", href: "/scammer-check" },
-              { name: "1v1 Tournaments", href: "/tournaments" },
-              { name: "Escrow & Policies", href: "/policies" },
-              { name: "Services & Support", href: "/contact" },
+              { name: "Browse Market", href: "/browse", newTab: false },
+              { name: "Sell Your Squad", href: "/seller/create-listing", newTab: false },
+              { name: "Blog & Guides", href: "/news", newTab: false },
+              { name: "Middleman Escrow", href: "/middleman", newTab: false },
+              { name: "Scammer Check", href: "/scammer-check", newTab: false },
+              { name: "1v1 Tournaments", href: "/tournaments", newTab: false },
+              { name: "Escrow & Policies ↗", href: "/policies", newTab: true },
+              { name: "Services & Support", href: "/contact", newTab: false },
             ].map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
+                target={link.newTab ? "_blank" : undefined}
+                rel={link.newTab ? "noopener noreferrer" : undefined}
+                onClick={link.newTab ? () => setMobileMenuOpen(false) : undefined}
                 className="px-3 py-2.5 rounded-md bg-sx-stone text-xs font-semibold text-sx-ink hover:bg-sx-elevated"
               >
                 {link.name}

@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
+import { DetailTabLink } from "@/components/ui/DetailTabLink";
 import { formatCurrency, formatSmartListingTitle, getPlatformLabel } from "@/lib/utils";
 import { normalizePhoneNumber } from "@/lib/utils/phone";
 import { isListingOnFlashSale } from "@/lib/utils/flashSale";
@@ -377,6 +378,8 @@ export function DirectCheckoutForm({
           </div>
           <Link
             href={`/listings/${listing.id}`}
+            target="_blank"
+            rel="noopener noreferrer"
             className="text-xs font-semibold text-sx-green-text hover:underline shrink-0 inline-flex items-center gap-1"
           >
             <span>Inspect</span>
@@ -709,15 +712,17 @@ export function DirectCheckoutForm({
         </div>
       )}
 
-      {/* Trust & Publisher Disclosure */}
-      <div className="p-4 rounded-xl bg-sx-subtle border border-sx-border text-[11px] text-sx-muted space-y-1.5 leading-relaxed">
-        <p className="font-semibold text-sx-ink flex items-center gap-1.5">
-          <Lock className="w-3.5 h-3.5 text-sx-green-text" />
-          <span>24-Hour Buyer Inspection Guarantee</span>
-        </p>
-        <p>
-          Sellers receive zero funds until you verify Clean Konami ID ownership (<strong>Google Play &amp; Apple ID: Not Linked</strong>) or 24 uncontested hours pass after credential delivery. Independent marketplace—please note Konami&apos;s user terms restrict account transfers.
-        </p>
+      {/* Crisp 1-Line Protection Summary (Detailed Rules Open in New Tab) */}
+      <div className="px-4 py-3 rounded-xl bg-sx-subtle border border-sx-border text-xs text-sx-muted flex flex-wrap items-center justify-between gap-2">
+        <span className="inline-flex items-center gap-1.5">
+          <Lock className="w-3.5 h-3.5 text-sx-green-text shrink-0" />
+          <span>
+            <strong className="text-sx-ink">24h Buyer Check:</strong> Seller paid only after you verify Clean ID in-game.
+          </span>
+        </span>
+        <DetailTabLink href="/policies#disputes">
+          Refund &amp; Publisher Rules
+        </DetailTabLink>
       </div>
     </div>
   );

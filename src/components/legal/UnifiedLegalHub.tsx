@@ -15,6 +15,8 @@ import {
   CheckCircle2,
   XCircle,
   ArrowUpRight,
+  ArrowLeft,
+  X,
   Search,
 } from "lucide-react";
 
@@ -99,6 +101,13 @@ interface UnifiedLegalHubProps {
 export function UnifiedLegalHub({ initialSection = "escrow" }: UnifiedLegalHubProps) {
   const [activeId, setActiveId] = useState<PolicySectionId>(initialSection);
   const [filterQuery, setFilterQuery] = useState("");
+  const [canCloseTab, setCanCloseTab] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== "undefined" && (window.opener || window.history.length <= 1)) {
+      setCanCloseTab(true);
+    }
+  }, []);
 
   // Smooth jump on initial route / hash load (skip scroll when opening default top chapter without hash)
   useEffect(() => {
@@ -177,10 +186,36 @@ export function UnifiedLegalHub({ initialSection = "escrow" }: UnifiedLegalHubPr
       <section className="border-b border-sx-border bg-gradient-to-b from-sx-subtle to-sx-canvas">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-8 pb-8 sm:pt-12 sm:pb-10 space-y-7">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sx-green-tint border border-sx-green-border text-xs font-bold text-sx-green-text">
-              <ShieldCheck className="w-3.5 h-3.5" />
-              <span>Unified Trust, Legal &amp; Policy Center</span>
-            </span>
+            <div className="flex flex-wrap items-center gap-2.5">
+              {canCloseTab ? (
+                <button
+                  type="button"
+                  onClick={() => {
+                    window.close();
+                    setTimeout(() => {
+                      window.location.href = "/browse";
+                    }, 150);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sx-canvas hover:bg-sx-stone border border-sx-border text-xs font-semibold text-sx-ink transition-colors cursor-pointer"
+                >
+                  <X className="w-3.5 h-3.5 text-sx-muted" />
+                  <span>Close Reference Tab</span>
+                </button>
+              ) : (
+                <Link
+                  href="/browse"
+                  className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sx-canvas hover:bg-sx-stone border border-sx-border text-xs font-semibold text-sx-ink transition-colors"
+                >
+                  <ArrowLeft className="w-3.5 h-3.5 text-sx-muted" />
+                  <span>Back to Squads</span>
+                </Link>
+              )}
+
+              <span className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sx-green-tint border border-sx-green-border text-xs font-bold text-sx-green-text">
+                <ShieldCheck className="w-3.5 h-3.5" />
+                <span>Unified Trust, Legal &amp; Policy Center</span>
+              </span>
+            </div>
             <span className="text-xs text-sx-muted font-mono">
               Effective &amp; Last Updated: November 10, 2026
             </span>

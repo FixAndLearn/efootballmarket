@@ -114,6 +114,8 @@ export function SupportHubWidget() {
 
             <Link
               href="/policies"
+              target="_blank"
+              rel="noopener noreferrer"
               onClick={() => setOpen(false)}
               className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-sx-stone transition-colors group"
             >
@@ -122,7 +124,7 @@ export function SupportHubWidget() {
                 Policies, Fees &amp; Refunds
               </span>
               <span className="text-[11px] text-sx-muted group-hover:text-sx-ink">
-                Read &rarr;
+                Read &nearr;
               </span>
             </Link>
           </div>

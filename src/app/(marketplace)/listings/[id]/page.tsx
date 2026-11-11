@@ -25,6 +25,7 @@ import { ListingActionsBar } from "@/components/marketplace/ListingActionsBar";
 import { ListingStickyBottomBar } from "@/components/marketplace/ListingStickyBottomBar";
 import { AdBanner } from "@/components/common/AdBanner";
 import { Button } from "@/components/ui/Button";
+import { DetailTabLink } from "@/components/ui/DetailTabLink";
 import {
   ArrowLeft,
   ArrowRight,
@@ -310,24 +311,18 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
               </div>
             </div>
 
-            {/* Seller-Provided vs Platform-Checked Transparency Box */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div className="p-3.5 rounded-xl bg-sx-stone border border-sx-border space-y-1">
-                <span className="font-bold text-sx-ink block">
-                  Seller-Provided Info (Verify During Your 24h Check)
+            {/* Compact Verification Strip (Detailed Info Opens in New Tab) */}
+            <div className="px-4 py-3 rounded-xl bg-sx-subtle border border-sx-border flex flex-wrap items-center justify-between gap-2 text-xs text-sx-muted">
+              <span className="inline-flex items-center gap-2">
+                <ShieldCheck className="w-4 h-4 text-sx-green-text shrink-0" />
+                <span>
+                  <strong className="text-sx-ink">24h Inspection Hold on Till 1572931:</strong>{" "}
+                  Seller stats are verified in-game by you before payout.
                 </span>
-                <p className="text-[11px] text-sx-muted leading-relaxed">
-                  Screenshots, OVR, card counts, coin balance, manager, formation, and Clean Konami ID declaration are entered by the seller. We do not log into seller game accounts before purchase.
-                </p>
-              </div>
-              <div className="p-3.5 rounded-xl bg-sx-green-tint border border-sx-green-border space-y-1">
-                <span className="font-bold text-sx-green-text block">
-                  Platform-Checked on Every Order
-                </span>
-                <p className="text-[11px] text-sx-ink-soft leading-relaxed">
-                  M-Pesa receipt confirmation on eFootballMarket&apos;s Buy Goods Till 1572931, seller completed-sales history/ID badge, and a 24-hour payment hold (starting when credentials are submitted) while you verify in-game.
-                </p>
-              </div>
+              </span>
+              <DetailTabLink href="/policies#escrow">
+                What We Check
+              </DetailTabLink>
             </div>
 
             {/* Card Tier Counts */}
@@ -393,64 +388,22 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
               </div>
             </div>
 
-            {/* 24-Hour Handover Checklist */}
-            <div className="pt-5 border-t border-sx-border space-y-4">
-              <div className="flex items-center justify-between gap-2 flex-wrap">
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-4 h-4 text-sx-green-text" />
-                  <h2 className="text-sm font-bold text-sx-ink font-display">
-                    24-Hour Buyer Handover Checklist
-                  </h2>
-                </div>
-                <div className="flex items-center gap-3 text-xs font-medium">
-                  <Link
-                    href="/news/how-to-verify-clean-konami-id-before-releasing-escrow"
-                    className="text-sx-green-text hover:underline"
-                  >
-                    Step-by-step Clean ID guide &rarr;
-                  </Link>
-                  <Link href="/escrow-guarantee" className="text-sx-muted hover:text-sx-ink">
-                    Escrow &amp; fees
-                  </Link>
-                </div>
+            {/* Clean Handover Reference Bar (Opens Full Step-by-Step Guides in New Tab) */}
+            <div className="p-4 rounded-xl bg-sx-subtle border border-sx-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+              <div className="flex items-center gap-2 text-sx-ink font-semibold">
+                <ShieldCheck className="w-4 h-4 text-sx-green-text shrink-0" />
+                <span>24-Hour Buyer Handover &amp; Clean Konami ID Guides</span>
               </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-                {[
-                  {
-                    step: "01",
-                    title: "Verify Squad & Balances",
-                    body: "Sign in via Title Screen Data Transfer and confirm Starting XI, reserves, OVR, and Coins match.",
-                  },
-                  {
-                    step: "02",
-                    title: "Check Link Data Screen",
-                    body: "Open Extras → Support → Link Data and verify Google Play and Game Center both show Not Linked.",
-                  },
-                  {
-                    step: "03",
-                    title: "Bind Your Own Email & 2FA",
-                    body: "Sign into my.konami.net, replace the registered email and password, and enable your own 2-Step Verification.",
-                  },
-                  {
-                    step: "04",
-                    title: "Confirm or Raise Dispute",
-                    body: "Release seller payout once satisfied, or open a dispute before 24 hours ends to freeze funds for refund.",
-                  },
-                ].map((item) => (
-                  <div
-                    key={item.step}
-                    className="p-3.5 rounded-xl bg-sx-stone border border-sx-border space-y-1"
-                  >
-                    <div className="flex items-center gap-2">
-                      <span className="font-mono text-[10px] font-bold text-sx-green-text px-1.5 py-0.5 rounded bg-sx-canvas border border-sx-border">
-                        {item.step}
-                      </span>
-                      <span className="font-semibold text-sx-ink">{item.title}</span>
-                    </div>
-                    <p className="text-sx-muted text-[11px] leading-relaxed">{item.body}</p>
-                  </div>
-                ))}
+              <div className="flex flex-wrap items-center gap-2">
+                <DetailTabLink
+                  href="/news/how-to-verify-clean-konami-id-before-releasing-escrow"
+                  variant="pill"
+                >
+                  Clean ID Checklist
+                </DetailTabLink>
+                <DetailTabLink href="/policies#disputes" variant="pill">
+                  Refund &amp; Escrow Rules
+                </DetailTabLink>
               </div>
             </div>
           </div>
@@ -605,27 +558,18 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
               </div>
             )}
 
-            {/* Protection & Fee Summary */}
-            <div className="border-t border-sx-border pt-4 space-y-2 text-xs text-sx-ink-soft">
-              <div className="flex items-start gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-sx-green-text shrink-0 mt-0.5" />
-                <span>
-                  <strong>KES&nbsp;0 added buyer fee</strong> — Safaricom M-Pesa sends your payment to eFootballMarket&apos;s <strong className="whitespace-nowrap">Till&nbsp;1572931</strong>, where we hold it during inspection
-                </span>
+            {/* Compact Protection Summary + New-Tab Detailed Rules */}
+            <div className="border-t border-sx-border pt-3.5 space-y-2 text-xs text-sx-muted">
+              <div className="flex items-center gap-2 text-sx-ink font-semibold">
+                <CheckCircle2 className="w-3.5 h-3.5 text-sx-green-text shrink-0" />
+                <span>KES 0 buyer fee · 12h delivery · 24h login check</span>
               </div>
-              <div className="flex items-start gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-sx-green-text shrink-0 mt-0.5" />
-                <span>Seller delivers within 12 hours or you receive a 100% refund</span>
+              <div className="flex items-center justify-between gap-2 text-[11px]">
+                <span>Independent marketplace (publisher rules apply)</span>
+                <DetailTabLink href="/policies#escrow">
+                  Full Rules
+                </DetailTabLink>
               </div>
-              <div className="flex items-start gap-2">
-                <CheckCircle2 className="w-3.5 h-3.5 text-sx-green-text shrink-0 mt-0.5" />
-                <span>24-hour inspection clock starts when credentials arrive in your Order Room</span>
-              </div>
-            </div>
-
-            {/* Plain-Language Game Publisher Rules Notice */}
-            <div className="p-3 rounded-xl bg-sx-stone border border-sx-border text-[11px] text-sx-muted leading-relaxed">
-              <strong className="text-sx-ink">Game publisher notice:</strong> Konami&apos;s Terms of Use restrict account transfers, and Konami can modify game features or restrict accounts under its own rules. eFootballMarket holds payment during your 24-hour Clean ID check, but cannot control future publisher actions after an order completes.
             </div>
 
             {/* Seller Card */}

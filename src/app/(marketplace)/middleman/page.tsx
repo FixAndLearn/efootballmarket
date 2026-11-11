@@ -4,6 +4,7 @@ import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
+import { DetailTabLink } from "@/components/ui/DetailTabLink";
 import { Input } from "@/components/ui/Input";
 import { formatCurrency } from "@/lib/utils";
 import { normalizePhoneNumber } from "@/lib/utils/phone";
@@ -219,45 +220,50 @@ function MiddlemanContent() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-8">
-      {/* Header */}
-      <div className="relative rounded-2xl store-panel p-6 sm:p-9 overflow-hidden">
+      {/* Clean Compact Header */}
+      <div className="relative rounded-2xl store-panel p-6 sm:p-8 overflow-hidden">
         <div
-          className="absolute inset-0 bg-cover bg-center opacity-20 pointer-events-none"
+          className="absolute inset-0 bg-cover bg-center opacity-15 pointer-events-none"
           style={{ backgroundImage: "url('/images/cat-middleman.jpg')" }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-sx-canvas via-sx-canvas/95 to-sx-canvas/80 pointer-events-none" />
+        <div className="absolute inset-0 bg-gradient-to-r from-sx-canvas via-sx-canvas/95 to-sx-canvas/85 pointer-events-none" />
 
-        <div className="relative z-10 space-y-3 max-w-2xl">
-          <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-sx-green-tint border border-emerald-500/35 text-[11px] font-mono font-bold text-sx-green-text uppercase">
-            Off-Platform Trade Protection
-          </span>
-          <h1 className="text-2xl sm:text-4xl font-bold text-sx-ink font-display tracking-tight">
-            Middleman Escrow for WhatsApp &amp; Facebook Deals
-          </h1>
+        <div className="relative z-10 flex flex-col md:flex-row md:items-end justify-between gap-5">
+          <div className="space-y-2 max-w-2xl">
+            <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded bg-sx-green-tint border border-sx-green-border text-[11px] font-mono font-bold text-sx-green-text uppercase">
+              Off-Platform Trade Protection
+            </span>
+            <h1 className="text-2xl sm:text-4xl font-bold text-sx-ink font-display tracking-tight">
+              Middleman Escrow for WhatsApp &amp; Social Deals
+            </h1>
+            <p className="text-xs sm:text-sm text-sx-muted leading-relaxed">
+              Lock your agreed KES price in <strong>Buy Goods Till 1572931</strong> (KES 0 buyer fee) while you verify Clean Konami ID ownership for 24 hours before seller payout.
+            </p>
+          </div>
 
-          <p className="text-xs sm:text-sm text-sx-ink-soft leading-relaxed">
-            Finding a buyer or seller on WhatsApp, Facebook, Discord, or TikTok is allowed when you settle the trade here: the buyer pays the agreed price into <strong>eFootballMarket Kenya&apos;s Buy Goods Till 1572931</strong> (KES 0 extra buyer fee; Safaricom processes the transfer and eFootballMarket holds the funds), the seller delivers within 12 hours, and the buyer has 24 hours from credential delivery to verify Clean Konami ID before net payout (minus 5% seller fee, KES 50–500).
-          </p>
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            <DetailTabLink href="/policies#escrow" variant="pill">
+              Escrow Rules &amp; Fees
+            </DetailTabLink>
+            <DetailTabLink href="/policies#disputes" variant="pill">
+              Refund Policy
+            </DetailTabLink>
+          </div>
         </div>
       </div>
 
-      {/* 4-Step Pipeline */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+      {/* Sleek 4-Step Inline Bar */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-2.5 text-xs">
         {[
-          { num: "01", tag: "CONTRACT", title: "Open Deal Code", desc: "Enter agreed KES amount and both trader phone numbers to generate a contract code." },
-          { num: "02", tag: "DEPOSIT", title: "Pay Till 1572931", desc: "Buyer completes payment into Till 1572931. Funds stay locked on the platform." },
-          { num: "03", tag: "VERIFY", title: "24h Buyer Check", desc: "Seller delivers Konami ID. Buyer verifies squad, Link Data, and rebinds email." },
-          { num: "04", tag: "PAYOUT", title: "Release M-Pesa", desc: "Buyer confirms handover (or 24h passes without dispute) to trigger seller payout." },
+          { num: "01", title: "Open Deal Code", desc: "Enter price & phone numbers" },
+          { num: "02", title: "Pay Till 1572931", desc: "Funds lock on platform" },
+          { num: "03", title: "24h Buyer Check", desc: "Verify squad & rebind email" },
+          { num: "04", title: "M-Pesa Payout", desc: "Seller paid (minus 5% fee)" },
         ].map((s) => (
-          <div key={s.num} className="p-4 rounded-xl store-panel space-y-2">
-            <div className="flex items-center justify-between">
-              <span className="px-1.5 py-0.5 rounded bg-sx-stone border border-sx-border font-mono text-[11px] font-bold text-sx-green-text">
-                {s.num}
-              </span>
-              <span className="text-[10px] font-mono uppercase text-sx-muted">{s.tag}</span>
-            </div>
+          <div key={s.num} className="p-3.5 rounded-xl bg-sx-subtle border border-sx-border space-y-0.5">
+            <span className="font-mono text-[10px] font-bold text-sx-green-text">STEP {s.num}</span>
             <h3 className="text-xs font-bold text-sx-ink font-display">{s.title}</h3>
-            <p className="text-[11px] text-sx-muted leading-relaxed">{s.desc}</p>
+            <p className="text-[11px] text-sx-muted">{s.desc}</p>
           </div>
         ))}
       </div>

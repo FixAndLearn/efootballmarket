@@ -4,6 +4,7 @@ import { useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
+import { DetailTabLink } from "@/components/ui/DetailTabLink";
 import { Input } from "@/components/ui/Input";
 import { useAuth } from "@/hooks/useAuth";
 import { watermarkSquadImage } from "@/lib/utils/watermark";
@@ -387,13 +388,18 @@ export default function CreateListingPage() {
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 py-8 sm:py-10 w-full space-y-6">
       <div className="space-y-2">
-        <Link
-          href="/dashboard/seller"
-          className="inline-flex items-center gap-1.5 text-xs font-semibold text-sx-muted hover:text-sx-ink transition-colors"
-        >
-          <ArrowLeft className="w-3.5 h-3.5" />
-          <span>Back to Seller Hub</span>
-        </Link>
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <Link
+            href="/dashboard/seller"
+            className="inline-flex items-center gap-1.5 text-xs font-semibold text-sx-muted hover:text-sx-ink transition-colors"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Back to Seller Hub</span>
+          </Link>
+          <DetailTabLink href="/policies#seller-standards" variant="pill">
+            Seller Rules &amp; Payouts
+          </DetailTabLink>
+        </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-sx-ink font-display tracking-tight">
           Sell Your eFootball Squad
         </h1>
@@ -427,8 +433,13 @@ export default function CreateListingPage() {
             </span>
           </div>
 
-          <div className="p-3 rounded-lg bg-sx-amber-tint border border-sx-amber-border text-[11px] text-sx-amber-text leading-relaxed">
-            <strong>Privacy check before uploading:</strong> Do not upload screenshots that display your personal email address, phone number, Konami ID password, or M-Pesa SMS messages. Crop or hide personal details first.
+          <div className="px-3.5 py-2.5 rounded-lg bg-sx-amber-tint border border-sx-amber-border text-[11px] text-sx-amber-text flex flex-wrap items-center justify-between gap-2">
+            <span>
+              <strong>Privacy tip:</strong> Mask or crop out personal emails, phone numbers, and passwords before uploading.
+            </span>
+            <DetailTabLink href="/policies#seller-standards" className="text-sx-ink">
+              Screenshot Standards
+            </DetailTabLink>
           </div>
 
           {/* 3-Slot Guided Proof Checklist */}
