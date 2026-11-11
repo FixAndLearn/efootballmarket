@@ -1,6 +1,9 @@
-// Google Analytics 4 & Google Consent Mode v2 Engine
+// Google Tag Manager (GTM-KSSS83QZ), Google Analytics 4 & Google Consent Mode v2 Engine
 
-export const GA_MEASUREMENT_ID = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "";
+export const GTM_CONTAINER_ID =
+  process.env.NEXT_PUBLIC_GTM_ID || "GTM-KSSS83QZ";
+export const GA_MEASUREMENT_ID =
+  process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID || "";
 
 export interface CookieConsentState {
   necessary: boolean;
@@ -18,25 +21,35 @@ export const DEFAULT_CONSENT: CookieConsentState = {
 
 // Update Google Consent Mode v2
 export const updateGoogleConsent = (consent: CookieConsentState) => {
-  if (typeof window === "undefined" || !(window as any).gtag) return;
-
-  (window as any).gtag("consent", "update", {
-    analytics_storage: consent.analytics ? "granted" : "denied",
-    ad_storage: consent.advertising ? "granted" : "denied",
-    ad_user_data: consent.advertising ? "granted" : "denied",
-    ad_personalization: consent.advertising ? "granted" : "denied",
-  });
+  if (typeof window === "undefined") return;
+  const w = window as any;
+  if (typeof w.gtag === "function") {
+    w.gtag("consent", "update", {
+      analytics_storage: consent.analytics ? "granted" : "denied",
+      ad_storage: consent.advertising ? "granted" : "denied",
+      ad_user_data: consent.advertising ? "granted" : "denied",
+      ad_personalization: consent.advertising ? "granted" : "denied",
+    });
+  }
 };
 
 // Track Page Views
 export const pageview = (url: string) => {
-  if (typeof window === "undefined" || !(window as any).gtag || !GA_MEASUREMENT_ID) return;
-  (window as any).gtag("config", GA_MEASUREMENT_ID, {
+  if (typeof window === "undefined") return;
+  const w = window as any;
+  w.dataLayer = w.dataLayer || [];
+  w.dataLayer.push({
+    event: "page_view",
     page_path: url,
   });
+  if (typeof w.gtag === "function" && GA_MEASUREMENT_ID) {
+    w.gtag("config", GA_MEASUREMENT_ID, {
+      page_path: url,
+    });
+  }
 };
 
-// Track Custom Event
+// Track Custom Event (supports both GTM dataLayer & gtag)
 export const trackEvent = ({
   action,
   category,
@@ -48,10 +61,20 @@ export const trackEvent = ({
   label?: string;
   value?: number;
 }) => {
-  if (typeof window === "undefined" || !(window as any).gtag) return;
-  (window as any).gtag("event", action, {
+  if (typeof window === "undefined") return;
+  const w = window as any;
+  w.dataLayer = w.dataLayer || [];
+  w.dataLayer.push({
+    event: action,
     event_category: category,
     event_label: label,
     value: value,
   });
+  if (typeof w.gtag === "function") {
+    w.gtag("event", action, {
+      event_category: category,
+      event_label: label,
+      value: value,
+    });
+  }
 };

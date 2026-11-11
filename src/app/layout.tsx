@@ -7,6 +7,7 @@ import { Footer } from "@/components/layout/Footer";
 import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { CookieConsentBanner } from "@/components/common/CookieConsentBanner";
 import { AdSenseScript } from "@/components/common/AdSenseScript";
+import { GoogleTagRouteTracker } from "@/components/common/GoogleTagRouteTracker";
 import { SupportHubWidget } from "@/components/support/SupportHubWidget";
 import { LiveNotificationManager } from "@/components/notifications/LiveNotificationManager";
 
@@ -32,6 +33,7 @@ const jetbrainsMono = JetBrains_Mono({
 
 const APP_URL = process.env.NEXT_PUBLIC_APP_URL || "https://www.efootballmarket.co.ke";
 const DEFAULT_ADSENSE_CLIENT_ID = "ca-pub-5924764989915276";
+const DEFAULT_GTM_ID = "GTM-KSSS83QZ";
 
 export const viewport: Viewport = {
   themeColor: [
@@ -139,6 +141,7 @@ export default function RootLayout({
 }>) {
   const adsenseId =
     process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || DEFAULT_ADSENSE_CLIENT_ID;
+  const gtmId = process.env.NEXT_PUBLIC_GTM_ID || DEFAULT_GTM_ID;
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
 
   return (
@@ -147,7 +150,7 @@ export default function RootLayout({
       className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
     >
       <head>
-        {/* Google Consent Mode v2 Bootstrap */}
+        {/* Google Consent Mode v2 + Google Tag / GTM Bootstrap */}
         <script
           id="google-consent-mode"
           dangerouslySetInnerHTML={{
@@ -173,9 +176,17 @@ export default function RootLayout({
                   'wait_for_update': 500
                 });
               })();
+              gtag('js', new Date());
+              window.dataLayer.push({ 'gtm.start': new Date().getTime(), event: 'gtm.js' });
             `,
           }}
         />
+        {gtmId && (
+          <script
+            async
+            src={`https://www.googletagmanager.com/gtm.js?id=${gtmId}`}
+          />
+        )}
         {gaId && (
           <>
             <Script
@@ -198,6 +209,18 @@ export default function RootLayout({
         )}
       </head>
       <body className="font-sans antialiased flex flex-col min-h-screen bg-sx-canvas text-sx-ink selection:bg-sx-green selection:text-white">
+        {gtmId && (
+          <noscript>
+            <iframe
+              src={`https://www.googletagmanager.com/ns.html?id=${gtmId}`}
+              height="0"
+              width="0"
+              style={{ display: "none", visibility: "hidden" }}
+              title="Google Tag Manager"
+            />
+          </noscript>
+        )}
+        <GoogleTagRouteTracker />
         <Header />
         <main className="flex-1 flex flex-col pb-20 md:pb-0">{children}</main>
         <Footer />

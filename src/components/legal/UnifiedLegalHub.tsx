@@ -720,10 +720,10 @@ export function UnifiedLegalHub({ initialSection = "escrow" }: UnifiedLegalHubPr
 
                 <div className="space-y-1.5">
                   <h3 className="text-base font-bold text-sx-ink font-display">
-                    6.2 Cookies, Google AdSense &amp; Consent Mode v2
+                    6.2 Cookies, Google Analytics / Tag Manager &amp; AdSense (Consent Mode v2)
                   </h3>
                   <p>
-                    Strictly necessary Supabase session cookies (<code>sb-*</code>) keep you signed in. Third-party vendors, including <strong>Google</strong> (AdSense publisher <code>ca-pub-5924764989915276</code>), use cookies to serve ads based on prior visits to this or other websites. Under <strong>Google Consent Mode v2</strong>, <code>ad_storage</code>, <code>ad_user_data</code>, <code>ad_personalization</code>, and <code>analytics_storage</code> default to <strong>denied</strong> until you click <em>Accept All</em> on our Cookie Banner (choosing <em>Essential Only</em> keeps them off). You can opt out anytime at{" "}
+                    Strictly necessary Supabase session cookies (<code>sb-*</code>) keep you signed in. We use <strong>Google Tag Manager / Google Analytics</strong> (<code>GTM-KSSS83QZ</code>) for aggregate traffic measurement, and third-party vendors including <strong>Google</strong> (AdSense publisher <code>ca-pub-5924764989915276</code>) use cookies to serve ads based on prior visits to this or other websites. Under <strong>Google Consent Mode v2</strong>, <code>ad_storage</code>, <code>ad_user_data</code>, <code>ad_personalization</code>, and <code>analytics_storage</code> default to <strong>denied</strong> until you click <em>Accept All</em> on our Cookie Banner (choosing <em>Essential Only</em> keeps them off). You can opt out anytime at{" "}
                     <a
                       href="https://myadcenter.google.com/"
                       target="_blank"
