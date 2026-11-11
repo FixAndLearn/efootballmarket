@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import {
   HelpCircle,
   X,
@@ -17,7 +18,13 @@ const WHATSAPP_NUMBER =
   process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP || "254794400365";
 
 export function SupportHubWidget() {
+  const pathname = usePathname();
   const [open, setOpen] = useState(false);
+
+  // Hide floating help pill inside Order Rooms & Dedicated Order Chat so it never blocks send buttons
+  if (pathname?.startsWith("/orders/")) {
+    return null;
+  }
 
   const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     "Hello eFootballMarket Support, I need help with an account listing or escrow order."

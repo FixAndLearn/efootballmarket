@@ -13,7 +13,8 @@ import { Button } from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/utils";
 import { createClient } from "@/lib/supabase/client";
 import { EscrowState, Order, OrderStatus } from "@/types/database";
-import { AlertCircle, AlertTriangle, CheckCircle2, Clock, FileText, KeyRound, Lock, Send, ShieldAlert, ShieldCheck, Smartphone } from "lucide-react";
+import { AlertCircle, AlertTriangle, CheckCircle2, Clock, FileText, KeyRound, Lock, MessageSquare, Send, ShieldAlert, ShieldCheck, Smartphone } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 
@@ -479,19 +480,22 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
               </div>
 
               {/* Step 2: Live Chat for Codes */}
-              <div className="p-4 rounded-xl bg-pitch-card border border-pitch-border flex items-center justify-between">
+              <div className="p-4 rounded-xl bg-sx-canvas border border-sx-border flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                 <div>
                   <h4 className="text-sm font-bold text-sx-ink flex items-center gap-2">
                     <span className="w-5 h-5 rounded-full bg-sx-green-tint text-sx-green-text text-xs flex items-center justify-center font-bold">2</span>
-                    Request 2FA / OTP in Chat
+                    Request 2FA / OTP in Dedicated Chat
                   </h4>
                   <p className="text-xs text-sx-muted mt-0.5">
-                    Ask seller for the Konami 2-Step verification code sent to their email.
+                    Open the full-page chat to ask the seller for the Konami 6-digit verification code.
                   </p>
                 </div>
-                <span className="text-xs text-sx-green-text font-semibold bg-sx-green-tint border border-sx-green-border px-2.5 py-1 rounded-lg">
-                  Chat Active
-                </span>
+                <Link href={`/orders/${order.id}/chat`} className="shrink-0">
+                  <Button variant="primary" size="sm">
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    <span>Open Chat Page</span>
+                  </Button>
+                </Link>
               </div>
 
               {/* Step 3: Konami ID Security Transfer Checklist (5-Point Protocol) */}
@@ -619,14 +623,20 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
               <div className="p-4 rounded-xl bg-sx-amber-tint border border-sx-amber-border text-xs text-sx-amber-text space-y-2">
                 <span className="font-bold text-sx-amber-text block text-sm">Action Needed in Order Chat:</span>
                 <p>
-                  The buyer is currently attempting login and updating the Konami account. Please stay active in the <strong>Order Chat</strong> below to send the <strong>2-Step OTP codes</strong> when prompted!
+                  The buyer is currently attempting login and updating the Konami account. Open the dedicated <strong>Order Chat Page</strong> to send the <strong>6-digit OTP codes</strong> when prompted!
                 </p>
                 <p className="text-[11px] text-sx-amber-text">
                   Once the buyer finishes binding both their password and email, the escrow funds will be cleared automatically to your Available Balance.
                 </p>
               </div>
 
-              <div className="flex gap-2">
+              <div className="flex flex-wrap gap-2">
+                <Link href={`/orders/${order.id}/chat`}>
+                  <Button variant="primary" size="sm">
+                    <MessageSquare className="w-4 h-4" />
+                    <span>Open Full-Page Chat</span>
+                  </Button>
+                </Link>
                 <Button
                   variant="outline"
                   size="sm"

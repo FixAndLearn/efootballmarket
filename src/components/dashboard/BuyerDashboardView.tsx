@@ -310,17 +310,16 @@ export const BuyerDashboardView: React.FC<BuyerDashboardViewProps> = ({
                     </div>
 
                     <div className="flex items-center gap-2">
-                      <a
-                        href={`https://wa.me/254794400365?text=${encodeURIComponent(
-                          `Hello eFootballMarket Escrow Desk, checking on Buyer Order #${order.order_number}.`
-                        )}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        title="WhatsApp Support for this Order"
-                        className="h-9 w-9 rounded-full bg-sx-stone hover:bg-sx-elevated border border-sx-border flex items-center justify-center text-sx-muted hover:text-sx-green-text transition-colors"
-                      >
-                        <MessageCircle className="w-4 h-4" />
-                      </a>
+                      {order.status !== "payment_pending" && (
+                        <Link
+                          href={`/orders/${order.id}/chat`}
+                          title="Open Dedicated Order Chat"
+                          className="h-9 px-3 rounded-lg bg-sx-stone hover:bg-sx-elevated border border-sx-border inline-flex items-center gap-1.5 text-xs font-bold text-sx-ink hover:text-sx-green-text transition-colors"
+                        >
+                          <MessageCircle className="w-3.5 h-3.5 text-sx-green-text" />
+                          <span>Chat</span>
+                        </Link>
+                      )}
                       <Link href={`/orders/${order.id}`}>
                         <Button
                           variant={badge.urgent ? "primary" : "secondary"}
