@@ -88,8 +88,8 @@ export function Header() {
               <Link href="/browse" className="text-sx-ink font-semibold hover:text-sx-green-text transition-colors">
                 Browse Squads
               </Link>
-              <Link href="/escrow-guarantee" className="hover:text-sx-ink transition-colors">
-                How Escrow Works
+              <Link href="/policies" className="hover:text-sx-ink transition-colors">
+                Escrow &amp; Policies
               </Link>
               <Link href="/news" className="hover:text-sx-ink transition-colors">
                 Guides
@@ -344,8 +344,8 @@ export function Header() {
               { name: "Middleman Escrow", href: "/middleman" },
               { name: "Scammer Check", href: "/scammer-check" },
               { name: "1v1 Tournaments", href: "/tournaments" },
-              { name: "How Escrow Works", href: "/escrow-guarantee" },
-              { name: "Contact Support", href: "/contact" },
+              { name: "Escrow & Policies", href: "/policies" },
+              { name: "Services & Support", href: "/contact" },
             ].map((link) => (
               <Link
                 key={link.href}

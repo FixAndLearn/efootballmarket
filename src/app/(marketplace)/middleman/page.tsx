@@ -269,7 +269,7 @@ function MiddlemanContent() {
           onClick={() => setActiveTab("create")}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
             activeTab === "create"
-              ? "bg-sx-green hover:bg-sx-green-hover text-sx-ink font-bold"
+              ? "bg-sx-green hover:bg-sx-green-hover text-white font-bold"
               : "bg-sx-canvas border border-sx-border text-sx-ink-soft hover:text-sx-ink"
           }`}
         >
@@ -282,7 +282,7 @@ function MiddlemanContent() {
           onClick={() => setActiveTab("generator")}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
             activeTab === "generator"
-              ? "bg-sx-green hover:bg-sx-green-hover text-sx-ink font-bold"
+              ? "bg-sx-green hover:bg-sx-green-hover text-white font-bold"
               : "bg-sx-canvas border border-sx-border text-sx-ink-soft hover:text-sx-ink"
           }`}
         >
@@ -295,7 +295,7 @@ function MiddlemanContent() {
           onClick={() => setActiveTab("track")}
           className={`flex items-center gap-2 px-4 py-2 rounded-lg text-xs font-semibold transition-colors ${
             activeTab === "track"
-              ? "bg-sx-green hover:bg-sx-green-hover text-sx-ink font-bold"
+              ? "bg-sx-green hover:bg-sx-green-hover text-white font-bold"
               : "bg-sx-canvas border border-sx-border text-sx-ink-soft hover:text-sx-ink"
           }`}
         >
@@ -413,7 +413,7 @@ function MiddlemanContent() {
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-sx-stone hover:bg-slate-700 text-sx-ink font-bold text-xs border border-sx-border-strong transition-all"
+                  className="w-full sm:w-auto inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-sx-stone hover:bg-sx-elevated text-sx-ink font-bold text-xs border border-sx-border-strong transition-all"
                 >
                   <span>Notify Officer Brian (0794400365)</span>
                 </a>
@@ -686,7 +686,7 @@ function MiddlemanContent() {
               >
                 {copiedInviteText ? (
                   <>
-                    <Check className="w-4 h-4 mr-1.5 text-slate-950" />
+                    <Check className="w-4 h-4 mr-1.5 text-white" />
                     Copied WhatsApp Message!
                   </>
                 ) : (

@@ -551,11 +551,21 @@ function RegisterForm() {
           />
           <span className="text-xs text-sx-muted leading-relaxed">
             I agree to the{" "}
-            <Link href="/terms" className="text-sx-green-text font-semibold hover:underline">
+            <Link
+              href="/policies#terms"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sx-green-text font-semibold hover:underline"
+            >
               Terms of Service
             </Link>{" "}
             and{" "}
-            <Link href="/escrow-guarantee" className="text-sx-green-text font-semibold hover:underline">
+            <Link
+              href="/policies#escrow"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-sx-green-text font-semibold hover:underline"
+            >
               Escrow Rules
             </Link>
             .

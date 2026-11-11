@@ -14,7 +14,7 @@ export function Footer() {
           <div className="col-span-2 sm:col-span-4 lg:col-span-1 space-y-3">
             <Logo clickable={true} size="sm" />
             <p className="text-xs text-sx-muted leading-relaxed max-w-xs">
-              Kenyan eFootball squad marketplace &amp; guides hub. Payments to Buy Goods Till 1572931 are held by eFootballMarket during your 24-hour login check.
+              Kenyan eFootball squad marketplace, WhatsApp Middleman desk &amp; tournaments hub. Payments to Buy Goods Till <strong className="text-sx-ink">1572931</strong> are held during your 24-hour login check.
             </p>
           </div>
 
@@ -28,37 +28,14 @@ export function Footer() {
                   All Verified Squads
                 </Link>
               </li>
-                <li>
-                  <Link href="/browse?minStrength=3150" className="hover:text-sx-ink transition-colors">
-                    Double-Booster Epics
-                  </Link>
-                </li>
+              <li>
+                <Link href="/browse?minStrength=3150" className="hover:text-sx-ink transition-colors">
+                  Double-Booster Epics
+                </Link>
+              </li>
               <li>
                 <Link href="/seller/create-listing" className="hover:text-sx-ink transition-colors">
                   Sell Your Squad
-                </Link>
-              </li>
-              <li>
-                <Link href="/middleman" className="hover:text-sx-ink transition-colors">
-                  Middleman Escrow
-                </Link>
-              </li>
-              <li>
-                <Link href="/tournaments" className="hover:text-sx-ink transition-colors">
-                  Community Cups
-                </Link>
-              </li>
-            </ul>
-          </div>
-
-          <div className="space-y-2.5">
-            <h3 className="text-xs font-bold uppercase tracking-wider text-sx-ink">
-              Verification &amp; Guides
-            </h3>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/escrow-guarantee" className="hover:text-sx-ink transition-colors">
-                  How Escrow Works
                 </Link>
               </li>
               <li>
@@ -67,18 +44,8 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/scammer-check" className="hover:text-sx-ink transition-colors">
-                  Trader Phone Check
-                </Link>
-              </li>
-              <li>
-                <Link href="/seller/guidelines" className="hover:text-sx-ink transition-colors">
-                  Seller Standards &amp; Fees
-                </Link>
-              </li>
-              <li>
-                <Link href="/fraud-prevention" className="hover:text-sx-ink transition-colors">
-                  Anti-Fraud Policy
+                <Link href="/friday-drops" className="hover:text-sx-ink transition-colors">
+                  Friday Drops
                 </Link>
               </li>
             </ul>
@@ -86,17 +53,50 @@ export function Footer() {
 
           <div className="space-y-2.5">
             <h3 className="text-xs font-bold uppercase tracking-wider text-sx-ink">
-              Help &amp; Support
+              Our Services
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/about" className="hover:text-sx-ink transition-colors">
-                  About eFootballMarket
+                <Link href="/middleman" className="hover:text-sx-ink transition-colors">
+                  WhatsApp Middleman Escrow
                 </Link>
               </li>
               <li>
+                <Link href="/wanted" className="hover:text-sx-ink transition-colors">
+                  Custom Squad Sourcing
+                </Link>
+              </li>
+              <li>
+                <Link href="/middleman?title=Account%20Swap%20%2B%20Cash%20Top-Up" className="hover:text-sx-ink transition-colors">
+                  Account Swap + Top-Up
+                </Link>
+              </li>
+              <li>
+                <Link href="/tournaments" className="hover:text-sx-ink transition-colors">
+                  1v1 &amp; Clan Cup Hosting
+                </Link>
+              </li>
+              <li>
+                <Link href="/scammer-check" className="hover:text-sx-ink transition-colors">
+                  Trader Phone Check
+                </Link>
+              </li>
+            </ul>
+          </div>
+
+          <div className="space-y-2.5">
+            <h3 className="text-xs font-bold uppercase tracking-wider text-sx-ink">
+              Support Desk
+            </h3>
+            <ul className="space-y-2">
+              <li>
                 <Link href="/contact" className="hover:text-sx-ink transition-colors">
-                  Contact Support Desk
+                  Book Direct Services
+                </Link>
+              </li>
+              <li>
+                <Link href="/about" className="hover:text-sx-ink transition-colors">
+                  About eFootballMarket
                 </Link>
               </li>
               <li>
@@ -122,27 +122,32 @@ export function Footer() {
 
           <div className="space-y-2.5">
             <h3 className="text-xs font-bold uppercase tracking-wider text-sx-ink">
-              Legal &amp; Terms
+              Policies &amp; Terms
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/terms" className="hover:text-sx-ink transition-colors">
+                <Link href="/policies#escrow" className="hover:text-sx-ink transition-colors">
+                  Escrow Rules &amp; Fees
+                </Link>
+              </li>
+              <li>
+                <Link href="/policies#terms" className="hover:text-sx-ink transition-colors">
                   Terms of Service
                 </Link>
               </li>
               <li>
-                <Link href="/privacy" className="hover:text-sx-ink transition-colors">
-                  Privacy &amp; Cookie Policy
+                <Link href="/policies#disputes" className="hover:text-sx-ink transition-colors">
+                  Refunds &amp; Disputes
                 </Link>
               </li>
               <li>
-                <Link href="/dispute-policy" className="hover:text-sx-ink transition-colors">
-                  Buyer Refund &amp; Disputes
+                <Link href="/policies#seller-standards" className="hover:text-sx-ink transition-colors">
+                  Seller Standards
                 </Link>
               </li>
               <li>
-                <Link href="/escrow-guarantee" className="hover:text-sx-ink transition-colors">
-                  Payment Protection &amp; Fees
+                <Link href="/policies#privacy" className="hover:text-sx-ink transition-colors">
+                  Privacy &amp; Cookies
                 </Link>
               </li>
             </ul>

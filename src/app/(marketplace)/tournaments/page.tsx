@@ -328,7 +328,7 @@ export default function TournamentsPage() {
           <div className="flex flex-col gap-2 shrink-0 w-full sm:w-auto">
             <Link
               href="/tournaments/host?type=1v1"
-              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-sx-green hover:bg-sx-green-hover text-sx-ink font-bold text-xs transition-colors"
+              className="inline-flex items-center justify-center gap-2 px-5 py-2.5 rounded-lg bg-sx-green hover:bg-sx-green-hover text-white font-bold text-xs transition-colors"
             >
               <Swords className="w-4 h-4" />
               <span>Create 1v1 Match</span>
@@ -365,7 +365,7 @@ export default function TournamentsPage() {
           <div className="flex items-center gap-2 w-full sm:w-auto shrink-0">
             <Link
               href="/register?redirect=/tournaments"
-              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-sx-green hover:bg-sx-green-hover text-sx-ink font-bold text-xs transition-colors"
+              className="flex-1 sm:flex-initial inline-flex items-center justify-center gap-1.5 px-4 py-2 rounded-lg bg-sx-green hover:bg-sx-green-hover text-white font-bold text-xs transition-colors"
             >
               <UserPlus className="w-3.5 h-3.5" />
               <span>Register</span>

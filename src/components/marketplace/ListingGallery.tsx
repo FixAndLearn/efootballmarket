@@ -356,7 +356,7 @@ export function ListingGallery({
                   setIsLightboxOpen(false);
                   setZoomLevel(1);
                 }}
-                className="p-2.5 rounded-xl bg-sx-stone hover:bg-slate-700 text-sx-ink border border-sx-border-strong transition-all shadow-xl active:scale-95"
+                className="p-2.5 rounded-xl bg-sx-stone hover:bg-sx-elevated text-sx-ink border border-sx-border-strong transition-all shadow-xl active:scale-95"
                 title="Close Lightbox (Esc)"
               >
                 <X className="w-5 h-5" />

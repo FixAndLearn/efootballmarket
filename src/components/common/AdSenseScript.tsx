@@ -18,6 +18,7 @@ interface AdSenseScriptProps {
 const CONTENT_ELIGIBLE_PREFIXES = [
   "/news",
   "/about",
+  "/policies",
   "/escrow-guarantee",
   "/fraud-prevention",
   "/dispute-policy",

@@ -190,7 +190,7 @@ export default function WantedBoardPage() {
               onClick={() => setPlatformFilter(tab.id)}
               className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
                 platformFilter === tab.id
-                  ? "bg-sx-green hover:bg-sx-green-hover text-sx-ink font-bold shadow-md shadow-amber-500/20"
+                  ? "bg-sx-green hover:bg-sx-green-hover text-white font-bold shadow-sm"
                   : "bg-pitch-surface border border-pitch-border text-sx-ink-soft hover:text-sx-ink hover:border-sx-border-strong"
               }`}
             >

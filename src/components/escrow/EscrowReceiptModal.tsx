@@ -52,7 +52,7 @@ export function EscrowReceiptModal({ order, isOpen, onClose }: EscrowReceiptModa
           <button
             type="button"
             onClick={onClose}
-            className="p-2 rounded-xl bg-sx-stone hover:bg-slate-700 text-sx-muted hover:text-sx-ink transition-colors"
+            className="p-2 rounded-xl bg-sx-stone hover:bg-sx-elevated text-sx-muted hover:text-sx-ink transition-colors"
           >
             <X className="w-5 h-5" />
           </button>

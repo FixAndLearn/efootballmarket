@@ -14,6 +14,7 @@ import { getCategoryLabel } from "@/lib/data/editorialGuides";
 import { Button } from "@/components/ui/Button";
 import { formatCurrency, getPlatformLabel } from "@/lib/utils";
 import {
+  ArrowLeftRight,
   ArrowRight,
   Bell,
   BookOpen,
@@ -24,6 +25,7 @@ import {
   ShieldAlert,
   ShieldCheck,
   Smartphone,
+  Store,
   Target,
   Trophy,
 } from "lucide-react";
@@ -148,8 +150,8 @@ export default async function HomePage() {
                   <p>
                     <strong className="text-sx-ink">How payment protection works:</strong>{" "}
                     You pay into Safaricom M-Pesa Buy Goods Till <strong>1572931</strong> — not directly to the seller. We hold your money while you log in, check the squad and <em>Link Data = Not Linked</em> for <strong>24 hours</strong>, and move the Konami ID to your own email before the seller is paid.{" "}
-                    <Link href="/escrow-guarantee" className="text-sx-green-text font-semibold hover:underline">
-                      Learn more
+                    <Link href="/policies#escrow" className="text-sx-green-text font-semibold hover:underline">
+                      View policies &amp; fees
                     </Link>
                   </p>
                 </div>
@@ -217,6 +219,101 @@ export default async function HomePage() {
               </div>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* 2B. OUR MARKETPLACE, ESCROW & CONCIERGE SERVICES */}
+      <section className="py-9 sm:py-11 border-t border-sx-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+            <div>
+              <span className="text-[11px] font-bold uppercase tracking-wider text-sx-green-text block mb-1">
+                eFootballMarket Kenya Services
+              </span>
+              <h2 className="text-xl sm:text-2xl font-bold text-sx-ink font-display tracking-tight">
+                Everything Our Desk Handles For Kenyan Players
+              </h2>
+            </div>
+            <Link
+              href="/contact"
+              className="inline-flex items-center gap-1 text-xs font-semibold text-sx-green-text hover:underline"
+            >
+              <span>Book 1-on-1 Concierge Help</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {[
+              {
+                icon: Store,
+                title: "Buy & Sell Verified Squads",
+                desc: "List your Clean Konami ID squad for free or buy verified Android, iOS, PS5 & PC accounts with KES 0 extra buyer fee and 24-hour login inspection.",
+                cta: "List or Browse Squads",
+                href: "/seller/create-listing",
+              },
+              {
+                icon: Handshake,
+                title: "WhatsApp & Facebook Middleman",
+                desc: "Agreed on a squad deal in a WhatsApp group, TikTok, or Facebook? Generate an official Deal Code and hold payment safely in M-Pesa Till 1572931.",
+                cta: "Open Middleman Contract",
+                href: "/middleman",
+              },
+              {
+                icon: Target,
+                title: "Custom Squad Sourcing",
+                desc: "Looking for 3150+ OVR or specific Epics like Gullit, Vieira, or Blitz Curler Son? Post your KES budget and let our desk & verified sellers match you.",
+                cta: "Request Your Dream Squad",
+                href: "/wanted",
+              },
+              {
+                icon: ArrowLeftRight,
+                title: "Account Swap + Cash Top-Up",
+                desc: "Upgrade your current squad safely—propose a Clean Konami ID trade-in plus M-Pesa top-up settled through neutral Order Room inspection.",
+                cta: "Start Protected Swap",
+                href: "/middleman?title=Account%20Swap%20%2B%20Cash%20Top-Up",
+              },
+              {
+                icon: Trophy,
+                title: "1v1 Matches & Paid Cup Hosting",
+                desc: "Enter competitive 1v1 fixtures or host 4–16 player knockout tournaments for your clan with automated brackets and M-Pesa prize pool custody.",
+                cta: "Explore or Host Cups",
+                href: "/tournaments",
+              },
+              {
+                icon: ShieldAlert,
+                title: "Free Phone Check & Handover Help",
+                desc: "Check any 07.../01... phone number for verified fraud reports before trading, or chat with Brian Okibo's Nairobi desk for Konami ID rebinding support.",
+                cta: "Run Trader Phone Check",
+                href: "/scammer-check",
+              },
+            ].map((srv) => {
+              const Icon = srv.icon;
+              return (
+                <Link
+                  key={srv.title}
+                  href={srv.href}
+                  className="group p-5 rounded-2xl bg-sx-subtle hover:bg-sx-stone border border-sx-border hover:border-sx-green-border transition-all flex flex-col justify-between space-y-4"
+                >
+                  <div className="space-y-2.5">
+                    <div className="w-9 h-9 rounded-xl bg-sx-canvas border border-sx-border flex items-center justify-center text-sx-green-text group-hover:border-sx-green-border transition-colors">
+                      <Icon className="w-4 h-4" />
+                    </div>
+                    <h3 className="text-sm sm:text-[15px] font-bold text-sx-ink font-display group-hover:text-sx-green-text transition-colors">
+                      {srv.title}
+                    </h3>
+                    <p className="text-xs text-sx-muted leading-relaxed">
+                      {srv.desc}
+                    </p>
+                  </div>
+                  <span className="inline-flex items-center gap-1 text-xs font-bold text-sx-green-text">
+                    <span>{srv.cta}</span>
+                    <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-0.5" />
+                  </span>
+                </Link>
+              );
+            })}
+          </div>
         </div>
       </section>
 

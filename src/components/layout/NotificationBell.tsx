@@ -237,7 +237,7 @@ export function NotificationBell() {
 
         {/* Unread Counter Badge */}
         {unreadCount > 0 && (
-          <span className="absolute top-1 right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-sx-green hover:bg-sx-green-hover text-sx-ink font-extrabold text-[10px] ring-2 ring-pitch-bg animate-pulse">
+          <span className="absolute top-1 right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-sx-green hover:bg-sx-green-hover text-white font-extrabold text-[10px] ring-2 ring-sx-canvas animate-pulse">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}

@@ -20,7 +20,7 @@ export function OrderCopyButton({ orderNumber }: { orderNumber: string }) {
     <button
       type="button"
       onClick={handleCopy}
-      className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-sx-stone hover:bg-slate-700/80 border border-sx-border-strong text-sx-ink-soft hover:text-sx-ink text-xs font-mono transition-all cursor-pointer"
+      className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-sx-stone hover:bg-sx-elevated border border-sx-border-strong text-sx-ink-soft hover:text-sx-ink text-xs font-mono transition-all cursor-pointer"
       title="Copy order number"
     >
       <span>#{orderNumber}</span>
