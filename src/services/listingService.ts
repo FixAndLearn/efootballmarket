@@ -1,5 +1,9 @@
 import { Listing, ListingImage, ListingStatus, Platform, Playstyle } from "@/types/database";
 import { SupabaseClient } from "@supabase/supabase-js";
+import {
+  PUBLIC_SELLER_PROFILE_SELECT,
+  sanitizeListingForPublic,
+} from "@/lib/security/publicSanitizer";
 
 export interface ListingFilterParams {
   search?: string;
@@ -54,7 +58,7 @@ export class ListingService {
 
     let query = this.supabase
       .from("listings")
-      .select("*, seller:profiles(*), images:listing_images(*)", { count: "exact" })
+      .select(`*, seller:profiles(${PUBLIC_SELLER_PROFILE_SELECT}), images:listing_images(*)`, { count: "exact" })
       .eq("status", "published")
       .is("deleted_at", null);
 
@@ -144,19 +148,20 @@ export class ListingService {
       throw new Error(`Failed to fetch listings: ${error.message}`);
     }
 
+    const rawList = (data as unknown as Listing[]) || [];
     return {
-      listings: (data as unknown as Listing[]) || [],
+      listings: rawList.map(sanitizeListingForPublic),
       totalCount: count || 0,
     };
   }
 
   /**
-   * Retrieves a single listing by its primary ID, with associated seller and images.
+   * Retrieves a single listing by its primary ID, with sanitized public seller info and images.
    */
   async getListingById(id: string): Promise<Listing | null> {
     const { data, error } = await this.supabase
       .from("listings")
-      .select("*, seller:profiles(*), images:listing_images(*)")
+      .select(`*, seller:profiles(${PUBLIC_SELLER_PROFILE_SELECT}), images:listing_images(*)`)
       .eq("id", id)
       .is("deleted_at", null)
       .single();
@@ -175,7 +180,7 @@ export class ListingService {
       // Non-critical metric increment failure can be safely ignored
     }
 
-    return data as unknown as Listing;
+    return sanitizeListingForPublic(data as unknown as Listing);
   }
 
   /**

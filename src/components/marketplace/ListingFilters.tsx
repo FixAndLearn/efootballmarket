@@ -323,6 +323,20 @@ export function ListingFilters() {
           </select>
         </div>
 
+        <div>
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-sx-ink mb-1.5">
+            Manager
+          </label>
+          <input
+            type="text"
+            placeholder="e.g. Xabi Alonso, Deschamps..."
+            value={manager}
+            onChange={(e) => setManager(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && applyFilters()}
+            className="w-full min-h-[40px] bg-sx-canvas border border-sx-border rounded-lg px-3 py-2 text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-sx-green"
+          />
+        </div>
+
         <label className="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-sx-canvas border border-sx-border cursor-pointer hover:border-sx-green-border transition-colors">
           <span className="inline-flex items-center gap-1.5 text-xs font-bold text-sx-ink">
             <Repeat2 className="w-3.5 h-3.5 text-sx-green-text" />

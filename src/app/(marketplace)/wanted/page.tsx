@@ -315,15 +315,15 @@ export default function WantedBoardPage() {
                 </div>
 
                 <a
-                  href={`https://wa.me/${formatWhatsAppPhone(req.buyer_phone || "254794400365")}?text=${encodeURIComponent(
-                    `Hello ${req.buyer_name}, I saw your request on eFootballMarket: "${req.title}". I have a squad available! Let's complete the trade via Escrow (Till 1572931): https://www.efootballmarket.co.ke`
+                  href={`https://wa.me/254794400365?text=${encodeURIComponent(
+                    `Hello eFootballMarket Escrow Desk, I have a matching squad for Buyer Request "${req.title}" (Budget: KES ${req.budget_kes.toLocaleString()}, Request #${String(req.id).slice(0, 8)}). Please connect us via Till 1572931 Middleman.`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg transition-all active:scale-95"
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sx-green hover:bg-sx-green-hover text-white font-bold text-xs transition-colors"
                 >
-                  <MessageCircle className="w-4 h-4 fill-white" />
-                  <span>I Have This Squad (WhatsApp Buyer)</span>
+                  <MessageCircle className="w-4 h-4" />
+                  <span>Pitch Matching Squad via Escrow Desk</span>
                 </a>
               </div>
             </div>

@@ -31,7 +31,7 @@ export default function PrivacyPage() {
           1. Data Controller Identity &amp; Contact Details
         </h2>
         <p>
-          For purposes of the <strong>Kenya Data Protection Act, 2019 (Act No. 24 of 2019)</strong> and the Data Protection (General) Regulations, the data controller responsible for personal information processed through <strong>efootballmarket.co.ke</strong> is <strong>eFootballMarket Kenya</strong>, operating in Nairobi, Republic of Kenya.
+          For purposes of the <strong>Kenya Data Protection Act, 2019 (Act No. 24 of 2019)</strong> and the Data Protection (General) Regulations, the data controller responsible for personal information processed through <strong>efootballmarket.co.ke</strong> is <strong>eFootballMarket Kenya</strong> (a sole proprietorship operated in Nairobi, Republic of Kenya by Brian Okibo, trading as eFootballMarket Kenya).
         </p>
         <p>
           All privacy inquiries, data subject access requests, or security reports may be directed to our Data &amp; Support Desk at <strong>support@efootballmarket.co.ke</strong> or via WhatsApp at <strong>+254 794 400 365</strong>.

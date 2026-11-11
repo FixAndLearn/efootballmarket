@@ -381,6 +381,37 @@ export default function TournamentsPage() {
         </div>
       )}
 
+      {/* Pre-Join & Pre-Host Rules, Fees & Payout Disclosure */}
+      <div className="rounded-2xl bg-sx-subtle border border-sx-border p-5 space-y-3 text-xs">
+        <div className="flex items-center justify-between gap-2 flex-wrap">
+          <h2 className="text-sm font-bold text-sx-ink font-display flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-sx-green-text" />
+            <span>Before You Join or Host: Entry Fees, Prize Split &amp; Dispute Rules</span>
+          </h2>
+          <Link href="/escrow-guarantee#fees" className="text-sx-green-text font-semibold hover:underline">
+            Full Fee Schedule &rarr;
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-sx-ink-soft">
+          <div className="p-3 rounded-xl bg-sx-canvas border border-sx-border">
+            <strong className="text-sx-ink block mb-0.5">Entry &amp; Platform Fee</strong>
+            Free cups charge KES 0. Paid pots deduct KES 15–60 (or 5% over KES 1,000) from the collected pool; net prize split is shown on each card.
+          </div>
+          <div className="p-3 rounded-xl bg-sx-canvas border border-sx-border">
+            <strong className="text-sx-ink block mb-0.5">Cancellation &amp; Refunds</strong>
+            100% entry refund if a tournament is cancelled before brackets start. Missed check-ins after bracket generation forfeit the match slot.
+          </div>
+          <div className="p-3 rounded-xl bg-sx-canvas border border-sx-border">
+            <strong className="text-sx-ink block mb-0.5">Result Verification</strong>
+            Both players keep a full-time match-stats screenshot showing Room Code &amp; Gamer Tags in case of a score dispute.
+          </div>
+          <div className="p-3 rounded-xl bg-sx-canvas border border-sx-border">
+            <strong className="text-sx-ink block mb-0.5">Prize Payout Timing</strong>
+            Verified winners receive M-Pesa or wallet payouts within 1–12 hours (8:00 AM – 10:00 PM EAT); disputed matches pause until admin review.
+          </div>
+        </div>
+      </div>
+
       {/* Tournaments Grid Header */}
       <div className="space-y-5">
         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pb-2 border-b border-sx-border">

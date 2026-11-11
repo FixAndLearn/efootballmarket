@@ -14,6 +14,11 @@ import {
 } from "lucide-react";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
+import {
+  PUBLIC_SELLER_PROFILE_SELECT,
+  sanitizeListingForPublic,
+  sanitizePublicSellerProfile,
+} from "@/lib/security/publicSanitizer";
 import { VerifiedSellerBadge } from "@/components/marketplace/VerifiedSellerBadge";
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import { ShareStorefrontBar } from "@/components/marketplace/ShareStorefrontBar";
@@ -47,7 +52,7 @@ async function fetchSellerByUsername(rawUsername: string) {
   // 1. Exact username match first, then case-insensitive fallback
   let { data: seller } = await client
     .from("profiles")
-    .select("*")
+    .select(PUBLIC_SELLER_PROFILE_SELECT)
     .eq("username", decoded)
     .limit(1)
     .maybeSingle();
@@ -55,7 +60,7 @@ async function fetchSellerByUsername(rawUsername: string) {
   if (!seller) {
     const { data: ilikeSeller } = await client
       .from("profiles")
-      .select("*")
+      .select(PUBLIC_SELLER_PROFILE_SELECT)
       .ilike("username", decoded)
       .limit(1)
       .maybeSingle();
@@ -104,36 +109,41 @@ async function fetchSellerByUsername(rawUsername: string) {
         await client.from("profiles").upsert(newProfile, { onConflict: "id" });
         seller = {
           ...newProfile,
+          role: "seller",
           avatar_url: null,
           bio: null,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),
-          deleted_at: null,
-        };
+        } as any;
       }
     }
   }
 
   if (!seller) return null;
 
-  // 3. Query active listings without fragile FK constraint hints and attach seller profile directly
+  const safeSeller = sanitizePublicSellerProfile(seller as any);
+  if (!safeSeller) return null;
+
+  // 3. Query active listings and sanitize all public fields
   const { data: rawListings } = await client
     .from("listings")
     .select("*, images:listing_images(*)")
-    .eq("seller_id", seller.id)
+    .eq("seller_id", safeSeller.id)
     .eq("status", "published")
     .is("deleted_at", null)
     .order("created_at", { ascending: false });
 
-  const listings: Listing[] = (rawListings || []).map((item: any) => ({
-    ...(item as Listing),
-    seller: seller as Profile,
-  }));
+  const listings: Listing[] = (rawListings || []).map((item: any) =>
+    sanitizeListingForPublic({
+      ...(item as Listing),
+      seller: safeSeller,
+    })
+  );
 
   return {
-    seller: seller as Profile,
+    seller: safeSeller,
     listings,
-    isOwner: Boolean(viewer && viewer.id === seller.id),
+    isOwner: Boolean(viewer && viewer.id === safeSeller.id),
   };
 }
 
@@ -147,8 +157,8 @@ export async function generateMetadata({
   }
 
   const { seller, listings } = result;
-  const title = `@${seller.username} — eFootball Squad Catalog (${listings.length} Active)`;
-  const description = `Browse ${listings.length} verified Konami eFootball squads listed by @${seller.username} on eFootballMarket Kenya with M-Pesa Escrow protection.`;
+  const title = `@${seller.username} — eFootball Squads (${listings.length} Listed)`;
+  const description = `Browse ${listings.length} eFootball squads listed by @${seller.username} on eFootballMarket Kenya. Payment held on M-Pesa Till 1572931 during 24-hour buyer inspection.`;
 
   return {
     title,
@@ -176,10 +186,6 @@ export default async function SellerStorefrontPage({
   const sales = Number(seller.completed_sales_count || 0);
   const rating = Number(seller.seller_rating || 0);
   const reviewsCount = Number(seller.total_reviews_count || 0);
-  const fullDisplayName = [seller.first_name, seller.last_name]
-    .filter(Boolean)
-    .join(" ")
-    .trim();
   const memberSince = seller.created_at
     ? new Date(seller.created_at).toLocaleDateString("en-KE", {
         month: "short",
@@ -199,7 +205,7 @@ export default async function SellerStorefrontPage({
           <span>Back to Marketplace</span>
         </Link>
         <span className="text-[11px] font-mono uppercase tracking-wider text-sx-muted">
-          {isOwner ? "Your Public Storefront" : "Verified Seller Storefront"}
+          {isOwner ? "Your Public Storefront" : "Seller Profile"}
         </span>
       </div>
 
@@ -218,7 +224,7 @@ export default async function SellerStorefrontPage({
               <VerifiedSellerBadge
                 seller={seller}
                 size="md"
-                showPopover={false}
+                showPopover={true}
               />
             </div>
 
@@ -226,14 +232,12 @@ export default async function SellerStorefrontPage({
               <p className="text-xs sm:text-sm text-sx-ink-soft max-w-2xl">
                 {seller.bio}
               </p>
-            ) : fullDisplayName ? (
-              <p className="text-xs text-sx-muted">{fullDisplayName}</p>
             ) : null}
 
             <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-sx-ink-soft">
               <span className="inline-flex items-center gap-1 font-semibold text-sx-ink">
                 <CheckCircle2 className="w-3.5 h-3.5 text-sx-green-text" />
-                <span>{sales} Completed Escrow Sales</span>
+                <span>{sales} Completed {sales === 1 ? "Sale" : "Sales"}</span>
               </span>
 
               {rating > 0 && (
@@ -255,7 +259,7 @@ export default async function SellerStorefrontPage({
             <p className="text-xs text-sx-muted flex items-center gap-1.5">
               <ShieldCheck className="w-3.5 h-3.5 text-sx-green-text shrink-0" />
               <span>
-                Every squad below is backed by Safaricom M-Pesa Escrow (Till 1572931) &amp; 24-hour login inspection.
+                Payments go to eFootballMarket Buy Goods Till 1572931 (via Safaricom M-Pesa) and are held by the platform during your 24-hour login check.
               </span>
             </p>
           </div>

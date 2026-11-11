@@ -107,6 +107,7 @@ export default function CreateListingPage() {
   const [epicCount, setEpicCount] = useState("");
   const [coinBalance, setCoinBalance] = useState("");
   const [managerName, setManagerName] = useState("");
+  const [formation, setFormation] = useState("4-2-1-3");
   const [playstyle, setPlaystyle] = useState("quick_counter");
   const [keyPlayersInput, setKeyPlayersInput] = useState("");
   const [sellerNotes, setSellerNotes] = useState("");
@@ -315,6 +316,7 @@ export default function CreateListingPage() {
           coin_balance: Number(coinBalance) || 0,
           epic_players_count: Number(epicCount) || 0,
           primary_playstyle: playstyle,
+          formation: formation.trim() || null,
           manager_name: managerName.trim() || null,
           key_players_list: keyPlayersArray,
           konami_id_status: "unlinked",
@@ -421,6 +423,10 @@ export default function CreateListingPage() {
             <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-sx-canvas border border-sx-border text-sx-ink shrink-0">
               {images.length}/5
             </span>
+          </div>
+
+          <div className="p-3 rounded-lg bg-sx-amber-tint border border-sx-amber-border text-[11px] text-sx-amber-text leading-relaxed">
+            <strong>Privacy check before uploading:</strong> Do not upload screenshots that display your personal email address, phone number, Konami ID password, or M-Pesa SMS messages. Crop or hide personal details first.
           </div>
 
           {/* 3-Slot Guided Proof Checklist */}
@@ -626,7 +632,7 @@ export default function CreateListingPage() {
             />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <div>
               <label className="block text-xs font-semibold text-sx-ink mb-1.5">
                 Primary Playstyle
@@ -643,6 +649,24 @@ export default function CreateListingPage() {
                 ))}
               </select>
             </div>
+            <div>
+              <label className="block text-xs font-semibold text-sx-ink mb-1.5">
+                Squad Formation
+              </label>
+              <select
+                value={formation}
+                onChange={(e) => setFormation(e.target.value)}
+                className="w-full h-10 bg-sx-canvas border border-sx-border-strong rounded-md px-3 text-sm text-sx-ink focus:outline-none focus:border-sx-green"
+              >
+                {["4-2-1-3", "4-1-2-3", "4-2-2-2", "4-3-3", "4-4-2", "3-2-4-1", "5-2-1-2", "Custom XI"].map(
+                  (fmt) => (
+                    <option key={fmt} value={fmt}>
+                      {fmt}
+                    </option>
+                  )
+                )}
+              </select>
+            </div>
             <Input
               label="Booster Manager (Optional)"
               placeholder="e.g. Xabi Alonso 88"
@@ -652,7 +676,7 @@ export default function CreateListingPage() {
           </div>
 
           <Input
-            label="Standout Players (comma-separated, optional)"
+            label="Notable Players (comma-separated)"
             placeholder="e.g. Double Booster Gullit, Vieira, Blitz Curler Salah, Maldini"
             value={keyPlayersInput}
             onChange={(e) => setKeyPlayersInput(e.target.value)}
@@ -758,13 +782,19 @@ export default function CreateListingPage() {
 
             <div className="p-3.5 rounded-lg bg-sx-canvas border border-sx-border space-y-1.5 text-xs">
               <div className="flex items-center justify-between text-sx-muted">
-                <span>Escrow Fee (5%, min KES 50 – max KES 500)</span>
+                <span>Buyer Pays to Till 1572931 (KES 0 buyer fee)</span>
+                <span className="font-mono text-sx-ink">
+                  {numericPrice >= 100 ? `KES ${numericPrice.toLocaleString()}` : "—"}
+                </span>
+              </div>
+              <div className="flex items-center justify-between text-sx-muted">
+                <span>Seller Service Fee (5%, min 50 / max 500)</span>
                 <span className="font-mono">
                   {numericPrice >= 100 ? `- KES ${platformFee.toLocaleString()}` : "—"}
                 </span>
               </div>
               <div className="flex items-center justify-between font-bold text-sm text-sx-ink pt-1 border-t border-sx-border">
-                <span>You Receive on M-Pesa</span>
+                <span>Your Net M-Pesa Payout</span>
                 <span className="font-mono text-sx-green-text">
                   {numericPrice >= 100 ? `KES ${sellerNet.toLocaleString()}` : "KES 0"}
                 </span>
@@ -810,9 +840,20 @@ export default function CreateListingPage() {
             />
             <span className="text-xs text-sx-ink leading-relaxed">
               <strong>Clean Konami ID Confirmed:</strong> Google Play Games and Apple Game Center are{" "}
-              <strong>Not Linked</strong>, and I can hand over the Konami ID email/OTP cleanly once the buyer pays into escrow.
+              <strong>Not Linked</strong>, and I can submit the login + email-change OTP within 12 hours once the buyer pays into Till 1572931.{" "}
+              <Link
+                href="/news/how-to-verify-clean-konami-id-before-releasing-escrow"
+                className="text-sx-green-text underline font-semibold"
+              >
+                How to check Link Data
+              </Link>
             </span>
           </label>
+
+          {/* Plain-Language Publisher Rules Notice */}
+          <div className="p-3 rounded-lg bg-sx-canvas border border-sx-border text-[11px] text-sx-muted leading-relaxed">
+            <strong className="text-sx-ink">Publisher rules notice:</strong> Konami&apos;s Terms of Use restrict account transfers, and Konami can modify game features or restrict accounts under its own rules. Do not attempt to reclaim a squad after payout — verified post-sale recovery attempts result in permanent ban and fraud reporting.
+          </div>
         </section>
 
         {/* Submit */}

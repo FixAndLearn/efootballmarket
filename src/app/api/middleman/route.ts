@@ -150,10 +150,10 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Agreed deal amount must be at least KES 100." }, { status: 400 });
     }
 
-    // 5% Escrow commission (minimum 50 KES, maximum 500 KES)
+    // 5% Seller Escrow service fee (minimum 50 KES, maximum 500 KES) deducted from seller payout; buyer pays KES 0 extra
     const rawFee = Math.round(amount * 0.05);
     const fee = Math.max(50, Math.min(500, rawFee));
-    const total = amount + fee;
+    const total = amount;
 
     const randomSuffix = crypto.randomBytes(4).toString("hex").toUpperCase();
     const dealCode = `EFM-${randomSuffix}`;

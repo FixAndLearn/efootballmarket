@@ -79,17 +79,26 @@ export default function ContactPage() {
         </div>
       </div>
 
+      <section className="p-5 rounded-xl bg-sx-stone border border-sx-border space-y-2 text-xs text-sx-ink-soft leading-relaxed">
+        <h2 className="text-sm font-semibold text-sx-ink">
+          Operator &amp; Official Payment Channel
+        </h2>
+        <p className="text-sx-muted">
+          <strong>eFootballMarket Kenya</strong> (sole proprietorship operated in Nairobi, Kenya by Brian Okibo). Official payments are accepted only via Safaricom Lipa Na M-Pesa Buy Goods Till <strong>1572931</strong>—our staff will never ask for your Konami password or ask you to send money to a personal number.
+        </p>
+      </section>
+
       <section className="p-5 rounded-xl bg-sx-canvas border border-sx-border space-y-2 text-xs text-sx-ink-soft leading-relaxed">
         <h2 className="text-sm font-semibold text-sx-ink flex items-center gap-2">
           <MapPin className="w-4 h-4 text-sx-muted" />
           <span>Active Order Disputes</span>
         </h2>
         <p className="text-sx-muted">
-          If you have an active order in its 24-hour inspection window, always click <strong>Raise Dispute</strong> directly inside your{" "}
-          <Link href="/dashboard/buyer" className="text-sx-green-text hover:underline">
-            Buyer Hub
+          If you have an active order in its 24-hour inspection window, click <strong>Open Dispute</strong> directly inside your{" "}
+          <Link href="/dashboard/buyer" className="text-sx-green-text hover:underline font-semibold">
+            Order Room / Buyer Hub
           </Link>{" "}
-          first so the payout timer freezes automatically before contacting support on WhatsApp.
+          first so seller payout pauses immediately before messaging support on WhatsApp.
         </p>
       </section>
     </div>

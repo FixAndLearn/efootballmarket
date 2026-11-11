@@ -65,7 +65,7 @@ export default async function FridayDropsPage() {
                 How The Friday Release Works
               </h2>
               <p className="text-xs sm:text-sm text-sx-muted max-w-2xl">
-                Curated collector accounts sold at fixed ask prices with Safaricom Till 1572931 escrow custody and 24-hour login inspection.
+                Featured squads offered at fixed ask prices during the Friday 2:00 PM – 10:00 PM EAT window, settled via eFootballMarket&apos;s Buy Goods Till 1572931 with a 24-hour buyer login check.
               </p>
             </div>
 
@@ -74,22 +74,22 @@ export default async function FridayDropsPage() {
                 {
                   icon: Clock,
                   title: "2:00 PM – 10:00 PM EAT",
-                  desc: "Selected collector rosters group into one weekly Friday release window. Unsold accounts roll into standard catalog rotation.",
+                  desc: "Featured squads run in a fixed-price Friday window. Outside that window, standard marketplace squads remain open as usual.",
                 },
                 {
                   icon: Lock,
-                  title: "Clean Konami ID Only",
-                  desc: "Every featured roster is verified free of Google Play and Apple Game Center links before entering the lineup.",
+                  title: "Clean Konami ID Rule",
+                  desc: "Sellers confirm Google Play and Apple Game Center are Not Linked, and you get 24 hours after delivery to verify Link Data yourself.",
                 },
                 {
                   icon: ShieldCheck,
-                  title: "Till 1572931 Custody",
-                  desc: "Checkout locks M-Pesa funds in escrow while you complete Data Transfer and rebind your personal email and 2FA.",
+                  title: "Held on Till 1572931",
+                  desc: "Safaricom M-Pesa transfers your payment to eFootballMarket's Till 1572931 (KES 0 added buyer fee), where we hold it during your 24h check.",
                 },
                 {
                   icon: CheckCircle2,
                   title: "Fixed Ask, Zero Bidding",
-                  desc: "No DM haggling — the first buyer to lock escrow claims the squad immediately.",
+                  desc: "During active Friday Drops, custom offer bidding pauses so the first buyer to pay Till 1572931 locks the squad.",
                 },
               ].map((rule) => {
                 const Icon = rule.icon;

@@ -49,7 +49,11 @@ export default async function DirectPayPage({ params }: DirectPayPageProps) {
   }
 
   return (
-    <div className="min-h-screen py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full">
+    <div className="min-h-screen py-10 px-4 sm:px-6 lg:px-8 max-w-4xl mx-auto w-full space-y-4">
+      <div className="p-4 rounded-xl bg-sx-stone border border-sx-border text-xs text-sx-ink-soft leading-relaxed">
+        <strong className="text-sx-ink">Before you pay (Till 1572931 · KES 0 extra buyer fee):</strong>{" "}
+        Safaricom M-Pesa transfers your payment to eFootballMarket Kenya&apos;s business Buy Goods Till 1572931, where we hold the funds during the seller&apos;s 12-hour delivery window and your 24-hour login inspection (which starts when credentials are submitted). Note that Konami&apos;s Terms of Use restrict account transfers and publisher rules apply after handover.
+      </div>
       <DirectCheckoutForm
         listing={listing}
         currentUserId={user?.id}

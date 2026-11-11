@@ -2,6 +2,7 @@ import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ListingService } from "@/services/listingService";
 import { dispatchAdminWhatsAppAlert } from "@/lib/notifications/adminAlert";
+import { redactAccidentalPii, sanitizePublicUsername } from "@/lib/security/publicSanitizer";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -175,9 +176,10 @@ export async function POST(req: NextRequest) {
     const adminSupabase = createAdminClient();
     const cleanId = user.id.replace(/-/g, "").slice(0, 6);
     const emailPrefix = user.email ? user.email.split("@")[0].replace(/[^a-zA-Z0-9_]/g, "") : "";
-    const fallbackUsername =
+    const rawUsername =
       user.user_metadata?.username?.trim() ||
       (emailPrefix ? `${emailPrefix}_${cleanId}` : `trader_${cleanId}`);
+    const fallbackUsername = sanitizePublicUsername(rawUsername);
 
     const firstName =
       user.user_metadata?.first_name?.trim() ||
@@ -198,12 +200,12 @@ export async function POST(req: NextRequest) {
       escrow_balance: 0.0,
     };
 
-    // First attempt: Provision profile via admin client (service role key bypasses RLS)
+    // First attempt: Provision profile if missing (ignoreDuplicates preserves existing balances/verification)
     let profileReady = false;
     try {
       const { error: adminProfileErr } = await adminSupabase
         .from("profiles")
-        .upsert(profileData, { onConflict: "id" });
+        .upsert(profileData, { onConflict: "id", ignoreDuplicates: true });
 
       if (!adminProfileErr) {
         profileReady = true;
@@ -219,7 +221,7 @@ export async function POST(req: NextRequest) {
       try {
         const { error: userProfileErr } = await supabase
           .from("profiles")
-          .upsert(profileData, { onConflict: "id" });
+          .upsert(profileData, { onConflict: "id", ignoreDuplicates: true });
 
         if (userProfileErr) {
           console.warn("supabase user profile upsert note:", userProfileErr.message);
@@ -254,7 +256,18 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const { image_urls, ...listingData } = parsed.data;
+    const { image_urls, ...rawListingData } = parsed.data;
+    const listingData = {
+      ...rawListingData,
+      title: redactAccidentalPii(rawListingData.title),
+      description: redactAccidentalPii(rawListingData.description),
+      dream_team_name: rawListingData.dream_team_name
+        ? redactAccidentalPii(rawListingData.dream_team_name)
+        : null,
+      swap_preferences: rawListingData.swap_preferences
+        ? redactAccidentalPii(rawListingData.swap_preferences)
+        : null,
+    };
 
     // Use admin client if service role key is present to bypass any residual RLS issues,
     // otherwise use the authenticated cookie client.

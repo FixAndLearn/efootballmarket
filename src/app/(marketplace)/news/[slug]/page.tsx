@@ -382,25 +382,30 @@ export default async function NewsArticlePage({
                 {badge.label}
               </span>
 
+              <span className="text-sx-ink font-semibold">
+                By {article.author_name || "eFootballMarket Editorial Desk"}
+              </span>
+
               <span className="flex items-center gap-1">
                 <Calendar className="w-3.5 h-3.5" />
-                {new Date(article.created_at).toLocaleDateString("en-US", {
-                  year: "numeric",
-                  month: "short",
-                  day: "numeric",
-                })}
+                <span>
+                  Updated{" "}
+                  {new Date(article.updated_at || article.created_at).toLocaleDateString("en-US", {
+                    year: "numeric",
+                    month: "short",
+                    day: "numeric",
+                  })}
+                </span>
+              </span>
+
+              <span className="px-2 py-0.5 rounded bg-sx-stone border border-sx-border font-mono text-[11px] text-sx-ink-soft">
+                eFootball v4.x · 2026 Season
               </span>
 
               <span className="flex items-center gap-1">
                 <Clock className="w-3.5 h-3.5" />
                 {readMinutes} min read
               </span>
-
-              {article.author_name && (
-                <span className="text-sx-ink font-semibold">
-                  By {article.author_name}
-                </span>
-              )}
             </div>
 
             <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-sx-ink font-display tracking-tight leading-tight">
@@ -437,15 +442,20 @@ export default async function NewsArticlePage({
                 Verified against eFootball 2026 Mobile &amp; Console mechanics and eFootballMarket Kenya escrow safety rules. Independent community platform — not affiliated with Konami Digital Entertainment.
               </p>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex flex-wrap items-center gap-2 shrink-0">
               <Link href="/browse">
                 <Button variant="primary" size="sm">
-                  <span>Browse Market</span>
+                  <span>Browse Squads</span>
+                </Button>
+              </Link>
+              <Link href="/seller/create-listing">
+                <Button variant="outline" size="sm">
+                  <span>Sell Squad</span>
                 </Button>
               </Link>
               <Link href="/escrow-guarantee">
                 <Button variant="outline" size="sm">
-                  <span>Verification Rules</span>
+                  <span>Escrow &amp; Fees</span>
                 </Button>
               </Link>
             </div>

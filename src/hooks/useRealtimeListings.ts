@@ -3,6 +3,10 @@
 import { useEffect, useState, useCallback, useRef } from "react";
 import { Listing } from "@/types/database";
 import { createClient } from "@/lib/supabase/client";
+import {
+  PUBLIC_SELLER_PROFILE_SELECT,
+  sanitizeListingForPublic,
+} from "@/lib/security/publicSanitizer";
 
 export interface UseRealtimeListingsOptions {
   initialListings?: Listing[];
@@ -180,12 +184,12 @@ export function useRealtimeListings(options: UseRealtimeListingsOptions = {}) {
                 if (supabase && payload.new?.id) {
                   const { data } = await supabase
                     .from("listings")
-                    .select("*, seller:profiles(*), images:listing_images(*)")
+                    .select(`*, seller:profiles(${PUBLIC_SELLER_PROFILE_SELECT}), images:listing_images(*)`)
                     .eq("id", payload.new.id)
                     .single();
 
                   if (data && data.status === "published" && !data.deleted_at) {
-                    const typedListing = data as Listing;
+                    const typedListing = sanitizeListingForPublic(data as Listing);
 
                     // Always announce newly published listing in alert banner
                     setNewListingAlert(typedListing);

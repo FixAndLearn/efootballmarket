@@ -2,7 +2,7 @@
 
 import React from "react";
 import { formatCurrency } from "@/lib/utils";
-import { formatWhatsAppPhone } from "@/lib/utils/phone";
+import { sanitizePublicUsername } from "@/lib/security/publicSanitizer";
 
 export interface ChatSellerWhatsAppButtonProps {
   sellerPhone?: string | null;
@@ -17,9 +17,6 @@ export interface ChatSellerWhatsAppButtonProps {
   label?: string;
 }
 
-/**
- * Official WhatsApp Icon SVG (crisp, recognizable brand icon)
- */
 function WhatsAppIcon({ className = "w-4 h-4" }: { className?: string }) {
   return (
     <svg
@@ -36,8 +33,12 @@ function WhatsAppIcon({ className = "w-4 h-4" }: { className?: string }) {
   );
 }
 
+/**
+ * Pre-sale questions route to the official eFootballMarket Support & Escrow Desk
+ * (+254 794 400 365) with the Listing ID attached so seller personal phone numbers
+ * are never exposed in public HTML or scraped by bots.
+ */
 export function ChatSellerWhatsAppButton({
-  sellerPhone,
   sellerUsername,
   listingId,
   listingTitle,
@@ -48,25 +49,26 @@ export function ChatSellerWhatsAppButton({
   className = "",
   label,
 }: ChatSellerWhatsAppButtonProps) {
-  // Normalize destination WhatsApp digits (falls back to platform desk if missing)
-  const phone = formatWhatsAppPhone(sellerPhone || "254794400365");
-
-  const baseUrl = typeof window !== "undefined"
-    ? window.location.origin
-    : "https://www.efootballmarket.co.ke";
+  const officialDesk = "254794400365";
+  const baseUrl =
+    typeof window !== "undefined"
+      ? window.location.origin
+      : "https://www.efootballmarket.co.ke";
   const listingUrl = `${baseUrl}/listings/${listingId}`;
 
   const formattedPrice = formatCurrency(listingPrice, listingCurrency);
-  const sellerDisplayName = sellerUsername ? `@${sellerUsername}` : "Seller";
+  const safeHandle = sellerUsername
+    ? `@${sanitizePublicUsername(sellerUsername)}`
+    : "the seller";
 
   const message =
-    `Hello ${sellerDisplayName}, I found your squad on eFootballMarket:\n\n` +
+    `Hello eFootballMarket Support, I have a question about this listing (${safeHandle}):\n\n` +
     `*Squad:* ${listingTitle}${overallTeamStrength ? ` (${overallTeamStrength} OVR)` : ""}\n` +
     `*Price:* ${formattedPrice}\n` +
-    `*Listing Link:* ${listingUrl}\n\n` +
-    `I would like to chat about this account. Note: We will complete the payment through eFootballMarket Safaricom Escrow (Till 1572931) for 100% protection.`;
+    `*Listing:* ${listingUrl}\n\n` +
+    `Please confirm availability before I pay via M-Pesa Till 1572931.`;
 
-  const whatsappUrl = `https://wa.me/${phone}?text=${encodeURIComponent(message)}`;
+  const whatsappUrl = `https://wa.me/${officialDesk}?text=${encodeURIComponent(message)}`;
 
   if (variant === "icon") {
     return (
@@ -75,8 +77,8 @@ export function ChatSellerWhatsAppButton({
         target="_blank"
         rel="noopener noreferrer"
         onClick={(e) => e.stopPropagation()}
-        title={`Chat with ${sellerDisplayName} on WhatsApp`}
-        className={`w-8 h-8 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 flex items-center justify-center transition-all shadow-md hover:scale-105 active:scale-95 shrink-0 ${className}`}
+        title="Ask eFootballMarket Support on WhatsApp"
+        className={`w-8 h-8 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 flex items-center justify-center transition-all shadow-sm shrink-0 ${className}`}
       >
         <WhatsAppIcon className="w-4 h-4 fill-slate-950" />
       </a>
@@ -90,10 +92,10 @@ export function ChatSellerWhatsAppButton({
         target="_blank"
         rel="noopener noreferrer"
         onClick={(e) => e.stopPropagation()}
-        className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black text-xs transition-all shadow-md active:scale-95 shrink-0 whitespace-nowrap ${className}`}
+        className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-sx-subtle border border-sx-border-strong text-sx-ink font-bold text-xs transition-colors shrink-0 whitespace-nowrap ${className}`}
       >
-        <WhatsAppIcon className="w-3.5 h-3.5 fill-slate-950 shrink-0" />
-        <span>{label || "Chat Seller"}</span>
+        <WhatsAppIcon className="w-3.5 h-3.5 text-[#25D366] shrink-0" />
+        <span>{label || "Ask Desk"}</span>
       </a>
     );
   }
@@ -105,25 +107,24 @@ export function ChatSellerWhatsAppButton({
         target="_blank"
         rel="noopener noreferrer"
         onClick={(e) => e.stopPropagation()}
-        className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sx-subtle border border-[#25D366]/40 hover:border-[#25D366] text-[#25D366] hover:bg-[#25D366]/10 font-bold text-xs transition-all shadow-sm active:scale-95 ${className}`}
+        className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sx-subtle border border-sx-border hover:border-sx-border-strong text-sx-ink font-semibold text-xs transition-colors ${className}`}
       >
-        <WhatsAppIcon className="w-4 h-4 fill-[#25D366] shrink-0" />
-        <span>{label || `Chat ${sellerDisplayName} on WhatsApp`}</span>
+        <WhatsAppIcon className="w-4 h-4 text-[#25D366] shrink-0" />
+        <span>{label || "Ask Escrow Desk on WhatsApp"}</span>
       </a>
     );
   }
 
-  // Primary variant (high-impact, glowing WhatsApp green)
   return (
     <a
       href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
       onClick={(e) => e.stopPropagation()}
-      className={`w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-black text-xs shadow-lg shadow-emerald-950/40 border border-emerald-300/40 transition-all active:scale-95 duration-200 group ${className}`}
+      className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sx-subtle hover:bg-sx-stone border border-sx-border-strong text-sx-ink font-semibold text-xs transition-colors ${className}`}
     >
-      <WhatsAppIcon className="w-4 h-4 fill-slate-950 group-hover:rotate-12 transition-transform shrink-0" />
-      <span>{label || "Chat Seller on WhatsApp"}</span>
+      <WhatsAppIcon className="w-4 h-4 text-[#25D366] shrink-0" />
+      <span>{label || "Ask Escrow Desk on WhatsApp"}</span>
     </a>
   );
 }

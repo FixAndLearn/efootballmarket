@@ -5,12 +5,23 @@ import { WantedRequest } from "@/types/database";
 import { normalizePhoneNumber } from "@/lib/utils/phone";
 import { dispatchAdminWhatsAppAlert } from "@/lib/notifications/adminAlert";
 import { checkRateLimit } from "@/lib/security/rateLimiter";
-import { getClientIp } from "@/lib/security/guards";
+import { getClientIp, maskPhoneNumber } from "@/lib/security/guards";
+import { redactAccidentalPii, sanitizePublicUsername } from "@/lib/security/publicSanitizer";
 
 export const dynamic = "force-dynamic";
 
 // Persistent in-memory storage for requests submitted in runtime
 let memoryRequests: WantedRequest[] = [];
+
+function sanitizeWantedForPublic(r: any): WantedRequest {
+  return {
+    ...r,
+    buyer_name: sanitizePublicUsername(r.buyer_name || "Buyer"),
+    buyer_phone: maskPhoneNumber(r.buyer_phone || ""),
+    title: redactAccidentalPii(r.title),
+    description: redactAccidentalPii(r.description),
+  };
+}
 
 export async function GET(req: NextRequest) {
   try {
@@ -36,7 +47,7 @@ export async function GET(req: NextRequest) {
 
       const { data, error } = await query.order("created_at", { ascending: false });
       if (!error && data && data.length > 0) {
-        return NextResponse.json({ requests: data });
+        return NextResponse.json({ requests: data.map(sanitizeWantedForPublic) });
       }
     } catch {
       // fallback to memory
@@ -54,7 +65,7 @@ export async function GET(req: NextRequest) {
       filtered = filtered.filter((r) => r.budget_kes <= parseInt(maxBudget, 10));
     }
 
-    return NextResponse.json({ requests: filtered });
+    return NextResponse.json({ requests: filtered.map(sanitizeWantedForPublic) });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Failed to load requests" }, { status: 500 });
   }

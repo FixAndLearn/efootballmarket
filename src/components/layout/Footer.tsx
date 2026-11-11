@@ -14,7 +14,7 @@ export function Footer() {
           <div className="col-span-2 sm:col-span-4 lg:col-span-1 space-y-3">
             <Logo clickable={true} size="sm" />
             <p className="text-xs text-sx-muted leading-relaxed max-w-xs">
-              Verified Konami ID marketplace &amp; tactical editorial hub in Kenya. Protected by M-Pesa Till 1572931 escrow custody.
+              Kenyan eFootball squad marketplace &amp; guides hub. Payments to Buy Goods Till 1572931 are held by eFootballMarket during your 24-hour login check.
             </p>
           </div>
 
@@ -142,7 +142,7 @@ export function Footer() {
               </li>
               <li>
                 <Link href="/escrow-guarantee" className="hover:text-sx-ink transition-colors">
-                  Escrow Guarantee
+                  Payment Protection &amp; Fees
                 </Link>
               </li>
             </ul>
@@ -150,9 +150,9 @@ export function Footer() {
         </div>
 
         <div className="pt-6 border-t border-sx-border flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-sx-muted text-center sm:text-left">
-          <p>&copy; {new Date().getFullYear()} eFootballMarket Kenya. All Rights Reserved.</p>
+          <p>&copy; {new Date().getFullYear()} eFootballMarket Kenya (Nairobi, Kenya). All Rights Reserved.</p>
           <p className="max-w-xl">
-            Independent verified peer-to-peer platform operated in Kenya. Not affiliated with Konami Digital Entertainment Co., Ltd. or Safaricom PLC.
+            Independent marketplace operated by eFootballMarket Kenya. Not affiliated with Konami Digital Entertainment Co., Ltd. or Safaricom PLC.
           </p>
         </div>
       </div>

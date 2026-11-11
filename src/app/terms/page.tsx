@@ -30,7 +30,14 @@ export default function TermsPage() {
           1. Who We Are &amp; Independent Marketplace Role
         </h2>
         <p>
-          <strong>eFootballMarket Kenya</strong> (&ldquo;eFootballMarket,&rdquo; &ldquo;we,&rdquo; or &ldquo;us&rdquo;) operates <strong>efootballmarket.co.ke</strong> from Kenya. We provide an online listing board, payment-hold (escrow) workflow, Middleman order room, and community tournament organizer for players trading football gaming accounts.
+          <strong>eFootballMarket Kenya</strong> (&ldquo;eFootballMarket,&rdquo; &ldquo;we,&rdquo; or &ldquo;us&rdquo;) is a sole proprietorship operated in Nairobi, Republic of Kenya by <strong>Brian Okibo</strong>, operating <strong>efootballmarket.co.ke</strong>. We provide an online listing board, payment-hold (escrow) workflow, Middleman order room, and community tournament organizer for players trading football gaming accounts.
+        </p>
+        <p>
+          <strong>Who Controls Payment Funds:</strong> Buyers pay via Safaricom Lipa Na M-Pesa into eFootballMarket Kenya&apos;s business Buy Goods Till <strong>1572931</strong>. Safaricom PLC acts solely as the mobile-money payment processor and does not manage orders or decide disputes. eFootballMarket Kenya holds the received funds in its platform settlement account while an order is open and administers payouts or refunds under these Terms and our{" "}
+          <Link href="/dispute-policy" className="text-sx-green-text underline font-semibold">
+            Refund &amp; Dispute Policy
+          </Link>
+          .
         </p>
         <p>
           <strong>Independent Service:</strong> We are not affiliated with, endorsed by, or connected to <strong>Konami Digital Entertainment Co., Ltd.</strong>, <strong>Safaricom PLC</strong>, <strong>Sony</strong>, <strong>Microsoft</strong>, <strong>Valve</strong>, <strong>Google</strong>, or <strong>Apple</strong>. Game names and trademarks belong to their respective owners and are used only to describe user listings. We act as an intermediary platform and are not the seller of listed squads.
@@ -112,13 +119,24 @@ export default function TermsPage() {
 
       <section className="space-y-3 pt-6 border-t border-sx-border">
         <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display">
-          5. Middleman Deals &amp; Community Tournaments
+          5. Off-Platform Price Discovery, Middleman Deals &amp; Tournaments
         </h2>
         <p>
-          <strong>Middleman Deals:</strong> When a buyer and seller agree on a price on WhatsApp, Discord, Instagram, or TikTok and create a Middleman order on eFootballMarket, the same Till 1572931 payment hold, 12-hour delivery window, 24-hour inspection window, and fee rules apply.
+          <strong>Allowed — Off-Platform Discovery Settled via Escrow:</strong> Finding a buyer or seller and agreeing on a squad price on WhatsApp, Facebook, Discord, Instagram, or TikTok <strong>is permitted</strong> when you bring the transaction onto eFootballMarket (either through a Marketplace Listing or a{" "}
+          <Link href="/middleman" className="text-sx-green-text underline font-semibold">
+            Middleman Deal Code
+          </Link>
+          ) so payment goes to Buy Goods Till <strong>1572931</strong> and credential handover happens inside the Order Room. Both Marketplace and Middleman orders charge <strong>KES 0</strong> extra buyer fee and deduct a <strong>5% seller fee (min KES 50, max KES 500)</strong> from seller payout.
         </p>
         <p>
-          <strong>Tournaments:</strong> Entry fees (where applicable) are refunded in full if an organizer cancels a cup before brackets begin. Players who miss scheduled match check-ins after bracket generation forfeit their match slot under the posted cup rules.
+          <strong>Not Allowed — Bypassing Escrow on Platform Listings:</strong> Using eFootballMarket listing descriptions, profile bios, or Order Chat to ask another user to pay a personal phone number outside Till 1572931 is prohibited and may result in listing removal or account suspension.
+        </p>
+        <p>
+          <strong>Tournaments:</strong> Paid community tournaments deduct the published platform pot fee (KES 15 up to 5% depending on pot size; see{" "}
+          <Link href="/escrow-guarantee#fees" className="text-sx-green-text underline font-semibold">
+            Fee Schedule
+          </Link>
+          ) before distributing prizes. Entry fees are refunded 100% if an organizer cancels a cup before brackets start; players who miss scheduled check-ins after bracket generation forfeit their match slot under the posted cup rules.
         </p>
       </section>
 

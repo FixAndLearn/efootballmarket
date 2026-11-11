@@ -163,6 +163,76 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
     ? order.seller?.phone_number
     : order.buyer?.phone_number;
 
+  const currentStageMeta = (() => {
+    switch (order.status) {
+      case "payment_pending":
+        return {
+          stepIndex: 1,
+          label: "Payment Pending",
+          actor: "Buyer",
+          deadline: "Before checkout session expires",
+          evidence: "Save your Safaricom M-Pesa confirmation SMS for Till 1572931.",
+          nextStep: "Once Till 1572931 confirms receipt, the squad locks and the seller's 12-hour delivery timer starts.",
+        };
+      case "escrow_locked":
+        return {
+          stepIndex: 2,
+          label: "Payment Confirmed · Credentials Due",
+          actor: "Seller",
+          deadline: "Within 12 hours of payment confirmation",
+          evidence: "Keep all OTP and handover messages inside Order Chat below.",
+          nextStep: "Your 24-hour buyer inspection clock starts only after the seller submits login credentials. If the seller misses 12 hours, you can cancel for a 100% refund.",
+        };
+      case "seller_delivered":
+      case "buyer_reviewing":
+        return {
+          stepIndex: 3,
+          label: "24-Hour Buyer Inspection Active",
+          actor: "Buyer",
+          deadline: "24 hours from credential delivery timestamp",
+          evidence: "Record one uncut screen video from Title Screen -> Data Transfer through Extras -> Support -> Link Data and Game Plan.",
+          nextStep: "Tap Confirm & Release once your own email & 2FA are bound—or tap Open Dispute below before 24 hours ends to pause payout.",
+        };
+      case "disputed":
+        return {
+          stepIndex: 4,
+          label: "Dispute Opened · Payout Paused",
+          actor: "Moderator & Both Parties",
+          deadline: "Evidence upload within 12h · Moderator decision in 24–48h",
+          evidence: "Upload your uncut first-login screen recording and Link Data screenshots in Order Chat.",
+          nextStep: "Funds remain held by eFootballMarket until our Nairobi desk issues a refund or payout decision.",
+        };
+      case "completed":
+        return {
+          stepIndex: 5,
+          label: "Completed & Paid Out",
+          actor: "Completed",
+          deadline: "Seller M-Pesa withdrawal sent within 1–12h (8 AM – 10 PM EAT)",
+          evidence: "Keep your my.konami.net 2-Step Verification active on your own email.",
+          nextStep: "Order closed. Leave a verified buyer review below to help the community.",
+        };
+      case "refunded":
+      case "cancelled":
+      default:
+        return {
+          stepIndex: 5,
+          label: order.status === "refunded" ? "Refunded to Buyer" : "Cancelled",
+          actor: "Closed",
+          deadline: "Approved M-Pesa refunds dispatch within 1–12h (8 AM – 10 PM EAT)",
+          evidence: "Retain your M-Pesa reversal/refund SMS reference.",
+          nextStep: "This order is closed and no seller payout was released.",
+        };
+    }
+  })();
+
+  const TIMELINE_STAGES = [
+    { idx: 1, name: "1. Payment" },
+    { idx: 2, name: "2. Credentials Due (12h)" },
+    { idx: 3, name: "3. Inspection (24h)" },
+    { idx: 4, name: order.status === "disputed" ? "4. Dispute Review" : "4. Confirm / Dispute" },
+    { idx: 5, name: order.status === "refunded" ? "5. Refunded" : "5. Completed" },
+  ];
+
   return (
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 w-full space-y-6">
       {/* Top Header + Clean Page Switcher */}
@@ -191,6 +261,12 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
           </div>
 
           <div className="flex flex-wrap items-center gap-2 text-xs">
+            <Link
+              href="/dispute-policy"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-sx-amber-tint border border-sx-amber-border text-sx-amber-text font-semibold transition-colors"
+            >
+              <span>Refund &amp; Dispute Policy</span>
+            </Link>
             <a
               href={shareOrderWhatsApp}
               target="_blank"
@@ -238,6 +314,63 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
           </div>
         </div>
       </div>
+
+      {/* Clear Stage Timeline: Who Acts, Deadline, Evidence & Next Step */}
+      <section className="rounded-2xl bg-sx-subtle border border-sx-border p-5 space-y-4">
+        <div className="grid grid-cols-2 sm:grid-cols-5 gap-2">
+          {TIMELINE_STAGES.map((st) => {
+            const active = st.idx === currentStageMeta.stepIndex;
+            const done = st.idx < currentStageMeta.stepIndex;
+            return (
+              <div
+                key={st.name}
+                className={`px-3 py-2 rounded-lg border text-[11px] font-semibold text-center ${
+                  active
+                    ? "bg-sx-green-tint border-sx-green-border text-sx-green-text"
+                    : done
+                    ? "bg-sx-canvas border-sx-border text-sx-ink"
+                    : "bg-sx-stone border-sx-border text-sx-muted"
+                }`}
+              >
+                {st.name}
+              </div>
+            );
+          })}
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 text-xs pt-1">
+          <div className="p-3 rounded-xl bg-sx-canvas border border-sx-border">
+            <span className="text-[10px] font-mono uppercase text-sx-muted block">
+              Current Stage &amp; Who Acts
+            </span>
+            <strong className="text-sx-ink block mt-0.5">
+              {currentStageMeta.label} ({currentStageMeta.actor})
+            </strong>
+          </div>
+          <div className="p-3 rounded-xl bg-sx-canvas border border-sx-border">
+            <span className="text-[10px] font-mono uppercase text-sx-muted block">
+              Deadline
+            </span>
+            <strong className="text-sx-ink block mt-0.5">{currentStageMeta.deadline}</strong>
+          </div>
+          <div className="p-3 rounded-xl bg-sx-canvas border border-sx-border">
+            <span className="text-[10px] font-mono uppercase text-sx-muted block">
+              Evidence to Keep
+            </span>
+            <span className="text-sx-ink-soft block mt-0.5 leading-snug">
+              {currentStageMeta.evidence}
+            </span>
+          </div>
+          <div className="p-3 rounded-xl bg-sx-canvas border border-sx-border">
+            <span className="text-[10px] font-mono uppercase text-sx-muted block">
+              What Happens Next
+            </span>
+            <span className="text-sx-ink-soft block mt-0.5 leading-snug">
+              {currentStageMeta.nextStep}
+            </span>
+          </div>
+        </div>
+      </section>
 
       {/* Spacious Layout: Main Escrow Controller (8 cols) + Clean Summary & Chat Launcher (4 cols) */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">

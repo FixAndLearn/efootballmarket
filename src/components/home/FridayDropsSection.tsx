@@ -3,230 +3,148 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Listing } from "@/types/database";
+import { ListingCard } from "@/components/marketplace/ListingCard";
+import { QuietAlertOptIn } from "@/components/common/QuietAlertOptIn";
 import {
   getFridayDropCountdown,
   FridayDropCountdown,
 } from "@/lib/utils/flashSale";
-import { ListingCard } from "@/components/marketplace/ListingCard";
-import { Button } from "@/components/ui/Button";
-import {
-  Clock,
-  ShieldCheck,
-  ArrowRight,
-  CheckCircle2,
-  Heart,
-  Flame,
-  PlusCircle,
-} from "lucide-react";
+import { Flame, ArrowRight, ShieldCheck } from "lucide-react";
 
-interface FridayDropsProps {
+interface FridayDropsSectionProps {
   listings: Listing[];
+  showFullHeader?: boolean;
 }
 
-export function FridayDropsSection({ listings }: FridayDropsProps) {
-  const [countdown, setCountdown] = useState<FridayDropCountdown>({
-    isActive: false,
-    days: 0,
-    hours: 0,
-    minutes: 0,
-    seconds: 0,
-    targetDateUtc: new Date(),
-  });
-  const [mounted, setMounted] = useState(false);
+export function FridayDropsSection({
+  listings,
+  showFullHeader = false,
+}: FridayDropsSectionProps) {
+  const [countdown, setCountdown] = useState<FridayDropCountdown | null>(null);
 
   useEffect(() => {
-    setMounted(true);
-    const updateCountdown = () => {
-      setCountdown(getFridayDropCountdown());
-    };
-
-    updateCountdown();
-    const interval = setInterval(updateCountdown, 1000);
-    return () => clearInterval(interval);
+    const update = () => setCountdown(getFridayDropCountdown());
+    update();
+    const timer = setInterval(update, 1000);
+    return () => clearInterval(timer);
   }, []);
 
-  const isDropActive = mounted && countdown.isActive;
-
-  const featuredDrops = listings.filter(
-    (item) => item.is_featured || (item as any).is_flash_sale
-  );
-  const showcaseItems = (
-    featuredDrops.length > 0 ? featuredDrops : listings
-  ).slice(0, 4);
+  // Only listings explicitly marked as featured are curated Friday Drops
+  const featuredDrops = listings.filter((l) => l.is_featured);
+  const standardListings = listings.slice(0, 6);
+  const hasActiveCuratedDrops = Boolean(countdown?.isActive && featuredDrops.length > 0);
 
   return (
-    <section id="friday-drops" className="py-8 sm:py-10 bg-sx-canvas">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-10">
-        {/* StockX Release Calendar Split Hero */}
-        <div className="rounded-2xl bg-sx-stone border border-sx-border overflow-hidden grid grid-cols-1 lg:grid-cols-12">
-          {/* Left: Editorial Copy & Countdown */}
-          <div className="lg:col-span-7 p-6 sm:p-10 flex flex-col justify-between space-y-6">
-            <div className="space-y-3">
-              <div className="inline-flex items-center gap-2 text-[11px] font-mono font-bold uppercase tracking-widest text-sx-green-text">
-                <span
-                  className={`w-2 h-2 rounded-full ${
-                    isDropActive ? "bg-sx-green animate-ping" : "bg-sx-green"
-                  }`}
-                />
+    <section className="relative rounded-2xl store-panel p-6 sm:p-8 overflow-hidden">
+      <div className="relative space-y-6">
+        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 pb-5 border-b border-sx-border">
+          <div className="space-y-2 max-w-2xl">
+            <div className="flex items-center gap-2 flex-wrap">
+              <span
+                className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded border text-[11px] font-mono font-bold uppercase ${
+                  hasActiveCuratedDrops
+                    ? "bg-sx-green-tint border-emerald-500/40 text-sx-green-text"
+                    : "bg-sx-amber-tint border-amber-500/35 text-sx-amber-text"
+                }`}
+              >
+                <Flame className="w-3 h-3" />
                 <span>
-                  {isDropActive
-                    ? "Release Window Open Now"
-                    : "Weekly Curated Release · Fridays 2:00 PM EAT"}
+                  {hasActiveCuratedDrops
+                    ? `${featuredDrops.length} Friday Drop Squads Live Now`
+                    : "Weekly Friday Window · Fridays 2:00 PM – 10:00 PM EAT"}
                 </span>
-              </div>
-
-              <h1 className="text-2xl sm:text-4xl font-extrabold text-sx-ink font-display tracking-tight leading-tight">
-                {isDropActive
-                  ? "The Friday Release Is Live."
-                  : "The Friday Squad Release."}
-              </h1>
-
-              <p className="text-sm text-sx-ink-soft max-w-xl leading-relaxed">
-                {isDropActive
-                  ? "Hand-vetted Double-Booster, Show Time, and dual-88 Manager accounts are live until 10:00 PM EAT at fixed ask prices — first M-Pesa escrow lock takes the squad."
-                  : "Once a week, we group verified collector rosters — stacked spines, rare Booster Managers, and clean unlinked Konami IDs — into an 8-hour fixed-price release."}
-              </p>
+              </span>
             </div>
 
-            {/* Clean StockX Ticker */}
-            <div className="space-y-2.5">
-              <div className="flex items-center gap-1.5 text-[11px] font-mono uppercase tracking-wider text-sx-muted">
-                <Clock className="w-3.5 h-3.5 text-sx-green-text" />
-                <span>
-                  {isDropActive
-                    ? "Window closes at 10:00 PM EAT in"
-                    : "Next release opens in"}
-                </span>
-              </div>
+            <h2 className="text-xl sm:text-2xl font-bold text-sx-ink font-display tracking-tight">
+              {hasActiveCuratedDrops
+                ? "Fixed-Price Friday Drops"
+                : "Friday Drops Return Every Friday at 2:00 PM EAT"}
+            </h2>
+            <p className="text-xs sm:text-sm text-sx-muted leading-relaxed">
+              {hasActiveCuratedDrops
+                ? "Fixed-price featured squads during the Friday 2:00 PM – 10:00 PM EAT window. Payment goes to eFootballMarket's Till 1572931 and stays on hold during your 24-hour login & Link Data check."
+                : "No featured Friday Drop window is live right now. Leave your number for a Friday 2:00 PM EAT WhatsApp alert, or browse standard marketplace squads available today below."}
+            </p>
+          </div>
 
-              <div className="grid grid-cols-4 gap-2.5 max-w-sm font-mono">
+          {hasActiveCuratedDrops && countdown ? (
+            <div className="p-3.5 rounded-xl bg-sx-stone border border-sx-border shrink-0">
+              <div className="text-[10px] font-mono uppercase tracking-wider text-sx-muted mb-1.5 text-center">
+                Friday Window Closes In
+              </div>
+              <div className="flex items-center justify-center gap-1.5 font-mono">
                 {[
-                  { val: countdown.days, label: "Days" },
-                  { val: countdown.hours, label: "Hours" },
-                  { val: countdown.minutes, label: "Mins" },
-                  { val: countdown.seconds, label: "Secs", accent: true },
-                ].map((unit) => (
+                  { val: String(countdown.hours).padStart(2, "0"), unit: "HRS" },
+                  { val: String(countdown.minutes).padStart(2, "0"), unit: "MIN" },
+                  { val: String(countdown.seconds).padStart(2, "0"), unit: "SEC" },
+                ].map((b) => (
                   <div
-                    key={unit.label}
-                    className="p-3 rounded-xl bg-sx-canvas border border-sx-border text-center"
+                    key={b.unit}
+                    className="px-2.5 py-1.5 rounded-lg bg-sx-canvas border border-sx-border text-center min-w-[48px]"
                   >
-                    <span
-                      className={`block text-xl sm:text-2xl font-extrabold leading-none ${
-                        unit.accent ? "text-sx-green-text" : "text-sx-ink"
-                      }`}
-                    >
-                      {mounted ? String(unit.val).padStart(2, "0") : "--"}
+                    <span className="text-base sm:text-lg font-bold text-sx-ink block leading-none">
+                      {b.val}
                     </span>
-                    <span className="block text-[10px] text-sx-muted uppercase font-semibold mt-1">
-                      {unit.label}
+                    <span className="text-[9px] text-sx-muted uppercase mt-0.5 block">
+                      {b.unit}
                     </span>
                   </div>
                 ))}
               </div>
             </div>
-
-            {/* Curation Pillars + Actions */}
-            <div className="pt-2 flex flex-wrap items-center gap-3">
-              <Link href="/browse">
-                <Button variant="primary" size="md" className="font-bold">
-                  <span>Shop Live Market</span>
-                  <ArrowRight className="w-4 h-4" />
-                </Button>
-              </Link>
-              <Link href="/seller/create-listing">
-                <Button variant="secondary" size="md" className="font-semibold">
-                  <PlusCircle className="w-4 h-4" />
-                  <span>Consign a Squad for Friday</span>
-                </Button>
-              </Link>
+          ) : (
+            <div className="w-full lg:max-w-sm shrink-0">
+              <QuietAlertOptIn topic="new_squads" compact />
             </div>
-          </div>
-
-          {/* Right: Real Match-Night Stadium Photography + Standards Overlay */}
-          <div className="lg:col-span-5 relative min-h-[240px] lg:min-h-full bg-sx-elevated border-t lg:border-t-0 lg:border-l border-sx-border overflow-hidden">
-            <img
-              src="/images/articles/live-update-condition-night.jpg"
-              alt="Floodlit football stadium match night"
-              className="w-full h-full object-cover"
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent flex flex-col justify-end p-6 text-white space-y-2.5">
-              <span className="text-[10px] font-mono uppercase tracking-widest text-emerald-300 font-bold">
-                Selection Criteria
-              </span>
-              <div className="space-y-1.5 text-xs text-white/90">
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Permanent-B Epic, Big Time &amp; Show Time spines</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>100% unlinked Google Play &amp; Game Center status</span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <ShieldCheck className="w-3.5 h-3.5 text-emerald-400 shrink-0" />
-                  <span>Fixed ask price · Till 1572931 M-Pesa escrow custody</span>
-                </div>
-              </div>
-            </div>
-          </div>
+          )}
         </div>
 
-        {/* Live Lineup OR Early Radar Watchlist */}
-        <div className="space-y-4">
-          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2 border-b border-sx-border pb-3">
-            <div>
-              <span className="text-[11px] font-mono uppercase tracking-wider text-sx-green-text font-bold flex items-center gap-1.5">
-                {isDropActive ? (
-                  <>
-                    <Flame className="w-3.5 h-3.5" />
-                    <span>Now Unlocking</span>
-                  </>
-                ) : (
-                  <>
-                    <Heart className="w-3.5 h-3.5" />
-                    <span>On The Radar</span>
-                  </>
-                )}
-              </span>
-              <h2 className="text-lg sm:text-xl font-extrabold text-sx-ink font-display mt-0.5">
-                {isDropActive
-                  ? "Friday Release Lineup"
-                  : "Available Now & Watchlist Picks"}
-              </h2>
-            </div>
-
-            <Link
-              href="/browse"
-              className="text-xs font-bold text-sx-green-text hover:underline inline-flex items-center gap-1"
-            >
-              <span>View Full Catalog</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+        {/* Squads Grid */}
+        {hasActiveCuratedDrops ? (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+            {featuredDrops.slice(0, 6).map((listing) => (
+              <ListingCard key={listing.id} listing={listing} />
+            ))}
           </div>
-
-          {showcaseItems.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-              {showcaseItems.map((item) => (
-                <ListingCard key={item.id} listing={item} />
-              ))}
-            </div>
-          ) : (
-            <div className="rounded-xl bg-sx-subtle border border-sx-border p-8 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="space-y-1">
-                <h3 className="text-sm font-bold text-sx-ink font-display">
-                  Next Friday Lineup In Curation
-                </h3>
-                <p className="text-xs text-sx-muted max-w-xl leading-relaxed">
-                  Have a clean Konami ID with meta Double-Booster cards or 88-proficiency Booster Managers? List your squad before Friday 12:00 PM EAT to be featured in the weekly release.
-                </p>
-              </div>
-              <Link href="/seller/create-listing" className="shrink-0">
-                <Button variant="primary" size="sm">
-                  <span>List Your Squad</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Button>
+        ) : standardListings.length > 0 ? (
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h3 className="text-sm font-bold text-sx-ink font-display">
+                Available Now in Standard Marketplace
+              </h3>
+              <Link
+                href="/browse"
+                className="inline-flex items-center gap-1 text-xs font-semibold text-sx-green-text hover:underline"
+              >
+                <span>Browse all squads</span>
+                <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+              {standardListings.map((listing) => (
+                <ListingCard key={listing.id} listing={listing} />
+              ))}
+            </div>
+          </div>
+        ) : null}
+
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pt-4 border-t border-sx-border text-xs text-sx-muted">
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-4 h-4 text-sx-green-text shrink-0" />
+            <span>
+              Every squad uses eFootballMarket&apos;s Till 1572931 payment hold (KES 0 added buyer fee) &amp; 24-hour buyer login inspection.
+            </span>
+          </div>
+
+          {!showFullHeader && (
+            <Link
+              href="/friday-drops"
+              className="inline-flex items-center gap-1 text-sx-green-text hover:underline font-semibold shrink-0"
+            >
+              <span>About Friday Drops</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           )}
         </div>
       </div>

@@ -126,7 +126,8 @@ function MiddlemanContent() {
 
   const numAmount = Number(dealAmount) || 0;
   const escrowFee = numAmount > 0 ? Math.max(50, Math.min(500, Math.round(numAmount * 0.05))) : 0;
-  const totalPayable = numAmount + escrowFee;
+  const sellerNetPayout = Math.max(0, numAmount - escrowFee);
+  const totalPayable = numAmount;
 
   const appBaseUrl = typeof window !== "undefined" ? window.location.origin : "https://www.efootballmarket.co.ke";
   const effectiveGenTitle = genTitle || dealTitle || "";
@@ -135,13 +136,13 @@ function MiddlemanContent() {
   const generatedInviteUrl = `${appBaseUrl}/middleman?title=${encodeURIComponent(effectiveGenTitle || "eFootball Deal")}${effectiveGenAmount ? `&amount=${encodeURIComponent(effectiveGenAmount)}` : ""}${genSellerPhone ? `&seller=${encodeURIComponent(genSellerPhone)}` : ""}${genBuyerPhone ? `&buyer=${encodeURIComponent(genBuyerPhone)}` : ""}`;
 
   const generatedWhatsAppGroupMessage =
-    `*OFFICIAL ESCROW TRADE CONTRACT*\n\n` +
+    `*eFootballMarket Middleman Contract*\n\n` +
     `*Squad / Item:* ${effectiveGenTitle || "eFootball Account"}\n` +
-    `*Agreed Price:* ${displayAmount}\n` +
-    `*Escrow Vault:* Safaricom Till 1572931 (EFootballMarket)\n` +
-    `*Escrow Officer:* Brian Okibo (+254 794 400 365)\n\n` +
-    `*Protection Policy:* Funds remain locked until the buyer inspects squad players, coins, and changes Konami ID credentials.\n\n` +
-    `*Open & Lock Contract:* ${generatedInviteUrl}`;
+    `*Agreed Price (Buyer Pays):* ${displayAmount} (KES 0 extra buyer fee)\n` +
+    `*Payment Account:* M-Pesa Buy Goods Till 1572931 (eFootballMarket Kenya)\n` +
+    `*Support Desk:* +254 794 400 365 (support@efootballmarket.co.ke)\n\n` +
+    `*How Funds Are Held:* Safaricom M-Pesa transfers payment to Till 1572931; eFootballMarket holds the funds during the buyer's 24-hour login & Konami ID check, then sends seller net payout (minus 5% fee, KES 50–500).\n\n` +
+    `*Open Contract:* ${generatedInviteUrl}`;
 
   const handleCreateDeal = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -235,7 +236,7 @@ function MiddlemanContent() {
           </h1>
 
           <p className="text-xs sm:text-sm text-sx-ink-soft leading-relaxed">
-            Agreed on a price in a WhatsApp group or Facebook DM? Generate a tracked contract code below—the buyer deposits into <strong>Safaricom Till 1572931</strong>, the seller delivers Konami ID details, and payout releases after buyer confirmation.
+            Finding a buyer or seller on WhatsApp, Facebook, Discord, or TikTok is allowed when you settle the trade here: the buyer pays the agreed price into <strong>eFootballMarket Kenya&apos;s Buy Goods Till 1572931</strong> (KES 0 extra buyer fee; Safaricom processes the transfer and eFootballMarket holds the funds), the seller delivers within 12 hours, and the buyer has 24 hours from credential delivery to verify Clean Konami ID before net payout (minus 5% seller fee, KES 50–500).
           </p>
         </div>
       </div>
@@ -335,33 +336,33 @@ function MiddlemanContent() {
 
               {/* Deal Breakdown Card */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="p-4 rounded-2xl bg-pitch-card border border-pitch-border space-y-1">
-                  <span className="text-xs text-sx-muted">Seller Payout</span>
-                  <p className="text-xl font-bold text-sx-ink font-display">
-                    {formatCurrency(createdDeal.item_amount_kes, "KES")}
-                  </p>
-                  <span className="text-[11px] text-sx-muted block">
-                    Seller: {createdDeal.seller_name} ({createdDeal.seller_phone})
-                  </span>
-                </div>
-
-                <div className="p-4 rounded-2xl bg-pitch-card border border-pitch-border space-y-1">
-                  <span className="text-xs text-sx-muted">Escrow Security Fee (5%)</span>
-                  <p className="text-xl font-bold text-sx-amber-text font-display">
-                    {formatCurrency(createdDeal.escrow_fee_kes, "KES")}
-                  </p>
-                  <span className="text-[11px] text-sx-muted block">
-                    Includes Konami 2FA verification & dispute cover
-                  </span>
-                </div>
-
                 <div className="p-4 rounded-2xl bg-sx-green-tint border border-sx-green-border space-y-1">
-                  <span className="text-xs text-sx-green-text">Total Payable to Till</span>
+                  <span className="text-xs text-sx-green-text">Buyer Pays to Till 1572931</span>
                   <p className="text-2xl font-black text-sx-green-text font-display">
                     {formatCurrency(createdDeal.total_amount_kes, "KES")}
                   </p>
                   <span className="text-[11px] text-sx-green-text block font-semibold">
-                    Buy Goods Till: 1572931
+                    KES 0 extra buyer fee · 100% refundable if undelivered
+                  </span>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-pitch-card border border-pitch-border space-y-1">
+                  <span className="text-xs text-sx-muted">Platform Seller Fee (5%, KES 50–500)</span>
+                  <p className="text-xl font-bold text-sx-amber-text font-display">
+                    -{formatCurrency(createdDeal.escrow_fee_kes, "KES")}
+                  </p>
+                  <span className="text-[11px] text-sx-muted block">
+                    Deducted from seller payout upon completion
+                  </span>
+                </div>
+
+                <div className="p-4 rounded-2xl bg-pitch-card border border-pitch-border space-y-1">
+                  <span className="text-xs text-sx-muted">Expected Seller Net Payout</span>
+                  <p className="text-xl font-bold text-sx-ink font-display">
+                    {formatCurrency(Math.max(0, createdDeal.item_amount_kes - createdDeal.escrow_fee_kes), "KES")}
+                  </p>
+                  <span className="text-[11px] text-sx-muted block">
+                    Seller: {createdDeal.seller_name} ({createdDeal.seller_phone})
                   </span>
                 </div>
               </div>
@@ -370,20 +371,20 @@ function MiddlemanContent() {
               <div className="p-5 rounded-2xl bg-sx-subtle border border-sx-border space-y-3">
                 <h4 className="text-sm font-bold text-sx-ink flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-sx-green-text" />
-                  <span>How This Trade is Executed Safely</span>
+                  <span>How Payment Holding &amp; Handover Work</span>
                 </h4>
                 <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-xs text-sx-ink-soft pt-1">
                   <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border">
-                    <strong className="text-sx-green-text block mb-1">1. Buyer Pays Till</strong>
-                    Buyer sends KES {createdDeal.total_amount_kes} to Till <strong>1572931</strong>.
+                    <strong className="text-sx-green-text block mb-1">1. Pay Till 1572931</strong>
+                    Buyer pays KES {createdDeal.total_amount_kes.toLocaleString()} via M-Pesa to eFootballMarket&apos;s Till <strong>1572931</strong>.
                   </div>
                   <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border">
-                    <strong className="text-sx-green-text block mb-1">2. Funds Locked</strong>
-                    Officer Brian Okibo verifies funds are locked in Escrow.
+                    <strong className="text-sx-green-text block mb-1">2. Held by Platform</strong>
+                    eFootballMarket confirms receipt and holds the balance while notifying the seller (12h delivery deadline).
                   </div>
                   <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border">
-                    <strong className="text-sx-green-text block mb-1">3. Konami Handover</strong>
-                    Seller delivers email/pass. Buyer changes email & enables 2FA.
+                    <strong className="text-sx-green-text block mb-1">3. 24h Buyer Check</strong>
+                    24h timer starts when credentials are submitted. Buyer checks Link Data &amp; rebinds email/2FA.
                   </div>
                   <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border">
                     <strong className="text-sx-green-text block mb-1">4. Payout to Seller</strong>
@@ -508,7 +509,7 @@ function MiddlemanContent() {
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <Input
-                    label="Agreed Price to Seller (KES)"
+                    label="Agreed Squad Price (KES)"
                     type="number"
                     placeholder="e.g. 2500"
                     value={dealAmount}
@@ -519,16 +520,16 @@ function MiddlemanContent() {
                   {/* Live Calculation Preview */}
                   <div className="p-3.5 rounded-xl bg-pitch-card border border-pitch-border flex flex-col justify-center">
                     <div className="flex items-center justify-between text-xs text-sx-ink-soft">
-                      <span>Agreed Seller Price:</span>
-                      <strong className="text-sx-ink">KES {numAmount}</strong>
+                      <span>Buyer Pays to Till 1572931:</span>
+                      <strong className="text-sx-ink">KES {totalPayable.toLocaleString()} (KES 0 extra fee)</strong>
                     </div>
                     <div className="flex items-center justify-between text-xs text-sx-ink-soft mt-1">
-                      <span>Escrow Protection Fee (5%):</span>
-                      <strong className="text-sx-amber-text">KES {escrowFee}</strong>
+                      <span>Seller Fee (5%, min 50 / max 500):</span>
+                      <strong className="text-sx-amber-text">-KES {escrowFee.toLocaleString()}</strong>
                     </div>
                     <div className="flex items-center justify-between text-xs text-sx-green-text font-bold border-t border-sx-border-strong pt-1 mt-1">
-                      <span>Total to Till 1572931:</span>
-                      <span className="text-base font-extrabold">KES {totalPayable}</span>
+                      <span>Seller Net M-Pesa Payout:</span>
+                      <span className="text-base font-extrabold">KES {sellerNetPayout.toLocaleString()}</span>
                     </div>
                   </div>
                 </div>

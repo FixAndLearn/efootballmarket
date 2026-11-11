@@ -21,6 +21,7 @@ import { ChatSellerWhatsAppButton } from "@/components/marketplace/ChatSellerWha
 import { SellerListingOffersPanel } from "@/components/marketplace/SellerListingOffersPanel";
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import { FavoriteButton } from "@/components/marketplace/FavoriteButton";
+import { ListingActionsBar } from "@/components/marketplace/ListingActionsBar";
 import { AdBanner } from "@/components/common/AdBanner";
 import { Button } from "@/components/ui/Button";
 import {
@@ -203,7 +204,8 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
           </span>
         </nav>
 
-        <div className="flex items-center gap-2.5 flex-wrap">
+        <div className="flex items-center gap-2 flex-wrap">
+          <ListingActionsBar listingId={listing.id} listingTitle={displayTitle} />
           <FavoriteButton
             listingId={listing.id}
             initialCount={listing.favorites_count || 0}
@@ -214,7 +216,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
             className="inline-flex items-center gap-1.5 text-xs font-medium text-sx-muted hover:text-sx-ink transition-colors"
           >
             <ArrowLeft className="w-3.5 h-3.5" />
-            <span>Back to Marketplace</span>
+            <span>Back to Browse</span>
           </Link>
           {isOwner && listing.status !== "sold" && listing.status !== "in_escrow" && (
             <Link href={`/seller/edit-listing/${listing.id}`}>
@@ -253,14 +255,22 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
               </h1>
             </div>
 
-            {/* Primary Resource Telemetry */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            {/* Standardized Squad Comparison Specs */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
               <div className="p-3.5 rounded-xl bg-sx-stone border border-sx-border">
                 <span className="block text-[10px] font-mono uppercase text-sx-muted">
-                  Team Strength
+                  Platform
+                </span>
+                <span className="text-sm font-bold text-sx-ink mt-1 block">
+                  {getPlatformLabel(listing.platform)}
+                </span>
+              </div>
+              <div className="p-3.5 rounded-xl bg-sx-stone border border-sx-border">
+                <span className="block text-[10px] font-mono uppercase text-sx-muted">
+                  Collective Strength
                 </span>
                 <span className="text-lg font-bold text-sx-green-text font-mono mt-0.5 block">
-                  {listing.overall_team_strength ? `${listing.overall_team_strength} OVR` : "Verified"}
+                  {listing.overall_team_strength ? `${listing.overall_team_strength} OVR` : "Declared"}
                 </span>
               </div>
               <div className="p-3.5 rounded-xl bg-sx-stone border border-sx-border">
@@ -273,19 +283,47 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
               </div>
               <div className="p-3.5 rounded-xl bg-sx-stone border border-sx-border">
                 <span className="block text-[10px] font-mono uppercase text-sx-muted">
-                  Head Coach
+                  Manager
                 </span>
                 <span className="text-sm font-bold text-sx-ink truncate mt-1 block">
-                  {listing.manager_name || "Assigned"}
+                  {listing.manager_name || "Not specified"}
                 </span>
               </div>
               <div className="p-3.5 rounded-xl bg-sx-stone border border-sx-border">
                 <span className="block text-[10px] font-mono uppercase text-sx-muted">
-                  Division Peak
+                  Playstyle
+                </span>
+                <span className="text-sm font-bold text-sx-ink truncate mt-1 block">
+                  {getPlaystyleLabel(listing.primary_playstyle)}
+                </span>
+              </div>
+              <div className="p-3.5 rounded-xl bg-sx-stone border border-sx-border">
+                <span className="block text-[10px] font-mono uppercase text-sx-muted">
+                  Formation &amp; Peak Div
                 </span>
                 <span className="text-sm font-bold text-sx-ink font-mono mt-1 block">
-                  Div {listing.current_division} (Best: Div {listing.highest_division})
+                  {listing.formation || "Custom XI"} · Div {listing.highest_division || listing.current_division}
                 </span>
+              </div>
+            </div>
+
+            {/* Seller-Provided vs Platform-Checked Transparency Box */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
+              <div className="p-3.5 rounded-xl bg-sx-stone border border-sx-border space-y-1">
+                <span className="font-bold text-sx-ink block">
+                  Seller-Provided Info (Verify During Your 24h Check)
+                </span>
+                <p className="text-[11px] text-sx-muted leading-relaxed">
+                  Screenshots, OVR, card counts, coin balance, manager, formation, and Clean Konami ID declaration are entered by the seller. We do not log into seller game accounts before purchase.
+                </p>
+              </div>
+              <div className="p-3.5 rounded-xl bg-sx-green-tint border border-sx-green-border space-y-1">
+                <span className="font-bold text-sx-green-text block">
+                  Platform-Checked on Every Order
+                </span>
+                <p className="text-[11px] text-sx-ink-soft leading-relaxed">
+                  M-Pesa receipt confirmation on eFootballMarket&apos;s Buy Goods Till 1572931, seller completed-sales history/ID badge, and a 24-hour payment hold (starting when credentials are submitted) while you verify in-game.
+                </p>
               </div>
             </div>
 
@@ -354,16 +392,24 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
 
             {/* 24-Hour Handover Checklist */}
             <div className="pt-5 border-t border-sx-border space-y-4">
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex items-center justify-between gap-2 flex-wrap">
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="w-4 h-4 text-sx-green-text" />
                   <h2 className="text-sm font-bold text-sx-ink font-display">
                     24-Hour Buyer Handover Checklist
                   </h2>
                 </div>
-                <Link href="/escrow-guarantee" className="text-xs font-medium text-sx-green-text hover:text-sx-green-text">
-                  Full terms &rarr;
-                </Link>
+                <div className="flex items-center gap-3 text-xs font-medium">
+                  <Link
+                    href="/news/how-to-verify-clean-konami-id-before-releasing-escrow"
+                    className="text-sx-green-text hover:underline"
+                  >
+                    Step-by-step Clean ID guide &rarr;
+                  </Link>
+                  <Link href="/escrow-guarantee" className="text-sx-muted hover:text-sx-ink">
+                    Escrow &amp; fees
+                  </Link>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
@@ -545,33 +591,40 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                 )}
                 <ProposeSwapModal listing={listing} />
                 <a
-                  href={`https://wa.me/${formatWhatsAppPhone(listing.seller?.phone_number || "254794400365")}?text=${encodeURIComponent(
-                    `Hello ${listing.seller?.username || "Seller"}, I saw your listing "${displayTitle}" on eFootballMarket and want to propose a Squad Swap + Cash deal via Till 1572931: https://www.efootballmarket.co.ke/listings/${listing.id}`
+                  href={`https://wa.me/254794400365?text=${encodeURIComponent(
+                    `Hello eFootballMarket Support, I want to propose a Squad Swap + Cash Top-Up on "${displayTitle}" (https://www.efootballmarket.co.ke/listings/${listing.id}) via Till 1572931.`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="w-full inline-flex items-center justify-center gap-1.5 text-[11px] font-semibold text-sx-muted hover:text-sx-ink transition-colors pt-0.5"
                 >
                   <MessageCircle className="w-3 h-3" />
-                  <span>Or ask seller about swap on WhatsApp</span>
+                  <span>Or ask Escrow Desk about swap on WhatsApp</span>
                 </a>
               </div>
             )}
 
-            {/* Protection Summary */}
+            {/* Protection & Fee Summary */}
             <div className="border-t border-sx-border pt-4 space-y-2 text-xs text-sx-ink-soft">
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="w-3.5 h-3.5 text-sx-green-text shrink-0 mt-0.5" />
-                <span>Money held on M-Pesa Till 1572931 — not paid straight to seller</span>
+                <span>
+                  <strong>KES 0 added buyer fee</strong> — Safaricom M-Pesa sends your payment to eFootballMarket&apos;s Till <strong>1572931</strong>, where we hold it during inspection
+                </span>
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="w-3.5 h-3.5 text-sx-green-text shrink-0 mt-0.5" />
-                <span>Seller delivers login details within 12 hours or you get a refund</span>
+                <span>Seller delivers within 12 hours or you receive a 100% refund</span>
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="w-3.5 h-3.5 text-sx-green-text shrink-0 mt-0.5" />
-                <span>24 hours to log in, check Link Data, and open a dispute if mismatched</span>
+                <span>24-hour inspection clock starts when credentials arrive in your Order Room</span>
               </div>
+            </div>
+
+            {/* Plain-Language Game Publisher Rules Notice */}
+            <div className="p-3 rounded-xl bg-sx-stone border border-sx-border text-[11px] text-sx-muted leading-relaxed">
+              <strong className="text-sx-ink">Game publisher notice:</strong> Konami&apos;s Terms of Use restrict account transfers, and Konami can modify game features or restrict accounts under its own rules. eFootballMarket holds payment during your 24-hour Clean ID check, but cannot control future publisher actions after an order completes.
             </div>
 
             {/* Seller Card */}
