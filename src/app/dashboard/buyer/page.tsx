@@ -10,9 +10,11 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { BuyerDashboardView } from "@/components/dashboard/BuyerDashboardView";
+import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { OrderService } from "@/services/orderService";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function BuyerDashboardPage() {
@@ -25,59 +27,79 @@ export default async function BuyerDashboardPage() {
     redirect("/login?redirect=/dashboard/buyer");
   }
 
-  const orderService = new OrderService(supabase);
+  // Use service-role client after server-side auth verification so RLS on joined
+  // profiles/escrow/listings never drops or breaks the authenticated buyer's own records.
+  const primaryClient = hasServiceRoleKey() ? createAdminClient() : supabase;
+
+  const orderService = new OrderService(primaryClient);
   const orders = await orderService.getUserOrders(user.id, "buyer");
 
   const activeOrders = orders.filter((o) =>
-    ["payment_pending", "escrow_locked", "seller_delivered", "buyer_reviewing", "disputed"].includes(
-      o.status
-    )
+    [
+      "payment_pending",
+      "escrow_locked",
+      "seller_delivered",
+      "buyer_reviewing",
+      "disputed",
+    ].includes(o.status)
   );
   const completedOrders = orders.filter((o) => o.status === "completed");
 
-  const { data: myOffersRaw } = await supabase
-    .from("listing_offers")
-    .select(
-      `
-      id,
-      listing_id,
-      offer_amount,
-      currency,
-      message,
-      status,
-      created_at,
-      listing:listings!listing_id(id, title, price, platform, overall_team_strength)
-    `
-    )
-    .eq("buyer_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(12);
-
-  const myOffers = (myOffersRaw || []).map((o: any) => ({
-    ...o,
-    listing: Array.isArray(o.listing) ? o.listing[0] : o.listing,
-  }));
-
-  const { data: favoritesRaw } = await supabase
-    .from("favorites")
-    .select(
-      `
-      id,
-      created_at,
-      listing:listings!listing_id(
-        *,
-        images:listing_images(*),
-        seller:profiles!listings_seller_id_fkey(id, username, is_verified_seller, seller_rating, completed_sales_count)
+  // Fetch buyer's submitted price offers (matching public.listing_offers schema: offered_price, note)
+  let myOffers: any[] = [];
+  try {
+    const { data: myOffersRaw } = await primaryClient
+      .from("listing_offers")
+      .select(
+        "*, listing:listings(id, title, price, platform, overall_team_strength)"
       )
-    `
-    )
-    .eq("user_id", user.id)
-    .order("created_at", { ascending: false })
-    .limit(24);
+      .eq("buyer_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(20);
 
-  const savedListings = (favoritesRaw || [])
-    .map((f: any) => (Array.isArray(f.listing) ? f.listing[0] : f.listing))
-    .filter((l: any) => l && !l.deleted_at);
+    myOffers = (myOffersRaw || []).map((o: any) => ({
+      id: o.id,
+      listing_id: o.listing_id,
+      offer_amount: Number(o.offered_price ?? o.offer_amount ?? 0),
+      currency: o.currency || "KES",
+      message: o.note ?? o.message ?? null,
+      status: o.status || "pending",
+      created_at: o.created_at,
+      listing: Array.isArray(o.listing) ? o.listing[0] : o.listing,
+    }));
+  } catch (err) {
+    console.warn("Buyer offers fetch warning:", err);
+  }
+
+  // Fetch buyer's watchlist / saved squads without fragile FK constraint hints
+  let savedListings: any[] = [];
+  try {
+    const { data: favRows } = await primaryClient
+      .from("favorites")
+      .select("listing_id, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(24);
+
+    const favListingIds = Array.from(
+      new Set((favRows || []).map((r: any) => r.listing_id).filter(Boolean))
+    );
+
+    if (favListingIds.length > 0) {
+      const { data: listingsRaw } = await primaryClient
+        .from("listings")
+        .select("*, images:listing_images(*), seller:profiles(*)")
+        .in("id", favListingIds)
+        .is("deleted_at", null);
+
+      const byId = new Map((listingsRaw || []).map((l: any) => [l.id, l]));
+      savedListings = favListingIds
+        .map((id) => byId.get(id))
+        .filter(Boolean);
+    }
+  } catch (err) {
+    console.warn("Buyer watchlist fetch warning:", err);
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-6">
@@ -88,7 +110,7 @@ export default async function BuyerDashboardPage() {
             Buyer Account
           </span>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-sx-ink font-display tracking-tight mt-0.5">
-            Orders &amp; Offers
+            Buying, Orders &amp; Watchlist
           </h1>
           <p className="text-xs sm:text-sm text-sx-muted mt-1">
             Track M-Pesa escrow custody, inspect delivered Konami IDs, and manage your squad offers.
@@ -101,7 +123,7 @@ export default async function BuyerDashboardPage() {
               Post Wanted Squad
             </Button>
           </Link>
-          <Link href="/marketplace">
+          <Link href="/browse">
             <Button variant="primary" size="sm">
               Browse Squads
               <ArrowRight className="w-3.5 h-3.5" />
@@ -112,34 +134,40 @@ export default async function BuyerDashboardPage() {
 
       {/* Summary Metric Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        <div className="p-4 sm:p-5 rounded-xl bg-sx-canvas border border-sx-border flex items-center gap-3.5">
+        <div className="p-4 sm:p-5 rounded-xl bg-sx-subtle border border-sx-border flex items-center gap-3.5">
           <div className="w-11 h-11 rounded-lg bg-sx-stone border border-sx-border flex items-center justify-center text-sx-ink shrink-0">
             <ShoppingBag className="w-5 h-5" />
           </div>
           <div>
             <p className="text-xs font-medium text-sx-muted">Total Orders</p>
-            <p className="text-2xl font-extrabold text-sx-ink font-mono">{orders.length}</p>
+            <p className="text-2xl font-extrabold text-sx-ink font-mono">
+              {orders.length}
+            </p>
           </div>
         </div>
 
-        <div className="p-4 sm:p-5 rounded-xl bg-sx-canvas border border-sx-border flex items-center gap-3.5">
+        <div className="p-4 sm:p-5 rounded-xl bg-sx-subtle border border-sx-border flex items-center gap-3.5">
           <div className="w-11 h-11 rounded-lg bg-sx-amber-tint border border-sx-amber-border flex items-center justify-center text-sx-amber-text shrink-0">
             <Clock className="w-5 h-5" />
           </div>
           <div>
-            <p className="text-xs font-medium text-sx-muted">Active Escrow / Pending</p>
+            <p className="text-xs font-medium text-sx-muted">
+              Active Escrow / Pending
+            </p>
             <p className="text-2xl font-extrabold text-sx-amber-text font-mono">
               {activeOrders.length}
             </p>
           </div>
         </div>
 
-        <div className="p-4 sm:p-5 rounded-xl bg-sx-canvas border border-sx-border flex items-center gap-3.5">
+        <div className="p-4 sm:p-5 rounded-xl bg-sx-subtle border border-sx-border flex items-center gap-3.5">
           <div className="w-11 h-11 rounded-lg bg-sx-green-tint border border-sx-green-border flex items-center justify-center text-sx-green-text shrink-0">
             <CheckCircle2 className="w-5 h-5" />
           </div>
           <div>
-            <p className="text-xs font-medium text-sx-muted">Verified &amp; Completed</p>
+            <p className="text-xs font-medium text-sx-muted">
+              Verified &amp; Completed
+            </p>
             <p className="text-2xl font-extrabold text-sx-green-text font-mono">
               {completedOrders.length}
             </p>
@@ -155,9 +183,10 @@ export default async function BuyerDashboardPage() {
       />
 
       {/* Need Escrow Help Bar */}
-      <div className="rounded-xl bg-sx-stone border border-sx-border p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
+      <div className="rounded-xl bg-sx-subtle border border-sx-border p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
         <span className="text-sx-muted">
-          Paid via Safaricom Buy Goods Till <strong className="font-mono text-sx-ink">1572931</strong> or need help verifying a Konami ID?
+          Paid via Safaricom Buy Goods Till{" "}
+          <strong className="font-mono text-sx-ink">1572931</strong> or need help verifying a Konami ID?
         </span>
         <a
           href="https://wa.me/254794400365?text=Hello%20eFootballMarket%20Escrow%20Desk%2C%20I%20need%20help%20with%20my%20buyer%20order."

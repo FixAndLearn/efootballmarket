@@ -3,9 +3,11 @@ import { redirect } from "next/navigation";
 import { ExternalLink, PlusCircle } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { SellerDashboardView } from "@/components/seller/SellerDashboardView";
+import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { Listing, Order } from "@/types/database";
 
+export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export default async function SellerDashboardPage() {
@@ -18,17 +20,19 @@ export default async function SellerDashboardPage() {
     redirect("/login?redirect=/dashboard/seller");
   }
 
+  const primaryClient = hasServiceRoleKey() ? createAdminClient() : supabase;
+
   // Fetch seller profile
-  const { data: profile } = await supabase
+  const { data: profile } = await primaryClient
     .from("profiles")
     .select(
       "username, available_balance, escrow_balance, completed_sales_count, seller_rating, is_verified_seller"
     )
     .eq("id", user.id)
-    .single();
+    .maybeSingle();
 
   // Fetch seller listings WITH images so thumbnails & WhatsApp flyers render cleanly
-  const { data: listings } = await supabase
+  const { data: listings } = await primaryClient
     .from("listings")
     .select("*, images:listing_images(*)")
     .eq("seller_id", user.id)
@@ -36,7 +40,7 @@ export default async function SellerDashboardPage() {
     .order("created_at", { ascending: false });
 
   // Fetch ALL active escrow orders (awaiting credentials, in 24h OTP handover/inspection, or disputed)
-  const { data: pendingOrders } = await supabase
+  const { data: pendingOrders } = await primaryClient
     .from("orders")
     .select("*, listing:listings(id, title, platform, overall_team_strength)")
     .eq("seller_id", user.id)
@@ -44,7 +48,7 @@ export default async function SellerDashboardPage() {
     .order("created_at", { ascending: false });
 
   // Fetch incoming buyer price offers for this seller
-  const { data: incomingOffers } = await supabase
+  const { data: incomingOffers } = await primaryClient
     .from("listing_offers")
     .select("*, listing:listings(id, title, price, platform, overall_team_strength, manager_name)")
     .eq("seller_id", user.id)
@@ -74,14 +78,16 @@ export default async function SellerDashboardPage() {
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-          {profile?.username && (
-            <Link href={`/u/${encodeURIComponent(profile.username)}`}>
-              <Button variant="secondary" size="md">
-                <ExternalLink className="w-4 h-4" />
-                <span>Public Storefront</span>
-              </Button>
-            </Link>
-          )}
+          <Link
+            href={`/u/${encodeURIComponent(
+              profile?.username || user.user_metadata?.username || user.id
+            )}`}
+          >
+            <Button variant="secondary" size="md">
+              <ExternalLink className="w-4 h-4" />
+              <span>Public Storefront</span>
+            </Button>
+          </Link>
           <Link href="/seller/create-listing">
             <Button variant="primary" size="md">
               <PlusCircle className="w-4 h-4" />

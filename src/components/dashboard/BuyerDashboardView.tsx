@@ -210,7 +210,7 @@ export const BuyerDashboardView: React.FC<BuyerDashboardViewProps> = ({
                 Every squad purchase is protected by M-Pesa escrow custody (Till 1572931) with KES 0 extra buyer fees.
               </p>
             </div>
-            <Link href="/marketplace" className="inline-block">
+            <Link href="/browse" className="inline-block">
               <Button variant="primary" size="md">
                 Explore Verified Squads
               </Button>
@@ -381,7 +381,7 @@ export const BuyerDashboardView: React.FC<BuyerDashboardViewProps> = ({
                   </div>
 
                   <Link
-                    href={offer.listing ? `/listings/${offer.listing.id}` : "/marketplace"}
+                    href={offer.listing ? `/listings/${offer.listing.id}` : "/browse"}
                     className="text-sm font-bold text-sx-ink hover:text-sx-green-text transition-colors block"
                   >
                     {offer.listing?.title || "Squad Listing"}
@@ -400,7 +400,7 @@ export const BuyerDashboardView: React.FC<BuyerDashboardViewProps> = ({
                     <Link
                       href={
                         offer.status === "accepted"
-                          ? `/pay/${offer.listing.id}`
+                          ? `/pay/${offer.listing.id}?offerId=${encodeURIComponent(offer.id)}`
                           : `/listings/${offer.listing.id}`
                       }
                     >

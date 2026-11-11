@@ -151,7 +151,7 @@ export async function POST(req: NextRequest) {
     const supabase = getClient();
     const { data: listing, error: listingError } = await supabase
       .from("listings")
-      .select("id, title, price, seller_id, platform, overall_team_strength, manager_name, seller:profiles!listings_seller_id_fkey(username, phone_number)")
+      .select("id, title, price, seller_id, platform, overall_team_strength, manager_name, seller:profiles(username, phone_number)")
       .eq("id", listing_id)
       .single();
 

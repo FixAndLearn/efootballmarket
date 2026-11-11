@@ -149,16 +149,18 @@ export function Header() {
                               <span>Selling Portfolio</span>
                             </Link>
 
-                            {profile?.username && (
-                              <Link
-                                href={`/u/${encodeURIComponent(profile.username)}`}
-                                onClick={() => setProfileDropdownOpen(false)}
-                                className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-sx-ink hover:bg-sx-stone"
-                              >
-                                <ExternalLink className="w-3.5 h-3.5 text-sx-muted" />
-                                <span>Public Storefront</span>
-                              </Link>
-                            )}
+                            <Link
+                              href={`/u/${encodeURIComponent(
+                                profile?.username ||
+                                  user.user_metadata?.username ||
+                                  user.id
+                              )}`}
+                              onClick={() => setProfileDropdownOpen(false)}
+                              className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-sx-ink hover:bg-sx-stone"
+                            >
+                              <ExternalLink className="w-3.5 h-3.5 text-sx-muted" />
+                              <span>Public Storefront</span>
+                            </Link>
 
                             {isSeller && (
                               <Link
