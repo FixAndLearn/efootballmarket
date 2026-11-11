@@ -22,6 +22,7 @@ import { SellerListingOffersPanel } from "@/components/marketplace/SellerListing
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import { FavoriteButton } from "@/components/marketplace/FavoriteButton";
 import { ListingActionsBar } from "@/components/marketplace/ListingActionsBar";
+import { ListingStickyBottomBar } from "@/components/marketplace/ListingStickyBottomBar";
 import { AdBanner } from "@/components/common/AdBanner";
 import { Button } from "@/components/ui/Button";
 import {
@@ -466,7 +467,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
         </div>
 
         {/* Right Column: Sticky Checkout & Seller Box (4 cols) */}
-        <div className="lg:col-span-4 space-y-5 lg:sticky lg:top-28">
+        <div id="listing-inline-cta" className="lg:col-span-4 space-y-5 lg:sticky lg:top-28">
           <div className="store-panel rounded-2xl p-6 space-y-5">
             <div className="pb-4 border-b border-sx-border">
               <span className="text-[11px] font-mono uppercase tracking-wider text-sx-muted">
@@ -564,7 +565,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                   listingId={listing.id}
                   priceFormatted={formatCurrency(listing.price, listing.currency)}
                 />
-                <MakeOfferButton listing={listing} />
+                <MakeOfferButton listing={listing} className="w-full" />
                 <ChatSellerWhatsAppButton
                   sellerPhone={listing.seller?.phone_number}
                   sellerUsername={listing.seller?.username}
@@ -708,73 +709,12 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
         </section>
       )}
 
-      {/* Mobile Sticky Action Bar */}
-      <div className="fixed bottom-0 left-0 right-0 z-40 bg-sx-canvas backdrop-blur-md border-t border-sx-border px-4 py-2.5 lg:hidden flex items-center justify-between gap-2 safe-area-pb">
-        <div className="min-w-0 shrink-0">
-          <p className="text-[9px] font-mono uppercase text-sx-muted leading-tight">Price</p>
-          <p className="text-base font-bold font-mono text-sx-ink leading-tight whitespace-nowrap">
-            {formatCurrency(listing.price, listing.currency)}
-          </p>
-        </div>
-        <div className="flex items-center gap-1.5 shrink-0">
-          {isOwner ? (
-            listing.status === "published" ? (
-              <Link href={`/seller/edit-listing/${listing.id}`}>
-                <Button variant="gold" size="sm">
-                  Edit
-                </Button>
-              </Link>
-            ) : (
-              <span className="px-3 py-1.5 rounded-lg bg-sx-stone border border-sx-border text-xs font-mono text-sx-muted">
-                {listing.status === "sold" ? "Sold" : "In Escrow"}
-              </span>
-            )
-          ) : listing.status !== "published" ? (
-            <span className="px-3 py-1.5 rounded-lg bg-sx-stone border border-sx-border text-xs font-mono text-sx-muted">
-              {listing.status === "sold" ? "Sold" : "In Escrow"}
-            </span>
-          ) : isListingOnFlashSale(listing) ? (
-            <div className="flex items-center gap-1.5">
-              <ChatSellerWhatsAppButton
-                sellerPhone={listing.seller?.phone_number}
-                sellerUsername={listing.seller?.username}
-                listingId={listing.id}
-                listingTitle={listing.title}
-                listingPrice={listing.price}
-                listingCurrency={listing.currency}
-                overallTeamStrength={listing.overall_team_strength}
-                variant="compact"
-                label="Chat"
-              />
-              <BuyNowButton
-                listingId={listing.id}
-                priceFormatted={formatCurrency(listing.price, listing.currency)}
-                compact={true}
-              />
-            </div>
-          ) : (
-            <div className="flex items-center gap-1.5">
-              <ChatSellerWhatsAppButton
-                sellerPhone={listing.seller?.phone_number}
-                sellerUsername={listing.seller?.username}
-                listingId={listing.id}
-                listingTitle={listing.title}
-                listingPrice={listing.price}
-                listingCurrency={listing.currency}
-                overallTeamStrength={listing.overall_team_strength}
-                variant="compact"
-                label="Chat"
-              />
-              <MakeOfferButton listing={listing} size="sm" />
-              <BuyNowButton
-                listingId={listing.id}
-                priceFormatted={formatCurrency(listing.price, listing.currency)}
-                compact={true}
-              />
-            </div>
-          )}
-        </div>
-      </div>
+      {/* Smart Mobile Sticky Action Bar (auto-hides whenever inline Purchase Card is visible on screen) */}
+      <ListingStickyBottomBar
+        listing={listing}
+        isOwner={isOwner}
+        isFlashSale={isListingOnFlashSale(listing)}
+      />
     </div>
   );
 }

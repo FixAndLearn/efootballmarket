@@ -187,7 +187,19 @@ export class PaymentService {
           recipient_id: payment.order.seller_id,
           type: "payment_received",
           title: "Payment Secured in Escrow!",
-          message: `Buyer paid KES ${amount}. Net KES ${netAmount} is locked in your escrow balance. Deliver credentials to complete.`,
+          message: `Buyer paid KES ${amount}. Net KES ${netAmount} is locked in your escrow balance. Deliver credentials within 12 hours to complete.`,
+          action_url: `/orders/${payment.order_id}`,
+          is_read: false,
+        });
+      }
+
+      // Also create instant in-app/pop-up confirmation for Buyer
+      if (payment.order?.buyer_id) {
+        await this.supabase.from("notifications").insert({
+          recipient_id: payment.order.buyer_id,
+          type: "mpesa_payment",
+          title: "M-Pesa Payment Confirmed on Till 1572931!",
+          message: `KES ${amount} is held safely on your order. Seller has up to 12 hours to submit Konami ID credentials.`,
           action_url: `/orders/${payment.order_id}`,
           is_read: false,
         });

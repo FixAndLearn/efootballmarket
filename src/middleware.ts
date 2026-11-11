@@ -133,6 +133,6 @@ export const config = {
   matcher: [
     "/admin/:path*",
     "/api/:path*",
-    "/((?!_next/static|_next/image|ads\\.txt|robots\\.txt|sitemap\\.xml|manifest\\.webmanifest|favicon\\.ico|google.*\\.html|.*\\.(?:svg|png|jpg|jpeg|gif|webp|txt|xml)$).*)",
+    "/((?!_next/static|_next/image|sw\\.js|ads\\.txt|robots\\.txt|sitemap\\.xml|manifest\\.webmanifest|favicon\\.ico|google.*\\.html|.*\\.(?:svg|png|jpg|jpeg|gif|webp|txt|xml)$).*)",
   ],
 };

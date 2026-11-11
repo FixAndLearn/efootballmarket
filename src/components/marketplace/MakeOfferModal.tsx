@@ -8,7 +8,15 @@ import { formatCurrency } from "@/lib/utils";
 import { normalizePhoneNumber } from "@/lib/utils/phone";
 import { isListingOnFlashSale } from "@/lib/utils/flashSale";
 import {
+  BrowserNotifPermission,
+  getBrowserNotificationPermission,
+  isBrowserNotificationSupported,
+  rememberWatchedOffer,
+  requestBrowserNotificationPermission,
+} from "@/lib/notifications/browserPush";
+import {
   Handshake,
+  BellRing,
   Tag,
   X,
   CheckCircle2,
@@ -57,9 +65,13 @@ export function MakeOfferModal({
     offer: any;
     whatsappUrl: string;
   } | null>(null);
+  const [notifPerm, setNotifPerm] = useState<BrowserNotifPermission>("default");
 
   useEffect(() => {
     setMounted(true);
+    if (isBrowserNotificationSupported()) {
+      setNotifPerm(getBrowserNotificationPermission());
+    }
   }, []);
 
   // Update default contact details when props change
@@ -135,6 +147,10 @@ export function MakeOfferModal({
         throw new Error(data.error || "Failed to submit offer.");
       }
 
+      if (data.offer?.id) {
+        rememberWatchedOffer(String(data.offer.id), listing.id);
+      }
+
       setSubmittedData({
         offer: data.offer,
         whatsappUrl: data.whatsappUrl,
@@ -200,6 +216,26 @@ export function MakeOfferModal({
             </div>
 
             <div className="pt-2 space-y-2.5">
+              {notifPerm === "default" && (
+                <button
+                  type="button"
+                  onClick={async () => {
+                    const res = await requestBrowserNotificationPermission();
+                    setNotifPerm(res);
+                  }}
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sx-amber-tint border border-sx-amber-border text-sx-amber-text font-bold text-xs transition-colors cursor-pointer"
+                >
+                  <BellRing className="w-4 h-4" />
+                  <span>Allow Pop-Up Alert When Seller Replies</span>
+                </button>
+              )}
+              {notifPerm === "granted" && (
+                <div className="w-full inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-sx-green-tint border border-sx-green-border text-sx-green-text font-semibold text-[11px]">
+                  <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+                  <span>Pop-up alerts active — you&apos;ll be notified as soon as the seller responds</span>
+                </div>
+              )}
+
               <div className="text-left">
                 <span className="text-[11px] font-semibold text-sx-muted block mb-1">
                   Optional Courtesy Action:

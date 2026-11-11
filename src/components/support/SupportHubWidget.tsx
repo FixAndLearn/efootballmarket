@@ -30,8 +30,10 @@ export function SupportHubWidget() {
     "Hello eFootballMarket Support, I need help with an account listing or escrow order."
   )}`;
 
+  const isListingDetail = pathname?.startsWith("/listings/");
+
   return (
-    <div className="fixed bottom-20 md:bottom-5 right-4 z-40">
+    <div className={`fixed bottom-20 md:bottom-5 right-4 z-40 ${isListingDetail ? "hidden lg:block" : ""}`}>
       {open && (
         <div
           role="dialog"

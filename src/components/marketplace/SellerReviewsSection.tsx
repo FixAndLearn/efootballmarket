@@ -33,11 +33,11 @@ export function SellerReviewsSection({
           </h2>
           <span className="inline-flex items-center gap-1 text-[11px] font-semibold text-sx-green-text bg-sx-green-tint border border-sx-green-border px-2.5 py-0.5 rounded-full">
             <ShieldCheck className="w-3 h-3" />
-            <span>100% Escrow Protected</span>
+            <span>Till 1572931 Hold</span>
           </span>
         </div>
         <p className="text-xs text-sx-muted leading-relaxed">
-          @{sellerUsername} hasn&apos;t received written buyer reviews yet. Every purchase on eFootballMarket is still fully protected by Safaricom M-Pesa Till <strong>1572931</strong> escrow and 24-hour login inspection before payout.
+          @{sellerUsername} hasn&apos;t received written buyer reviews yet. Every purchase on eFootballMarket uses Buy Goods Till <strong>1572931</strong> payment holding and a 24-hour buyer login check before seller payout.
         </p>
       </section>
     );

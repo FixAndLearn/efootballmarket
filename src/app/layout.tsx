@@ -8,6 +8,7 @@ import { MobileBottomNav } from "@/components/layout/MobileBottomNav";
 import { CookieConsentBanner } from "@/components/common/CookieConsentBanner";
 import { AdSenseScript } from "@/components/common/AdSenseScript";
 import { SupportHubWidget } from "@/components/support/SupportHubWidget";
+import { LiveNotificationManager } from "@/components/notifications/LiveNotificationManager";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -203,6 +204,7 @@ export default function RootLayout({
         <MobileBottomNav />
         <CookieConsentBanner />
         <SupportHubWidget />
+        <LiveNotificationManager />
         <AdSenseScript clientId={adsenseId} />
       </body>
     </html>
