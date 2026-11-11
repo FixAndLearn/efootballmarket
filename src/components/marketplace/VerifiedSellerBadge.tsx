@@ -56,7 +56,7 @@ export function VerifiedSellerBadge({
         }}
         onMouseEnter={() => showPopover && setPopoverOpen(true)}
         onMouseLeave={() => showPopover && setPopoverOpen(false)}
-        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full font-semibold transition-all cursor-pointer ${tier.badgeClass} ${badgeTextSizes[size]}`}
+        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border font-semibold transition-all cursor-pointer ${tier.badgeClass} ${badgeTextSizes[size]}`}
       >
         {renderIcon()}
         <span>{tier.label}</span>

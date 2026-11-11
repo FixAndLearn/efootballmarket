@@ -62,7 +62,7 @@ export function getSellerTier(salesCount: number = 0, rating: number = 5.0): Sel
     label: "New Trader",
     shortLabel: "New",
     badgeClass:
-      "bg-sx-stone border-sx-border text-sx-muted",
+      "bg-sx-elevated border-sx-border-strong/70 text-sx-ink-soft",
     iconType: "shield",
     salesRequiredForNext: remaining,
     nextTierLabel: "Experienced Trader",
