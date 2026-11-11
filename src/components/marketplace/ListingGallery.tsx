@@ -101,13 +101,7 @@ export function ListingGallery({
         <div className="relative aspect-[16/9] w-full bg-sx-canvas overflow-hidden group select-none">
           {activeImage ? (
             <>
-              {/* Atmospheric Ambient Glow Backdrop (Eliminates harsh black bars while keeping 100% sharp foreground) */}
-              <div
-                className="absolute inset-0 bg-cover bg-center blur-2xl opacity-30 scale-110 pointer-events-none transition-all duration-700"
-                style={{ backgroundImage: `url(${activeImage})` }}
-              />
-
-              {/* Lossless HD Foreground Image */}
+              {/* Clean Foreground Image (No duplicate background image fetch for fast mobile loading) */}
               <div
                 className="relative z-10 w-full h-full flex items-center justify-center cursor-zoom-in p-1"
                 onClick={() => setIsLightboxOpen(true)}
@@ -117,7 +111,9 @@ export function ListingGallery({
                 <img
                   src={activeImage}
                   alt={title}
-                  className={`w-full h-full transition-all duration-300 drop-shadow-2xl ${
+                  loading="eager"
+                  decoding="async"
+                  className={`w-full h-full transition-all duration-200 ${
                     fitMode === "contain"
                       ? "object-contain"
                       : "object-cover scale-100"
@@ -269,6 +265,8 @@ export function ListingGallery({
                 <img
                   src={img.image_url}
                   alt={`Screenshot thumbnail ${idx + 1}`}
+                  loading="lazy"
+                  decoding="async"
                   className="w-full h-full object-cover"
                 />
               </button>

@@ -133,7 +133,7 @@ export function ListingGrid({ listings: initialListings, filters, isLoading = fa
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {listings.map((listing, index) => (
             <React.Fragment key={listing.id}>
-              <ListingCard listing={listing} />
+              <ListingCard listing={listing} priority={index < 2} />
               {index === 7 && listings.length > 8 && (
                 <div className="col-span-full">
                   <AdBanner slot="browse_in_feed_grid" format="in-feed" hasContent={true} />

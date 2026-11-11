@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { AdBanner } from "@/components/common/AdBanner";
+import { QuietAlertOptIn } from "@/components/common/QuietAlertOptIn";
 import { formatCurrency, getPlatformLabel, getPlaystyleLabel } from "@/lib/utils";
 import { formatWhatsAppPhone, normalizePhoneNumber } from "@/lib/utils/phone";
 import { Platform, Playstyle, WantedRequest } from "@/types/database";
@@ -219,12 +220,33 @@ export default function WantedBoardPage() {
           ))}
         </div>
       ) : filteredRequests.length === 0 ? (
-        <div className="text-center py-16 bg-pitch-surface border border-pitch-border rounded-3xl p-8 space-y-3">
-          <Target className="w-12 h-12 text-sx-muted mx-auto stroke-[1.5]" />
-          <h3 className="text-lg font-bold text-sx-ink">No active requests for this filter</h3>
-          <p className="text-xs text-sx-muted max-w-md mx-auto">
-            No buyer requests currently open under this category. Use the &quot;Post Account Request&quot; button above to publish your target squad wish.
-          </p>
+        <div className="rounded-2xl bg-sx-subtle border border-sx-border p-6 sm:p-7 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+          <div className="md:col-span-7 space-y-2">
+            <span className="inline-flex items-center gap-1.5 text-xs font-bold text-sx-amber-text">
+              <Target className="w-4 h-4" />
+              <span>No open requests right now</span>
+            </span>
+            <h3 className="text-base sm:text-lg font-bold text-sx-ink font-display">
+              Post the squad you want — or get alerted when sellers receive new requests
+            </h3>
+            <p className="text-xs text-sx-muted max-w-lg leading-relaxed">
+              Buyers can post their target OVR, players, and KES budget for free. Sellers can also leave their number below to get alerted when new buyer requests arrive.
+            </p>
+            <div className="pt-1 max-w-md">
+              <QuietAlertOptIn topic="buyer_requests" />
+            </div>
+          </div>
+          <div className="md:col-span-5 md:border-l md:border-sx-border md:pl-6 flex flex-col gap-2.5">
+            <Button variant="primary" size="md" onClick={() => setIsModalOpen(true)}>
+              <PlusCircle className="w-4 h-4" />
+              <span>Post Your Squad Request</span>
+            </Button>
+            <Link href="/browse">
+              <Button variant="outline" size="md" className="w-full">
+                <span>Browse Available Squads</span>
+              </Button>
+            </Link>
+          </div>
         </div>
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

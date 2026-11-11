@@ -10,29 +10,29 @@ interface FaqItem {
 
 const FAQS: FaqItem[] = [
   {
-    question: "How does Safaricom Till 1572931 protect my payment?",
+    question: "How does payment protection work?",
     answer:
-      "When you buy a squad or open a Middleman contract, your payment goes into Lipa Na M-Pesa Till 1572931 rather than directly to the seller's personal phone number. Your funds remain held in escrow while you receive the Konami ID login details, sign in on your phone, and inspect the squad for 24 hours.",
+      "You pay the squad price into Safaricom M-Pesa Buy Goods Till 1572931 — not to the seller's personal phone number. Buyers pay KES 0 extra fee. eFootballMarket holds the money while the seller delivers login details (within 12 hours) and while you check the squad in-game (for 24 hours).",
   },
   {
-    question: "What must I check during the 24-hour inspection window?",
+    question: "What should I check during my 24-hour inspection?",
     answer:
-      "Sign in from the eFootball Title Screen (Data Transfer) and verify that Starting XI players, reserves, Collective Strength, and coin balances match the listing. Open Extras -> Support -> Link Data and verify Google Play and Game Center both display 'Not Linked'. Then update the Konami ID email, password, and 2FA at my.konami.net before clicking Release Funds.",
+      "Import the account from the eFootball Title Screen (Data Transfer) and check that permanent OVR, Epic/Big Time players, and Coins match the screenshots. Open Extras -> Support -> Link Data and confirm Google Play and Apple ID both say 'Not Linked'. Then sign in to my.konami.net and change the email, password, and 2-Step Verification to your own.",
   },
   {
-    question: "What happens if login details fail or Google Play is still linked?",
+    question: "What if the login fails or the squad doesn't match the listing?",
     answer:
-      "Click 'Raise Dispute' inside your order page before the 24-hour timer ends and attach an uncropped screenshot. Seller payout freezes immediately while our moderation desk verifies your evidence and issues a full M-Pesa refund.",
+      "Tap 'Open Dispute' on your Order Page before the 24-hour timer ends and share a screen recording or uncropped screenshot. Opening a dispute pauses the seller payout while our team reviews the order logs and screenshots within 24 to 48 hours. If the seller missed the 12-hour delivery window, left Google/Apple linked, or misstated permanent cards, your M-Pesa payment is refunded in full.",
   },
   {
-    question: "Can I verify and lock a deal I found on WhatsApp or Facebook?",
+    question: "When and how is the seller paid?",
     answer:
-      "Yes. Open the Middleman Escrow page, enter the agreed KES price and both phone numbers, and share the contract code with the other party. The exact same Till 1572931 payment hold and 24-hour buyer inspection apply.",
+      "As soon as the buyer taps 'Confirm & Release' — or automatically 24 hours after valid login delivery if no dispute is opened. We deduct a 5% seller service fee (minimum KES 50, capped at KES 500) and credit the balance for M-Pesa payout.",
   },
   {
-    question: "When do sellers receive their M-Pesa payout?",
+    question: "Can I use escrow for a squad I found on WhatsApp or TikTok?",
     answer:
-      "Immediately when the buyer clicks Release Funds—or automatically 24 hours after valid credential delivery if no dispute is raised. Net proceeds are credited directly to your Seller Earnings balance for M-Pesa withdrawal.",
+      "Yes. Open the Middleman page, enter the agreed KES price and both phone numbers, and share the deal code with the other person. The same M-Pesa Till 1572931 hold, 12-hour delivery rule, and 24-hour inspection window apply.",
   },
 ];
 
@@ -48,7 +48,7 @@ export function HomeFaqAccordion() {
             <button
               type="button"
               onClick={() => setOpenIndex(isOpen ? null : idx)}
-              className="w-full text-left py-4 flex items-center justify-between gap-4 hover:text-sx-green-text transition-colors focus:outline-none cursor-pointer"
+              className="w-full text-left py-4 min-h-[48px] flex items-center justify-between gap-4 hover:text-sx-green-text transition-colors focus:outline-none cursor-pointer"
               aria-expanded={isOpen}
             >
               <span className="text-sm sm:text-[15px] font-semibold text-sx-ink">

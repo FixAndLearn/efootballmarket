@@ -1,27 +1,36 @@
 import { ListingFilters } from "@/components/marketplace/ListingFilters";
 import { ListingGrid } from "@/components/marketplace/ListingGrid";
+import { TrustBadgeGuide } from "@/components/marketplace/TrustBadgeGuide";
 import { AdBanner } from "@/components/common/AdBanner";
 import { Button } from "@/components/ui/Button";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ListingService } from "@/services/listingService";
 import { Listing, Platform, Playstyle } from "@/types/database";
 import { getPlaystyleLabel } from "@/lib/utils";
-import { ArrowLeft, ArrowRight, CheckCircle2, X } from "lucide-react";
+import { ArrowLeft, ArrowRight, ShieldCheck, X } from "lucide-react";
 import Link from "next/link";
 import { Metadata } from "next";
 
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "Browse Verified eFootball Squads | eFootballMarket Kenya",
+  title: "Browse eFootball Squads in Kenya | eFootballMarket",
   description:
-    "Browse Clean Konami ID eFootball accounts in Kenya. Filter by Collective Strength (OVR), Epic legends, Playstyle, Swap availability, and Ask Price in KES with M-Pesa Till 1572931 verification.",
+    "Compare Android, iOS, PlayStation, and PC eFootball squads in Kenya by price in KES, OVR, eFootball Coins, and notable Epic players. Protected by 24-hour M-Pesa Till 1572931 escrow.",
   alternates: {
     canonical: "https://www.efootballmarket.co.ke/browse",
   },
 };
 
 const PAGE_SIZE = 24;
+
+const SORT_OPTIONS = [
+  { id: "newest", label: "Newest" },
+  { id: "price_asc", label: "Lowest Price" },
+  { id: "strength_desc", label: "Highest OVR" },
+  { id: "coins_desc", label: "Most Coins" },
+  { id: "price_desc", label: "Highest Price" },
+] as const;
 
 interface BrowsePageProps {
   searchParams: {
@@ -46,6 +55,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
 
   const currentPage = Math.max(1, Number(searchParams.page) || 1);
   const offset = (currentPage - 1) * PAGE_SIZE;
+  const activeSort = searchParams.sortBy || "newest";
 
   const filters = {
     search: searchParams.search,
@@ -58,7 +68,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
     manager: searchParams.manager,
     minPrice: searchParams.minPrice ? Number(searchParams.minPrice) : undefined,
     maxPrice: searchParams.maxPrice ? Number(searchParams.maxPrice) : undefined,
-    sortBy: searchParams.sortBy,
+    sortBy: activeSort,
     limit: PAGE_SIZE,
     offset,
   };
@@ -77,12 +87,18 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
 
-  const buildPageHref = (targetPage: number) => {
+  const buildQueryHref = (overrides: Record<string, string | undefined>) => {
     const params = new URLSearchParams();
     Object.entries(searchParams || {}).forEach(([k, v]) => {
-      if (v && k !== "page") params.set(k, v);
+      if (v) params.set(k, v);
     });
-    if (targetPage > 1) params.set("page", String(targetPage));
+    Object.entries(overrides).forEach(([k, v]) => {
+      if (!v || (k === "sortBy" && v === "newest") || (k === "page" && v === "1")) {
+        params.delete(k);
+      } else {
+        params.set(k, v);
+      }
+    });
     const qs = params.toString();
     return qs ? `/browse?${qs}` : "/browse";
   };
@@ -97,62 +113,83 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
       searchParams.swap === "1" ||
       searchParams.manager ||
       searchParams.minPrice ||
-      searchParams.maxPrice ||
-      (searchParams.sortBy && searchParams.sortBy !== "newest")
+      searchParams.maxPrice
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 w-full space-y-8">
-      <div className="border-b border-sx-border pb-6 flex flex-col md:flex-row md:items-end justify-between gap-4">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-24 md:pb-10 w-full space-y-6">
+      {/* Header */}
+      <div className="border-b border-sx-border pb-5 flex flex-col md:flex-row md:items-end justify-between gap-4">
         <div className="space-y-1.5">
-          <div className="text-xs text-sx-muted flex items-center gap-1.5">
-            <Link href="/" className="hover:text-sx-ink">
-              Home
-            </Link>
-            <span>/</span>
-            <span className="text-sx-ink font-medium">eFootball Squads</span>
-          </div>
           <div className="flex items-center gap-3 flex-wrap">
             <h1 className="text-2xl sm:text-3xl font-extrabold text-sx-ink font-display tracking-tight">
-              Verified eFootball Squads
+              Browse Squads
             </h1>
             {totalCount > 0 && (
               <span className="px-2.5 py-0.5 rounded-full bg-sx-green-tint border border-sx-green-border text-sx-green-text text-xs font-bold">
-                {totalCount} Available
+                {totalCount} {totalCount === 1 ? "Squad" : "Squads"}
               </span>
             )}
           </div>
           <p className="text-xs sm:text-sm text-sx-muted flex items-center gap-1.5">
-            <CheckCircle2 className="w-3.5 h-3.5 text-sx-green-text shrink-0" />
+            <ShieldCheck className="w-3.5 h-3.5 text-sx-green-text shrink-0" />
             <span>
-              Every squad requires Clean Konami ID status (zero Google Play / Apple links) and 24-hour M-Pesa Till 1572931 buyer inspection.
+              Pay into M-Pesa Till <strong>1572931</strong> · Inspect the squad &amp; Link Data in-game for <strong>24 hours</strong> before the seller is paid.
             </span>
           </p>
         </div>
 
-        <div className="flex items-center gap-2.5 shrink-0">
+        <div className="hidden sm:flex items-center gap-2.5 shrink-0">
           <Link href="/wanted">
             <Button variant="outline" size="sm">
-              Buyer Requests
+              Request a Squad
             </Button>
           </Link>
           <Link href="/seller/create-listing">
             <Button variant="primary" size="sm">
-              Sell Squad
+              Sell Your Squad
             </Button>
           </Link>
         </div>
       </div>
 
+      {/* Plain-Language Trust Badge Guide */}
+      <TrustBadgeGuide />
+
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
-        <div className="lg:col-span-3 lg:sticky lg:top-28">
+        <div className="lg:col-span-3 lg:sticky lg:top-24">
           <ListingFilters />
         </div>
 
-        <div className="lg:col-span-9 space-y-6">
+        <div className="lg:col-span-9 space-y-5">
+          {/* Desktop Quick Sort Bar */}
+          <div className="hidden lg:flex items-center justify-between gap-3 pb-3 border-b border-sx-border text-xs">
+            <span className="text-sx-muted font-medium">
+              Compare by:
+            </span>
+            <div className="flex items-center gap-1.5 flex-wrap">
+              {SORT_OPTIONS.map((opt) => {
+                const isSelected = activeSort === opt.id;
+                return (
+                  <Link
+                    key={opt.id}
+                    href={buildQueryHref({ sortBy: opt.id, page: "1" })}
+                    className={`px-3 py-1.5 rounded-full border font-semibold transition-colors ${
+                      isSelected
+                        ? "bg-sx-green border-sx-green text-white"
+                        : "bg-sx-subtle border-sx-border text-sx-ink hover:border-sx-border-strong"
+                    }`}
+                  >
+                    {opt.label}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+
           {hasActiveFilters && (
             <div className="flex flex-wrap items-center gap-2 pb-3 border-b border-sx-border text-xs">
-              <span className="text-sx-muted font-medium mr-1">Active:</span>
+              <span className="text-sx-muted font-medium mr-1">Filters:</span>
               {searchParams.search && (
                 <span className="px-2.5 py-1 rounded-full bg-sx-subtle border border-sx-border text-sx-ink font-medium">
                   &ldquo;{searchParams.search}&rdquo;
@@ -217,9 +254,9 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
               className="pt-4 border-t border-sx-border flex items-center justify-between gap-3"
             >
               <Link
-                href={buildPageHref(Math.max(1, currentPage - 1))}
+                href={buildQueryHref({ page: String(Math.max(1, currentPage - 1)) })}
                 aria-disabled={currentPage <= 1}
-                className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border text-xs font-bold transition-colors ${
+                className={`inline-flex items-center gap-1.5 min-h-[42px] px-4 py-2 rounded-lg border text-xs font-bold transition-colors ${
                   currentPage <= 1
                     ? "pointer-events-none opacity-45 bg-sx-subtle border-sx-border text-sx-muted"
                     : "bg-sx-subtle hover:bg-sx-stone border-sx-border text-sx-ink"
@@ -235,9 +272,9 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
               </span>
 
               <Link
-                href={buildPageHref(Math.min(totalPages, currentPage + 1))}
+                href={buildQueryHref({ page: String(Math.min(totalPages, currentPage + 1)) })}
                 aria-disabled={currentPage >= totalPages}
-                className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border text-xs font-bold transition-colors ${
+                className={`inline-flex items-center gap-1.5 min-h-[42px] px-4 py-2 rounded-lg border text-xs font-bold transition-colors ${
                   currentPage >= totalPages
                     ? "pointer-events-none opacity-45 bg-sx-subtle border-sx-border text-sx-muted"
                     : "bg-sx-subtle hover:bg-sx-stone border-sx-border text-sx-ink"

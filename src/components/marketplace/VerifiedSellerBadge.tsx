@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ShieldCheck, Shield, Crown, Zap, Award, CheckCircle2, Phone, Star } from "lucide-react";
+import { ShieldCheck, Shield, Crown, CheckCircle2, HelpCircle, Star, X } from "lucide-react";
 import { Profile } from "@/types/database";
 import { getSellerTier } from "@/lib/utils/sellerTier";
 
@@ -20,7 +20,8 @@ export function VerifiedSellerBadge({
 
   const salesCount = Number(seller?.completed_sales_count || 0);
   const rating = Number(seller?.seller_rating || 0);
-  const tier = getSellerTier(salesCount, rating);
+  const isVerified = Boolean(seller?.is_verified_seller);
+  const tier = getSellerTier(salesCount, rating, isVerified);
 
   const iconSizes = {
     sm: "w-3 h-3",
@@ -29,7 +30,7 @@ export function VerifiedSellerBadge({
   };
 
   const badgeTextSizes = {
-    sm: "text-[10px]",
+    sm: "text-[10.5px]",
     md: "text-xs",
     lg: "text-sm font-bold",
   };
@@ -37,11 +38,11 @@ export function VerifiedSellerBadge({
   const renderIcon = () => {
     switch (tier.iconType) {
       case "crown":
-        return <Crown className={`${iconSizes[size]} text-sx-amber-text fill-amber-300/30 animate-pulse`} />;
+        return <Crown className={`${iconSizes[size]} text-sx-amber-text shrink-0`} />;
       case "shield-check":
-        return <ShieldCheck className={`${iconSizes[size]} text-sx-green-text fill-emerald-400/20`} />;
+        return <ShieldCheck className={`${iconSizes[size]} shrink-0`} />;
       default:
-        return <Shield className={`${iconSizes[size]} text-sx-muted`} />;
+        return <Shield className={`${iconSizes[size]} shrink-0`} />;
     }
   };
 
@@ -52,77 +53,66 @@ export function VerifiedSellerBadge({
         onClick={(e) => {
           e.preventDefault();
           e.stopPropagation();
-          if (showPopover) setPopoverOpen(!popoverOpen);
+          if (showPopover) setPopoverOpen((prev) => !prev);
         }}
         onMouseEnter={() => showPopover && setPopoverOpen(true)}
         onMouseLeave={() => showPopover && setPopoverOpen(false)}
-        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border font-semibold transition-all cursor-pointer ${tier.badgeClass} ${badgeTextSizes[size]}`}
+        title={tier.description}
+        className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full border font-semibold transition-colors ${
+          showPopover ? "cursor-pointer" : "cursor-default"
+        } ${tier.badgeClass} ${badgeTextSizes[size]}`}
       >
         {renderIcon()}
         <span>{tier.label}</span>
+        {showPopover && <HelpCircle className="w-2.5 h-2.5 opacity-70 shrink-0" />}
       </button>
 
-      {/* Trust Popover */}
       {showPopover && popoverOpen && (
         <div
-          onClick={(e) => e.stopPropagation()}
-          className="absolute bottom-full left-0 mb-2 z-50 w-72 p-3.5 rounded-2xl bg-sx-subtle backdrop-blur-xl border border-sx-border-strong shadow-2xl space-y-2.5 text-left animate-in fade-in zoom-in-95 pointer-events-auto"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+          }}
+          className="absolute bottom-full right-0 sm:left-0 sm:right-auto mb-2 z-50 w-72 p-3.5 rounded-xl bg-sx-canvas border border-sx-border-strong shadow-xl space-y-2.5 text-left pointer-events-auto"
         >
-          <div className="flex items-center gap-2 border-b border-sx-border pb-2">
-            <div className="w-7 h-7 rounded-lg bg-sx-amber-tint text-sx-amber-text flex items-center justify-center shrink-0">
-              <Award className="w-4 h-4" />
-            </div>
+          <div className="flex items-start justify-between gap-2 border-b border-sx-border pb-2">
             <div>
-              <h5 className="text-xs font-bold text-sx-ink flex items-center gap-1.5">
-                <span>{tier.label}</span>
-                <span className="text-[9px] uppercase px-1 rounded bg-sx-stone text-sx-ink-soft">
-                  Level {tier.level === "master" ? "3" : tier.level === "verified" ? "2" : "1"}
-                </span>
-              </h5>
-              <p className="text-[10px] text-sx-green-text font-medium">Safaricom Till 1572931 Escrow</p>
+              <h5 className="text-xs font-bold text-sx-ink">{tier.label}</h5>
+              <p className="text-[10px] text-sx-muted">What this seller badge means</p>
             </div>
+            <button
+              type="button"
+              onClick={() => setPopoverOpen(false)}
+              className="p-0.5 text-sx-muted hover:text-sx-ink sm:hidden"
+              aria-label="Close badge info"
+            >
+              <X className="w-3.5 h-3.5" />
+            </button>
           </div>
 
-          <p className="text-[11px] text-sx-ink-soft leading-normal">
+          <p className="text-[11px] text-sx-ink-soft leading-relaxed">
             {tier.description}
           </p>
 
-          <div className="space-y-1.5 text-[11px]">
-            <div className="flex items-center gap-1.5 text-sx-ink-soft">
-              <CheckCircle2 className="w-3.5 h-3.5 text-sx-green-text shrink-0" />
-              <span>
-                <strong>{salesCount}</strong> completed escrow transfers
-              </span>
-            </div>
+          <div className="space-y-1.5 pt-0.5">
+            <span className="block text-[10px] font-bold uppercase tracking-wider text-sx-muted">
+              What was checked:
+            </span>
+            {tier.whatWasChecked.map((point, idx) => (
+              <div key={idx} className="flex items-start gap-1.5 text-[11px] text-sx-ink-soft">
+                <CheckCircle2 className="w-3.5 h-3.5 text-sx-green-text shrink-0 mt-0.5" />
+                <span>{point}</span>
+              </div>
+            ))}
 
-            {salesCount > 0 && rating > 0 ? (
-                <div className="flex items-center gap-1.5 text-sx-amber-text">
-                  <Star className="w-3.5 h-3.5 fill-amber-400 text-sx-amber-text shrink-0" />
-                  <span>
-                    <strong>{rating.toFixed(1)} / 5.0</strong> seller satisfaction rating
-                  </span>
-                </div>
-              ) : (
-                <div className="flex items-center gap-1.5 text-sx-muted">
-                  <Star className="w-3.5 h-3.5 text-sx-muted shrink-0" />
-                  <span>No buyer reviews yet</span>
-                </div>
-              )}
-
-            <div className="flex items-center gap-1.5 text-sx-ink-soft">
-              <Phone className="w-3.5 h-3.5 text-sx-info-text shrink-0" />
-              <span><strong>M-Pesa Registered:</strong> Safaricom mobile phone registered</span>
-            </div>
-          </div>
-
-          {tier.nextTierLabel && (
-            <div className="p-2 rounded-lg bg-sx-stone border border-sx-border-strong text-[10px] text-sx-ink-soft">
-              <span className="text-sx-amber-text font-bold">{tier.salesRequiredForNext} more sales</span> until {tier.nextTierLabel} promotion.
-            </div>
-          )}
-
-          <div className="pt-1.5 border-t border-sx-border text-[9px] text-sx-muted">
-            Funds held securely until buyer verifies Konami ID login.
+            {salesCount > 0 && rating > 0 && (
+              <div className="flex items-center gap-1.5 text-[11px] text-sx-amber-text pt-0.5">
+                <Star className="w-3.5 h-3.5 fill-amber-400 text-sx-amber-text shrink-0" />
+                <span>
+                  <strong>{rating.toFixed(1)} / 5.0</strong> average buyer rating
+                </span>
+              </div>
+            )}
           </div>
         </div>
       )}

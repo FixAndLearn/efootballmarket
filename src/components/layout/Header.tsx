@@ -80,11 +80,14 @@ export function Header() {
 
           <div className="hidden md:flex items-center gap-4 lg:gap-5 shrink-0">
             <nav className="hidden lg:flex items-center gap-5 text-[13px] font-medium text-sx-muted">
-              <Link href="/news" className="hover:text-sx-ink transition-colors">
-                Blog &amp; Guides
+              <Link href="/browse" className="text-sx-ink font-semibold hover:text-sx-green-text transition-colors">
+                Browse Squads
               </Link>
               <Link href="/escrow-guarantee" className="hover:text-sx-ink transition-colors">
-                Escrow Help
+                How Escrow Works
+              </Link>
+              <Link href="/news" className="hover:text-sx-ink transition-colors">
+                Guides
               </Link>
             </nav>
 
@@ -93,7 +96,7 @@ export function Header() {
                 href="/seller/create-listing"
                 className="inline-flex items-center justify-center h-9 px-4 rounded-full bg-sx-green hover:bg-sx-green-hover text-xs font-bold text-white transition-colors"
               >
-                Sell
+                Sell Your Squad
               </Link>
 
               {user ? (
@@ -231,11 +234,17 @@ export function Header() {
             </div>
           </div>
 
-          <div className="flex items-center gap-2 md:hidden">
+          <div className="flex items-center gap-1.5 md:hidden">
             {user && <NotificationBell />}
             <Link
+              href="/browse"
+              className="inline-flex items-center justify-center h-9 px-3 rounded-full bg-sx-green text-xs font-bold text-white"
+            >
+              Browse
+            </Link>
+            <Link
               href="/seller/create-listing"
-              className="inline-flex items-center justify-center h-8 px-3.5 rounded-full border border-sx-ink text-xs font-semibold text-sx-ink"
+              className="inline-flex items-center justify-center h-9 px-3 rounded-full border border-sx-border-strong text-xs font-semibold text-sx-ink"
             >
               Sell
             </Link>
@@ -251,7 +260,7 @@ export function Header() {
         </div>
       </div>
 
-      <div className="border-t border-sx-border bg-sx-subtle">
+      <div className="hidden md:block border-t border-sx-border bg-sx-subtle">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <nav
             aria-label="Product Categories"

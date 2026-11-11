@@ -44,6 +44,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import { calculateTournamentFee } from "@/lib/utils/tournamentFee";
+import { QuietAlertOptIn } from "@/components/common/QuietAlertOptIn";
 
 export default function TournamentsPage() {
   const { user, profile, displayName } = useAuth();
@@ -344,8 +345,8 @@ export default function TournamentsPage() {
         </div>
       </div>
 
-      {/* Membership Banner for Guests */}
-      {!loading && !user && (
+      {/* Membership Banner for Guests (only shown when active brackets exist) */}
+      {!loading && !user && tournaments.length > 0 && (
         <div className="rounded-xl store-panel p-5 flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
           <div className="flex items-start sm:items-center gap-3.5">
             <div className="w-10 h-10 rounded-lg bg-sx-stone border border-sx-border text-sx-amber-text flex items-center justify-center shrink-0">
@@ -395,26 +396,40 @@ export default function TournamentsPage() {
             <span className="text-xs">Loading brackets...</span>
           </div>
         ) : tournaments.length === 0 ? (
-          <div className="text-center py-12 store-panel rounded-2xl p-8 space-y-3">
-            <Trophy className="w-10 h-10 text-sx-muted mx-auto stroke-[1.5]" />
-            <h3 className="text-base font-bold text-sx-ink font-display">No Open Brackets Right Now</h3>
-            <p className="text-xs text-sx-muted max-w-md mx-auto leading-relaxed">
-              No scheduled cups are currently open for registration. You can challenge another player to a 1v1 match or host a 4–16 player knockout cup.
-            </p>
-            <div className="pt-2 flex flex-wrap items-center justify-center gap-2.5">
+          <div className="rounded-2xl bg-sx-subtle border border-sx-border p-6 sm:p-7 grid grid-cols-1 md:grid-cols-12 gap-6 items-center">
+            <div className="md:col-span-7 space-y-2">
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold text-sx-green-text">
+                <Trophy className="w-4 h-4" />
+                <span>Quiet between cups</span>
+              </span>
+              <h3 className="text-base sm:text-lg font-bold text-sx-ink font-display">
+                Get notified when the next tournament opens
+              </h3>
+              <p className="text-xs text-sx-muted leading-relaxed max-w-lg">
+                No brackets are taking entries at this moment. Leave your Kenyan mobile number for a WhatsApp alert when the next cup opens—or start a 1v1 match with a friend right now.
+              </p>
+              <div className="pt-1 max-w-md">
+                <QuietAlertOptIn topic="tournament" />
+              </div>
+            </div>
+
+            <div className="md:col-span-5 md:border-l md:border-sx-border md:pl-6 flex flex-col gap-2.5">
+              <span className="text-xs font-semibold text-sx-ink">
+                Want to play today?
+              </span>
               <Link
                 href="/tournaments/host?type=1v1"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-sx-green hover:bg-sx-green-hover text-sx-ink font-bold text-xs transition-colors"
+                className="inline-flex items-center justify-center gap-2 min-h-[42px] px-4 py-2 rounded-lg bg-sx-canvas hover:bg-sx-stone border border-sx-border-strong text-sx-ink font-bold text-xs transition-colors"
               >
-                <Swords className="w-3.5 h-3.5" />
-                <span>Create 1v1 Match</span>
+                <Swords className="w-3.5 h-3.5 text-sx-green-text" />
+                <span>Create a 1v1 Match</span>
               </Link>
               <Link
                 href="/tournaments/host?type=tournament"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-sx-stone hover:bg-sx-elevated border border-sx-border text-sx-ink font-semibold text-xs transition-colors"
+                className="inline-flex items-center justify-center gap-2 min-h-[42px] px-4 py-2 rounded-lg bg-sx-canvas hover:bg-sx-stone border border-sx-border text-sx-ink font-semibold text-xs transition-colors"
               >
                 <Trophy className="w-3.5 h-3.5 text-sx-amber-text" />
-                <span>Host Knockout Cup</span>
+                <span>Host a 4–16 Player Cup</span>
               </Link>
             </div>
           </div>

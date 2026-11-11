@@ -5,9 +5,9 @@ import { PolicyPageShell } from "@/components/layout/PolicyPageShell";
 import { KonamiIdExplainerVideo } from "@/components/common/KonamiIdExplainerVideo";
 
 export const metadata: Metadata = {
-  title: "How M-Pesa Escrow & Clean ID Verification Works | eFootballMarket",
+  title: "How Payment Protection (Escrow) Works | eFootballMarket Kenya",
   description:
-    "Step-by-step guide to Safaricom M-Pesa Till 1572931 escrow custody, the 7-point Clean Konami ID buyer verification checklist, OS coin rules, and Middleman deal protection.",
+    "Clear guide to how M-Pesa Till 1572931 payment protection works on eFootballMarket: 12-hour seller delivery, 24-hour buyer inspection, disputes, and seller payouts.",
   alternates: { canonical: "https://www.efootballmarket.co.ke/escrow-guarantee" },
 };
 
@@ -15,16 +15,14 @@ export default function EscrowGuaranteePage() {
   return (
     <PolicyPageShell
       currentPath="/escrow-guarantee"
-      badge="Escrow & Verification Guide"
-      title="How M-Pesa Escrow & Verification Works"
-      subtitle="Peer-to-peer gaming trades fail in WhatsApp, Discord, and Facebook groups because one person is forced to go first. eFootballMarket eliminates that risk by holding M-Pesa funds in neutral custody while the buyer verifies Clean Konami ID ownership in-game."
+      badge="Payment Protection Guide"
+      title="How Payment Protection Works"
+      subtitle="When two strangers trade in a group chat, whoever goes first takes all the risk. On eFootballMarket, we hold the buyer's M-Pesa payment on Till 1572931 while the buyer logs in, checks the squad for 24 hours, and moves the Konami ID to their own email."
       summaryPoints={[
-        "Never send M-Pesa directly to a stranger's personal phone number — fund orders exclusively via Safaricom Buy Goods Till 1572931.",
-        "Sellers never see your money until you confirm in-game squad accuracy or 24 uncontested inspection hours pass.",
-        "Buyers never get squad credentials until our server verifies their real Safaricom M-Pesa payment receipt.",
-        "Every buyer should run the 7-Point Clean Konami ID Checklist before clicking Confirm & Release.",
-        "Off-platform deals negotiated on WhatsApp or TikTok can use the exact same escrow protection via /middleman.",
-        "Full refund protection applies if Google Play or Apple ID is still linked or if permanent cards are missing.",
+        "1. Pay into Escrow: Pay via Safaricom M-Pesa Buy Goods Till 1572931 (KES 0 added buyer fee). Never pay a personal phone number.",
+        "2. Delivery in 12 Hours: The seller submits the Konami ID login and shares the email-change code in the Order Room within 12 hours.",
+        "3. 24-Hour Buyer Check: Log in from the eFootball Title Screen, check permanent cards and Link Data = Not Linked, and move the Konami ID to your own email.",
+        "4. Payout or Dispute: Tap Confirm & Release to pay the seller (minus our 5% seller fee, KES 50–500), or open a dispute within 24 hours to pause payout for review.",
       ]}
     >
       <section className="pb-2">
@@ -33,46 +31,41 @@ export default function EscrowGuaranteePage() {
 
       <section className="space-y-3">
         <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display">
-          1. Why Direct Group-Chat Transfers Lose Money
+          1. What Escrow Protects (And What It Doesn&apos;t)
         </h2>
         <p>
-          In unmoderated social-media groups, buyers lose money in two ways: (1) sending M-Pesa to a personal number only to get blocked immediately, or (2) receiving a Konami ID password while the seller secretly leaves their own <strong>Google Play Games</strong> or <strong>Apple Game Center</strong> linked—allowing the seller to log right back in a week later without needing your new password. Meanwhile, honest sellers get tricked by fake edited M-Pesa SMS text apps.
+          In direct social-media trades, buyers risk paying a personal number and getting blocked—or receiving a Konami password while the seller&apos;s <strong>Google Play</strong> or <strong>Apple ID</strong> is still linked in the background. Sellers risk handing over logins after seeing a fake edited M-Pesa SMS.
         </p>
         <p>
-          Our platform solves both halves of the problem simultaneously: server-verified Till `1572931` custody protects the seller from fake SMS receipts, and our 24-hour Clean ID inspection window protects the buyer from hidden recovery links.
+          Our escrow process protects both sides during the handover: sellers only deliver after our server confirms a real M-Pesa receipt on Till <strong>1572931</strong>, and buyers have <strong>24 hours</strong> to check the squad and secure exclusive Konami ID ownership before the seller is paid. (Payments sent outside Till 1572931 cannot be held or refunded by us.)
         </p>
       </section>
 
       <section className="space-y-4 pt-6 border-t border-sx-border">
         <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display">
-          2. The 5-Stage Escrow Lifecycle
+          2. The 4 Steps on Every Order
         </h2>
         <div className="space-y-3">
           {[
             {
-              stage: "Stage 1 · Lock Listing & Fund Till 1572931",
+              stage: "Step 1 · Pay into M-Pesa Till 1572931",
               detail:
-                "Click Buy Now (or accept an Offer) on a listing, or generate a Middleman Deal Code. Pay via automated M-Pesa STK Push or Buy Goods Till 1572931. Once verified by our server callback, the listing locks so nobody else can buy it.",
+                "Tap Buy Now (or accept an Offer) on a listing, or open a Middleman contract. Pay via M-Pesa STK Push or Buy Goods Till 1572931. Once Safaricom confirms the receipt, the listing locks and your money is held in escrow.",
             },
             {
-              stage: "Stage 2 · Encrypted Seller Handover (Within 12 Hours)",
+              stage: "Step 2 · Seller Delivers Within 12 Hours",
               detail:
-                "We notify the seller that funds are secured in escrow—without releasing the cash. Within 12 hours, the seller submits the Konami ID email/password into our AES-256-GCM encrypted Order Vault and coordinates in Order Chat to share the 6-digit email-change OTP.",
+                "We notify the seller that payment is held. Within 12 hours, the seller submits the Konami ID email and password inside the Order Room and replies in Order Chat with the 6-digit email-change code. If they miss 12 hours, you can cancel for a full refund.",
             },
             {
-              stage: "Stage 3 · Data Transfer & In-Game Verification",
+              stage: "Step 3 · 24-Hour Buyer Login & Rebinding",
               detail:
-                "Start your screen recorder, launch eFootball, and tap Title Screen -> Data Transfer -> Transfer Data Linked to KONAMI ID (never overwrite from inside Settings -> Link Data!). Check Game Plan, Permanent OVR, Epics, Managers, and Link Data.",
+                "Turn on your phone's screen recorder, open eFootball, and tap Title Screen -> Data Transfer -> Transfer Data Linked to KONAMI ID. Check your squad, confirm Google Play and Apple ID both say Not Linked, then sign in to my.konami.net to change the email, password, and 2-Step Verification to your own.",
             },
             {
-              stage: "Stage 4 · Exclusive Rebinding at my.konami.net",
+              stage: "Step 4 · Confirm & Release (or Open a Dispute)",
               detail:
-                "Log in to my.konami.net, replace the seller's email address with a fresh Gmail address only you control, set a brand-new password, and enable Two-Factor Authentication (2FA) via Google Authenticator.",
-            },
-            {
-              stage: "Stage 5 · Buyer Release or Moderator Arbitration",
-              detail:
-                "Once satisfied, click Confirm & Release so net proceeds disburse to the seller's M-Pesa number. If anything does not match the listing, click Open Dispute within the 24-hour window to freeze funds for moderator review.",
+                "When everything matches and your email is bound, tap Confirm & Release so we send the seller's M-Pesa payout (minus our 5% seller fee, min KES 50, max KES 500). If anything doesn't match, tap Open Dispute before 24 hours ends to pause payout while our team reviews the order within 24–48 hours.",
             },
           ].map((item) => (
             <div
@@ -92,48 +85,35 @@ export default function EscrowGuaranteePage() {
 
       <section className="space-y-3 pt-6 border-t border-sx-border">
         <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display">
-          3. Buyer&apos;s Mandatory 7-Point Verification Checklist
+          3. Quick Buyer Checklist Before Releasing Payment
         </h2>
-        <p>Before you click <strong>Confirm &amp; Release</strong> on any order, check all seven items below:</p>
         <ol className="list-decimal pl-5 space-y-2">
-          <li><strong>Link Data Screen (`Extras &rarr; Support &rarr; Link Data`):</strong> Confirm <em>KONAMI ID: Linked</em> AND both <em>Google Play: Not Linked</em> and <em>Apple ID: Not Linked</em>.</li>
-          <li><strong>Permanent Collective Strength:</strong> Open <em>Game Plan</em>, remove any temporary <em>My League</em> loan cards, and verify permanent Team Strength matches the listing.</li>
-          <li><strong>Epic, Big Time &amp; Show Time Roster:</strong> Filter <em>My Team &rarr; Players</em> by card type to confirm every advertised legend/booster card is present and unlocked.</li>
-          <li><strong>Booster Managers:</strong> Check <em>My Team &rarr; Managers</em> to confirm advertised 88-proficiency managers are permanently owned.</li>
-          <li><strong>Remaining Monthly Data Transfers:</strong> Verify on the Data Transfer prompt that you were not handed an account on its `10/10` monthly transfer lockout.</li>
-          <li><strong>Exclusive Email Ownership (`my.konami.net`):</strong> Confirm your own email address is now listed under Personal Information on `my.konami.net` and the seller&apos;s old email is completely removed.</li>
-          <li><strong>Password + 2FA Enabled:</strong> Set a unique password and activate Konami 2-Step Verification so no previous session can authenticate.</li>
+          <li><strong>Link Data (`Extras &rarr; Support &rarr; Link Data`):</strong> Confirm <em>KONAMI ID: Linked</em>, <em>Google Play: Not Linked</em>, and <em>Apple ID: Not Linked</em>.</li>
+          <li><strong>Permanent Squad &amp; OVR:</strong> Check <em>Game Plan</em> (without temporary loan players) and <em>My Team &rarr; Players / Managers</em> against the listing photos.</li>
+          <li><strong>Remaining Monthly Transfers:</strong> Make sure the account isn&apos;t locked at `10/10` monthly transfers.</li>
+          <li><strong>Your Own Email &amp; 2FA (`my.konami.net`):</strong> Replace the seller&apos;s email with your own email, set a new password, and turn on 2-Step Verification.</li>
         </ol>
       </section>
 
       <section className="space-y-3 pt-6 border-t border-sx-border">
         <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display">
-          4. Important Platform Mechanics Every Buyer Should Know
+          4. Good-to-Know eFootball Rules
         </h2>
         <ul className="list-disc pl-5 space-y-2">
           <li>
-            <strong>Title Screen Data Transfer vs In-Menu Link Data:</strong> Always import a purchased Konami ID from the <strong>Title Screen</strong> (circle menu icon at bottom-right &rarr; <em>Data Transfer</em>). Tapping <em>Extras &rarr; Support &rarr; Link Data</em> while logged into a fresh Lv.1 guest squad can overwrite your Konami ID with the empty squad!
+            <strong>Import from the Title Screen Only:</strong> Always use the circle icon on the <strong>Title Screen &rarr; Data Transfer</strong>. Using <em>Extras &rarr; Support &rarr; Link Data</em> from inside a new Lv.1 account can overwrite your squad.
           </li>
           <li>
-            <strong>Android vs iOS Coin Wallets:</strong> Konami keeps eFootball Coins separate between Google Play (Android) and App Store (iOS). If you buy an Android squad with 2,500 coins and log in on an iPhone, your iPhone will show `0` coins—while the 2,500 coins remain safely stored on Android whenever logged in from an Android device.
+            <strong>Android vs iOS Coins:</strong> Konami keeps Android and iOS coin wallets separate. Coins on an Android listing only appear on Android devices (and vice versa).
           </li>
           <li>
-            <strong>10 Transfers Per Month Cap:</strong> Avoid reinstalling the game or switching between multiple accounts repeatedly; Konami resets the 10-transfer counter on the 1st of each calendar month (UTC).
+            <strong>Off-Platform Deals:</strong> Agreed on a squad on WhatsApp, Discord, Instagram, or TikTok? Create a{" "}
+            <Link href="/middleman" className="text-sx-green-text underline font-semibold">
+              Middleman Escrow Order
+            </Link>{" "}
+            to use the same Till 1572931 hold and 24-hour check.
           </li>
         </ul>
-      </section>
-
-      <section className="space-y-3 pt-6 border-t border-sx-border">
-        <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display">
-          5. Using Middleman Escrow for Off-Platform Deals
-        </h2>
-        <p>
-          Found a squad on WhatsApp, Discord, Instagram, or TikTok? Either party can open our{" "}
-          <Link href="/middleman" className="text-sx-green-text underline font-semibold">
-            Middleman Escrow Room
-          </Link>
-          , enter the agreed KES price and squad summary, and share the generated Deal Code with the counterparty. You get the exact same Till `1572931` custody, encrypted credential handover, and 24-hour refund protection without having to wait for a full public marketplace listing.
-        </p>
       </section>
     </PolicyPageShell>
   );

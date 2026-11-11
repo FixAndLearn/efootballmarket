@@ -2,129 +2,167 @@ import React from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { ListingService } from "@/services/listingService";
 import { TournamentService } from "@/services/tournamentService";
 import { NewsService } from "@/services/newsService";
-import { Listing, NewsArticle, Tournament } from "@/types/database";
+import { Listing, NewsArticle, Tournament, WantedRequest } from "@/types/database";
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import { HomeFaqAccordion } from "@/components/home/HomeFaqAccordion";
+import { QuietAlertOptIn } from "@/components/common/QuietAlertOptIn";
 import { getCategoryLabel } from "@/lib/data/editorialGuides";
 import { Button } from "@/components/ui/Button";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, getPlatformLabel } from "@/lib/utils";
 import {
   ArrowRight,
+  Bell,
   BookOpen,
-  Check,
-  CheckCircle2,
   Clock,
   Handshake,
+  Lock,
   Search,
   ShieldAlert,
   ShieldCheck,
   Smartphone,
-  Sparkles,
+  Target,
   Trophy,
-  X,
 } from "lucide-react";
 
 export const revalidate = 0;
 
 export default async function HomePage() {
   const supabase = createServerSupabaseClient();
+  const adminOrUser = hasServiceRoleKey() ? createAdminClient() : supabase;
   const listingService = new ListingService(supabase);
   const newsService = new NewsService(supabase);
 
   let listings: Listing[] = [];
+  let totalSquads = 0;
   let tournaments: Tournament[] = [];
+  let wantedRequests: WantedRequest[] = [];
   let articles: NewsArticle[] = [];
 
   try {
-    const [listingsResult, tourneysResult, articlesResult] = await Promise.all([
-      listingService.getListings({ limit: 8, sortBy: "newest" }).catch(() => ({ listings: [], totalCount: 0 })),
+    const [listingsResult, tourneysResult, wantedResult, articlesResult] = await Promise.all([
+      listingService
+        .getListings({ limit: 8, sortBy: "newest" })
+        .catch(() => ({ listings: [], totalCount: 0 })),
       TournamentService.getAllTournaments().catch(() => []),
+      Promise.resolve(
+        adminOrUser
+          .from("wanted_requests")
+          .select("*")
+          .eq("status", "active")
+          .order("created_at", { ascending: false })
+          .limit(3)
+      )
+        .then((r) => (r.data as WantedRequest[]) || [])
+        .catch(() => [] as WantedRequest[]),
       newsService.getPublishedArticles().catch(() => []),
     ]);
 
     listings = listingsResult.listings || [];
-    tournaments = tourneysResult || [];
-    articles = (articlesResult || []).slice(0, 7);
+    totalSquads = listingsResult.totalCount || listings.length;
+    tournaments = (tourneysResult || []).filter((t) => t.status !== "completed").slice(0, 3);
+    wantedRequests = wantedResult || [];
+    articles = (articlesResult || []).slice(0, 3);
   } catch (err) {
     console.error("HomePage query error:", err);
   }
 
-  const featuredBlogPost =
-    articles.find((a) => a.is_pinned) ||
-    articles.find((a) => a.category === "announcement" || a.category === "update") ||
-    articles[0];
-  const remainingPosts = articles.filter((a) => a.id !== featuredBlogPost?.id);
-  const upcomingBriefings = remainingPosts.slice(0, 3);
-  const guideCards = remainingPosts.slice(3, 6);
+  const hasActiveTournaments = tournaments.length > 0;
+  const hasActiveWanted = wantedRequests.length > 0;
 
   return (
-    <div className="min-h-screen bg-sx-canvas text-sx-ink">
-      {/* 1. FRAMED SPLIT HERO BANNER */}
-      <section className="pt-5 pb-8 sm:pt-7 sm:pb-10">
+    <div className="min-h-screen bg-sx-canvas text-sx-ink pb-20 md:pb-0">
+      {/* 1. SQUAD-FIRST HERO SCREEN */}
+      <section className="pt-5 pb-8 sm:pt-8 sm:pb-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-lg bg-sx-stone border border-sx-border overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-stretch">
-            <div className="lg:col-span-6 p-6 sm:p-10 lg:p-12 flex flex-col justify-between space-y-6">
+          <div className="rounded-2xl bg-sx-subtle border border-sx-border overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-stretch">
+            <div className="lg:col-span-7 p-6 sm:p-9 lg:p-11 flex flex-col justify-between space-y-6">
               <div className="space-y-4">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-sx-green text-white text-[11px] font-bold uppercase tracking-wider">
-                  <CheckCircle2 className="w-3.5 h-3.5" />
-                  <span>eFootballMarket Verified</span>
-                </div>
-
-                <h1 className="text-3xl sm:text-4xl lg:text-[44px] font-extrabold font-display tracking-[-0.035em] text-sx-ink leading-[1.08]">
-                  Buy &amp; Sell Verified eFootball Squads in Kenya.
+                <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-extrabold font-display tracking-[-0.03em] text-sx-ink leading-[1.1]">
+                  Find Your Next eFootball Squad in Kenya.
                 </h1>
 
-                <p className="text-sm sm:text-base text-sx-ink-soft max-w-lg leading-relaxed">
-                  Every listed Mobile and Console squad is verified for Clean Konami ID ownership—no Google Play or Apple links—backed by 24-hour M-Pesa Till 1572931 escrow custody.
-                </p>
-              </div>
+                {/* Primary Squad Search Bar */}
+                <form
+                  action="/browse"
+                  method="GET"
+                  className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1"
+                >
+                  <div className="relative flex-1">
+                    <Search className="w-4 h-4 text-sx-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+                    <input
+                      type="search"
+                      name="search"
+                      placeholder="Search by player (Gullit, Vieira), OVR (3200), or coach..."
+                      className="w-full h-12 pl-10 pr-4 rounded-xl bg-sx-canvas border border-sx-border-strong text-sm text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-sx-green"
+                    />
+                  </div>
+                  <Button type="submit" variant="primary" size="lg" className="h-12 shrink-0">
+                    <span>Search</span>
+                  </Button>
+                </form>
 
-              <div className="space-y-4">
-                <div className="flex flex-wrap items-center gap-3">
-                  <Link href="/browse">
-                    <Button variant="primary" size="lg">
-                      <span>Browse Market</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </Button>
-                  </Link>
-                  <Link href="/seller/create-listing">
-                    <Button variant="outline" size="lg">
-                      <span>Sell Your Squad</span>
-                    </Button>
-                  </Link>
-                </div>
-
-                <div className="flex items-center gap-2 flex-wrap text-xs pt-1">
-                  <span className="text-sx-muted font-medium">Trending:</span>
+                {/* Quick Filter Pills */}
+                <div className="flex items-center gap-1.5 flex-wrap text-xs">
+                  <span className="text-sx-muted font-medium mr-0.5">Popular:</span>
                   {[
+                    { label: "Android", href: "/browse?platform=android" },
+                    { label: "iOS", href: "/browse?platform=ios" },
                     { label: "3150+ OVR", href: "/browse?minStrength=3150" },
-                    { label: "Gullit", href: "/browse?search=Gullit" },
-                    { label: "Vieira", href: "/browse?search=Vieira" },
-                    { label: "Under KES 5K", href: "/browse?maxPrice=5000" },
-                    { label: "Blog & What's Coming", href: "/news" },
+                    { label: "Under KES 5,000", href: "/browse?maxPrice=5000" },
+                    { label: "Lowest Price", href: "/browse?sortBy=price_asc" },
                   ].map((pill) => (
                     <Link
                       key={pill.label}
                       href={pill.href}
-                      className="px-2.5 py-1 rounded-full bg-sx-canvas border border-sx-border hover:border-sx-ink text-sx-ink font-medium transition-colors"
+                      className="min-h-[32px] inline-flex items-center px-3 py-1 rounded-full bg-sx-canvas border border-sx-border hover:border-sx-green text-sx-ink font-medium transition-colors"
                     >
                       {pill.label}
                     </Link>
                   ))}
                 </div>
               </div>
+
+              {/* Primary CTAs: Browse Squads beside Sell Your Squad */}
+              <div className="space-y-4 pt-1">
+                <div className="flex flex-wrap items-center gap-3">
+                  <Link href="/browse" className="flex-1 sm:flex-initial">
+                    <Button variant="primary" size="lg" className="w-full sm:w-auto min-h-[46px]">
+                      <span>Browse Squads{totalSquads > 0 ? ` (${totalSquads})` : ""}</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </Button>
+                  </Link>
+                  <Link href="/seller/create-listing" className="flex-1 sm:flex-initial">
+                    <Button variant="outline" size="lg" className="w-full sm:w-auto min-h-[46px]">
+                      <span>Sell Your Squad</span>
+                    </Button>
+                  </Link>
+                </div>
+
+                {/* Short, Plain-Language Payment Protection Summary */}
+                <div className="p-3.5 rounded-xl bg-sx-canvas border border-sx-border flex items-start gap-2.5 text-xs text-sx-ink-soft leading-relaxed">
+                  <Lock className="w-4 h-4 text-sx-green-text shrink-0 mt-0.5" />
+                  <p>
+                    <strong className="text-sx-ink">How payment protection works:</strong>{" "}
+                    You pay into Safaricom M-Pesa Buy Goods Till <strong>1572931</strong> — not directly to the seller. We hold your money while you log in, check the squad and <em>Link Data = Not Linked</em> for <strong>24 hours</strong>, and move the Konami ID to your own email before the seller is paid.{" "}
+                    <Link href="/escrow-guarantee" className="text-sx-green-text font-semibold hover:underline">
+                      Learn more
+                    </Link>
+                  </p>
+                </div>
+              </div>
             </div>
 
-            <div className="lg:col-span-6 relative min-h-[250px] sm:min-h-[340px] bg-sx-elevated">
+            <div className="hidden lg:block lg:col-span-5 relative min-h-[360px] bg-sx-elevated border-l border-sx-border">
               <Image
                 src="/images/sx-hero-banner.jpg"
-                alt="Verified eFootball Mobile and PlayStation squads"
+                alt="eFootball Mobile and PlayStation squads in Kenya"
                 fill
                 priority
-                sizes="(max-width: 1024px) 100vw, 50vw"
+                sizes="42vw"
                 className="object-cover object-center"
               />
             </div>
@@ -132,56 +170,48 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 2. RECENTLY VERIFIED SQUADS SHELF */}
+      {/* 2. AVAILABLE SQUADS GRID */}
       <section className="py-8 sm:py-10 border-t border-sx-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
           <div className="flex items-baseline justify-between gap-4">
             <div>
-              <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display tracking-tight">
-                Recently Listed Squads
+              <h2 className="text-xl sm:text-2xl font-bold text-sx-ink font-display tracking-tight">
+                Available Squads
               </h2>
               <p className="text-xs text-sx-muted mt-0.5">
-                Live Ask Prices in Kenyan Shillings (KES) · Verified Clean Konami ID Required
+                Compare OVR, Epics, Coins, and KES prices · Buyer pays KES 0 extra fee
               </p>
             </div>
             <Link
               href="/browse"
               className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-sx-green-text hover:underline shrink-0"
             >
-              <span>Browse All</span>
+              <span>Compare All Squads</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
 
           {listings.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {listings.map((listing) => (
-                <ListingCard key={listing.id} listing={listing} />
+              {listings.map((listing, idx) => (
+                <ListingCard key={listing.id} listing={listing} priority={idx < 2} />
               ))}
             </div>
           ) : (
-            <div className="rounded-lg bg-sx-stone border border-sx-border p-6 sm:p-8 flex flex-col md:flex-row items-start md:items-center justify-between gap-6">
-              <div className="space-y-1.5 max-w-xl">
-                <span className="inline-flex items-center gap-1.5 text-xs font-bold text-sx-green-text uppercase tracking-wider">
-                  <ShieldCheck className="w-4 h-4" />
-                  <span>Real Seller Inventory Only</span>
-                </span>
-                <h3 className="text-lg font-bold text-sx-ink font-display">
-                  Have a Clean Konami ID Squad Ready to Sell?
+            <div className="rounded-xl bg-sx-subtle border border-sx-border p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
+              <div className="space-y-1.5 max-w-lg">
+                <h3 className="text-base font-bold text-sx-ink font-display">
+                  No open squads listed right now
                 </h3>
                 <p className="text-xs sm:text-sm text-sx-muted leading-relaxed">
-                  We never display placeholder stock—every card on our market is a real user-submitted squad. List your Android, iOS, or Console team for free and get paid via M-Pesa once the buyer verifies in-game.
+                  We only show real seller accounts — never fake placeholder stock. Get alerted when the next squad is listed, or list your own Clean Konami ID squad for free.
                 </p>
               </div>
-              <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+              <div className="w-full md:w-auto flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5">
+                <QuietAlertOptIn topic="new_squads" compact />
                 <Link href="/seller/create-listing">
-                  <Button variant="primary" size="md">
+                  <Button variant="outline" size="md" className="w-full sm:w-auto h-10">
                     Sell Your Squad
-                  </Button>
-                </Link>
-                <Link href="/wanted">
-                  <Button variant="outline" size="md">
-                    View Buyer Requests
                   </Button>
                 </Link>
               </div>
@@ -190,462 +220,283 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 4. VERIFICATION STANDARD & TRADER CHECK */}
-      <section className="py-10 sm:py-12 border-t border-sx-border bg-sx-subtle">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+      {/* 3. UNIFIED PLAIN-LANGUAGE ESCROW EXPLANATION */}
+      <section className="py-9 sm:py-11 border-t border-sx-border bg-sx-subtle">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
+            <div>
+              <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display">
+                How Buying &amp; Selling Works
+              </h2>
+              <p className="text-xs text-sx-muted mt-0.5">
+                Same clear rules on every marketplace listing and Middleman order.
+              </p>
+            </div>
+            <div className="flex items-center gap-3 text-xs">
+              <Link href="/middleman" className="inline-flex items-center gap-1 font-semibold text-sx-green-text hover:underline">
+                <Handshake className="w-3.5 h-3.5" />
+                <span>Use Middleman for a WhatsApp deal</span>
+              </Link>
+              <span className="text-sx-border-strong">·</span>
+              <Link href="/scammer-check" className="inline-flex items-center gap-1 font-semibold text-sx-ink hover:underline">
+                <ShieldAlert className="w-3.5 h-3.5 text-sx-amber-text" />
+                <span>Check a Phone Number</span>
+              </Link>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
             {[
               {
-                step: "01",
-                title: "Deposit to Safaricom Till 1572931",
-                desc: "Buyer funds are locked in platform escrow custody—never sent directly to a stranger's personal M-Pesa number.",
+                step: "1. Pay into Escrow",
+                desc: "Pay the squad price into M-Pesa Buy Goods Till 1572931. Buyers pay KES 0 extra fee, and the seller does not receive the money yet.",
               },
               {
-                step: "02",
-                title: "Clean Konami ID Verification",
-                desc: "Buyer performs Data Transfer and checks Extras -> Support -> Link Data to confirm Google Play & Apple ID are Not Linked.",
+                step: "2. Delivery in 12 Hours",
+                desc: "The seller has up to 12 hours to submit the Konami ID login and share the email-change code in the Order Room, or you can cancel for a full refund.",
               },
               {
-                step: "03",
-                title: "24-Hour Check & Instant Payout",
-                desc: "Once the buyer rebinds my.konami.net email & 2FA (or raises an evidence-backed dispute), settlement completes.",
+                step: "3. 24-Hour Buyer Check",
+                desc: "Log in from the eFootball Title Screen, confirm permanent OVR/cards and Link Data = Not Linked, and move the Konami ID to your own email and password.",
+              },
+              {
+                step: "4. Payout or Dispute",
+                desc: "Tap Confirm & Release to pay the seller (minus our 5% seller fee, KES 50–500). If the squad doesn't match, open a dispute within 24 hours to freeze the money for review.",
               },
             ].map((item) => (
               <div
                 key={item.step}
-                className="p-6 rounded-lg bg-sx-canvas border border-sx-border space-y-2"
+                className="p-5 rounded-xl bg-sx-canvas border border-sx-border space-y-1.5"
               >
-                <span className="inline-block px-2 py-0.5 rounded bg-sx-green-tint text-sx-green-text font-mono text-xs font-bold">
-                  STEP {item.step}
-                </span>
-                <h3 className="text-base font-bold text-sx-ink font-display">
-                  {item.title}
+                <h3 className="text-sm font-bold text-sx-ink font-display">
+                  {item.step}
                 </h3>
-                <p className="text-xs sm:text-sm text-sx-muted leading-relaxed">
+                <p className="text-xs text-sx-muted leading-relaxed">
                   {item.desc}
                 </p>
               </div>
             ))}
           </div>
+        </div>
+      </section>
 
-          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-stretch">
-            <div className="lg:col-span-7 rounded-lg bg-sx-canvas border border-sx-border p-6 sm:p-7 flex flex-col justify-between space-y-5">
-              <div>
-                <span className="text-[11px] font-bold uppercase tracking-wider text-sx-green-text">
-                  Buyer &amp; Seller Protection
-                </span>
-                <h2 className="text-xl font-bold text-sx-ink font-display mt-1">
-                  Why Kenyan Players Use Verified Escrow Instead of Group Chats
-                </h2>
+      {/* 4. ADAPTIVE TOURNAMENTS & BUYER REQUESTS (Prominent when active, compact alert strip when quiet) */}
+      <section className="py-9 sm:py-10 border-t border-sx-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
+          {(hasActiveTournaments || hasActiveWanted) ? (
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+              {/* Active Tournaments Column */}
+              <div className="lg:col-span-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-base sm:text-lg font-bold text-sx-ink font-display flex items-center gap-2">
+                    <Trophy className="w-4 h-4 text-sx-green-text" />
+                    <span>Open Tournaments</span>
+                  </h2>
+                  <Link href="/tournaments" className="text-xs font-semibold text-sx-green-text hover:underline">
+                    View Brackets &rarr;
+                  </Link>
+                </div>
+
+                {hasActiveTournaments ? (
+                  <div className="space-y-3">
+                    {tournaments.map((t) => (
+                      <Link
+                        key={t.id}
+                        href="/tournaments"
+                        className="block rounded-xl bg-sx-subtle border border-sx-border hover:border-sx-green-border p-4 transition-colors"
+                      >
+                        <div className="flex items-center justify-between gap-2 text-xs mb-1">
+                          <span className="font-bold text-sx-ink">{t.title}</span>
+                          <span className="font-mono font-bold text-sx-green-text">
+                            Prize: {formatCurrency(t.prize_pool_kes, "KES")}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-[11px] text-sx-muted">
+                          <span>{t.subtitle || "1v1 / Knockout Cup"}</span>
+                          <span className="font-mono">
+                            {t.registered_count || 0}/{t.max_players} players
+                          </span>
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <div className="rounded-xl bg-sx-subtle border border-sx-border p-4 space-y-2.5">
+                    <p className="text-xs text-sx-muted">
+                      No open tournament brackets right now. Get notified when the next cup opens:
+                    </p>
+                    <QuietAlertOptIn topic="tournament" compact />
+                  </div>
+                )}
               </div>
 
-              <div className="rounded-md border border-sx-border overflow-hidden text-xs">
-                <div className="grid grid-cols-12 bg-sx-stone px-4 py-2.5 font-bold uppercase tracking-wider text-[10px] text-sx-muted border-b border-sx-border">
-                  <div className="col-span-5">Verification Point</div>
-                  <div className="col-span-3">Direct Chat</div>
-                  <div className="col-span-4 text-sx-green-text">eFootballMarket</div>
+              {/* Active Buyer Requests Column */}
+              <div className="lg:col-span-6 space-y-4">
+                <div className="flex items-center justify-between">
+                  <h2 className="text-base sm:text-lg font-bold text-sx-ink font-display flex items-center gap-2">
+                    <Target className="w-4 h-4 text-sx-amber-text" />
+                    <span>Buyer Squad Requests</span>
+                  </h2>
+                  <Link href="/wanted" className="text-xs font-semibold text-sx-green-text hover:underline">
+                    Wanted Board &rarr;
+                  </Link>
                 </div>
-                {[
-                  {
-                    feature: "Payment Custody",
-                    bad: "Personal phone",
-                    good: "Held via Till 1572931",
-                  },
-                  {
-                    feature: "Google Play / Apple Link",
-                    bad: "Still linked to seller",
-                    good: "Unlinked or full refund",
-                  },
-                  {
-                    feature: "M-Pesa Receipt Check",
-                    bad: "Edited SMS risk",
-                    good: "Server-verified receipt",
-                  },
-                  {
-                    feature: "Squad Inspection",
-                    bad: "Zero recourse",
-                    good: "24-hour full check",
-                  },
-                ].map((row, idx) => (
-                  <div
-                    key={row.feature}
-                    className={`grid grid-cols-12 items-center px-4 py-3 bg-sx-canvas ${
-                      idx !== 3 ? "border-b border-sx-border" : ""
-                    }`}
-                  >
-                    <div className="col-span-5 font-semibold text-sx-ink pr-2">
-                      {row.feature}
-                    </div>
-                    <div className="col-span-3 text-sx-muted flex items-center gap-1.5 pr-2">
-                      <X className="w-3.5 h-3.5 text-sx-red-text shrink-0" />
-                      <span className="truncate">{row.bad}</span>
-                    </div>
-                    <div className="col-span-4 text-sx-ink font-semibold flex items-center gap-1.5">
-                      <Check className="w-3.5 h-3.5 text-sx-green-text shrink-0" />
-                      <span className="truncate">{row.good}</span>
-                    </div>
+
+                {hasActiveWanted ? (
+                  <div className="space-y-3">
+                    {wantedRequests.map((req) => (
+                      <Link
+                        key={req.id}
+                        href="/wanted"
+                        className="block rounded-xl bg-sx-subtle border border-sx-border hover:border-sx-amber-border p-4 transition-colors"
+                      >
+                        <div className="flex items-center justify-between gap-2 text-xs mb-1">
+                          <span className="font-bold text-sx-ink line-clamp-1">{req.title}</span>
+                          <span className="font-mono font-bold text-sx-amber-text shrink-0">
+                            Budget: {formatCurrency(req.budget_kes, "KES")}
+                          </span>
+                        </div>
+                        <div className="flex items-center justify-between text-[11px] text-sx-muted">
+                          <span>{getPlatformLabel(req.preferred_platform)} · {req.min_overall_rating}+ OVR</span>
+                          <span>Pitch Squad &rarr;</span>
+                        </div>
+                      </Link>
+                    ))}
                   </div>
-                ))}
+                ) : (
+                  <div className="rounded-xl bg-sx-subtle border border-sx-border p-4 flex items-center justify-between gap-3">
+                    <p className="text-xs text-sx-muted">
+                      Looking for a specific OVR or Epic card? Post what you want and let sellers come to you.
+                    </p>
+                    <Link href="/wanted" className="shrink-0">
+                      <Button variant="outline" size="sm">
+                        Post Request
+                      </Button>
+                    </Link>
+                  </div>
+                )}
               </div>
             </div>
-
-            <div className="lg:col-span-5 rounded-lg bg-sx-canvas border border-sx-border p-6 sm:p-7 flex flex-col justify-between space-y-6">
-              <div className="space-y-3">
-                <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded bg-sx-red-tint text-sx-red-text text-[11px] font-bold uppercase tracking-wider">
-                  <ShieldAlert className="w-3.5 h-3.5" />
-                  <span>Trader Verification</span>
+          ) : (
+            /* Quiet Mode: Compact 2-Column Strip instead of big empty sections */
+            <div className="rounded-xl bg-sx-subtle border border-sx-border p-4 sm:p-5 grid grid-cols-1 md:grid-cols-2 gap-5 items-center">
+              <div className="space-y-2">
+                <div className="flex items-center gap-2 text-xs font-bold text-sx-ink">
+                  <Bell className="w-4 h-4 text-sx-green-text shrink-0" />
+                  <span>Tournaments are quiet right now — get alerted when the next cup opens</span>
                 </div>
-                <h3 className="text-lg sm:text-xl font-bold text-sx-ink font-display">
-                  Trading Off-Platform? Check Their Number First.
-                </h3>
-                <p className="text-xs sm:text-sm text-sx-muted leading-relaxed">
-                  Look up any Kenyan 07... or 01... phone number against community scam reports—or move your WhatsApp deal into a neutral Middleman contract.
-                </p>
-
-                <form action="/scammer-check" method="GET" className="pt-1 flex items-center gap-2">
-                  <div className="relative flex-1">
-                    <Search className="w-3.5 h-3.5 text-sx-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    <input
-                      type="text"
-                      name="q"
-                      placeholder="Enter 07... number or handle"
-                      className="w-full h-10 pl-8 pr-3 rounded-md bg-sx-stone border border-sx-border-strong text-xs text-sx-ink placeholder:text-sx-muted focus:bg-sx-canvas focus:outline-none focus:border-sx-ink"
-                    />
-                  </div>
-                  <Button type="submit" variant="secondary" size="md" className="h-10 shrink-0">
-                    Check
-                  </Button>
-                </form>
+                <QuietAlertOptIn topic="tournament" compact />
               </div>
 
-              <div className="pt-4 border-t border-sx-border flex items-center justify-between gap-3">
-                <span className="text-xs text-sx-muted font-medium">
-                  Agreed on a price already?
-                </span>
-                <Link href="/middleman">
+              <div className="md:border-l md:border-sx-border md:pl-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                <div className="space-y-0.5">
+                  <span className="text-xs font-bold text-sx-ink block">
+                    Can&apos;t find the exact squad you want?
+                  </span>
+                  <span className="text-xs text-sx-muted block">
+                    Post your target OVR, players, and KES budget for sellers to match.
+                  </span>
+                </div>
+                <Link href="/wanted" className="shrink-0">
                   <Button variant="outline" size="sm">
-                    <Handshake className="w-3.5 h-3.5 text-sx-green-text" />
-                    <span>Middleman Escrow</span>
+                    Request a Squad
                   </Button>
                 </Link>
               </div>
             </div>
-          </div>
+          )}
         </div>
       </section>
 
-      {/* 5. COMMUNITY TOURNAMENTS */}
-      {tournaments.length > 0 && (
-        <section className="py-10 border-t border-sx-border">
+      {/* 5. COMPACT GUIDES & PLATFORM UPDATES */}
+      {articles.length > 0 && (
+        <section className="py-9 sm:py-10 border-t border-sx-border">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
             <div className="flex items-baseline justify-between gap-4">
               <div>
-                <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display">
-                  Community Tournaments
+                <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display flex items-center gap-2">
+                  <BookOpen className="w-4 h-4 text-sx-green-text" />
+                  <span>Guides &amp; Platform Updates</span>
                 </h2>
                 <p className="text-xs text-sx-muted mt-0.5">
-                  Organized 1v1 and knockout eFootball cups in Kenya.
+                  Safe Konami ID transfer steps, manager builds, and what&apos;s coming next.
                 </p>
               </div>
               <Link
-                href="/tournaments"
+                href="/news"
                 className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-sx-green-text hover:underline shrink-0"
               >
-                <span>All Brackets</span>
+                <span>All Guides</span>
                 <ArrowRight className="w-3.5 h-3.5" />
               </Link>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              {tournaments.map((t) => (
-                <div
-                  key={t.id}
-                  className="rounded-lg bg-sx-canvas border border-sx-border p-5 flex flex-col justify-between"
-                >
-                  <div className="space-y-2">
-                    <div className="flex items-center justify-between text-xs">
-                      <span className="px-2 py-0.5 rounded bg-sx-stone text-sx-ink font-semibold capitalize">
-                        {t.status?.replace("_", " ")}
-                      </span>
-                      <span className="text-sx-muted font-mono">
-                        {t.registered_count || 0}/{t.max_players} slots
-                      </span>
-                    </div>
-                    <h3 className="text-base font-bold text-sx-ink font-display">{t.title}</h3>
-                    <p className="text-xs text-sx-muted line-clamp-2">{t.subtitle}</p>
-                    <div className="pt-2 flex items-center justify-between text-xs">
-                      <span className="text-sx-muted">Champion Pool</span>
-                      <strong className="text-sx-green-text font-mono text-sm">
-                        {formatCurrency(t.prize_pool_kes, "KES")}
-                      </strong>
-                    </div>
-                  </div>
-                  <div className="pt-4 mt-4 border-t border-sx-border">
-                    <Link href="/tournaments">
-                      <Button variant="outline" size="sm" className="w-full">
-                        <Trophy className="w-3.5 h-3.5 text-sx-green-text" />
-                        <span>View Bracket</span>
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 6. BLOG, GUIDES & WHAT'S COMING HUB */}
-      {articles.length > 0 && (
-        <section className="py-10 sm:py-12 border-t border-sx-border">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-            <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
-              <div className="space-y-1.5">
-                <span className="inline-flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-widest text-sx-green-text">
-                  <BookOpen className="w-3.5 h-3.5" />
-                  <span>eFootballMarket Blogger &amp; Guides</span>
-                </span>
-                <h2 className="text-xl sm:text-2xl font-extrabold text-sx-ink font-display tracking-tight">
-                  Guides, Meta Tactics &amp; What&apos;s Coming Next
-                </h2>
-                <p className="text-xs sm:text-sm text-sx-muted max-w-2xl">
-                  Upcoming eFootball pack drops, new platform features, 88+ manager stat breakpoints, custom builds, and Clean Konami ID escrow walkthroughs.
-                </p>
-              </div>
-
-              <div className="flex flex-wrap items-center gap-2 shrink-0">
-                {[
-                  { label: "What's Coming", href: "/news?category=upcoming" },
-                  { label: "Meta & Tactics", href: "/news?category=efootball_news" },
-                  { label: "Konami ID & Escrow", href: "/news?category=escrow_guide" },
-                ].map((tab) => (
+              {articles.map((article) => {
+                const badge = getCategoryLabel(article.category);
+                const readMin = Math.max(
+                  3,
+                  Math.ceil((article.content || "").split(/\s+/).length / 195)
+                );
+                return (
                   <Link
-                    key={tab.href}
-                    href={tab.href}
-                    className="px-3 py-1.5 rounded-full bg-sx-subtle border border-sx-border hover:border-sx-green-border text-xs font-semibold text-sx-ink transition-colors"
+                    key={article.id}
+                    href={`/news/${article.slug}`}
+                    className="group flex flex-col justify-between rounded-xl border border-sx-border hover:border-sx-green-border bg-sx-subtle p-5 transition-colors space-y-3"
                   >
-                    {tab.label}
-                  </Link>
-                ))}
-                <Link
-                  href="/news"
-                  className="inline-flex items-center gap-1 px-3.5 py-1.5 rounded-full bg-sx-green hover:bg-sx-green-hover text-xs font-bold text-white transition-colors"
-                >
-                  <span>Full Blog</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </Link>
-              </div>
-            </div>
-
-            {/* Top Split: Featured What's Coming Spotlight + Latest Updates Feed */}
-            {featuredBlogPost && (
-              <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-stretch">
-                <Link
-                  href={`/news/${featuredBlogPost.slug}`}
-                  className="lg:col-span-7 group rounded-xl bg-sx-subtle border border-sx-border hover:border-sx-green-border overflow-hidden flex flex-col justify-between transition-all shadow-sm hover:shadow-md"
-                >
-                  <div>
-                    {featuredBlogPost.cover_image_url && (
-                      <div className="relative h-52 sm:h-64 w-full bg-sx-stone overflow-hidden border-b border-sx-border">
-                        <Image
-                          src={featuredBlogPost.cover_image_url}
-                          alt={featuredBlogPost.title}
-                          fill
-                          sizes="(max-width: 1024px) 100vw, 58vw"
-                          unoptimized={!featuredBlogPost.cover_image_url.startsWith("/")}
-                          className="object-cover group-hover:scale-[1.03] transition-transform duration-300"
-                        />
-                      </div>
-                    )}
-                    <div className="p-5 sm:p-6 space-y-3">
-                      <div className="flex flex-wrap items-center gap-2 text-[11px]">
-                        <span
-                          className={`px-2.5 py-0.5 rounded-md border font-bold ${
-                            getCategoryLabel(featuredBlogPost.category).color
-                          }`}
-                        >
-                          {getCategoryLabel(featuredBlogPost.category).label}
-                        </span>
-                        <span className="px-2 py-0.5 rounded-md bg-sx-green text-white font-bold">
-                          Featured Post
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between text-[11px]">
+                        <span className={`px-2 py-0.5 rounded border font-bold ${badge.color}`}>
+                          {badge.label}
                         </span>
                         <span className="text-sx-muted flex items-center gap-1">
                           <Clock className="w-3 h-3" />
-                          {Math.max(
-                            3,
-                            Math.ceil(
-                              (featuredBlogPost.content || "").split(/\s+/).length / 195
-                            )
-                          )}{" "}
-                          min read
+                          {readMin} min
                         </span>
                       </div>
-
-                      <h3 className="text-lg sm:text-xl font-extrabold font-display text-sx-ink group-hover:text-sx-green-text transition-colors leading-snug">
-                        {featuredBlogPost.title}
+                      <h3 className="text-sm sm:text-[15px] font-bold font-display text-sx-ink group-hover:text-sx-green-text transition-colors line-clamp-2 leading-snug">
+                        {article.title}
                       </h3>
-                      <p className="text-xs sm:text-sm text-sx-ink-soft leading-relaxed line-clamp-3">
-                        {featuredBlogPost.summary}
+                      <p className="text-xs text-sx-muted line-clamp-2 leading-relaxed">
+                        {article.summary}
                       </p>
                     </div>
-                  </div>
 
-                  <div className="px-5 sm:px-6 pb-4 pt-3 border-t border-sx-border flex items-center justify-between text-xs font-bold text-sx-green-text">
-                    <span>Read Featured Post</span>
-                    <ArrowRight className="w-4 h-4" />
-                  </div>
-                </Link>
-
-                {/* Right Column: What's Coming & Latest Briefings */}
-                <div className="lg:col-span-5 rounded-xl bg-sx-subtle border border-sx-border p-5 flex flex-col justify-between space-y-4">
-                  <div className="space-y-4">
-                    <div className="flex items-center justify-between pb-3 border-b border-sx-border">
-                      <span className="inline-flex items-center gap-1.5 text-xs font-bold text-sx-ink uppercase tracking-wider">
-                        <Sparkles className="w-3.5 h-3.5 text-sx-amber-text" />
-                        <span>Latest Updates &amp; Walkthroughs</span>
-                      </span>
-                      <Link
-                        href="/news?category=upcoming"
-                        className="text-[11px] font-semibold text-sx-green-text hover:underline"
-                      >
-                        See All
-                      </Link>
-                    </div>
-
-                    <div className="divide-y divide-sx-border">
-                      {upcomingBriefings.map((item) => {
-                        const badge = getCategoryLabel(item.category);
-                        return (
-                          <Link
-                            key={item.id}
-                            href={`/news/${item.slug}`}
-                            className="group block py-3.5 first:pt-0 last:pb-0 space-y-1.5"
-                          >
-                            <div className="flex items-center justify-between gap-2 text-[10.5px]">
-                              <span
-                                className={`px-2 py-0.5 rounded border font-bold ${badge.color}`}
-                              >
-                                {badge.label}
-                              </span>
-                              <span className="text-sx-muted">
-                                {new Date(item.created_at).toLocaleDateString(
-                                  "en-US",
-                                  { month: "short", day: "numeric" }
-                                )}
-                              </span>
-                            </div>
-                            <h4 className="text-sm font-bold text-sx-ink group-hover:text-sx-green-text transition-colors font-display leading-snug line-clamp-2">
-                              {item.title}
-                            </h4>
-                            <p className="text-xs text-sx-muted line-clamp-2 leading-relaxed">
-                              {item.summary}
-                            </p>
-                          </Link>
-                        );
-                      })}
-                    </div>
-                  </div>
-
-                  <div className="pt-3 border-t border-sx-border">
-                    <Link href="/news" className="block">
-                      <Button variant="outline" size="sm" className="w-full">
-                        <BookOpen className="w-3.5 h-3.5 text-sx-green-text" />
-                        <span>Browse All {articles.length}+ Guides &amp; Posts</span>
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Bottom 3 Essential Guides */}
-            {guideCards.length > 0 && (
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-                {guideCards.map((article) => {
-                  const badge = getCategoryLabel(article.category);
-                  const readMin = Math.max(
-                    3,
-                    Math.ceil((article.content || "").split(/\s+/).length / 195)
-                  );
-                  return (
-                    <Link
-                      key={article.id}
-                      href={`/news/${article.slug}`}
-                      className="group flex flex-col justify-between rounded-xl border border-sx-border hover:border-sx-green-border hover:-translate-y-0.5 bg-sx-subtle overflow-hidden transition-all shadow-sm hover:shadow-md"
-                    >
-                      <div>
-                        <div className="relative h-44 w-full bg-sx-stone overflow-hidden border-b border-sx-border">
-                          {article.cover_image_url ? (
-                            <Image
-                              src={article.cover_image_url}
-                              alt={article.title}
-                              fill
-                              sizes="(max-width: 768px) 100vw, 33vw"
-                              unoptimized={!article.cover_image_url.startsWith("/")}
-                              className="object-cover group-hover:scale-[1.04] transition-transform duration-300"
-                            />
-                          ) : null}
-                        </div>
-
-                        <div className="p-5 space-y-2">
-                          <div className="flex items-center justify-between text-[11px] font-semibold">
-                            <span
-                              className={`px-2 py-0.5 rounded-md border font-bold ${badge.color}`}
-                            >
-                              {badge.label}
-                            </span>
-                            <span className="text-sx-muted flex items-center gap-1 font-normal">
-                              <Clock className="w-3 h-3" />
-                              {readMin} min
-                            </span>
-                          </div>
-
-                          <h3 className="text-[15.5px] font-bold font-display text-sx-ink group-hover:text-sx-green-text transition-colors line-clamp-2 leading-snug">
-                            {article.title}
-                          </h3>
-                          <p className="text-xs text-sx-muted line-clamp-2 leading-relaxed">
-                            {article.summary}
-                          </p>
-                        </div>
-                      </div>
-
-                      <div className="px-5 pb-4 pt-3 border-t border-sx-border flex items-center justify-between text-xs font-bold text-sx-green-text">
-                        <span>Read Guide</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            )}
+                    <span className="text-xs font-semibold text-sx-green-text inline-flex items-center gap-1 pt-1">
+                      <span>Read guide</span>
+                      <ArrowRight className="w-3.5 h-3.5" />
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         </section>
       )}
 
-      {/* 7. FAQ & SUPPORT DESK */}
-      <section className="py-10 sm:py-12 border-t border-sx-border">
+      {/* 6. FAQ & SUPPORT DESK */}
+      <section className="py-9 sm:py-11 border-t border-sx-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
             <div className="lg:col-span-4 space-y-4">
-              <h2 className="text-xl sm:text-2xl font-bold text-sx-ink font-display">
-                Frequently Asked Questions
+              <h2 className="text-xl font-bold text-sx-ink font-display">
+                Common Questions
               </h2>
               <p className="text-xs sm:text-sm text-sx-muted leading-relaxed">
-                How Safaricom Till 1572931 custody, Clean Konami ID checks, and seller M-Pesa payouts work.
+                Clear answers on payment hold, the 24-hour login check, refunds, and seller payouts.
               </p>
-              <div className="rounded-lg bg-sx-stone border border-sx-border p-5 space-y-2 text-xs">
+              <div className="rounded-xl bg-sx-subtle border border-sx-border p-4 space-y-2 text-xs">
                 <div className="flex items-center gap-2 text-sx-ink font-bold">
                   <Smartphone className="w-4 h-4 text-sx-green-text" />
-                  <span>Direct Order Support</span>
+                  <span>Need Order Help?</span>
                 </div>
                 <p className="text-sx-muted leading-relaxed">
-                  Need assistance with an active escrow order or M-Pesa confirmation? Reach our support desk on WhatsApp at <strong className="text-sx-ink">0794 400 365</strong>.
+                  Message our Nairobi support desk on WhatsApp at{" "}
+                  <strong className="text-sx-ink">0794 400 365</strong>.
                 </p>
-                <div className="pt-1">
-                  <Link href="/contact" className="text-sx-green-text hover:underline font-semibold">
-                    Contact &amp; Support Hours &rarr;
-                  </Link>
-                </div>
+                <Link href="/contact" className="inline-block text-sx-green-text hover:underline font-semibold pt-0.5">
+                  Support hours &amp; contact details &rarr;
+                </Link>
               </div>
             </div>
 

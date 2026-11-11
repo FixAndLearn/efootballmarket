@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/ui/Button";
 import {
+  ArrowUpDown,
   Repeat2,
   RotateCcw,
   Search,
@@ -60,7 +61,6 @@ export function ListingFilters() {
     manager.trim() ? 1 : 0,
     minPrice ? 1 : 0,
     maxPrice ? 1 : 0,
-    sortBy && sortBy !== "newest" ? 1 : 0,
   ].reduce((a, b) => a + b, 0);
 
   const applyFilters = (customOverrides: Record<string, string> = {}) => {
@@ -136,31 +136,194 @@ export function ListingFilters() {
 
   const ovrPresets = ["3100", "3150", "3200", "3250"];
   const epicPresets = ["1", "3", "6", "10"];
-  const metaCoaches = ["Xabi Alonso", "Pep Guardiola", "Luis Enrique", "Fabio Capello"];
+  const notablePlayers = ["Gullit", "Vieira", "Rummenigge", "Maldini", "Messi", "Salah"];
+  const priceCapPresets = [
+    { label: "Under 3K", val: "3000" },
+    { label: "Under 5K", val: "5000" },
+    { label: "Under 10K", val: "10000" },
+  ];
 
   const filterFormFields = (
     <div className="space-y-5 text-xs">
-      {/* Keyword */}
+      {/* 1. Notable Players & Search */}
       <div>
         <label className="block text-[11px] font-bold uppercase tracking-wider text-sx-ink mb-2">
-          Keyword / Player
+          Notable Players or Coach
         </label>
-        <div className="relative">
+        <div className="relative mb-2">
           <Search className="w-3.5 h-3.5 text-sx-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
-            placeholder="Gullit, Vieira, Maldini..."
+            placeholder="e.g. Gullit, Vieira, Xabi Alonso..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && applyFilters()}
-            className="w-full pl-8 pr-3 py-2 bg-sx-subtle border border-sx-border focus:bg-sx-canvas focus:border-sx-green rounded-lg text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none"
+            className="w-full min-h-[40px] pl-8 pr-3 py-2 bg-sx-canvas border border-sx-border focus:border-sx-green rounded-lg text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none"
           />
+        </div>
+        <div className="flex flex-wrap gap-1.5">
+          {notablePlayers.map((player) => (
+            <button
+              key={player}
+              type="button"
+              onClick={() => setSearch(search === player ? "" : player)}
+              className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors cursor-pointer ${
+                search.toLowerCase() === player.toLowerCase()
+                  ? "bg-sx-green border-sx-green text-white font-semibold"
+                  : "bg-sx-canvas border-sx-border text-sx-ink hover:border-sx-border-strong"
+              }`}
+            >
+              {player}
+            </button>
+          ))}
         </div>
       </div>
 
-      {/* Squad Swap Open Toggle */}
+      {/* 2. Platform */}
       <div className="pt-3 border-t border-sx-border">
-        <label className="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-sx-subtle border border-sx-border cursor-pointer hover:border-sx-green-border transition-colors">
+        <label className="block text-[11px] font-bold uppercase tracking-wider text-sx-ink mb-2">
+          Platform
+        </label>
+        <select
+          value={platform}
+          onChange={(e) => setPlatform(e.target.value)}
+          className="w-full min-h-[40px] bg-sx-canvas border border-sx-border rounded-lg px-3 py-2 text-xs font-medium text-sx-ink focus:outline-none focus:border-sx-green"
+        >
+          <option value="all">All Platforms</option>
+          <option value="android">Android Mobile</option>
+          <option value="ios">iOS (iPhone / iPad)</option>
+          <option value="playstation_5">PlayStation 5</option>
+          <option value="playstation_4">PlayStation 4</option>
+          <option value="pc_steam">PC / Steam</option>
+          <option value="xbox_series_x">Xbox Series X/S</option>
+        </select>
+      </div>
+
+      {/* 3. Price (KES) */}
+      <div className="pt-3 border-t border-sx-border space-y-2">
+        <label className="block text-[11px] font-bold uppercase tracking-wider text-sx-ink">
+          Price in KES
+        </label>
+        <div className="grid grid-cols-2 gap-2">
+          <input
+            type="number"
+            inputMode="numeric"
+            placeholder="Min KES"
+            value={minPrice}
+            onChange={(e) => setMinPrice(e.target.value)}
+            className="w-full min-h-[40px] bg-sx-canvas border border-sx-border rounded-lg px-2.5 py-2 text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-sx-green font-mono"
+          />
+          <input
+            type="number"
+            inputMode="numeric"
+            placeholder="Max KES"
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
+            className="w-full min-h-[40px] bg-sx-canvas border border-sx-border rounded-lg px-2.5 py-2 text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-sx-green font-mono"
+          />
+        </div>
+        <div className="grid grid-cols-3 gap-1.5">
+          {priceCapPresets.map((p) => (
+            <button
+              key={p.val}
+              type="button"
+              onClick={() => setMaxPrice(maxPrice === p.val ? "" : p.val)}
+              className={`py-1.5 rounded-lg text-[11px] font-semibold border transition-colors cursor-pointer ${
+                maxPrice === p.val
+                  ? "bg-sx-green text-white border-sx-green"
+                  : "bg-sx-canvas border-sx-border text-sx-ink hover:border-sx-border-strong"
+              }`}
+            >
+              {p.label}
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 4. Team Strength (OVR) */}
+      <div className="pt-3 border-t border-sx-border">
+        <label className="block text-[11px] font-bold uppercase tracking-wider text-sx-ink mb-2">
+          Minimum OVR (Team Strength)
+        </label>
+        <div className="grid grid-cols-2 gap-1.5">
+          {ovrPresets.map((ovr) => (
+            <button
+              key={ovr}
+              type="button"
+              onClick={() => setMinStrength(minStrength === ovr ? "" : ovr)}
+              className={`min-h-[38px] py-2 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
+                minStrength === ovr
+                  ? "bg-sx-green text-white border-sx-green"
+                  : "bg-sx-canvas border-sx-border text-sx-ink hover:border-sx-border-strong"
+              }`}
+            >
+              {ovr}+ OVR
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 5. eFootball Coins */}
+      <div className="pt-3 border-t border-sx-border">
+        <label className="block text-[11px] font-bold uppercase tracking-wider text-sx-ink mb-2">
+          Minimum eFootball Coins
+        </label>
+        <select
+          value={minCoins}
+          onChange={(e) => setMinCoins(e.target.value)}
+          className="w-full min-h-[40px] bg-sx-canvas border border-sx-border rounded-lg px-3 py-2 text-xs font-medium text-sx-ink focus:outline-none focus:border-sx-green"
+        >
+          <option value="">Any Coin Balance</option>
+          <option value="300">300+ Coins</option>
+          <option value="1000">1,000+ Coins</option>
+          <option value="2500">2,500+ Coins</option>
+          <option value="5000">5,000+ Coins</option>
+        </select>
+      </div>
+
+      {/* 6. Epic Count & Playstyle */}
+      <div className="pt-3 border-t border-sx-border space-y-3">
+        <div>
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-sx-ink mb-2">
+            Epic / Big Time Cards
+          </label>
+          <div className="grid grid-cols-4 gap-1.5">
+            {epicPresets.map((ep) => (
+              <button
+                key={ep}
+                type="button"
+                onClick={() => setMinEpics(minEpics === ep ? "" : ep)}
+                className={`py-1.5 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
+                  minEpics === ep
+                    ? "bg-sx-green text-white border-sx-green"
+                    : "bg-sx-canvas border-sx-border text-sx-ink hover:border-sx-border-strong"
+                }`}
+              >
+                {ep}+
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className="block text-[11px] font-bold uppercase tracking-wider text-sx-ink mb-1.5">
+            Playstyle
+          </label>
+          <select
+            value={playstyle}
+            onChange={(e) => setPlaystyle(e.target.value)}
+            className="w-full min-h-[40px] bg-sx-canvas border border-sx-border rounded-lg px-3 py-2 text-xs font-medium text-sx-ink focus:outline-none focus:border-sx-green"
+          >
+            <option value="all">All Playstyles</option>
+            <option value="quick_counter">Quick Counter</option>
+            <option value="long_ball_counter">Long Ball Counter (LBC)</option>
+            <option value="possession">Possession Game</option>
+            <option value="out_wide">Out Wide</option>
+            <option value="long_ball">Long Ball</option>
+          </select>
+        </div>
+
+        <label className="flex items-center justify-between gap-2 p-2.5 rounded-lg bg-sx-canvas border border-sx-border cursor-pointer hover:border-sx-green-border transition-colors">
           <span className="inline-flex items-center gap-1.5 text-xs font-bold text-sx-ink">
             <Repeat2 className="w-3.5 h-3.5 text-sx-green-text" />
             <span>Open to Squad Swap</span>
@@ -173,197 +336,28 @@ export function ListingFilters() {
           />
         </label>
       </div>
-
-      {/* Team Strength */}
-      <div className="pt-3 border-t border-sx-border">
-        <label className="block text-[11px] font-bold uppercase tracking-wider text-sx-ink mb-2">
-          Collective Strength
-        </label>
-        <div className="grid grid-cols-2 gap-1.5">
-          {ovrPresets.map((ovr) => (
-            <button
-              key={ovr}
-              type="button"
-              onClick={() => setMinStrength(minStrength === ovr ? "" : ovr)}
-              className={`py-2 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
-                minStrength === ovr
-                  ? "bg-sx-green text-white border-sx-green"
-                  : "bg-sx-subtle border-sx-border text-sx-ink hover:border-sx-border-strong"
-              }`}
-            >
-              {ovr}+ OVR
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Minimum Epics */}
-      <div className="pt-3 border-t border-sx-border">
-        <label className="block text-[11px] font-bold uppercase tracking-wider text-sx-ink mb-2">
-          Epic / Booster Cards
-        </label>
-        <div className="grid grid-cols-4 gap-1.5">
-          {epicPresets.map((ep) => (
-            <button
-              key={ep}
-              type="button"
-              onClick={() => setMinEpics(minEpics === ep ? "" : ep)}
-              className={`py-1.5 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
-                minEpics === ep
-                  ? "bg-sx-green text-white border-sx-green"
-                  : "bg-sx-subtle border-sx-border text-sx-ink hover:border-sx-border-strong"
-              }`}
-            >
-              {ep}+
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Platform */}
-      <div className="pt-3 border-t border-sx-border">
-        <label className="block text-[11px] font-bold uppercase tracking-wider text-sx-ink mb-2">
-          Platform
-        </label>
-        <select
-          value={platform}
-          onChange={(e) => setPlatform(e.target.value)}
-          className="w-full bg-sx-subtle border border-sx-border rounded-lg px-3 py-2 text-xs font-medium text-sx-ink focus:outline-none focus:border-sx-green"
-        >
-          <option value="all">All Platforms</option>
-          <option value="android">Android Mobile</option>
-          <option value="ios">iOS Mobile</option>
-          <option value="playstation_5">PlayStation 5</option>
-          <option value="playstation_4">PlayStation 4</option>
-          <option value="pc_steam">PC / Steam</option>
-          <option value="xbox_series_x">Xbox Series X/S</option>
-        </select>
-      </div>
-
-      {/* Team Playstyle */}
-      <div className="pt-3 border-t border-sx-border">
-        <label className="block text-[11px] font-bold uppercase tracking-wider text-sx-ink mb-2">
-          Team Playstyle
-        </label>
-        <select
-          value={playstyle}
-          onChange={(e) => setPlaystyle(e.target.value)}
-          className="w-full bg-sx-subtle border border-sx-border rounded-lg px-3 py-2 text-xs font-medium text-sx-ink focus:outline-none focus:border-sx-green"
-        >
-          <option value="all">All Playstyles</option>
-          <option value="quick_counter">Quick Counter</option>
-          <option value="long_ball_counter">Long Ball Counter (LBC)</option>
-          <option value="possession">Possession Game</option>
-          <option value="out_wide">Out Wide</option>
-          <option value="long_ball">Long Ball</option>
-        </select>
-      </div>
-
-      {/* Coins */}
-      <div className="pt-3 border-t border-sx-border">
-        <label className="block text-[11px] font-bold uppercase tracking-wider text-sx-ink mb-2">
-          eFootball Coins
-        </label>
-        <select
-          value={minCoins}
-          onChange={(e) => setMinCoins(e.target.value)}
-          className="w-full bg-sx-subtle border border-sx-border rounded-lg px-3 py-2 text-xs font-medium text-sx-ink focus:outline-none focus:border-sx-green"
-        >
-          <option value="">Any Balance</option>
-          <option value="500">500+ Coins</option>
-          <option value="1000">1,000+ Coins</option>
-          <option value="2500">2,500+ Coins</option>
-          <option value="5000">5,000+ Coins</option>
-        </select>
-      </div>
-
-      {/* Manager */}
-      <div className="pt-3 border-t border-sx-border">
-        <label className="block text-[11px] font-bold uppercase tracking-wider text-sx-ink mb-2">
-          Booster Manager
-        </label>
-        <input
-          type="text"
-          placeholder="e.g. Xabi Alonso, Guardiola..."
-          value={manager}
-          onChange={(e) => setManager(e.target.value)}
-          className="w-full px-3 py-2 bg-sx-subtle border border-sx-border rounded-lg text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-sx-green mb-2"
-        />
-        <div className="flex flex-wrap gap-1.5">
-          {metaCoaches.map((c) => (
-            <button
-              key={c}
-              type="button"
-              onClick={() => setManager(manager === c ? "" : c)}
-              className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors cursor-pointer ${
-                manager === c
-                  ? "bg-sx-green border-sx-green text-white font-semibold"
-                  : "bg-sx-subtle border-sx-border text-sx-ink hover:border-sx-border-strong"
-              }`}
-            >
-              {c.split(" ").pop()}
-            </button>
-          ))}
-        </div>
-      </div>
-
-      {/* Price Range */}
-      <div className="pt-3 border-t border-sx-border">
-        <label className="block text-[11px] font-bold uppercase tracking-wider text-sx-ink mb-2">
-          Ask Price (KES)
-        </label>
-        <div className="grid grid-cols-2 gap-2">
-          <input
-            type="number"
-            placeholder="Min"
-            value={minPrice}
-            onChange={(e) => setMinPrice(e.target.value)}
-            className="w-full bg-sx-subtle border border-sx-border rounded-lg px-2.5 py-2 text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-sx-green font-mono"
-          />
-          <input
-            type="number"
-            placeholder="Max"
-            value={maxPrice}
-            onChange={(e) => setMaxPrice(e.target.value)}
-            className="w-full bg-sx-subtle border border-sx-border rounded-lg px-2.5 py-2 text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-sx-green font-mono"
-          />
-        </div>
-      </div>
-
-      {/* Sort */}
-      <div className="pt-3 border-t border-sx-border">
-        <label className="block text-[11px] font-bold uppercase tracking-wider text-sx-ink mb-2">
-          Sort By
-        </label>
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value)}
-          className="w-full bg-sx-subtle border border-sx-border rounded-lg px-3 py-2 text-xs font-medium text-sx-ink focus:outline-none focus:border-sx-green"
-        >
-          <option value="newest">Recently Listed</option>
-          <option value="price_asc">Lowest Ask</option>
-          <option value="price_desc">Highest Ask</option>
-          <option value="strength_desc">Highest Strength (OVR)</option>
-          <option value="coins_desc">Most eFootball Coins</option>
-        </select>
-      </div>
     </div>
   );
 
   return (
     <>
-      {/* Mobile Compact Search + Quick Pills */}
-      <div className="lg:hidden space-y-2.5">
+      {/* Mobile One-Handed Sticky Search, Sort & Filter Bar */}
+      <div className="lg:hidden space-y-2.5 sticky top-16 z-30 bg-sx-canvas/95 backdrop-blur-md py-2.5 -mx-4 px-4 border-b border-sx-border">
         <div className="flex items-center gap-2">
-          <div className="relative flex-1">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              applyFilters();
+            }}
+            className="relative flex-1"
+          >
             <Search className="w-4 h-4 text-sx-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
             <input
-              type="text"
-              placeholder="Search players, coaches, OVR..."
+              type="search"
+              placeholder="Search player, OVR, manager..."
               value={search}
               onChange={(e) => setSearch(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && applyFilters()}
-              className="w-full h-10 pl-9 pr-8 bg-sx-subtle border border-sx-border rounded-lg text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-sx-green"
+              className="w-full h-11 pl-9 pr-8 bg-sx-subtle border border-sx-border rounded-xl text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-sx-green"
             />
             {search && (
               <button
@@ -372,35 +366,55 @@ export function ListingFilters() {
                   setSearch("");
                   applyFilters({ search: "" });
                 }}
-                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-sx-muted hover:text-sx-ink"
+                className="absolute right-2.5 top-1/2 -translate-y-1/2 p-1 text-sx-muted hover:text-sx-ink"
+                aria-label="Clear search"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
             )}
-          </div>
+          </form>
 
           <button
             type="button"
             onClick={() => setIsMobileDrawerOpen(true)}
-            className={`h-10 px-3.5 rounded-full border flex items-center gap-1.5 text-xs font-semibold shrink-0 cursor-pointer ${
+            className={`h-11 px-3.5 rounded-xl border flex items-center gap-1.5 text-xs font-bold shrink-0 cursor-pointer ${
               activeFiltersCount > 0
                 ? "bg-sx-green border-sx-green text-white"
                 : "bg-sx-subtle border-sx-border text-sx-ink"
             }`}
           >
             <SlidersHorizontal className="w-3.5 h-3.5" />
-            <span>Filter {activeFiltersCount > 0 ? `(${activeFiltersCount})` : ""}</span>
+            <span>Filters {activeFiltersCount > 0 ? `(${activeFiltersCount})` : ""}</span>
           </button>
         </div>
 
-        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-1 text-xs">
+        {/* One-Handed Mobile Sort + Quick Filter Row */}
+        <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5 text-xs">
+          <div className="relative shrink-0">
+            <ArrowUpDown className="w-3 h-3 text-sx-green-text absolute left-2.5 top-1/2 -translate-y-1/2 pointer-events-none" />
+            <select
+              aria-label="Sort squads"
+              value={sortBy}
+              onChange={(e) => {
+                setSortBy(e.target.value);
+                applyFilters({ sortBy: e.target.value });
+              }}
+              className="h-8 pl-7 pr-2.5 rounded-full bg-sx-subtle border border-sx-border-strong text-[11px] font-bold text-sx-ink focus:outline-none focus:border-sx-green"
+            >
+              <option value="newest">Sort: Newest</option>
+              <option value="price_asc">Lowest Price</option>
+              <option value="strength_desc">Highest OVR</option>
+              <option value="price_desc">Highest Price</option>
+              <option value="coins_desc">Most Coins</option>
+            </select>
+          </div>
+
           {[
-            { key: "minStrength", val: "3150", label: "3150+ OVR" },
-            { key: "minEpics", val: "3", label: "3+ Epics" },
-            { key: "swap", val: "1", label: "Swap Open" },
             { key: "platform", val: "android", label: "Android" },
             { key: "platform", val: "ios", label: "iOS" },
+            { key: "minStrength", val: "3150", label: "3150+ OVR" },
             { key: "maxPrice", val: "5000", label: "Under KES 5K" },
+            { key: "minCoins", val: "1000", label: "1K+ Coins" },
           ].map((chip) => {
             const active = searchParams.get(chip.key) === chip.val;
             return (
@@ -408,7 +422,7 @@ export function ListingFilters() {
                 key={`${chip.key}-${chip.val}`}
                 type="button"
                 onClick={() => toggleQuickFilter(chip.key, chip.val)}
-                className={`px-3 py-1.5 rounded-full text-xs font-semibold shrink-0 border transition-colors cursor-pointer ${
+                className={`h-8 px-3 rounded-full text-[11px] font-semibold shrink-0 border transition-colors cursor-pointer ${
                   active
                     ? "bg-sx-green text-white border-sx-green"
                     : "bg-sx-subtle border-sx-border text-sx-ink"
@@ -425,7 +439,7 @@ export function ListingFilters() {
       <div className="hidden lg:block rounded-xl bg-sx-subtle border border-sx-border p-5 space-y-5">
         <div className="flex items-center justify-between border-b border-sx-border pb-3">
           <span className="text-sm font-bold text-sx-ink uppercase tracking-wider">
-            Filter Squads
+            Compare &amp; Filter
           </span>
           {activeFiltersCount > 0 && (
             <button
@@ -453,14 +467,15 @@ export function ListingFilters() {
 
       {/* Mobile Filter Drawer */}
       {isMobileDrawerOpen && (
-        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/50 backdrop-blur-xs">
+        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/55 backdrop-blur-xs">
           <div className="w-full max-w-lg bg-sx-canvas border-t sm:border border-sx-border rounded-t-2xl sm:rounded-xl overflow-hidden flex flex-col max-h-[85vh]">
             <div className="p-4 border-b border-sx-border flex items-center justify-between">
-              <h3 className="text-sm font-bold text-sx-ink">Filter Squads</h3>
+              <h3 className="text-sm font-bold text-sx-ink">Filter &amp; Compare Squads</h3>
               <button
                 type="button"
                 onClick={() => setIsMobileDrawerOpen(false)}
-                className="p-1.5 rounded-md text-sx-muted hover:text-sx-ink"
+                className="p-2 rounded-md text-sx-muted hover:text-sx-ink"
+                aria-label="Close filters"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -473,7 +488,7 @@ export function ListingFilters() {
                 Reset
               </Button>
               <Button variant="primary" size="md" onClick={() => applyFilters()} className="flex-1">
-                View Results
+                Show Squads
               </Button>
             </div>
           </div>

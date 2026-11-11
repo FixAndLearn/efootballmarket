@@ -558,26 +558,26 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
               </div>
             )}
 
-            {/* Protection Guarantees */}
+            {/* Protection Summary */}
             <div className="border-t border-sx-border pt-4 space-y-2 text-xs text-sx-ink-soft">
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="w-3.5 h-3.5 text-sx-green-text shrink-0 mt-0.5" />
-                <span>Payment held on Till 1572931 until login verified</span>
+                <span>Money held on M-Pesa Till 1572931 — not paid straight to seller</span>
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="w-3.5 h-3.5 text-sx-green-text shrink-0 mt-0.5" />
-                <span>12-hour seller credential delivery window</span>
+                <span>Seller delivers login details within 12 hours or you get a refund</span>
               </div>
               <div className="flex items-start gap-2">
                 <CheckCircle2 className="w-3.5 h-3.5 text-sx-green-text shrink-0 mt-0.5" />
-                <span>24-hour dispute &amp; full M-Pesa refund guarantee</span>
+                <span>24 hours to log in, check Link Data, and open a dispute if mismatched</span>
               </div>
             </div>
 
             {/* Seller Card */}
             <div className="border-t border-sx-border pt-4 space-y-3">
               <span className="block text-[10px] font-mono uppercase tracking-wider text-sx-muted">
-                Listed By
+                Listed By (tap badge for details)
               </span>
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-sx-stone border border-sx-border flex items-center justify-center font-mono font-bold text-xs text-sx-ink-soft">
@@ -598,15 +598,24 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                     <VerifiedSellerBadge seller={listing.seller} size="sm" showPopover={true} />
                   </div>
                   <div className="flex items-center gap-1.5 text-xs text-sx-muted mt-0.5">
-                    {(listing.seller?.completed_sales_count || 0) > 0 && listing.seller?.seller_rating ? (
+                    {(listing.seller?.completed_sales_count || 0) > 0 ? (
                       <>
-                        <Star className="w-3 h-3 text-sx-amber-text fill-amber-400" />
-                        <span>{Number(listing.seller.seller_rating).toFixed(1)}</span>
-                        <span>&middot;</span>
-                        <span>{listing.seller.completed_sales_count} completed</span>
+                        {listing.seller?.seller_rating ? (
+                          <>
+                            <Star className="w-3 h-3 text-sx-amber-text fill-amber-400" />
+                            <span>{Number(listing.seller.seller_rating).toFixed(1)}</span>
+                            <span>&middot;</span>
+                          </>
+                        ) : null}
+                        <span>
+                          {listing.seller?.completed_sales_count} completed{" "}
+                          {listing.seller?.completed_sales_count === 1 ? "sale" : "sales"}
+                        </span>
                       </>
+                    ) : listing.seller?.is_verified_seller ? (
+                      <span>National ID &amp; M-Pesa phone checked · 0 sales yet</span>
                     ) : (
-                      <span>Verified seller account</span>
+                      <span>0 sales yet · Payment held in 24h escrow</span>
                     )}
                   </div>
                 </div>

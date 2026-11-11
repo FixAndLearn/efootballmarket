@@ -57,11 +57,17 @@ export function SellerDashboardView({
   const [isWithdrawModalOpen, setIsWithdrawModalOpen] = useState(false);
   const [selectedFlyerListing, setSelectedFlyerListing] = useState<Listing | null>(null);
 
-  const tier = getSellerTier(sellerProfile.completed_sales_count, sellerProfile.seller_rating);
+  const tier = getSellerTier(
+    sellerProfile.completed_sales_count,
+    sellerProfile.seller_rating,
+    Boolean(sellerProfile.is_verified_seller)
+  );
   const currentSales = Number(sellerProfile.completed_sales_count) || 0;
-  const targetSales = tier.level === "rookie" ? 3 : 10;
+  const targetSales = tier.level === "new_seller" ? 1 : 10;
   const progressPercent =
-    tier.level === "master" ? 100 : Math.min(100, Math.round((currentSales / targetSales) * 100));
+    tier.level === "top_seller"
+      ? 100
+      : Math.min(100, Math.round((currentSales / targetSales) * 100));
 
   const getOrderActionMeta = (status: string) => {
     switch (status) {
@@ -454,16 +460,18 @@ export function SellerDashboardView({
           <div className="flex items-center gap-3">
             <div
               className={`w-11 h-11 rounded-xl flex items-center justify-center border ${
-                tier.level === "master"
+                tier.level === "top_seller"
                   ? "bg-sx-amber-tint text-sx-amber-text border-sx-amber-border"
-                  : tier.level === "verified"
+                  : tier.level === "id_verified"
                   ? "bg-sx-green-tint text-sx-green-text border-sx-green-border"
+                  : tier.level === "proven_seller"
+                  ? "bg-sx-info-tint text-sx-info-text border-sx-info-border"
                   : "bg-sx-stone text-sx-ink border-sx-border"
               }`}
             >
-              {tier.level === "master" ? (
+              {tier.level === "top_seller" ? (
                 <Crown className="w-5 h-5" />
-              ) : tier.level === "verified" ? (
+              ) : tier.level === "id_verified" || tier.level === "proven_seller" ? (
                 <ShieldCheck className="w-5 h-5" />
               ) : (
                 <Trophy className="w-5 h-5" />

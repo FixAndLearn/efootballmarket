@@ -758,7 +758,7 @@ export default function CreateListingPage() {
 
             <div className="p-3.5 rounded-lg bg-sx-canvas border border-sx-border space-y-1.5 text-xs">
               <div className="flex items-center justify-between text-sx-muted">
-                <span>Escrow Service Fee (tiered 10% → 6%)</span>
+                <span>Escrow Fee (5%, min KES 50 – max KES 500)</span>
                 <span className="font-mono">
                   {numericPrice >= 100 ? `- KES ${platformFee.toLocaleString()}` : "—"}
                 </span>
