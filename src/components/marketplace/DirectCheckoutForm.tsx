@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
-import { formatCurrency, getPlatformLabel } from "@/lib/utils";
+import { formatCurrency, formatSmartListingTitle, getPlatformLabel } from "@/lib/utils";
 import { normalizePhoneNumber } from "@/lib/utils/phone";
 import { isListingOnFlashSale } from "@/lib/utils/flashSale";
 import { calculateEscrowCommission } from "@/lib/utils/commission";
@@ -42,7 +42,7 @@ export function DirectCheckoutForm({
 }: DirectCheckoutFormProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const offerId = searchParams.get("offer");
+  const offerId = searchParams.get("offerId") || searchParams.get("offer");
 
   const [paymentMethod, setPaymentMethod] = useState<"stk" | "manual">("stk");
   const [phoneNumber, setPhoneNumber] = useState(currentUserPhone);
@@ -277,20 +277,22 @@ export function DirectCheckoutForm({
     }
   };
 
+  const displayTitle = formatSmartListingTitle(listing);
+
   const shareUrl =
     typeof window !== "undefined"
       ? window.location.href
       : `https://www.efootballmarket.co.ke/pay/${listing.id}`;
 
   const whatsappShareHref = `https://wa.me/?text=${encodeURIComponent(
-    `${listing.title} (${listing.overall_team_strength} OVR) — ${formatCurrency(
+    `${displayTitle} (${listing.overall_team_strength} OVR) — ${formatCurrency(
       payablePrice,
       listing.currency
     )} via M-Pesa Till 1572931 Escrow: ${shareUrl}`
   )}`;
 
   const whatsappSupportHref = `https://wa.me/254794400365?text=${encodeURIComponent(
-    `Hello eFootballMarket Support, I need assistance checking out "${listing.title}" (KES ${payablePrice.toLocaleString()}) via Till 1572931.`
+    `Hello eFootballMarket Support, I need assistance checking out "${displayTitle}" (KES ${payablePrice.toLocaleString()}) via Till 1572931.`
   )}`;
 
   return (
@@ -348,7 +350,7 @@ export function DirectCheckoutForm({
             {primaryImage ? (
               <Image
                 src={primaryImage}
-                alt={listing.title}
+                alt={displayTitle}
                 fill
                 sizes="80px"
                 unoptimized
@@ -370,7 +372,7 @@ export function DirectCheckoutForm({
               </span>
             </div>
             <h2 className="text-sm sm:text-base font-bold text-sx-ink line-clamp-1 font-display">
-              {listing.title}
+              {displayTitle}
             </h2>
           </div>
           <Link

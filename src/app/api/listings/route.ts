@@ -82,6 +82,11 @@ const listingCreateSchema = z.object({
   linked_email_status: z.enum(["transferable_full_access", "buyer_email_bindable"]).default("transferable_full_access"),
   status: z.enum(["draft", "pending_review", "published"]).default("published"),
   is_featured: z.boolean().default(false),
+  allows_swap: z.boolean().default(false),
+  swap_preferences: z
+    .string()
+    .nullish()
+    .transform((val) => val?.trim() || null),
   image_urls: z
     .array(z.string())
     .min(1, "Please upload at least one squad screenshot")
@@ -100,6 +105,7 @@ export async function GET(req: NextRequest) {
     const minCoins = searchParams.get("minCoins") ? Number(searchParams.get("minCoins")) : undefined;
     const minGp = searchParams.get("minGp") ? Number(searchParams.get("minGp")) : undefined;
     const minEpics = searchParams.get("minEpics") ? Number(searchParams.get("minEpics")) : undefined;
+    const allowsSwap = searchParams.get("swap") === "1";
     const manager = searchParams.get("manager") || undefined;
     const sortBy = (searchParams.get("sortBy") as any) || "newest";
     const limit = searchParams.get("limit") ? Number(searchParams.get("limit")) : 20;
@@ -118,6 +124,7 @@ export async function GET(req: NextRequest) {
       minCoins,
       minGp,
       minEpics,
+      allowsSwap,
       manager,
       sortBy,
       limit,

@@ -47,6 +47,12 @@ const listingUpdateSchema = z.object({
   konami_id_status: z.enum(["linked_changeable", "unlinked", "linked_immutable"]).optional(),
   linked_email_status: z.enum(["transferable_full_access", "buyer_email_bindable"]).optional(),
   status: z.enum(["draft", "pending_review", "published", "sold", "archived"]).optional(),
+  allows_swap: z.boolean().optional(),
+  swap_preferences: z
+    .string()
+    .nullish()
+    .transform((val) => val?.trim() || null)
+    .optional(),
   image_urls: z.array(z.string()).min(1).max(5).optional(),
 });
 

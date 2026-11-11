@@ -1,12 +1,22 @@
-import { formatCompactNumber, formatCurrency, getKonamiIdStatusInfo, getPlatformLabel, getPlaystyleLabel } from "@/lib/utils";
+import {
+  formatCompactNumber,
+  formatCurrency,
+  formatSmartListingTitle,
+  getKonamiIdStatusInfo,
+  getPlatformLabel,
+  getPlaystyleLabel,
+} from "@/lib/utils";
 import { formatWhatsAppPhone } from "@/lib/utils/phone";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ListingService } from "@/services/listingService";
+import { getVerifiedSellerReviews } from "@/services/reviewService";
 import { Listing } from "@/types/database";
 import { BuyNowButton } from "@/components/marketplace/BuyNowButton";
 import { ListingGallery } from "@/components/marketplace/ListingGallery";
 import { VerifiedSellerBadge } from "@/components/marketplace/VerifiedSellerBadge";
 import { MakeOfferButton } from "@/components/marketplace/MakeOfferButton";
+import { ProposeSwapModal } from "@/components/marketplace/ProposeSwapModal";
+import { SellerReviewsSection } from "@/components/marketplace/SellerReviewsSection";
 import { ChatSellerWhatsAppButton } from "@/components/marketplace/ChatSellerWhatsAppButton";
 import { SellerListingOffersPanel } from "@/components/marketplace/SellerListingOffersPanel";
 import { ListingCard } from "@/components/marketplace/ListingCard";
@@ -56,19 +66,23 @@ export async function generateMetadata({ params }: ListingDetailPageProps): Prom
       listing.images?.[0]?.image_url ||
       "/opengraph-image";
 
-    const title = `${listing.title} (${listing.overall_team_strength} OVR)`;
-    const description = `${listing.overall_team_strength} OVR unlinked eFootball squad listed at ${formatCurrency(
+    const displayTitle = formatSmartListingTitle(listing);
+    const title = `${displayTitle} (${listing.overall_team_strength} OVR)`;
+    const description = `${listing.overall_team_strength} OVR Clean Konami ID eFootball squad listed at ${formatCurrency(
       listing.price
     )}. Protected via Safaricom M-Pesa Till 1572931 with 24-hour buyer inspection.`;
 
     return {
       title,
       description,
+      alternates: {
+        canonical: `https://www.efootballmarket.co.ke/listings/${listing.id}`,
+      },
       openGraph: {
         title,
         description,
         type: "website",
-        images: [{ url: primaryImage, alt: listing.title }],
+        images: [{ url: primaryImage, alt: displayTitle }],
       },
       twitter: {
         card: "summary_large_image",
@@ -110,9 +124,69 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
 
   const isOwner = Boolean(user && listing.seller_id === user.id);
   const konamiStatus = getKonamiIdStatusInfo(listing.konami_id_status);
+  const displayTitle = formatSmartListingTitle(listing);
+  const sellerReviews = listing.seller_id
+    ? await getVerifiedSellerReviews(listing.seller_id, 6)
+    : [];
+
+  const primaryImage =
+    listing.images?.find((img) => img.is_primary)?.image_url ||
+    listing.images?.[0]?.image_url ||
+    "https://www.efootballmarket.co.ke/opengraph-image";
+
+  const productJsonLd: Record<string, any> = {
+    "@context": "https://schema.org",
+    "@type": "Product",
+    name: displayTitle,
+    description:
+      listing.description ||
+      `${listing.overall_team_strength} OVR verified eFootball squad on ${getPlatformLabel(
+        listing.platform
+      )} with M-Pesa Till 1572931 escrow protection.`,
+    sku: listing.id,
+    image: [primaryImage],
+    brand: {
+      "@type": "Brand",
+      name: "eFootball (Konami)",
+    },
+    offers: {
+      "@type": "Offer",
+      url: `https://www.efootballmarket.co.ke/listings/${listing.id}`,
+      priceCurrency: listing.currency || "KES",
+      price: Number(listing.price || 0),
+      availability:
+        listing.status === "published"
+          ? "https://schema.org/InStock"
+          : "https://schema.org/SoldOut",
+      seller: {
+        "@type": "Person",
+        name: listing.seller?.username
+          ? `@${listing.seller.username}`
+          : "Verified Seller",
+      },
+    },
+  };
+
+  if (
+    listing.seller &&
+    Number(listing.seller.seller_rating) > 0 &&
+    Number(listing.seller.total_reviews_count) > 0
+  ) {
+    productJsonLd.aggregateRating = {
+      "@type": "AggregateRating",
+      ratingValue: Number(listing.seller.seller_rating).toFixed(1),
+      reviewCount: Number(listing.seller.total_reviews_count),
+      bestRating: 5,
+      worstRating: 1,
+    };
+  }
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 pb-24 lg:pb-12 w-full space-y-8">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd) }}
+      />
       {/* Top Breadcrumb Bar */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-sx-border">
         <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-sx-muted flex-wrap">
@@ -125,7 +199,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
           </Link>
           <span className="text-sx-muted">/</span>
           <span className="text-sx-ink-soft font-medium truncate max-w-[260px] sm:max-w-md">
-            {listing.title}
+            {displayTitle}
           </span>
         </nav>
 
@@ -158,7 +232,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
         <div className="lg:col-span-8 space-y-6">
           <ListingGallery
             images={listing.images || []}
-            title={listing.title}
+            title={displayTitle}
             platform={listing.platform}
             overallTeamStrength={listing.overall_team_strength}
           />
@@ -175,7 +249,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                 <span>Region: {listing.region || "Global"}</span>
               </div>
               <h1 className="text-2xl sm:text-3xl font-bold text-sx-ink font-display">
-                {listing.title}
+                {displayTitle}
               </h1>
             </div>
 
@@ -257,7 +331,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                       {listing.key_players_list.map((player, idx) => (
                         <span
                           key={idx}
-                          className="px-2.5 py-1 rounded-md bg-sx-canvas border border-[#263248] text-xs font-medium text-sx-ink-soft"
+                          className="px-2.5 py-1 rounded-md bg-sx-canvas border border-sx-border text-xs font-medium text-sx-ink-soft"
                         >
                           {player}
                         </span>
@@ -331,6 +405,18 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
               </div>
             </div>
           </div>
+
+          {/* Verified Buyer Reviews for this Seller */}
+          {listing.seller && (
+            <SellerReviewsSection
+              sellerUsername={listing.seller.username || "Trader"}
+              sellerRating={listing.seller.seller_rating}
+              totalReviewsCount={listing.seller.total_reviews_count}
+              completedSalesCount={listing.seller.completed_sales_count}
+              reviews={sellerReviews}
+              compact
+            />
+          )}
         </div>
 
         {/* Right Column: Sticky Checkout & Seller Box (4 cols) */}
@@ -420,7 +506,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                   sellerPhone={listing.seller?.phone_number}
                   sellerUsername={listing.seller?.username}
                   listingId={listing.id}
-                  listingTitle={listing.title}
+                  listingTitle={displayTitle}
                   listingPrice={listing.price}
                   listingCurrency={listing.currency}
                   overallTeamStrength={listing.overall_team_strength}
@@ -437,7 +523,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                   sellerPhone={listing.seller?.phone_number}
                   sellerUsername={listing.seller?.username}
                   listingId={listing.id}
-                  listingTitle={listing.title}
+                  listingTitle={displayTitle}
                   listingPrice={listing.price}
                   listingCurrency={listing.currency}
                   overallTeamStrength={listing.overall_team_strength}
@@ -445,28 +531,29 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
               </div>
             )}
 
-            {/* Swap Option */}
+            {/* On-Platform Escrow Swap Proposal + WhatsApp Option */}
             {listing.allows_swap && !isOwner && !isListingOnFlashSale(listing) && listing.status === "published" && (
-              <div className="p-3.5 rounded-xl bg-sx-green-tint border border-emerald-500/35 space-y-2">
+              <div className="p-3.5 rounded-xl bg-sx-subtle border border-sx-green-border space-y-2.5">
                 <div className="flex items-center gap-1.5 text-xs font-semibold text-sx-green-text">
                   <ArrowRightLeft className="w-3.5 h-3.5" />
-                  <span>Open to Squad Swap + Cash</span>
+                  <span>Open to Squad Swap + Cash Top-Up</span>
                 </div>
                 {listing.swap_preferences && (
                   <p className="text-[11px] text-sx-ink-soft leading-relaxed">
                     Preferences: &ldquo;{listing.swap_preferences}&rdquo;
                   </p>
                 )}
+                <ProposeSwapModal listing={listing} />
                 <a
                   href={`https://wa.me/${formatWhatsAppPhone(listing.seller?.phone_number || "254794400365")}?text=${encodeURIComponent(
-                    `Hello ${listing.seller?.username || "Seller"}, I saw your listing "${listing.title}" on eFootballMarket and want to propose a Squad Swap + Cash deal via Till 1572931: https://www.efootballmarket.co.ke/listings/${listing.id}`
+                    `Hello ${listing.seller?.username || "Seller"}, I saw your listing "${displayTitle}" on eFootballMarket and want to propose a Squad Swap + Cash deal via Till 1572931: https://www.efootballmarket.co.ke/listings/${listing.id}`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 px-3 py-2 rounded-lg bg-emerald-600 hover:bg-sx-green hover:bg-sx-green-hover text-white font-bold text-xs transition-colors"
+                  className="w-full inline-flex items-center justify-center gap-1.5 text-[11px] font-semibold text-sx-muted hover:text-sx-ink transition-colors pt-0.5"
                 >
-                  <MessageCircle className="w-3.5 h-3.5" />
-                  <span>Discuss Swap on WhatsApp</span>
+                  <MessageCircle className="w-3 h-3" />
+                  <span>Or ask seller about swap on WhatsApp</span>
                 </a>
               </div>
             )}

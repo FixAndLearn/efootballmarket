@@ -245,12 +245,29 @@ export function SellerDashboardView({
                         {formatCurrency(net, order.currency)}
                       </span>
                     </div>
-                    <Link href={`/orders/${order.id}`}>
-                      <Button variant={meta.urgent ? "primary" : "secondary"} size="sm">
-                        <span>{meta.cta}</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
-                      </Button>
-                    </Link>
+                    <div className="flex items-center gap-2">
+                      {(order.status === "seller_delivered" ||
+                        order.status === "buyer_reviewing") && (
+                        <Link href={`/orders/${order.id}`}>
+                          <Button variant="outline" size="sm">
+                            <span>Escrow Room</span>
+                          </Button>
+                        </Link>
+                      )}
+                      <Link
+                        href={
+                          order.status === "seller_delivered" ||
+                          order.status === "buyer_reviewing"
+                            ? `/orders/${order.id}/chat`
+                            : `/orders/${order.id}`
+                        }
+                      >
+                        <Button variant={meta.urgent ? "primary" : "secondary"} size="sm">
+                          <span>{meta.cta}</span>
+                          <ArrowRight className="w-3.5 h-3.5" />
+                        </Button>
+                      </Link>
+                    </div>
                   </div>
                 </div>
               );

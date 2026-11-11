@@ -4,8 +4,9 @@ import { AdBanner } from "@/components/common/AdBanner";
 import { Button } from "@/components/ui/Button";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ListingService } from "@/services/listingService";
-import { Listing, Platform } from "@/types/database";
-import { CheckCircle2, X } from "lucide-react";
+import { Listing, Platform, Playstyle } from "@/types/database";
+import { getPlaystyleLabel } from "@/lib/utils";
+import { ArrowLeft, ArrowRight, CheckCircle2, X } from "lucide-react";
 import Link from "next/link";
 import { Metadata } from "next";
 
@@ -14,18 +15,23 @@ export const revalidate = 0;
 export const metadata: Metadata = {
   title: "Browse Verified eFootball Squads | eFootballMarket Kenya",
   description:
-    "Browse Clean Konami ID eFootball accounts in Kenya. Filter by Collective Strength (OVR), Epic legends, Coin balance, and Ask Price in KES with M-Pesa Till 1572931 verification.",
+    "Browse Clean Konami ID eFootball accounts in Kenya. Filter by Collective Strength (OVR), Epic legends, Playstyle, Swap availability, and Ask Price in KES with M-Pesa Till 1572931 verification.",
   alternates: {
     canonical: "https://www.efootballmarket.co.ke/browse",
   },
 };
 
+const PAGE_SIZE = 24;
+
 interface BrowsePageProps {
   searchParams: {
     search?: string;
     platform?: Platform | "all";
+    playstyle?: Playstyle | "all";
     minStrength?: string;
+    minEpics?: string;
     minCoins?: string;
+    swap?: string;
     manager?: string;
     minPrice?: string;
     maxPrice?: string;
@@ -38,16 +44,23 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
   const supabase = createServerSupabaseClient();
   const listingService = new ListingService(supabase);
 
+  const currentPage = Math.max(1, Number(searchParams.page) || 1);
+  const offset = (currentPage - 1) * PAGE_SIZE;
+
   const filters = {
     search: searchParams.search,
     platform: searchParams.platform,
+    playstyle: searchParams.playstyle,
     minStrength: searchParams.minStrength ? Number(searchParams.minStrength) : undefined,
+    minEpics: searchParams.minEpics ? Number(searchParams.minEpics) : undefined,
     minCoins: searchParams.minCoins ? Number(searchParams.minCoins) : undefined,
+    allowsSwap: searchParams.swap === "1",
     manager: searchParams.manager,
     minPrice: searchParams.minPrice ? Number(searchParams.minPrice) : undefined,
     maxPrice: searchParams.maxPrice ? Number(searchParams.maxPrice) : undefined,
     sortBy: searchParams.sortBy,
-    limit: 24,
+    limit: PAGE_SIZE,
+    offset,
   };
 
   let listings: Listing[] = [];
@@ -62,11 +75,26 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
     hasSearchError = true;
   }
 
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+
+  const buildPageHref = (targetPage: number) => {
+    const params = new URLSearchParams();
+    Object.entries(searchParams || {}).forEach(([k, v]) => {
+      if (v && k !== "page") params.set(k, v);
+    });
+    if (targetPage > 1) params.set("page", String(targetPage));
+    const qs = params.toString();
+    return qs ? `/browse?${qs}` : "/browse";
+  };
+
   const hasActiveFilters = Boolean(
     searchParams.search ||
       (searchParams.platform && searchParams.platform !== "all") ||
+      (searchParams.playstyle && searchParams.playstyle !== "all") ||
       searchParams.minStrength ||
+      searchParams.minEpics ||
       searchParams.minCoins ||
+      searchParams.swap === "1" ||
       searchParams.manager ||
       searchParams.minPrice ||
       searchParams.maxPrice ||
@@ -89,7 +117,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
               Verified eFootball Squads
             </h1>
             {totalCount > 0 && (
-              <span className="px-2.5 py-0.5 rounded-full bg-sx-green-tint text-sx-green-text text-xs font-bold">
+              <span className="px-2.5 py-0.5 rounded-full bg-sx-green-tint border border-sx-green-border text-sx-green-text text-xs font-bold">
                 {totalCount} Available
               </span>
             )}
@@ -116,42 +144,57 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
-        <div className="lg:col-span-3 lg:sticky lg:top-32">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
+        <div className="lg:col-span-3 lg:sticky lg:top-28">
           <ListingFilters />
         </div>
 
-        <div className="lg:col-span-9 space-y-5">
+        <div className="lg:col-span-9 space-y-6">
           {hasActiveFilters && (
             <div className="flex flex-wrap items-center gap-2 pb-3 border-b border-sx-border text-xs">
               <span className="text-sx-muted font-medium mr-1">Active:</span>
               {searchParams.search && (
-                <span className="px-2.5 py-1 rounded-full bg-sx-stone text-sx-ink font-medium">
+                <span className="px-2.5 py-1 rounded-full bg-sx-subtle border border-sx-border text-sx-ink font-medium">
                   &ldquo;{searchParams.search}&rdquo;
                 </span>
               )}
+              {searchParams.swap === "1" && (
+                <span className="px-2.5 py-1 rounded-full bg-sx-green-tint border border-sx-green-border text-sx-green-text font-semibold">
+                  Swap Open
+                </span>
+              )}
               {searchParams.minStrength && (
-                <span className="px-2.5 py-1 rounded-full bg-sx-stone text-sx-ink font-semibold">
+                <span className="px-2.5 py-1 rounded-full bg-sx-subtle border border-sx-border text-sx-ink font-semibold">
                   {searchParams.minStrength}+ OVR
                 </span>
               )}
+              {searchParams.minEpics && (
+                <span className="px-2.5 py-1 rounded-full bg-sx-subtle border border-sx-border text-sx-ink font-semibold">
+                  {searchParams.minEpics}+ Epics
+                </span>
+              )}
               {searchParams.platform && searchParams.platform !== "all" && (
-                <span className="px-2.5 py-1 rounded-full bg-sx-stone text-sx-ink capitalize font-medium">
+                <span className="px-2.5 py-1 rounded-full bg-sx-subtle border border-sx-border text-sx-ink capitalize font-medium">
                   {searchParams.platform.replace(/_/g, " ")}
                 </span>
               )}
+              {searchParams.playstyle && searchParams.playstyle !== "all" && (
+                <span className="px-2.5 py-1 rounded-full bg-sx-subtle border border-sx-border text-sx-ink font-medium">
+                  {getPlaystyleLabel(searchParams.playstyle)}
+                </span>
+              )}
               {searchParams.minCoins && (
-                <span className="px-2.5 py-1 rounded-full bg-sx-stone text-sx-ink font-medium">
+                <span className="px-2.5 py-1 rounded-full bg-sx-subtle border border-sx-border text-sx-ink font-medium">
                   {Number(searchParams.minCoins).toLocaleString()}+ Coins
                 </span>
               )}
               {searchParams.manager && (
-                <span className="px-2.5 py-1 rounded-full bg-sx-stone text-sx-ink font-medium">
+                <span className="px-2.5 py-1 rounded-full bg-sx-subtle border border-sx-border text-sx-ink font-medium">
                   {searchParams.manager}
                 </span>
               )}
               {(searchParams.minPrice || searchParams.maxPrice) && (
-                <span className="px-2.5 py-1 rounded-full bg-sx-stone text-sx-ink font-mono font-medium">
+                <span className="px-2.5 py-1 rounded-full bg-sx-subtle border border-sx-border text-sx-ink font-mono font-medium">
                   KES {searchParams.minPrice || "0"} – {searchParams.maxPrice || "Any"}
                 </span>
               )}
@@ -166,6 +209,45 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
           )}
 
           <ListingGrid listings={listings} filters={filters} />
+
+          {/* Pagination Bar */}
+          {totalPages > 1 && (
+            <nav
+              aria-label="Squad catalog pagination"
+              className="pt-4 border-t border-sx-border flex items-center justify-between gap-3"
+            >
+              <Link
+                href={buildPageHref(Math.max(1, currentPage - 1))}
+                aria-disabled={currentPage <= 1}
+                className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border text-xs font-bold transition-colors ${
+                  currentPage <= 1
+                    ? "pointer-events-none opacity-45 bg-sx-subtle border-sx-border text-sx-muted"
+                    : "bg-sx-subtle hover:bg-sx-stone border-sx-border text-sx-ink"
+                }`}
+              >
+                <ArrowLeft className="w-3.5 h-3.5" />
+                <span>Previous</span>
+              </Link>
+
+              <span className="text-xs text-sx-muted font-mono">
+                Page <strong className="text-sx-ink">{currentPage}</strong> of{" "}
+                <strong className="text-sx-ink">{totalPages}</strong>
+              </span>
+
+              <Link
+                href={buildPageHref(Math.min(totalPages, currentPage + 1))}
+                aria-disabled={currentPage >= totalPages}
+                className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-lg border text-xs font-bold transition-colors ${
+                  currentPage >= totalPages
+                    ? "pointer-events-none opacity-45 bg-sx-subtle border-sx-border text-sx-muted"
+                    : "bg-sx-subtle hover:bg-sx-stone border-sx-border text-sx-ink"
+                }`}
+              >
+                <span>Next</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </nav>
+          )}
 
           <AdBanner
             slot="browse_bottom_feed"

@@ -60,6 +60,74 @@ export function getPlatformLabel(platform: string): string {
   return map[platform] || platform;
 }
 
+export function getShortPlatformLabel(platform: string): string {
+  const map: Record<string, string> = {
+    android: "Android",
+    ios: "iOS",
+    pc_steam: "PC / Steam",
+    playstation_4: "PS4",
+    playstation_5: "PS5",
+    xbox_one: "Xbox One",
+    xbox_series_x: "Xbox X/S",
+  };
+  return map[platform] || platform;
+}
+
+export function getShortPlaystyleLabel(playstyle?: string | null): string | null {
+  if (!playstyle) return null;
+  const map: Record<string, string> = {
+    quick_counter: "Quick Counter",
+    long_ball_counter: "LBC Meta",
+    possession: "Possession",
+    out_wide: "Out Wide",
+    long_ball: "Long Ball",
+  };
+  return map[playstyle] || getPlaystyleLabel(playstyle);
+}
+
+/**
+ * Enriches bare 3-4 digit numeric titles (e.g. "3252", "3163") into descriptive
+ * marketplace headlines while keeping real custom seller headlines untouched.
+ */
+export function formatSmartListingTitle(listing: {
+  title?: string | null;
+  overall_team_strength?: number | null;
+  dream_team_name?: string | null;
+  platform?: string | null;
+  primary_playstyle?: string | null;
+  epic_players_count?: number | null;
+  big_time_players_count?: number | null;
+}): string {
+  const raw = (listing.title || "").trim();
+  const isBareNumericOrShort =
+    !raw ||
+    /^\d{3,4}(\s*\+?\s*(ovr|strength))?$/i.test(raw) ||
+    raw.length <= 5;
+
+  if (!isBareNumericOrShort) {
+    return raw;
+  }
+
+  const ovr = listing.overall_team_strength || raw;
+  const epics =
+    Number(listing.epic_players_count || 0) +
+    Number(listing.big_time_players_count || 0);
+  const teamName = listing.dream_team_name?.trim();
+  const shortPlat = getShortPlatformLabel(listing.platform || "android");
+  const styleLabel = getShortPlaystyleLabel(listing.primary_playstyle);
+
+  if (teamName && !/^\d+$/.test(teamName)) {
+    return `${teamName} · ${ovr} OVR ${shortPlat} Squad`;
+  }
+  if (epics > 0) {
+    return `${ovr} OVR · ${epics}-Epic ${shortPlat} Squad`;
+  }
+  if (styleLabel) {
+    return `${ovr} OVR ${styleLabel} · ${shortPlat} Squad`;
+  }
+  return `${ovr} OVR Verified ${shortPlat} Dream Team`;
+}
+
 /**
  * Maps Konami ID status to user-friendly badge data.
  */

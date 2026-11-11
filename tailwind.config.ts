@@ -56,9 +56,9 @@ const config: Config = {
         pitch: {
           DEFAULT: "var(--sx-canvas)",
           dark: "var(--sx-canvas)",
-          surface: "var(--sx-canvas)",
+          surface: "var(--sx-subtle)",
           card: "var(--sx-stone)",
-          elevated: "var(--sx-subtle)",
+          elevated: "var(--sx-elevated)",
           border: "var(--sx-border)",
           accent: "var(--sx-green)",
           gold: "var(--sx-amber-text)",

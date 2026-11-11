@@ -11,6 +11,7 @@ export interface ListingFilterParams {
   minCoins?: number;
   minGp?: number;
   minEpics?: number;
+  allowsSwap?: boolean;
   manager?: string;
   sortBy?: "newest" | "price_asc" | "price_desc" | "strength_desc" | "coins_desc" | "views";
   limit?: number;
@@ -44,6 +45,7 @@ export class ListingService {
       minCoins,
       minGp,
       minEpics,
+      allowsSwap,
       manager,
       sortBy = "newest",
       limit = 20,
@@ -88,6 +90,10 @@ export class ListingService {
       query = query.gte("epic_players_count", minEpics);
     }
 
+    if (allowsSwap) {
+      query = query.eq("allows_swap", true);
+    }
+
     if (manager && manager.trim() !== "") {
       query = query.ilike("manager_name", `%${manager.trim()}%`);
     }
@@ -127,6 +133,13 @@ export class ListingService {
     const { data, count, error } = await query;
 
     if (error) {
+      if (allowsSwap && error.message.includes("allows_swap")) {
+        return this.getListings({
+          ...filters,
+          allowsSwap: false,
+          search: filters.search ? `${filters.search} swap` : "swap",
+        });
+      }
       console.error("Listing query error:", error);
       throw new Error(`Failed to fetch listings: ${error.message}`);
     }
@@ -172,17 +185,42 @@ export class ListingService {
     listingData: Omit<Listing, "id" | "created_at" | "updated_at" | "deleted_at" | "views_count" | "favorites_count" | "seller" | "images">,
     imageUrls: string[]
   ): Promise<Listing> {
-    const { data: newListing, error: insertError } = await this.supabase
+    const nowIso = new Date().toISOString();
+    const basePayload: Record<string, any> = {
+      ...listingData,
+      views_count: 0,
+      favorites_count: 0,
+      created_at: nowIso,
+      updated_at: nowIso,
+    };
+
+    let { data: newListing, error: insertError } = await this.supabase
       .from("listings")
-      .insert({
-        ...listingData,
-        views_count: 0,
-        favorites_count: 0,
-        created_at: new Date().toISOString(),
-        updated_at: new Date().toISOString(),
-      })
+      .insert(basePayload)
       .select()
       .single();
+
+    if (
+      insertError &&
+      (insertError.message.includes("allows_swap") ||
+        insertError.message.includes("swap_preferences"))
+    ) {
+      if (basePayload.allows_swap) {
+        const swapTag = basePayload.swap_preferences
+          ? `\n\n[Open to Squad Swap + Cash Top-Up: ${basePayload.swap_preferences}]`
+          : "\n\n[Open to Squad Swap + Cash Top-Up]";
+        basePayload.description = `${basePayload.description || ""}${swapTag}`.trim();
+      }
+      delete basePayload.allows_swap;
+      delete basePayload.swap_preferences;
+      const retry = await this.supabase
+        .from("listings")
+        .insert(basePayload)
+        .select()
+        .single();
+      newListing = retry.data;
+      insertError = retry.error;
+    }
 
     if (insertError) {
       throw new Error(`Listing creation failed: ${insertError.message}`);

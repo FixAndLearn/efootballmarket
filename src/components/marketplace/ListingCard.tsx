@@ -9,7 +9,9 @@ import { FavoriteButton } from "@/components/marketplace/FavoriteButton";
 import {
   formatCompactNumber,
   formatCurrency,
-  getPlaystyleLabel,
+  formatSmartListingTitle,
+  getShortPlatformLabel,
+  getShortPlaystyleLabel,
 } from "@/lib/utils";
 import { isListingOnFlashSale } from "@/lib/utils/flashSale";
 import {
@@ -26,59 +28,6 @@ import {
 export interface ListingCardProps {
   listing: Listing;
   featured?: boolean;
-}
-
-function getShortPlatformLabel(platform: string): string {
-  const map: Record<string, string> = {
-    android: "Android",
-    ios: "iOS",
-    pc_steam: "PC / Steam",
-    playstation_4: "PS4",
-    playstation_5: "PS5",
-    xbox_one: "Xbox One",
-    xbox_series_x: "Xbox X/S",
-  };
-  return map[platform] || platform;
-}
-
-function getShortPlaystyleLabel(playstyle?: string | null): string | null {
-  if (!playstyle) return null;
-  const map: Record<string, string> = {
-    quick_counter: "Quick Counter",
-    long_ball_counter: "LBC Meta",
-    possession: "Possession",
-    out_wide: "Out Wide",
-    long_ball: "Long Ball",
-  };
-  return map[playstyle] || getPlaystyleLabel(playstyle);
-}
-
-function formatSmartListingTitle(listing: Listing, epics: number): string {
-  const raw = (listing.title || "").trim();
-  const isBareNumericOrShort =
-    !raw ||
-    /^\d{3,4}(\s*\+?\s*(ovr|strength))?$/i.test(raw) ||
-    raw.length <= 5;
-
-  if (!isBareNumericOrShort) {
-    return raw;
-  }
-
-  const ovr = listing.overall_team_strength || raw;
-  const teamName = listing.dream_team_name?.trim();
-  const shortPlat = getShortPlatformLabel(listing.platform);
-  const styleLabel = getShortPlaystyleLabel(listing.primary_playstyle);
-
-  if (teamName && !/^\d+$/.test(teamName)) {
-    return `${teamName} · ${ovr} OVR ${shortPlat} Squad`;
-  }
-  if (epics > 0) {
-    return `${ovr} OVR · ${epics}-Epic ${shortPlat} Squad`;
-  }
-  if (styleLabel) {
-    return `${ovr} OVR ${styleLabel} · ${shortPlat} Squad`;
-  }
-  return `${ovr} OVR Verified ${shortPlat} Dream Team`;
 }
 
 function StockXPitchPlaceholder({ ovr }: { ovr?: number }) {
@@ -193,7 +142,7 @@ export function ListingCard({ listing }: ListingCardProps) {
   const gp = listing.gp_balance || 0;
   const division = listing.current_division || 0;
   const playstyle = getShortPlaystyleLabel(listing.primary_playstyle);
-  const displayTitle = formatSmartListingTitle(listing, epics);
+  const displayTitle = formatSmartListingTitle(listing);
   const keyPlayers = (listing.key_players_list || []).filter(Boolean).slice(0, 3);
 
   return (

@@ -17,6 +17,8 @@ import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { VerifiedSellerBadge } from "@/components/marketplace/VerifiedSellerBadge";
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import { ShareStorefrontBar } from "@/components/marketplace/ShareStorefrontBar";
+import { SellerReviewsSection } from "@/components/marketplace/SellerReviewsSection";
+import { getVerifiedSellerReviews } from "@/services/reviewService";
 import { Button } from "@/components/ui/Button";
 import { Listing, Profile } from "@/types/database";
 
@@ -170,6 +172,7 @@ export default async function SellerStorefrontPage({
   }
 
   const { seller, listings, isOwner } = result;
+  const reviews = await getVerifiedSellerReviews(seller.id, 8);
   const sales = Number(seller.completed_sales_count || 0);
   const rating = Number(seller.seller_rating || 0);
   const reviewsCount = Number(seller.total_reviews_count || 0);
@@ -321,6 +324,15 @@ export default async function SellerStorefrontPage({
           </div>
         )}
       </section>
+
+      {/* Verified Buyer Reviews */}
+      <SellerReviewsSection
+        sellerUsername={seller.username}
+        sellerRating={seller.seller_rating}
+        totalReviewsCount={seller.total_reviews_count}
+        completedSalesCount={seller.completed_sales_count}
+        reviews={reviews}
+      />
     </div>
   );
 }

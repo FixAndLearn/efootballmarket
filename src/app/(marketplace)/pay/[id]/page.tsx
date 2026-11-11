@@ -1,6 +1,7 @@
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ListingService } from "@/services/listingService";
 import { DirectCheckoutForm } from "@/components/marketplace/DirectCheckoutForm";
+import { formatSmartListingTitle } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
 
@@ -21,9 +22,10 @@ export async function generateMetadata({ params }: DirectPayPageProps): Promise<
     return { title: "Direct Checkout | eFootballMarket" };
   }
 
+  const displayTitle = formatSmartListingTitle(listing);
   return {
-    title: `Instant M-Pesa Checkout: ${listing.title} | eFootballMarket`,
-    description: `Pay KES ${listing.price.toLocaleString()} securely via Till 1572931 escrow for ${listing.title}. Escrow-protected Konami ID transfer with 24-hour inspection.`,
+    title: `Instant M-Pesa Checkout: ${displayTitle} | eFootballMarket`,
+    description: `Pay KES ${listing.price.toLocaleString()} securely via Till 1572931 escrow for ${displayTitle}. Escrow-protected Konami ID transfer with 24-hour inspection.`,
   };
 }
 

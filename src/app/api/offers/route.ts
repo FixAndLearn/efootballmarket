@@ -133,19 +133,22 @@ export async function POST(req: NextRequest) {
     } = await userSupabase.auth.getUser();
 
     const body = await req.json();
-    const { listing_id, buyer_name, buyer_phone, offered_price, note } = body;
+    const { listing_id, buyer_name, buyer_phone, offered_price, note, is_swap_proposal } = body;
+    const isSwap = Boolean(
+      is_swap_proposal || (typeof note === "string" && note.startsWith("[SWAP PROPOSAL]"))
+    );
     const verifiedBuyerId = authBuyer?.id || null;
 
     if (!listing_id || !buyer_name || !buyer_phone || !offered_price) {
       return NextResponse.json(
-        { error: "Listing ID, buyer name, phone number, and offer price are required." },
+        { error: "Listing ID, buyer name, phone number, and amount in KES are required." },
         { status: 400 }
       );
     }
 
     const offerNum = Number(offered_price);
     if (isNaN(offerNum) || offerNum <= 0) {
-      return NextResponse.json({ error: "Please enter a valid offer amount in KES." }, { status: 400 });
+      return NextResponse.json({ error: "Please enter a valid amount in KES." }, { status: 400 });
     }
 
     const supabase = getClient();
@@ -160,23 +163,30 @@ export async function POST(req: NextRequest) {
     }
 
     const originalPrice = Number(listing.price);
-    const minAllowed = Math.floor(originalPrice * 0.5); // Minimum 50% threshold to prevent spam
+    const minAllowed = isSwap ? 100 : Math.floor(originalPrice * 0.5);
 
     if (offerNum < minAllowed) {
       return NextResponse.json(
-        { error: `Offer is too low. Minimum allowed offer is KES ${minAllowed.toLocaleString()} (50% of listing price).` },
+        {
+          error: isSwap
+            ? "Swap cash top-up / escrow fee deposit must be at least KES 100."
+            : `Offer is too low. Minimum allowed offer is KES ${minAllowed.toLocaleString()} (50% of listing price).`,
+        },
         { status: 400 }
       );
     }
 
-    if (offerNum >= originalPrice) {
+    if (!isSwap && offerNum >= originalPrice) {
       return NextResponse.json(
         { error: `Your offer is equal to or higher than the listing price (KES ${originalPrice.toLocaleString()}). You can buy now directly!` },
         { status: 400 }
       );
     }
 
-    const discountPercentage = Math.round(((originalPrice - offerNum) / originalPrice) * 100);
+    const discountPercentage = Math.max(
+      0,
+      Math.round(((originalPrice - offerNum) / originalPrice) * 100)
+    );
     const offerId = `off_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
 
     const normBuyerPhone = normalizePhoneNumber(buyer_phone);
@@ -233,8 +243,12 @@ export async function POST(req: NextRequest) {
         await supabase.from("notifications").insert({
           recipient_id: listing.seller_id,
           type: "new_offer",
-          title: `New Price Offer: KES ${offerNum.toLocaleString()}`,
-          message: `${buyer_name.trim()} offered KES ${offerNum.toLocaleString()} (${discountPercentage}% off) for "${listing.title}". Review, accept, or counter now!`,
+          title: isSwap
+            ? `Squad Swap Proposal + KES ${offerNum.toLocaleString()}`
+            : `New Price Offer: KES ${offerNum.toLocaleString()}`,
+          message: isSwap
+            ? `${buyer_name.trim()} proposed a Squad Swap + KES ${offerNum.toLocaleString()} cash top-up for "${listing.title}". Review details in your Seller Hub.`
+            : `${buyer_name.trim()} offered KES ${offerNum.toLocaleString()} (${discountPercentage}% off) for "${listing.title}". Review, accept, or counter now!`,
           action_url: `/dashboard/seller`,
           is_read: false,
         });
