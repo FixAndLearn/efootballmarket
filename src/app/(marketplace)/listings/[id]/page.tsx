@@ -288,7 +288,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
         {/* Left Column: Screenshots & Squad Telemetry (8 cols) */}
-        <div className="lg:col-span-8 space-y-6">
+        <div className="lg:col-span-8 min-w-0 space-y-6">
           <ListingGallery
             images={listing.images || []}
             title={displayTitle}
@@ -502,7 +502,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
         </div>
 
         {/* Right Column: Sticky Checkout & Seller Box (4 cols) */}
-        <div id="listing-inline-cta" className="lg:col-span-4 space-y-5 lg:sticky lg:top-28">
+        <div id="listing-inline-cta" className="lg:col-span-4 min-w-0 space-y-5 lg:sticky lg:top-28">
           <div className="store-panel rounded-2xl p-6 space-y-5">
             <div className="pb-4 border-b border-sx-border space-y-2.5">
               <div>

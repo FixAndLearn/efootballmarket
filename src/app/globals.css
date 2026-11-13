@@ -106,12 +106,16 @@ html[data-theme="dark"] {
     background-color: var(--sx-canvas);
     color: var(--sx-ink);
     scroll-behavior: smooth;
+    max-width: 100%;
+    overflow-x: clip;
   }
 
   body {
     color: var(--sx-ink);
     background-color: var(--sx-canvas);
     min-height: 100vh;
+    max-width: 100%;
+    overflow-x: clip;
     font-feature-settings: "cv02", "cv03", "cv04", "cv11";
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;

@@ -150,7 +150,7 @@ export function AppDropdownWidget({
         onClick={() => setOpen((prev) => !prev)}
         aria-label={open ? "Close eFootball Market Pro App menu" : "Get eFootball Market Pro App"}
         aria-expanded={open}
-        className="inline-flex items-center gap-1.5 h-9 px-3 rounded-full bg-sx-green-tint hover:bg-sx-elevated border border-sx-green-border text-sx-green-text text-xs font-bold transition-colors cursor-pointer whitespace-nowrap"
+        className="inline-flex items-center gap-1 sm:gap-1.5 h-8 sm:h-9 px-2.5 sm:px-3 rounded-full bg-sx-green-tint hover:bg-sx-elevated border border-sx-green-border text-sx-green-text text-xs font-bold transition-colors cursor-pointer whitespace-nowrap shrink-0"
       >
         <Smartphone className="w-3.5 h-3.5 shrink-0" />
         <span className="hidden sm:inline">Pro App</span>

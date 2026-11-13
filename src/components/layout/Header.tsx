@@ -135,19 +135,26 @@ export function Header() {
   const isAdmin = profile?.role === "admin" || isSuperAdminEmail(user?.email);
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-sx-canvas/95 backdrop-blur-md border-b border-sx-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between gap-2 sm:gap-5 lg:gap-8 h-16">
-          <Logo size="md" />
+    <header className="sticky top-0 z-50 w-full max-w-full bg-sx-canvas/95 backdrop-blur-md border-b border-sx-border">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+        <div className="flex items-center justify-between gap-2 sm:gap-4 lg:gap-6 h-14 sm:h-16 min-w-0">
+          <div className="min-w-0 shrink">
+            <div className="sm:hidden">
+              <Logo size="sm" />
+            </div>
+            <div className="hidden sm:block">
+              <Logo size="md" />
+            </div>
+          </div>
 
-          <div className="hidden md:block flex-1 max-w-lg">
+          <div className="hidden lg:block flex-1 max-w-md xl:max-w-lg min-w-0">
             <SmartSearchBar variant="header" />
           </div>
 
-          <div className="hidden md:flex items-center gap-4 lg:gap-5 shrink-0">
+          <div className="hidden lg:flex items-center gap-3 xl:gap-5 shrink-0">
             <nav
               aria-label="Primary"
-              className="hidden lg:flex items-center gap-5 text-[13px] font-medium text-sx-muted"
+              className="hidden xl:flex items-center gap-5 text-[13px] font-medium text-sx-muted"
             >
               <Link
                 href="/browse"
@@ -334,23 +341,26 @@ export function Header() {
             </div>
           </div>
 
-          {/* Mobile Top Right Controls */}
-          <div className="flex items-center gap-1.5 md:hidden shrink-0">
-            <ThemeToggle />
+          {/* Mobile & Tablet (< lg) Top Right Controls */}
+          <div className="flex items-center gap-1 sm:gap-1.5 lg:hidden shrink-0">
+            <div className="hidden sm:block">
+              <ThemeToggle compact />
+            </div>
             <AppDropdownWidget viewportMode="mobile" />
             {user ? (
               <>
                 <NotificationBell />
                 <Link
                   href="/dashboard/buyer"
-                  className="inline-flex items-center gap-1.5 h-9 px-2.5 rounded-full bg-sx-stone border border-sx-border text-xs font-semibold text-sx-ink"
+                  aria-label="Open Buyer Account Dashboard"
+                  className="hidden min-[390px]:inline-flex items-center justify-center gap-1.5 w-8 h-8 sm:w-auto sm:h-9 sm:px-2.5 rounded-full bg-sx-stone border border-sx-border text-xs font-semibold text-sx-ink shrink-0"
                 >
-                  <span className="w-5 h-5 rounded-full bg-sx-green flex items-center justify-center text-white font-mono font-bold text-[10px]">
+                  <span className="w-6 h-6 sm:w-5 sm:h-5 rounded-full bg-sx-green flex items-center justify-center text-white font-mono font-bold text-[10px] shrink-0">
                     {profile?.username
                       ? profile.username.slice(0, 2).toUpperCase()
                       : "ME"}
                   </span>
-                  <span className="max-w-[64px] truncate">
+                  <span className="hidden sm:inline max-w-[84px] truncate">
                     {profile?.username || "Account"}
                   </span>
                 </Link>
@@ -358,7 +368,7 @@ export function Header() {
             ) : (
               <Link
                 href="/login"
-                className="inline-flex items-center justify-center h-9 px-3 rounded-full border border-sx-border-strong text-xs font-semibold text-sx-ink active:bg-sx-stone whitespace-nowrap"
+                className="inline-flex items-center justify-center h-8 sm:h-9 px-2.5 sm:px-3 rounded-full border border-sx-border-strong text-xs font-semibold text-sx-ink active:bg-sx-stone whitespace-nowrap"
               >
                 Log In
               </Link>
@@ -366,7 +376,7 @@ export function Header() {
             <button
               type="button"
               onClick={() => setMobileMenuOpen((prev) => !prev)}
-              className="w-9 h-9 inline-flex items-center justify-center rounded-md text-sx-ink hover:bg-sx-stone"
+              className="w-8 h-8 sm:w-9 sm:h-9 inline-flex items-center justify-center rounded-md text-sx-ink hover:bg-sx-stone shrink-0"
               aria-label="Toggle menu"
               aria-expanded={mobileMenuOpen}
             >
@@ -390,9 +400,42 @@ export function Header() {
         </div>
       </div>
 
-      {/* Mobile Drawer Menu */}
+      {/* Mobile & Tablet (< lg) Drawer Menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden bg-sx-canvas border-t border-sx-border px-4 pt-3 pb-5 space-y-4 shadow-lg">
+        <div className="lg:hidden bg-sx-canvas border-t border-sx-border px-4 pt-3 pb-5 space-y-3.5 shadow-lg">
+          {/* Account & Theme Bar at Top of Mobile Drawer */}
+          <div className="flex items-center justify-between gap-3 px-3 py-2 rounded-xl bg-sx-subtle border border-sx-border">
+            {user ? (
+              <Link
+                href="/dashboard/buyer"
+                onClick={() => setMobileMenuOpen(false)}
+                className="flex items-center gap-2.5 min-w-0"
+              >
+                <span className="w-7 h-7 rounded-full bg-sx-green flex items-center justify-center text-white font-mono font-bold text-[11px] shrink-0">
+                  {profile?.username
+                    ? profile.username.slice(0, 2).toUpperCase()
+                    : "ME"}
+                </span>
+                <div className="min-w-0">
+                  <p className="text-xs font-bold text-sx-ink truncate">
+                    {profile?.username || user.email}
+                  </p>
+                  <p className="text-[10.5px] text-sx-muted capitalize truncate">
+                    {isAdmin ? "Administrator" : "Verified Member · Tap for Orders"}
+                  </p>
+                </div>
+              </Link>
+            ) : (
+              <span className="text-xs font-semibold text-sx-ink-soft">
+                Display Theme
+              </span>
+            )}
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="text-[11px] text-sx-muted sm:hidden">Theme</span>
+              <ThemeToggle compact />
+            </div>
+          </div>
+
           <SmartSearchBar
             variant="mobile"
             onNavigate={() => setMobileMenuOpen(false)}

@@ -391,10 +391,10 @@ export default async function HomePage() {
       />
 
       {/* 1. SQUAD-FIRST HERO SCREEN */}
-      <section className="pt-5 pb-8 sm:pt-8 sm:pb-10">
+      <section className="pt-4 pb-8 sm:pt-8 sm:pb-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-2xl bg-sx-subtle border border-sx-border grid grid-cols-1 lg:grid-cols-12 items-stretch">
-            <div className="lg:col-span-7 p-6 sm:p-9 lg:p-11 flex flex-col justify-between space-y-6">
+            <div className="lg:col-span-7 min-w-0 p-5 sm:p-9 lg:p-11 flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 {totalSquads > 0 && (
                   <div className="inline-flex flex-wrap items-center gap-2 px-3 py-1 rounded-full bg-sx-canvas border border-sx-border text-[11px] font-medium text-sx-muted">
@@ -450,15 +450,23 @@ export default async function HomePage() {
 
               {/* Primary CTAs: Browse Squads beside Sell Your Squad */}
               <div className="space-y-4 pt-1">
-                <div className="flex flex-wrap items-center gap-3">
-                  <Link href="/browse" className="flex-1 sm:flex-initial">
-                    <Button variant="primary" size="lg" className="w-full sm:w-auto min-h-[46px]">
+                <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-3">
+                  <Link href="/browse" className="w-full sm:w-auto">
+                    <Button
+                      variant="primary"
+                      size="lg"
+                      className="w-full sm:w-auto min-h-[46px] whitespace-nowrap"
+                    >
                       <span>Browse Squads{totalSquads > 0 ? ` (${totalSquads})` : ""}</span>
-                      <ArrowRight className="w-4 h-4" />
+                      <ArrowRight className="w-4 h-4 shrink-0" />
                     </Button>
                   </Link>
-                  <Link href="/seller/create-listing" className="flex-1 sm:flex-initial">
-                    <Button variant="outline" size="lg" className="w-full sm:w-auto min-h-[46px]">
+                  <Link href="/seller/create-listing" className="w-full sm:w-auto">
+                    <Button
+                      variant="outline"
+                      size="lg"
+                      className="w-full sm:w-auto min-h-[46px] whitespace-nowrap"
+                    >
                       <span>Sell Your Squad</span>
                     </Button>
                   </Link>

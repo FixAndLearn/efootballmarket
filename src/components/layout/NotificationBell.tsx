@@ -224,20 +224,20 @@ export function NotificationBell() {
   const previewList = notifications.slice(0, 5);
 
   return (
-    <div className="relative" ref={dropdownRef}>
+    <div className="relative shrink-0" ref={dropdownRef}>
       {/* Bell Trigger Button */}
       <button
         type="button"
         onClick={handleToggle}
-        className="p-2 rounded-xl text-sx-ink-soft hover:text-sx-ink hover:bg-pitch-surface transition-all relative"
+        className="w-8 h-8 sm:w-9 sm:h-9 inline-flex items-center justify-center rounded-xl text-sx-ink-soft hover:text-sx-ink hover:bg-pitch-surface transition-all relative"
         aria-label="Notifications"
         title="View Notifications"
       >
-        <Bell className="w-5 h-5" />
+        <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
 
         {/* Unread Counter Badge */}
         {unreadCount > 0 && (
-          <span className="absolute top-1 right-1 flex items-center justify-center min-w-[18px] h-[18px] px-1 rounded-full bg-sx-green hover:bg-sx-green-hover text-white font-extrabold text-[10px] ring-2 ring-sx-canvas animate-pulse">
+          <span className="absolute top-0.5 right-0.5 flex items-center justify-center min-w-[16px] h-[16px] px-1 rounded-full bg-sx-green hover:bg-sx-green-hover text-white font-extrabold text-[9.5px] ring-2 ring-sx-canvas animate-pulse">
             {unreadCount > 9 ? "9+" : unreadCount}
           </span>
         )}
@@ -245,7 +245,7 @@ export function NotificationBell() {
 
       {/* Dropdown Popover */}
       {isOpen && (
-        <div className="absolute right-0 mt-2 w-80 sm:w-96 rounded-2xl bg-pitch-surface border border-pitch-border shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2">
+        <div className="fixed sm:absolute right-3 left-3 sm:left-auto sm:right-0 top-14 sm:top-auto sm:mt-2 sm:w-96 rounded-2xl bg-pitch-surface border border-pitch-border shadow-2xl z-50 overflow-hidden animate-in fade-in slide-in-from-top-2">
           {/* Header */}
           <div className="p-3.5 border-b border-pitch-border/80 flex items-center justify-between bg-pitch-card/60">
             <div className="flex items-center gap-2">

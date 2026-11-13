@@ -157,11 +157,11 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
       <TrustBadgeGuide />
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-7 items-start">
-        <div className="lg:col-span-3 lg:sticky lg:top-24">
+        <div className="lg:col-span-3 min-w-0 lg:sticky lg:top-24">
           <ListingFilters />
         </div>
 
-        <div className="lg:col-span-9 space-y-5">
+        <div className="lg:col-span-9 min-w-0 space-y-5">
           {/* Mobile & Desktop Quick Sort Bar */}
           <div className="flex items-center justify-between gap-3 pb-3 border-b border-sx-border text-xs overflow-x-auto no-scrollbar">
             <span className="text-sx-muted font-medium shrink-0">
