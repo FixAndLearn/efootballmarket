@@ -1,0 +1,15 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls",
+      "delegate_permission/common.query_webapk"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "ke.co.efootballmarket.app",
+      "sha256_cert_fingerprints": [
+        "CE:1E:89:AA:C9:DD:13:D6:7E:E8:03:74:87:32:3F:09:01:16:AA:0E:70:E8:F3:F2:36:08:D9:E3:F4:62:8E:8A"
+      ]
+    }
+  }
+]

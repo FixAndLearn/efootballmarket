@@ -54,6 +54,7 @@ export function Header() {
     { name: "Middleman", href: "/middleman" },
     { name: "Tournaments", href: "/tournaments" },
     { name: "Scammer Check", href: "/scammer-check" },
+    { name: "Get App", href: "/app" },
   ];
 
   const handleHeaderSearch = (e: React.FormEvent) => {
@@ -354,6 +355,7 @@ export function Header() {
               { name: "Middleman Escrow", href: "/middleman", newTab: false },
               { name: "Scammer Check", href: "/scammer-check", newTab: false },
               { name: "1v1 Tournaments", href: "/tournaments", newTab: false },
+              { name: "Download App (APK)", href: "/app", newTab: false },
               { name: "How Escrow Works ↗", href: "/escrow-guarantee", newTab: true },
               { name: "Services & Support", href: "/contact", newTab: false },
             ].map((link) => (

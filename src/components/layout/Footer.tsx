@@ -59,6 +59,11 @@ export function Footer() {
                   Friday Drops
                 </Link>
               </li>
+              <li>
+                <Link href="/app" className="font-semibold text-sx-green-text hover:underline transition-colors">
+                  Download Mobile App (APK)
+                </Link>
+              </li>
             </ul>
           </div>
 

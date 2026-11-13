@@ -82,8 +82,10 @@ export function LiveNotificationManager() {
     }).catch(() => {});
   }, []);
 
-  // Sync permission state + register SW when granted
+  // Register PWA Service Worker + sync notification permission state
   useEffect(() => {
+    ensureNotificationServiceWorker().catch(() => {});
+
     if (!isBrowserNotificationSupported()) {
       setPermission("unsupported");
       return;
@@ -93,7 +95,6 @@ export function LiveNotificationManager() {
       const p = getBrowserNotificationPermission();
       setPermission(p);
       if (p === "granted") {
-        ensureNotificationServiceWorker().catch(() => {});
         setShowOptInPrompt(false);
       }
     };
