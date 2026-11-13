@@ -16,6 +16,7 @@ import {
   ArrowUpRight,
 } from "lucide-react";
 import { isStandaloneDocPath } from "@/components/legal/StandaloneDocLayout";
+import { Logo } from "@/components/brand/Logo";
 
 interface BeforeInstallPromptEvent extends Event {
   prompt: () => Promise<void>;
@@ -175,8 +176,8 @@ export function AppDropdownWidget({
           >
             <div className="flex items-center justify-between px-4 py-3.5 bg-sx-stone border-b border-sx-border">
               <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-xl bg-[#0B1120] border border-sx-border flex items-center justify-center shrink-0">
-                  <Smartphone className="w-4 h-4 text-emerald-400" />
+                <div className="w-9 h-9 rounded-xl bg-[#061E18] border border-emerald-500/35 p-1 flex items-center justify-center shrink-0">
+                  <Logo size="sm" showText={false} clickable={false} />
                 </div>
                 <div>
                   <div className="flex items-center gap-1.5">

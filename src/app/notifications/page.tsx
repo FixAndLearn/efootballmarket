@@ -97,14 +97,14 @@ function getNotificationBadge(type: string) {
     case "new_message":
     case "message":
       return {
-        icon: <MessageSquare className="w-5 h-5 text-sky-400" />,
-        color: "bg-sky-500/10 border-sky-500/30 text-sky-300",
+        icon: <MessageSquare className="w-5 h-5 text-sx-info-text" />,
+        color: "bg-sx-info-tint border-sx-info-border text-sx-info-text",
         label: "Direct Chat",
       };
     default:
       return {
         icon: <Sparkles className="w-5 h-5 text-sx-green-text" />,
-        color: "bg-brand-500/10 border-brand-500/30 text-sx-green-text",
+        color: "bg-sx-green-tint border-sx-green-border text-sx-green-text",
         label: "System Alert",
       };
   }
@@ -359,7 +359,7 @@ function NotificationsContent() {
             onClick={() => setActiveTab("all")}
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
               activeTab === "all"
-                ? "bg-brand-600 text-white shadow-md shadow-brand-900/50"
+                ? "bg-sx-green text-white shadow-sm"
                 : "bg-pitch-surface text-sx-muted hover:text-sx-ink hover:bg-pitch-card"
             }`}
           >
@@ -370,7 +370,7 @@ function NotificationsContent() {
             onClick={() => setActiveTab("unread")}
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
               activeTab === "unread"
-                ? "bg-brand-600 text-white shadow-md shadow-brand-900/50"
+                ? "bg-sx-green text-white shadow-sm"
                 : "bg-pitch-surface text-sx-muted hover:text-sx-ink hover:bg-pitch-card"
             }`}
           >
@@ -386,7 +386,7 @@ function NotificationsContent() {
             onClick={() => setActiveTab("messages")}
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
               activeTab === "messages"
-                ? "bg-brand-600 text-white shadow-md shadow-brand-900/50"
+                ? "bg-sx-green text-white shadow-sm"
                 : "bg-pitch-surface text-sx-muted hover:text-sx-ink hover:bg-pitch-card"
             }`}
           >
@@ -397,7 +397,7 @@ function NotificationsContent() {
             onClick={() => setActiveTab("escrow")}
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
               activeTab === "escrow"
-                ? "bg-brand-600 text-white shadow-md shadow-brand-900/50"
+                ? "bg-sx-green text-white shadow-sm"
                 : "bg-pitch-surface text-sx-muted hover:text-sx-ink hover:bg-pitch-card"
             }`}
           >
@@ -408,7 +408,7 @@ function NotificationsContent() {
             onClick={() => setActiveTab("orders")}
             className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
               activeTab === "orders"
-                ? "bg-brand-600 text-white shadow-md shadow-brand-900/50"
+                ? "bg-sx-green text-white shadow-sm"
                 : "bg-pitch-surface text-sx-muted hover:text-sx-ink hover:bg-pitch-card"
             }`}
           >

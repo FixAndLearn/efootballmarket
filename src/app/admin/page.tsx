@@ -833,7 +833,7 @@ function AdminControlCenterContent() {
                 onClick={() => setDisputeFilter("open")}
                 className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
                   disputeFilter === "open"
-                    ? "bg-rose-500 text-white shadow"
+                    ? "bg-sx-red text-white shadow"
                     : "text-sx-muted hover:text-sx-ink"
                 }`}
               >
@@ -844,7 +844,7 @@ function AdminControlCenterContent() {
                 onClick={() => setDisputeFilter("all")}
                 className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
                   disputeFilter === "all"
-                    ? "bg-slate-700 text-sx-ink shadow"
+                    ? "bg-sx-contrast text-sx-contrast-fg shadow"
                     : "text-sx-muted hover:text-sx-ink"
                 }`}
               >
@@ -855,7 +855,7 @@ function AdminControlCenterContent() {
                 onClick={() => setDisputeFilter("resolved")}
                 className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
                   disputeFilter === "resolved"
-                    ? "bg-emerald-600 text-white shadow"
+                    ? "bg-sx-green text-white shadow"
                     : "text-sx-muted hover:text-sx-ink"
                 }`}
               >
@@ -936,7 +936,7 @@ function AdminControlCenterContent() {
                               : disp.status === "resolved_seller_release"
                               ? "bg-sx-green-tint text-sx-green-text border-sx-green-border"
                               : disp.status === "resolved_buyer_refund"
-                              ? "bg-blue-500/20 text-blue-300 border-blue-500/40"
+                              ? "bg-sx-info-tint text-sx-info-text border-sx-info-border"
                               : "bg-sx-stone text-sx-ink-soft border-sx-border-strong"
                           }`}
                         >
@@ -962,7 +962,7 @@ function AdminControlCenterContent() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                       {/* Buyer */}
                       <div className="p-4 rounded-2xl bg-pitch-card border border-pitch-border space-y-2">
-                        <span className="text-[10px] uppercase font-bold text-blue-400 tracking-wider flex items-center gap-1.5">
+                        <span className="text-[10px] uppercase font-bold text-sx-info-text tracking-wider flex items-center gap-1.5">
                           <Users className="w-3.5 h-3.5" />
                           <span>Buyer Counterparty</span>
                         </span>
@@ -981,7 +981,7 @@ function AdminControlCenterContent() {
                                 <button
                                   type="button"
                                   onClick={() => handleCopyPhone(buyer.phone_number)}
-                                  className="p-1.5 rounded-lg bg-sx-stone hover:bg-slate-700 text-sx-ink-soft text-[11px]"
+                                  className="p-1.5 rounded-lg bg-sx-stone hover:bg-sx-elevated text-sx-ink-soft text-[11px]"
                                   title="Copy phone"
                                 >
                                   {copiedPhone === buyer.phone_number ? (
@@ -1182,7 +1182,7 @@ function AdminControlCenterContent() {
                                 resolvingDisputeId === disp.id ? resolutionNotes : ""
                               )
                             }
-                            className="text-xs font-bold bg-emerald-600 hover:bg-emerald-500 text-white"
+                            className="text-xs font-bold bg-sx-green hover:bg-sx-green-hover text-white"
                           >
                             <CheckCircle2 className="w-3.5 h-3.5 mr-1" />
                             Release {formatCurrency(order?.total_amount || 0)} to Seller

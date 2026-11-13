@@ -48,7 +48,7 @@ export function ShareStorefrontBar({
         href={waHref}
         target="_blank"
         rel="noopener noreferrer"
-        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#25D366] hover:bg-[#1fb855] text-white text-xs font-bold transition-colors"
+        className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 text-xs font-extrabold transition-colors"
       >
         <Share2 className="w-3.5 h-3.5" />
         <span>Share on WhatsApp</span>

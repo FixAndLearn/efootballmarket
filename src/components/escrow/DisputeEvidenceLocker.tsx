@@ -258,18 +258,18 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
                   <span
                     className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full ${
                       item.uploaderRole === "Buyer"
-                        ? "bg-sky-950/90 text-sky-300 border border-sky-600/50"
-                        : "bg-sx-green-tint text-sx-green-text border border-emerald-600/50"
+                        ? "bg-slate-900/90 text-sky-300 border border-sky-400/50"
+                        : "bg-slate-900/90 text-emerald-300 border border-emerald-400/50"
                     }`}
                   >
                     {item.uploaderRole} Evidence
                   </span>
                 </div>
                 <div className="absolute bottom-2 left-2 right-2 flex items-center justify-between">
-                  <span className="text-[10px] font-semibold text-sx-ink truncate max-w-[85%]">
+                  <span className="text-[10px] font-semibold text-white truncate max-w-[85%]">
                     {item.title}
                   </span>
-                  <Maximize2 className="w-3 h-3 text-sx-muted group-hover:text-sx-ink shrink-0" />
+                  <Maximize2 className="w-3 h-3 text-slate-200 group-hover:text-white shrink-0" />
                 </div>
               </div>
             ))}

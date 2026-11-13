@@ -1130,7 +1130,7 @@ export default function TournamentsPage() {
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs transition-all shadow-lg"
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sx-green hover:bg-sx-green-hover text-white font-bold text-xs transition-all shadow-lg"
                   >
                     <MessageCircle className="w-4 h-4 fill-white" />
                     <span>Join Tournament WhatsApp Room</span>

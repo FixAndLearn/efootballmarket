@@ -18,10 +18,12 @@ export function Logo({
   href = "/",
 }: LogoProps) {
   const rawId = useId();
-  const uid = rawId.replace(/:/g, "");
-  const shieldGradId = `efm-shield-${uid}`;
-  const goldGradId = `efm-gold-${uid}`;
-  const accentGradId = `efm-accent-${uid}`;
+  const uid = rawId.replace(/[^a-zA-Z0-9_-]/g, "");
+  const goldBevelId = `efm-gold-${uid}`;
+  const emeraldFieldId = `efm-field-${uid}`;
+  const ballBodyId = `efm-ball-${uid}`;
+  const glassSheenId = `efm-sheen-${uid}`;
+  const ballClipId = `efm-clip-${uid}`;
 
   const iconDimensions = {
     sm: "w-7 h-7 sm:w-8 sm:h-8",
@@ -38,8 +40,8 @@ export function Logo({
   }[size];
 
   const subtitleSizes = {
-    sm: "text-[7px] sm:text-[8.5px]",
-    md: "text-[7.5px] sm:text-[9px]",
+    sm: "text-[7.5px] sm:text-[8.5px]",
+    md: "text-[8px] sm:text-[9px]",
     lg: "text-[9px] sm:text-[10.5px]",
     xl: "text-[10px] sm:text-xs",
   }[size];
@@ -47,82 +49,152 @@ export function Logo({
   const LogoIcon = (
     <div
       className={cn(
-        "relative shrink-0 group-hover:scale-105 group-hover:-rotate-2 transition-all duration-300 drop-shadow-[0_3px_10px_rgba(37,99,235,0.25)]",
+        "relative shrink-0 group-hover:scale-105 transition-transform duration-200",
         iconDimensions
       )}
     >
       <svg
-        viewBox="0 0 48 48"
+        viewBox="0 0 512 512"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
         className="w-full h-full"
         aria-hidden="true"
       >
         <defs>
-          <linearGradient id={shieldGradId} x1="4" y1="4" x2="44" y2="44" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#1e3a8a" />
-            <stop offset="50%" stopColor="#2563eb" />
-            <stop offset="100%" stopColor="#0284c7" />
+          <linearGradient
+            id={goldBevelId}
+            x1="76"
+            y1="36"
+            x2="436"
+            y2="476"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop offset="0%" stopColor="#FEF08A" />
+            <stop offset="32%" stopColor="#FBBF24" />
+            <stop offset="72%" stopColor="#F59E0B" />
+            <stop offset="100%" stopColor="#B45309" />
           </linearGradient>
 
-          <linearGradient id={goldGradId} x1="0" y1="0" x2="48" y2="48" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#f59e0b" />
-            <stop offset="50%" stopColor="#fbbf24" />
-            <stop offset="100%" stopColor="#d97706" />
+          <linearGradient
+            id={emeraldFieldId}
+            x1="128"
+            y1="68"
+            x2="384"
+            y2="452"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop offset="0%" stopColor="#10B981" />
+            <stop offset="45%" stopColor="#059669" />
+            <stop offset="100%" stopColor="#022C22" />
           </linearGradient>
 
-          <linearGradient id={accentGradId} x1="12" y1="12" x2="36" y2="36" gradientUnits="userSpaceOnUse">
-            <stop offset="0%" stopColor="#10b981" />
-            <stop offset="100%" stopColor="#06b6d4" />
+          <linearGradient
+            id={ballBodyId}
+            x1="168"
+            y1="168"
+            x2="348"
+            y2="368"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop offset="0%" stopColor="#FFFFFF" />
+            <stop offset="70%" stopColor="#F1F5F9" />
+            <stop offset="100%" stopColor="#CBD5E1" />
           </linearGradient>
+
+          <linearGradient
+            id={glassSheenId}
+            x1="96"
+            y1="64"
+            x2="288"
+            y2="260"
+            gradientUnits="userSpaceOnUse"
+          >
+            <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.24" />
+            <stop offset="100%" stopColor="#FFFFFF" stopOpacity="0" />
+          </linearGradient>
+
+          <clipPath id={ballClipId}>
+            <circle cx="256" cy="264" r="100" />
+          </clipPath>
         </defs>
 
-        {/* Outer Hex-Shield Crest */}
+        {/* Crisp Dark Emerald Outer Contour (High contrast on both White & Dark surfaces) */}
         <path
-          d="M24 4L42 10V22C42 33.2 34.3 43.1 24 46C13.7 43.1 6 33.2 6 22V10L24 4Z"
-          fill={`url(#${shieldGradId})`}
-          stroke={`url(#${goldGradId})`}
-          strokeWidth="2.5"
+          d="M256 26L442 92V238C442 356 362 449 256 486C150 449 70 356 70 238V92L256 26Z"
+          fill="#03261B"
+        />
+
+        {/* Metallic Championship Gold Shield Frame */}
+        <path
+          d="M256 38L430 100V237C430 349 354 437 256 473C158 437 82 349 82 237V100L256 38Z"
+          fill={`url(#${goldBevelId})`}
+        />
+
+        {/* Deep Stadium Emerald Interior */}
+        <path
+          d="M256 64L406 117V236C406 334 340 412 256 445C172 412 106 334 106 236V117L256 64Z"
+          fill={`url(#${emeraldFieldId})`}
+        />
+
+        {/* Diagonal Stadium Light Sheen */}
+        <path
+          d="M256 64L406 117V206L114 296C108 277 106 257 106 236V117L256 64Z"
+          fill={`url(#${glassSheenId})`}
+        />
+
+        {/* Top Epic 4-Point Championship Star */}
+        <path
+          d="M256 88L265 110L287 119L265 128L256 150L247 128L225 119L247 110Z"
+          fill="#FEF08A"
+        />
+
+        {/* Classic 3D Telstar Football */}
+        <circle cx="256" cy="276" r="106" fill="#022C22" fillOpacity="0.45" />
+        <g clipPath={`url(#${ballClipId})`} transform="translate(0, 8)">
+          <circle cx="256" cy="264" r="100" fill={`url(#${ballBodyId})`} />
+          <g stroke="#042F22" strokeWidth="7" strokeLinecap="round">
+            <line x1="256" y1="216" x2="256" y2="176" />
+            <line x1="302" y1="249" x2="340" y2="237" />
+            <line x1="284" y1="303" x2="309" y2="337" />
+            <line x1="228" y1="303" x2="203" y2="337" />
+            <line x1="210" y1="249" x2="172" y2="237" />
+          </g>
+          <polygon points="256,214 304,249 285,305 227,305 208,249" fill="#042F22" />
+          <polygon points="256,180 292,154 278,130 234,130 220,154" fill="#042F22" />
+          <polygon points="336,238 368,266 382,232 362,196 344,206" fill="#042F22" />
+          <polygon points="306,333 348,334 332,370 288,376 286,354" fill="#042F22" />
+          <polygon points="206,333 164,334 180,370 224,376 226,354" fill="#042F22" />
+          <polygon points="176,238 144,266 130,232 150,196 168,206" fill="#042F22" />
+        </g>
+        <circle
+          cx="256"
+          cy="272"
+          r="100"
+          stroke={`url(#${goldBevelId})`}
+          strokeWidth="8"
+        />
+
+        {/* Verified Escrow Seal */}
+        <circle cx="332" cy="348" r="38" fill="#03261B" />
+        <circle cx="332" cy="348" r="32" fill={`url(#${goldBevelId})`} />
+        <path
+          d="M316 348L327 359L350 336"
+          stroke="#03261B"
+          strokeWidth="9"
+          strokeLinecap="round"
           strokeLinejoin="round"
         />
-
-        {/* Inner Deep Pitch Field */}
-        <path
-          d="M24 7.5L39 12.5V22C39 31.5 32.5 39.8 24 42.5C15.5 39.8 9 31.5 9 22V12.5L24 7.5Z"
-          fill="#0a1226"
-          fillOpacity="0.9"
-        />
-
-        {/* Football Geometry */}
-        <circle cx="24" cy="22" r="10" stroke={`url(#${accentGradId})`} strokeWidth="1.8" fill="#0e1b38" />
-
-        {/* Central Gold Football Pentagram */}
-        <polygon points="24,17 28,20 26.5,25 21.5,25 20,20" fill={`url(#${goldGradId})`} />
-
-        {/* Ball Seam Lines */}
-        <line x1="24" y1="17" x2="24" y2="12" stroke="#38bdf8" strokeWidth="1.3" strokeLinecap="round" />
-        <line x1="28" y1="20" x2="32.5" y2="18.5" stroke="#38bdf8" strokeWidth="1.3" strokeLinecap="round" />
-        <line x1="26.5" y1="25" x2="31" y2="28" stroke="#38bdf8" strokeWidth="1.3" strokeLinecap="round" />
-        <line x1="21.5" y1="25" x2="17" y2="28" stroke="#38bdf8" strokeWidth="1.3" strokeLinecap="round" />
-        <line x1="20" y1="20" x2="15.5" y2="18.5" stroke="#38bdf8" strokeWidth="1.3" strokeLinecap="round" />
-
-        {/* Escrow Vault Lock at Bottom of Crest */}
-        <g transform="translate(19, 32)">
-          <rect x="1.5" y="4" width="7" height="5" rx="1.5" fill="#f59e0b" />
-          <path
-            d="M3 4V2.5C3 1.67 3.67 1 4.5 1H5.5C6.33 1 7 1.67 7 2.5V4"
-            stroke="#fbbf24"
-            strokeWidth="1.3"
-            strokeLinecap="round"
-          />
-          <circle cx="5" cy="6.5" r="0.8" fill="#090d16" />
-        </g>
       </svg>
     </div>
   );
 
   const content = (
-    <div className={cn("inline-flex items-center gap-2 sm:gap-2.5 select-none min-w-0 shrink-0", className)}>
+    <div
+      className={cn(
+        "inline-flex items-center gap-2 sm:gap-2.5 select-none min-w-0 shrink-0",
+        className
+      )}
+    >
       {LogoIcon}
       {showText && (
         <div className="flex flex-col justify-center leading-none min-w-0">
@@ -136,7 +208,7 @@ export function Logo({
           </span>
           <span
             className={cn(
-              "uppercase tracking-wider text-sx-green-text font-bold leading-none mt-0.5 whitespace-nowrap",
+              "uppercase tracking-wider text-sx-green-text font-extrabold leading-none mt-0.5 whitespace-nowrap",
               subtitleSizes
             )}
           >
@@ -149,7 +221,11 @@ export function Logo({
 
   if (clickable && href) {
     return (
-      <Link href={href} className="group inline-flex items-center focus:outline-none" aria-label="eFootballMarket Home">
+      <Link
+        href={href}
+        className="group inline-flex items-center focus:outline-none"
+        aria-label="eFootballMarket Home"
+      >
         {content}
       </Link>
     );

@@ -146,13 +146,13 @@ export function BuildLabTool({ onFindPlayerInMarket }: BuildLabToolProps) {
       {/* Player Picker Strip */}
       <div className="space-y-2">
         <div className="relative">
-          <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+          <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
           <input
             type="search"
             value={playerSearch}
             onChange={(e) => setPlayerSearch(e.target.value)}
             placeholder="Pick Epic / Big Time card (Rummenigge, Messi, Vieira...)"
-            className="w-full h-9 pl-8 pr-3 rounded-xl bg-slate-900 border border-slate-800 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-400"
+            className="w-full h-9 pl-8 pr-3 rounded-xl bg-slate-900 border border-slate-700 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-emerald-400"
           />
         </div>
 
@@ -209,11 +209,11 @@ export function BuildLabTool({ onFindPlayerInMarket }: BuildLabToolProps) {
             <p className="text-[10px] uppercase text-slate-400 font-bold">Points Left</p>
             <p
               className={`text-lg font-mono font-black ${
-                computed.remainingPoints === 0 ? "text-slate-400" : "text-emerald-400"
+                computed.remainingPoints === 0 ? "text-slate-300" : "text-emerald-400"
               }`}
             >
               {computed.remainingPoints}
-              <span className="text-xs text-slate-500">/{player.maxPoints}</span>
+              <span className="text-xs text-slate-400">/{player.maxPoints}</span>
             </p>
           </div>
         </div>
@@ -296,7 +296,7 @@ export function BuildLabTool({ onFindPlayerInMarket }: BuildLabToolProps) {
                   <p className={`text-[10px] font-extrabold ${cat.color} truncate`}>
                     {cat.label}
                   </p>
-                  <p className="text-[10px] text-slate-500 font-mono">
+                  <p className="text-[10px] text-slate-400 font-mono">
                     +{lvl} ({calcCategoryPointCost(lvl)}p)
                   </p>
                 </div>

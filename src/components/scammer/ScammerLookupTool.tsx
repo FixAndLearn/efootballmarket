@@ -124,14 +124,14 @@ export function ScammerLookupTool() {
       {searched && (
         <div className="pt-2 space-y-3">
           {matches.length > 0 ? (
-            <div className="p-5 rounded-xl bg-red-950/40 border-2 border-red-500/60 space-y-4">
+            <div className="p-5 rounded-xl bg-sx-red-tint border-2 border-sx-red-border space-y-4">
               <div className="flex items-start gap-3">
                 <AlertTriangle className="w-6 h-6 text-sx-red-text shrink-0 mt-0.5" />
                 <div>
                   <h3 className="text-base font-bold text-sx-red-text">
                     High Risk: {matches.length} Verified Incident {matches.length === 1 ? "Report" : "Reports"} Found
                   </h3>
-                  <p className="text-xs text-red-200/80 mt-0.5">
+                  <p className="text-xs font-medium text-sx-ink-soft mt-0.5">
                     Do NOT send direct M-Pesa transfers to this number or handle.
                   </p>
                 </div>

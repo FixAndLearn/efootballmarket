@@ -21,17 +21,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(
 
     const variantStyles = {
       primary:
-        "bg-sx-green text-white hover:bg-sx-green-hover focus:ring-sx-green",
+        "bg-sx-green text-white border border-emerald-300/30 shadow-sm hover:bg-sx-green-hover focus:ring-sx-green",
       secondary:
         "bg-sx-contrast text-sx-contrast-fg hover:bg-sx-contrast-hover focus:ring-sx-ink",
       outline:
-        "border border-sx-border-strong bg-sx-canvas text-sx-ink hover:bg-sx-stone hover:border-sx-ink focus:ring-sx-ink",
+        "border border-sx-border-strong bg-sx-stone/70 text-sx-ink hover:bg-sx-elevated hover:border-sx-ink focus:ring-sx-ink",
       ghost:
         "text-sx-ink hover:bg-sx-stone focus:ring-sx-ink",
       danger:
-        "bg-sx-red text-white hover:opacity-90 focus:ring-sx-red",
+        "bg-sx-red text-white border border-red-300/30 hover:opacity-95 focus:ring-sx-red",
       gold:
-        "bg-sx-green text-white hover:bg-sx-green-hover focus:ring-sx-green",
+        "bg-sx-green text-white border border-emerald-300/30 shadow-sm hover:bg-sx-green-hover focus:ring-sx-green",
     };
 
     return (

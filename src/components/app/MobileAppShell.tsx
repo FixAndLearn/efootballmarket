@@ -23,6 +23,7 @@ import {
 import { BuildLabTool } from "@/components/app/pro/BuildLabTool";
 import { SquadPitchBuilder } from "@/components/app/pro/SquadPitchBuilder";
 import { PackSimulatorAndVsLab } from "@/components/app/pro/PackSimulatorAndVsLab";
+import { Logo } from "@/components/brand/Logo";
 import {
   Flame,
   Radio,
@@ -506,8 +507,8 @@ export function MobileAppShell({
       <header className="sticky top-0 z-40 bg-[#050912]/95 backdrop-blur-xl border-b border-slate-800/80 px-3.5 py-2.5">
         <div className="max-w-md mx-auto flex items-center justify-between gap-2">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500/25 to-amber-500/20 border border-emerald-400/50 flex items-center justify-center shrink-0">
-              <ShieldCheck className="w-4 h-4 text-emerald-400" />
+            <div className="w-8 h-8 rounded-xl bg-[#061E18] border border-emerald-500/40 p-0.5 flex items-center justify-center shrink-0">
+              <Logo size="sm" showText={false} clickable={false} />
             </div>
             <div className="min-w-0">
               <div className="flex items-center gap-1.5">
@@ -518,7 +519,7 @@ export function MobileAppShell({
                   PRO v2.0
                 </span>
               </div>
-              <p className="text-[10px] text-slate-400 flex items-center gap-1">
+              <p className="text-[10px] text-slate-300 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                 <span>Market · eFHUB Lab · Till 1572931</span>
               </p>
@@ -601,13 +602,13 @@ export function MobileAppShell({
             {/* Search + View Toggle */}
             <div className="flex items-center gap-2">
               <div className="relative flex-1">
-                <Search className="w-3.5 h-3.5 text-slate-500 absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-3.5 h-3.5 text-slate-400 absolute left-3 top-1/2 -translate-y-1/2" />
                 <input
                   type="search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
                   placeholder="Search Gullit, 3200 OVR, Messi..."
-                  className="w-full h-9 pl-8 pr-3 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
+                  className="w-full h-9 pl-8 pr-3 rounded-xl bg-slate-900/95 border border-slate-700 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-emerald-400"
                 />
               </div>
 
@@ -1214,7 +1215,7 @@ export function MobileAppShell({
                   value={scanInput}
                   onChange={(e) => setScanInput(e.target.value)}
                   placeholder="Scan 07XX / 01XX number or @handle..."
-                  className="flex-1 h-10 px-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-400"
+                  className="flex-1 h-10 px-3 rounded-xl bg-slate-950 border border-slate-700 text-xs text-white placeholder:text-slate-400 focus:outline-none focus:border-amber-400"
                 />
                 <button
                   type="submit"
@@ -1288,7 +1289,7 @@ export function MobileAppShell({
                 My Availability Pings ({watchedPings.length}) &amp; Offers ({watchedOffers.length})
               </p>
               {watchedPings.length === 0 && watchedOffers.length === 0 ? (
-                <p className="text-xs text-slate-500">
+                <p className="text-xs text-slate-300">
                   Tap <strong>Available?</strong> or <strong>Offer</strong> on any squad in Market to track live seller responses here.
                 </p>
               ) : (
@@ -1433,7 +1434,7 @@ export function MobileAppShell({
                       <Loader2 className="w-5 h-5 animate-spin text-emerald-400" />
                     </div>
                   ) : buyerOrders.length === 0 && sellerOrders.length === 0 ? (
-                    <p className="text-xs text-slate-500">
+                    <p className="text-xs text-slate-300">
                       No active escrow rooms yet. Any squad you buy or sell appears here.
                     </p>
                   ) : (

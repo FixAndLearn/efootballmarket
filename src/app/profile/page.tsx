@@ -571,7 +571,7 @@ function ProfileContent() {
                 const text = `Join me on eFootballMarket.co.ke to buy and sell verified Konami eFootball squads safely with Safaricom M-Pesa Escrow (Till 1572931): https://www.efootballmarket.co.ke/register?ref=${encodeURIComponent(username || "you")}`;
                 window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
               }}
-              className="w-full py-2.5 px-4 rounded-lg bg-[#25D366] hover:bg-[#1fb855] text-white font-bold flex items-center justify-center gap-2 text-xs transition-colors"
+              className="w-full py-2.5 px-4 rounded-lg bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-extrabold flex items-center justify-center gap-2 text-xs transition-colors"
             >
               <MessageCircle className="w-4 h-4" />
               <span>Share Invite on WhatsApp</span>

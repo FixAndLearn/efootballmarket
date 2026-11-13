@@ -430,7 +430,7 @@ function MiddlemanContent() {
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-sm shadow-xl transition-all"
+                  className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-sx-green hover:bg-sx-green-hover text-white font-bold text-sm shadow-xl transition-all"
                 >
                   <MessageCircle className="w-5 h-5 fill-white" />
                   <span>Send Contract to WhatsApp Group / Counterparty</span>
@@ -668,7 +668,7 @@ function MiddlemanContent() {
                   href={`https://wa.me/?text=${encodeURIComponent(generatedWhatsAppGroupMessage)}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs shadow-lg transition-all"
+                  className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sx-green hover:bg-sx-green-hover text-white font-bold text-xs shadow-lg transition-all"
                 >
                   <MessageCircle className="w-4 h-4 fill-white" />
                   <span>Share Directly to WhatsApp</span>

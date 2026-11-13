@@ -109,13 +109,14 @@ export function AppDownloadClient() {
             </div>
 
             <div className="flex items-center gap-4">
-              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl bg-[#0B1120] border border-sx-border p-2.5 flex items-center justify-center shrink-0 shadow-md">
+              <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-2xl overflow-hidden border border-emerald-500/40 shrink-0 shadow-md">
                 <Image
                   src="/icon-512.png"
                   alt="eFootball Market App Icon"
-                  width={64}
-                  height={64}
-                  className="w-full h-full object-contain"
+                  width={80}
+                  height={80}
+                  unoptimized
+                  className="w-full h-full object-cover"
                 />
               </div>
               <div>

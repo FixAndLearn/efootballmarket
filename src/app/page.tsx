@@ -440,7 +440,7 @@ export default async function HomePage() {
                     <Link
                       key={pill.label}
                       href={pill.href}
-                      className="min-h-[32px] inline-flex items-center px-3 py-1 rounded-full bg-sx-canvas border border-sx-border hover:border-sx-green text-sx-ink font-medium transition-colors"
+                      className="min-h-[32px] inline-flex items-center px-3 py-1 rounded-full bg-sx-stone/80 hover:bg-sx-elevated border border-sx-border-strong/70 hover:border-sx-green-text text-sx-ink font-semibold transition-colors"
                     >
                       {pill.label}
                     </Link>
