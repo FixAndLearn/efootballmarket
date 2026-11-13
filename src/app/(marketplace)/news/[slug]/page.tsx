@@ -15,9 +15,18 @@ import {
   ShieldCheck,
 } from "lucide-react";
 import { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import { notFound } from "next/navigation";
+
+function isOptimizableImage(src: string): boolean {
+  return (
+    src.startsWith("/") ||
+    src.includes(".supabase.co/") ||
+    src.includes("images.unsplash.com")
+  );
+}
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -105,11 +114,13 @@ function renderStructuredArticleContent(raw: string): React.ReactNode[] {
           className="my-6 rounded-xl overflow-hidden border border-sx-border bg-sx-stone"
         >
           <div className="aspect-[16/10] w-full relative overflow-hidden bg-sx-elevated">
-            <img
+            <Image
               src={src}
               alt={caption || "eFootballMarket Guide Photo"}
-              loading="lazy"
-              className="w-full h-full object-cover"
+              fill
+              sizes="(max-width: 768px) 100vw, 768px"
+              unoptimized={!isOptimizableImage(src)}
+              className="object-cover"
             />
           </div>
           {caption && (
@@ -365,10 +376,14 @@ export default async function NewsArticlePage({
       <article className="rounded-lg bg-sx-canvas border border-sx-border overflow-hidden">
         {article.cover_image_url && (
           <div className="h-56 sm:h-72 w-full bg-sx-stone relative overflow-hidden border-b border-sx-border">
-            <img
+            <Image
               src={article.cover_image_url}
               alt={article.title}
-              className="w-full h-full object-cover"
+              fill
+              priority
+              sizes="(max-width: 768px) 100vw, 860px"
+              unoptimized={!isOptimizableImage(article.cover_image_url)}
+              className="object-cover"
             />
           </div>
         )}
@@ -497,12 +512,14 @@ export default async function NewsArticlePage({
               >
                 <div>
                   {rel.cover_image_url && (
-                    <div className="h-36 w-full bg-sx-stone overflow-hidden border-b border-sx-border">
-                      <img
+                    <div className="relative h-36 w-full bg-sx-stone overflow-hidden border-b border-sx-border">
+                      <Image
                         src={rel.cover_image_url}
                         alt={rel.title}
-                        loading="lazy"
-                        className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-300"
+                        fill
+                        sizes="(max-width: 768px) 100vw, 280px"
+                        unoptimized={!isOptimizableImage(rel.cover_image_url)}
+                        className="object-cover group-hover:scale-[1.03] transition-transform duration-300"
                       />
                     </div>
                   )}

@@ -405,7 +405,7 @@ export default function RegisterTournamentPage() {
         </div>
       </header>
 
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 space-y-6">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 space-y-6">
         {/* Banner */}
         <div className="rounded-3xl bg-sx-stone border border-sx-amber-border p-6 sm:p-8 shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-sx-amber-tint rounded-full blur-3xl pointer-events-none" />
@@ -776,7 +776,7 @@ export default function RegisterTournamentPage() {
                           }`}
                         >
                           {paymentMethod === "mpesa_stk" && (
-                            <div className="w-1.5 h-1.5 rounded-full bg-black" />
+                            <div className="w-1.5 h-1.5 rounded-full bg-white" />
                           )}
                         </div>
                         <div className="flex-1">
@@ -823,7 +823,7 @@ export default function RegisterTournamentPage() {
                               }`}
                             >
                               {paymentMethod === "wallet" && hasEnough && (
-                                <div className="w-1.5 h-1.5 rounded-full bg-black" />
+                                <div className="w-1.5 h-1.5 rounded-full bg-white" />
                               )}
                             </div>
                             <div className="flex-1">
@@ -881,7 +881,7 @@ export default function RegisterTournamentPage() {
             </div>
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }

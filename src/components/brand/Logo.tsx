@@ -132,7 +132,7 @@ export function Logo({
               titleSizes
             )}
           >
-            eFootball<span className="text-amber-600 dark:text-amber-400">Market</span>
+            eFootball<span className="text-sx-amber-text">Market</span>
           </span>
           <span
             className={cn(

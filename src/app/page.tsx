@@ -567,6 +567,8 @@ export default async function HomePage() {
               </div>
             </div>
           )}
+
+          <RecentlyViewedRow title="Continue Inspecting" minItems={1} />
         </div>
       </section>
 

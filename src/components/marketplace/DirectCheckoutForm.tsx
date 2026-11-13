@@ -59,6 +59,24 @@ export function DirectCheckoutForm({
   const [createdOrderId, setCreatedOrderId] = useState("");
   const [countdown, setCountdown] = useState(60);
 
+  // Restore saved checkout draft if guest signed in and returned
+  useEffect(() => {
+    try {
+      const saved = sessionStorage.getItem(`efm_checkout_draft_${listing.id}`);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (parsed?.phoneNumber) {
+          setPhoneNumber((prev) => prev || String(parsed.phoneNumber));
+        }
+        if (parsed?.buyerName) {
+          setBuyerName((prev) => prev || String(parsed.buyerName));
+        }
+      }
+    } catch {
+      // ignore storage errors
+    }
+  }, [listing.id]);
+
   useEffect(() => {
     if (!offerId) return;
     let isMounted = true;
@@ -265,6 +283,15 @@ export function DirectCheckoutForm({
   const handleTriggerPayment = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    try {
+      sessionStorage.setItem(
+        `efm_checkout_draft_${listing.id}`,
+        JSON.stringify({ phoneNumber, buyerName })
+      );
+    } catch {
+      // ignore storage errors
+    }
 
     if (!currentUserId) {
       router.push(loginHref);
@@ -569,9 +596,23 @@ export function DirectCheckoutForm({
               </div>
 
               {error && (
-                <div className="p-3.5 rounded-lg bg-sx-red-tint border border-sx-red-border text-sx-red-text text-xs flex items-start gap-2">
-                  <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
-                  <span>{error}</span>
+                <div className="p-3.5 rounded-lg bg-sx-red-tint border border-sx-red-border text-sx-red-text text-xs space-y-2">
+                  <div className="flex items-start gap-2">
+                    <AlertCircle className="w-4 h-4 shrink-0 mt-0.5" />
+                    <span>{error}</span>
+                  </div>
+                  {stkStatus === "failed" && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setError("");
+                        setPaymentMethod("manual");
+                      }}
+                      className="inline-flex items-center gap-1 px-3 py-1.5 rounded-md bg-sx-canvas border border-sx-border-strong text-sx-ink font-semibold hover:border-sx-ink transition-colors cursor-pointer"
+                    >
+                      <span>Pay Manually via Till 1572931 Instead &rarr;</span>
+                    </button>
+                  )}
                 </div>
               )}
 
@@ -583,7 +624,11 @@ export function DirectCheckoutForm({
                 isLoading={loading}
               >
                 <Smartphone className="w-4 h-4" />
-                <span>Pay {formatCurrency(payablePrice, listing.currency)} via M-Pesa</span>
+                <span>
+                  {currentUserId
+                    ? `Pay ${formatCurrency(payablePrice, listing.currency)} via M-Pesa`
+                    : `Sign In & Pay ${formatCurrency(payablePrice, listing.currency)} via M-Pesa`}
+                </span>
               </Button>
             </form>
           ) : (

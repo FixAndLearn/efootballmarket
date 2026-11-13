@@ -101,7 +101,7 @@ export default function CompareSquadsPage() {
         <div className="space-y-1.5">
           <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-sx-green-text font-bold">
             <Scale className="w-3.5 h-3.5" />
-            <span>Side-by-Side Telemetry Matrix</span>
+            <span>Side-by-Side Squad Comparison</span>
           </div>
           <h1 className="text-2xl sm:text-3xl font-extrabold text-sx-ink font-display tracking-tight">
             Compare Squads ({items.length}/{MAX_COMPARE_SQUADS})
@@ -134,7 +134,7 @@ export default function CompareSquadsPage() {
             <thead>
               <tr className="border-b border-sx-border bg-sx-subtle">
                 <th className="w-44 p-4 align-top font-mono text-[11px] uppercase tracking-wider text-sx-muted">
-                  Telemetry Spec
+                  Squad Spec
                 </th>
                 {items.map((sq) => {
                   const ctx = getListingPriceContext(sq);

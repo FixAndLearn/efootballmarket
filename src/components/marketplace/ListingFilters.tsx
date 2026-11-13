@@ -549,8 +549,17 @@ export function ListingFilters() {
 
       {/* Mobile Filter Drawer */}
       {isMobileDrawerOpen && (
-        <div className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/55 backdrop-blur-xs">
-          <div className="w-full max-w-lg bg-sx-canvas border-t sm:border border-sx-border rounded-t-2xl sm:rounded-xl overflow-hidden flex flex-col max-h-[85vh]">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Filter and compare squads"
+          onClick={() => setIsMobileDrawerOpen(false)}
+          className="fixed inset-0 z-[100] flex items-end sm:items-center justify-center bg-black/55 backdrop-blur-sm"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-lg bg-sx-canvas border-t sm:border border-sx-border rounded-t-2xl sm:rounded-xl overflow-hidden flex flex-col max-h-[85vh]"
+          >
             <div className="p-4 border-b border-sx-border flex items-center justify-between">
               <h3 className="text-sm font-bold text-sx-ink">Filter &amp; Compare Squads</h3>
               <button

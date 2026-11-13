@@ -12,7 +12,7 @@ import { formatCurrency } from "@/lib/utils";
 export function SquadCompareTray() {
   const pathname = usePathname() || "/";
   const { items, count, remove, clear } = useCompareSquads();
-  const [minimized, setMinimized] = useState(false);
+  const [minimized, setMinimized] = useState(true);
 
   if (
     count === 0 ||
@@ -25,8 +25,14 @@ export function SquadCompareTray() {
     return null;
   }
 
+  const isListingDetail = pathname.startsWith("/listings/");
+
   return (
-    <div className="fixed bottom-16 md:bottom-5 left-3 sm:left-5 z-40 max-w-[calc(100vw-5.5rem)] sm:max-w-md">
+    <div
+      className={`fixed bottom-20 md:bottom-5 left-3 sm:left-5 z-40 max-w-[calc(100vw-5.5rem)] sm:max-w-md ${
+        isListingDetail ? "hidden lg:block" : ""
+      }`}
+    >
       {minimized ? (
         <button
           type="button"

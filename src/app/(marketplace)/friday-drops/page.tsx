@@ -55,7 +55,7 @@ export default async function FridayDropsPage() {
         </div>
       </div>
 
-      <main className="flex-1">
+      <div className="flex-1">
         <FridayDropsSection listings={listings} />
 
         <section className="py-12 border-t border-sx-border bg-sx-subtle">
@@ -113,7 +113,7 @@ export default async function FridayDropsPage() {
             </div>
           </div>
         </section>
-      </main>
+      </div>
     </div>
   );
 }

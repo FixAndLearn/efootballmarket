@@ -6,7 +6,13 @@ const config: Config = {
     "./src/components/**/*.{js,ts,jsx,tsx,mdx}",
     "./src/app/**/*.{js,ts,jsx,tsx,mdx}",
   ],
-  darkMode: "media",
+  darkMode: [
+    "variant",
+    [
+      "@media (prefers-color-scheme: dark) { &:not([data-theme='light'] *) }",
+      "&:is([data-theme='dark'] *)",
+    ],
+  ],
   theme: {
     extend: {
       colors: {

@@ -580,7 +580,7 @@ export default function CreateListingPage() {
                     <button
                       type="button"
                       onClick={() => handleSetPrimaryCover(idx)}
-                      className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded bg-black/70 text-white text-[10px] font-semibold opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                      className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded bg-black/75 text-white text-[10px] font-semibold opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity cursor-pointer"
                     >
                       Set Cover
                     </button>

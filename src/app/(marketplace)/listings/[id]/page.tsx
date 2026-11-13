@@ -29,6 +29,7 @@ import {
 } from "@/components/marketplace/RecentlyViewedRow";
 import { ListingActionsBar } from "@/components/marketplace/ListingActionsBar";
 import { ListingStickyBottomBar } from "@/components/marketplace/ListingStickyBottomBar";
+import { KonamiTransferChecklistTrigger } from "@/components/escrow/KonamiTransferChecklistModal";
 import { AdBanner } from "@/components/common/AdBanner";
 import { Button } from "@/components/ui/Button";
 import { DetailTabLink } from "@/components/ui/DetailTabLink";
@@ -472,19 +473,14 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
               </div>
             </div>
 
-            {/* Clean Handover Reference Bar (Opens Full Step-by-Step Guides in New Tab) */}
+            {/* Clean Handover Reference Bar (Interactive 6-Step Checklist + Full Guides) */}
             <div className="p-4 rounded-xl bg-sx-subtle border border-sx-border flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs">
               <div className="flex items-center gap-2 text-sx-ink font-semibold">
                 <ShieldCheck className="w-4 h-4 text-sx-green-text shrink-0" />
-                <span>24-Hour Buyer Handover &amp; Clean Konami ID Guides</span>
+                <span>24-Hour Buyer Handover &amp; Clean Konami ID Protocol</span>
               </div>
               <div className="flex flex-wrap items-center gap-2">
-                <DetailTabLink
-                  href="/news/how-to-verify-clean-konami-id-before-releasing-escrow"
-                  variant="pill"
-                >
-                  Clean ID Checklist
-                </DetailTabLink>
+                <KonamiTransferChecklistTrigger className="shadow-none py-1 rounded-full" />
                 <DetailTabLink href="/dispute-policy" variant="pill">
                   Refund &amp; Dispute Rules
                 </DetailTabLink>

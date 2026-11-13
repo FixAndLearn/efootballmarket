@@ -378,6 +378,7 @@ export function AdminBloggerStudio({
             <div className="rounded-xl bg-sx-canvas border border-sx-border p-5 space-y-4">
               {coverImageUrl && (
                 <div className="aspect-[16/9] w-full rounded-lg overflow-hidden bg-sx-stone border border-sx-border">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={coverImageUrl}
                     alt={title || "Cover preview"}

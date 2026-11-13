@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { ShieldCheck, CheckCircle2, Circle, AlertTriangle, ExternalLink, X, Lock, Key, Smartphone, HelpCircle } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { ShieldCheck, CheckCircle2, Circle, AlertTriangle, ExternalLink, X } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 
 interface ChecklistStep {
@@ -58,6 +58,15 @@ interface Props {
 export function KonamiTransferChecklistModal({ isOpen, onClose }: Props) {
   const [checkedSteps, setCheckedSteps] = useState<Record<string, boolean>>({});
 
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isOpen, onClose]);
+
   if (!isOpen) return null;
 
   const toggleStep = (id: string) => {
@@ -71,8 +80,17 @@ export function KonamiTransferChecklistModal({ isOpen, onClose }: Props) {
   const progressPercent = Math.round((completedCount / CHECKLIST_STEPS.length) * 100);
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-      <div className="w-full max-w-2xl bg-pitch-surface border border-pitch-border rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+    <div
+      role="dialog"
+      aria-modal="true"
+      aria-label="Konami ID Account Transfer Checklist"
+      onClick={onClose}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in"
+    >
+      <div
+        onClick={(e) => e.stopPropagation()}
+        className="w-full max-w-2xl bg-sx-canvas border border-sx-border rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+      >
         {/* Modal Header */}
         <div className="p-6 border-b border-pitch-border/80 bg-pitch-card/60 flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
@@ -128,7 +146,7 @@ export function KonamiTransferChecklistModal({ isOpen, onClose }: Props) {
             <p className="leading-relaxed text-sx-ink-soft text-xs">
               In eFootball Mobile, Google Play accounts cannot be transferred cleanly. If an account has ever been linked to Google Play, the previous owner can <strong>log back in and pull back the account at any time</strong> using Google sign-in, even after you change the Konami ID email and password!
             </p>
-            <div className="p-2.5 rounded-xl bg-black/40 border border-sx-red-border text-[11px] font-mono text-sx-red-text">
+            <div className="p-2.5 rounded-xl bg-sx-canvas border border-sx-red-border text-[11px] font-mono text-sx-red-text">
               <strong>How to check in eFootball Mobile:</strong> Go to Extras &rarr; Support &rarr; Link Data &rarr; Look at &quot;Google Play Games&quot;. It MUST say <strong>&quot;Not Linked&quot;</strong>. If it says &quot;Linked&quot;, <strong>DO NOT ACCEPT IT</strong> and open a dispute immediately for escrow refund investigation.
             </div>
           </div>

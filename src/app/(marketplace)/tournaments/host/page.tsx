@@ -189,7 +189,7 @@ export default function HostTournamentPage() {
       </div>
 
       {/* Main Content Area - Full-page Scrollable (Zero Modal Obstruction) */}
-      <main className="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-6 py-8 space-y-8 pb-36 sm:pb-24">
+      <div className="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-6 py-8 space-y-8 pb-36 sm:pb-24">
         {/* Page Header Banner */}
         <div className="rounded-3xl bg-sx-stone border border-sx-amber-border p-6 sm:p-8 shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-sx-amber-tint rounded-full blur-3xl pointer-events-none" />
@@ -633,7 +633,7 @@ export default function HostTournamentPage() {
             </p>
           </div>
         </form>
-      </main>
+      </div>
     </div>
   );
 }

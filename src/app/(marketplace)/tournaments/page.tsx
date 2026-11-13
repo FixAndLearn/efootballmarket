@@ -729,7 +729,7 @@ export default function TournamentsPage() {
               <div className="relative z-10 flex flex-col sm:flex-row items-center justify-between gap-6 text-center sm:text-left">
                 <div className="flex items-center gap-4">
                   <div className="w-16 h-16 rounded-2xl bg-black/20 backdrop-blur-sm flex items-center justify-center shrink-0">
-                    <Crown className="w-10 h-10 text-sx-ink fill-white" />
+                    <Crown className="w-10 h-10 text-amber-950 fill-white" />
                   </div>
                   <div>
                     <span className="text-xs font-black uppercase tracking-wider text-black/70">
@@ -750,7 +750,7 @@ export default function TournamentsPage() {
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-5 py-3 rounded-xl bg-black text-white hover:bg-sx-subtle font-bold text-xs shadow-lg transition-all flex items-center gap-2 shrink-0"
+                  className="px-5 py-3 rounded-xl bg-zinc-950 text-white hover:bg-zinc-800 font-bold text-xs shadow-lg transition-all flex items-center gap-2 shrink-0"
                 >
                   <MessageCircle className="w-4 h-4" />
                   <span>Verify Payout Receipt</span>
@@ -1227,7 +1227,7 @@ export default function TournamentsPage() {
                                 }`}
                               >
                                 {paymentMethod === "wallet" && hasEnough && (
-                                  <div className="w-1.5 h-1.5 rounded-full bg-black" />
+                                  <div className="w-1.5 h-1.5 rounded-full bg-white" />
                                 )}
                               </div>
                               <div className="flex-1">
@@ -1275,7 +1275,7 @@ export default function TournamentsPage() {
                             }`}
                           >
                             {paymentMethod === "mpesa_till" && (
-                              <div className="w-1.5 h-1.5 rounded-full bg-black" />
+                              <div className="w-1.5 h-1.5 rounded-full bg-white" />
                             )}
                           </div>
                           <div className="flex-1">

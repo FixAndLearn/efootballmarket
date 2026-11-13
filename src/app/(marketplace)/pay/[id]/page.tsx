@@ -1,3 +1,4 @@
+import { Suspense } from "react";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ListingService } from "@/services/listingService";
 import { DirectCheckoutForm } from "@/components/marketplace/DirectCheckoutForm";
@@ -58,12 +59,22 @@ export default async function DirectPayPage({ params }: DirectPayPageProps) {
         <strong className="text-sx-ink">Before you pay (Till 1572931 · KES 0 extra buyer fee):</strong>{" "}
         Safaricom M-Pesa transfers your payment to eFootballMarket Kenya&apos;s business Buy Goods Till 1572931, where we hold the funds during the seller&apos;s 12-hour delivery window and your 24-hour login inspection (which starts when credentials are submitted). Note that Konami&apos;s Terms of Use restrict account transfers and publisher rules apply after handover.
       </div>
-      <DirectCheckoutForm
-        listing={listing}
-        currentUserId={user?.id}
-        currentUserPhone={profile?.phone_number || ""}
-        currentUserName={profile?.first_name ? `${profile.first_name} ${profile.last_name || ""}`.trim() : profile?.username || ""}
-      />
+      <Suspense
+        fallback={
+          <div className="w-full max-w-xl mx-auto h-96 rounded-2xl bg-sx-stone border border-sx-border animate-pulse" />
+        }
+      >
+        <DirectCheckoutForm
+          listing={listing}
+          currentUserId={user?.id}
+          currentUserPhone={profile?.phone_number || ""}
+          currentUserName={
+            profile?.first_name
+              ? `${profile.first_name} ${profile.last_name || ""}`.trim()
+              : profile?.username || ""
+          }
+        />
+      </Suspense>
     </div>
   );
 }

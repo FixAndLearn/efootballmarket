@@ -149,8 +149,31 @@ function MiddlemanContent() {
     e.preventDefault();
     setFormError("");
 
-    if (!buyerPhone || !sellerPhone || !dealTitle || !dealAmount) {
+    if (!buyerPhone || !sellerPhone || !dealTitle.trim() || !dealAmount) {
       setFormError("Please fill in all required fields.");
+      return;
+    }
+
+    if (numAmount < 100) {
+      setFormError("Minimum Middleman escrow contract amount is KES 100.");
+      return;
+    }
+
+    const buyerNorm = normalizePhoneNumber(buyerPhone);
+    const sellerNorm = normalizePhoneNumber(sellerPhone);
+
+    if (!buyerNorm.isValid) {
+      setFormError("Enter a valid Kenyan mobile number for the Buyer (e.g. 0712 345 678).");
+      return;
+    }
+
+    if (!sellerNorm.isValid) {
+      setFormError("Enter a valid Kenyan mobile number for the Seller (e.g. 0722 123 456).");
+      return;
+    }
+
+    if (buyerNorm.international === sellerNorm.international) {
+      setFormError("Buyer and Seller phone numbers must be two different mobile numbers.");
       return;
     }
 
@@ -160,12 +183,12 @@ function MiddlemanContent() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          buyer_name: buyerName || "Verified Buyer",
-          buyer_phone: normalizePhoneNumber(buyerPhone).international,
-          seller_name: sellerName || "Verified Seller",
-          seller_phone: normalizePhoneNumber(sellerPhone).international,
-          deal_title: dealTitle,
-          deal_description: dealDescription,
+          buyer_name: buyerName.trim() || "Verified Buyer",
+          buyer_phone: buyerNorm.international,
+          seller_name: sellerName.trim() || "Verified Seller",
+          seller_phone: sellerNorm.international,
+          deal_title: dealTitle.trim(),
+          deal_description: dealDescription.trim(),
           item_amount_kes: numAmount,
         }),
       });

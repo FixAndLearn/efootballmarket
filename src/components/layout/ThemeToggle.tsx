@@ -17,7 +17,21 @@ export function ThemeToggle({ compact = false }: { compact?: boolean }) {
       if (attr === "light") return false;
       return window.matchMedia("(prefers-color-scheme: dark)").matches;
     };
-    setResolvedDark(readCurrent());
+    const sync = () => setResolvedDark(readCurrent());
+    sync();
+
+    const observer = new MutationObserver(sync);
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["data-theme"],
+    });
+
+    const mql = window.matchMedia("(prefers-color-scheme: dark)");
+    mql.addEventListener("change", sync);
+    return () => {
+      observer.disconnect();
+      mql.removeEventListener("change", sync);
+    };
   }, []);
 
   const toggleTheme = () => {

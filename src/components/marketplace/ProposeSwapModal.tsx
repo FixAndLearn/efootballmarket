@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { useAuth } from "@/hooks/useAuth";
@@ -35,6 +35,20 @@ export function ProposeSwapModal({ listing }: ProposeSwapModalProps) {
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
+
+  useEffect(() => {
+    if (displayName) setBuyerName((prev) => prev || displayName);
+    if (profile?.phone_number) setBuyerPhone((prev) => prev || profile.phone_number || "");
+  }, [displayName, profile?.phone_number]);
+
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [open]);
 
   const displayTitle = formatSmartListingTitle(listing);
 
@@ -117,8 +131,17 @@ export function ProposeSwapModal({ listing }: ProposeSwapModalProps) {
       </button>
 
       {open && (
-        <div className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center bg-black/65 backdrop-blur-xs p-0 sm:p-4">
-          <div className="w-full max-w-lg bg-sx-canvas border-t sm:border border-sx-border rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Propose Escrow Squad Swap"
+          onClick={() => setOpen(false)}
+          className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center bg-black/65 backdrop-blur-sm p-0 sm:p-4"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-lg bg-sx-canvas border-t sm:border border-sx-border rounded-t-2xl sm:rounded-2xl overflow-hidden shadow-2xl max-h-[90vh] flex flex-col"
+          >
             <div className="p-4 sm:p-5 border-b border-sx-border flex items-center justify-between gap-3 bg-sx-subtle">
               <div className="flex items-center gap-2.5 min-w-0">
                 <div className="w-9 h-9 rounded-lg bg-sx-green-tint border border-sx-green-border text-sx-green-text flex items-center justify-center shrink-0">

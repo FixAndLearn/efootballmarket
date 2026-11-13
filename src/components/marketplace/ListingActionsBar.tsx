@@ -1,7 +1,7 @@
 "use client";
 
-import React, { useState } from "react";
-import { Share2, Flag, Check, X, AlertTriangle } from "lucide-react";
+import React, { useEffect, useState } from "react";
+import { Share2, Flag, Check, X, AlertTriangle, MessageCircle } from "lucide-react";
 
 interface ListingActionsBarProps {
   listingId: string;
@@ -53,22 +53,31 @@ export function ListingActionsBar({
     }
   };
 
+  useEffect(() => {
+    if (!reportOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setReportOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [reportOpen]);
+
   const handleSubmitReport = (e: React.FormEvent) => {
     e.preventDefault();
     const url = getUrl();
-    const subject = `Listing Report (#${listingId.slice(0, 8).toUpperCase()}): ${selectedReason}`;
-    const body =
+    const code = listingId.slice(0, 8).toUpperCase();
+    const waText =
+      `*Moderation Report (#${code})*\n` +
       `Listing: ${listingTitle}\n` +
       `URL: ${url}\n` +
-      `Reason: ${selectedReason}\n` +
-      (extraNote.trim() ? `Details: ${extraNote.trim()}\n` : "");
+      `Reason: ${selectedReason}` +
+      (extraNote.trim() ? `\nDetails: ${extraNote.trim()}` : "");
 
     if (typeof window !== "undefined") {
       window.open(
-        `mailto:support@efootballmarket.co.ke?subject=${encodeURIComponent(
-          subject
-        )}&body=${encodeURIComponent(body)}`,
-        "_blank"
+        `https://wa.me/254794400365?text=${encodeURIComponent(waText)}`,
+        "_blank",
+        "noopener,noreferrer"
       );
     }
     setReportSent(true);
@@ -206,9 +215,10 @@ export function ListingActionsBar({
                   </button>
                   <button
                     type="submit"
-                    className="px-4 py-2 rounded-lg bg-sx-contrast text-sx-contrast-fg text-xs font-semibold cursor-pointer"
+                    className="inline-flex items-center gap-1.5 px-4 py-2 rounded-lg bg-sx-green hover:bg-sx-green-hover text-white text-xs font-semibold cursor-pointer"
                   >
-                    Send Report
+                    <MessageCircle className="w-3.5 h-3.5" />
+                    <span>Report to Moderation Desk</span>
                   </button>
                 </div>
               </form>

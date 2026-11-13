@@ -63,9 +63,11 @@ export function RecentlyViewedTracker({ listing }: { listing: Listing }) {
 export function RecentlyViewedRow({
   excludeId,
   minItems = 2,
+  title = "Recently Inspected Squads",
 }: {
   excludeId?: string;
   minItems?: number;
+  title?: string;
 }) {
   const [items, setItems] = useState<RecentSquadSummary[]>([]);
 
@@ -106,7 +108,7 @@ export function RecentlyViewedRow({
           <div className="flex items-center gap-2">
             <Clock className="w-4 h-4 text-sx-green-text" />
             <h2 className="text-sm sm:text-base font-bold text-sx-ink font-display">
-              Recently Inspected Squads
+              {title}
             </h2>
           </div>
           <button

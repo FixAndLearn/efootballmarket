@@ -1077,6 +1077,7 @@ function AdminControlCenterContent() {
                               onClick={() => setAdminZoomImage(ev.url)}
                               className="group relative rounded-xl overflow-hidden bg-sx-subtle border border-pitch-border hover:border-brand-400 transition-all cursor-pointer aspect-video"
                             >
+                              {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img
                                 src={ev.url}
                                 alt={ev.note || "Dispute evidence"}
@@ -1086,8 +1087,8 @@ function AdminControlCenterContent() {
                                 <span
                                   className={`text-[9px] font-bold uppercase tracking-wider px-1.5 py-0.5 rounded w-fit mb-0.5 ${
                                     ev.role === "buyer"
-                                      ? "bg-blue-500/80 text-sx-ink"
-                                      : "bg-emerald-500/80 text-sx-ink"
+                                      ? "bg-blue-600/90 text-white"
+                                      : "bg-emerald-600/90 text-white"
                                   }`}
                                 >
                                   {ev.role || "Proof"}
@@ -1464,7 +1465,7 @@ function AdminControlCenterContent() {
                     onClick={() => setWithdrawalFilter(filter)}
                     className={`px-3 py-1.5 rounded-lg font-medium transition-all capitalize flex items-center gap-1.5 shrink-0 ${
                       withdrawalFilter === filter
-                        ? "bg-amber-500 text-pitch-dark font-bold shadow"
+                        ? "bg-amber-500 text-zinc-950 font-bold shadow"
                         : "text-sx-muted hover:text-sx-ink"
                     }`}
                   >
@@ -1472,7 +1473,7 @@ function AdminControlCenterContent() {
                     <span
                       className={`text-[10px] px-1.5 py-0.5 rounded-full ${
                         withdrawalFilter === filter
-                          ? "bg-black/20 text-pitch-dark font-bold"
+                          ? "bg-black/20 text-zinc-950 font-bold"
                           : "bg-pitch-card text-sx-muted"
                       }`}
                     >
@@ -1834,6 +1835,7 @@ function AdminControlCenterContent() {
                 </button>
               </div>
             </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={adminZoomImage}
               alt="Evidence high resolution"

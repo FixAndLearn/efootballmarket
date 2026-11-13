@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -23,11 +23,31 @@ const WHATSAPP_NUMBER =
 export function SupportHubWidget() {
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
+  const rootRef = useRef<HTMLDivElement>(null);
 
-  // Hide floating help pill inside Mobile App Shell, Order Rooms, Auth forms & Standalone Policy pages
+  useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setOpen(false);
+    };
+    const onMouseDown = (e: MouseEvent) => {
+      if (rootRef.current && !rootRef.current.contains(e.target as Node)) {
+        setOpen(false);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    document.addEventListener("mousedown", onMouseDown);
+    return () => {
+      window.removeEventListener("keydown", onKeyDown);
+      document.removeEventListener("mousedown", onMouseDown);
+    };
+  }, [open]);
+
+  // Hide floating help pill inside Mobile App Shell, Checkout, Order Rooms, Auth forms & Standalone Policy pages
   if (
     isStandaloneDocPath(pathname) ||
     pathname?.startsWith("/mobile") ||
+    pathname?.startsWith("/pay/") ||
     pathname?.startsWith("/orders/") ||
     pathname === "/login" ||
     pathname === "/register" ||
@@ -44,12 +64,17 @@ export function SupportHubWidget() {
   const isListingDetail = pathname?.startsWith("/listings/");
 
   return (
-    <div className={`fixed bottom-20 md:bottom-5 right-4 z-40 ${isListingDetail ? "hidden lg:block" : ""}`}>
+    <div
+      ref={rootRef}
+      className={`fixed bottom-20 md:bottom-5 right-3 sm:right-4 z-40 ${
+        isListingDetail ? "hidden lg:block" : ""
+      }`}
+    >
       {open && (
         <div
           role="dialog"
           aria-label="Services and Support Desk"
-          className="mb-3 w-[310px] sm:w-[340px] rounded-2xl bg-sx-canvas border border-sx-border shadow-xl overflow-hidden"
+          className="mb-3 w-[min(340px,calc(100vw-1.5rem))] rounded-2xl bg-sx-canvas border border-sx-border shadow-xl overflow-hidden"
         >
           <div className="flex items-center justify-between px-4 py-3.5 bg-sx-stone border-b border-sx-border">
             <div className="flex items-center gap-2">

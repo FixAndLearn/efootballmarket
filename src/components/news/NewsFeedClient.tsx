@@ -18,8 +18,17 @@ import {
   Sparkles,
   Zap,
 } from "lucide-react";
+import Image from "next/image";
 import Link from "next/link";
 import { useMemo, useState } from "react";
+
+function isOptimizableImage(src: string): boolean {
+  return (
+    src.startsWith("/") ||
+    src.includes(".supabase.co/") ||
+    src.includes("images.unsplash.com")
+  );
+}
 
 interface NewsFeedClientProps {
   initialArticles: NewsArticle[];
@@ -225,10 +234,14 @@ export function NewsFeedClient({
               <article className="grid grid-cols-1 lg:grid-cols-12">
                 {featuredArticle.cover_image_url && (
                   <div className="lg:col-span-5 relative min-h-[230px] sm:min-h-[290px] bg-sx-stone overflow-hidden border-b lg:border-b-0 lg:border-r border-sx-border">
-                    <img
+                    <Image
                       src={featuredArticle.cover_image_url}
                       alt={featuredArticle.title}
-                      className="w-full h-full object-cover group-hover:scale-[1.03] transition-transform duration-500"
+                      fill
+                      priority
+                      sizes="(max-width: 1024px) 100vw, 480px"
+                      unoptimized={!isOptimizableImage(featuredArticle.cover_image_url)}
+                      className="object-cover group-hover:scale-[1.03] transition-transform duration-500"
                     />
                   </div>
                 )}
@@ -384,11 +397,13 @@ export function NewsFeedClient({
                         <div>
                           {article.cover_image_url && (
                             <div className="h-44 w-full bg-sx-stone relative overflow-hidden border-b border-sx-border">
-                              <img
+                              <Image
                                 src={article.cover_image_url}
                                 alt={article.title}
-                                loading="lazy"
-                                className="w-full h-full object-cover group-hover:scale-[1.04] transition-transform duration-300"
+                                fill
+                                sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 380px"
+                                unoptimized={!isOptimizableImage(article.cover_image_url)}
+                                className="object-cover group-hover:scale-[1.04] transition-transform duration-300"
                               />
                             </div>
                           )}

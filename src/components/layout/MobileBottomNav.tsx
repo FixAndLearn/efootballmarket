@@ -51,7 +51,7 @@ export function MobileBottomNav() {
   return (
     <nav
       aria-label="Mobile Bottom Navigation"
-      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-sx-canvas backdrop-blur-md border-t border-sx-border px-2 py-1"
+      className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-sx-canvas/95 backdrop-blur-md border-t border-sx-border px-2 pt-1 pb-[max(0.25rem,env(safe-area-inset-bottom))]"
     >
       <div className="grid grid-cols-5 gap-1 items-center max-w-md mx-auto">
         {navItems.map((item) => {

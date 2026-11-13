@@ -162,19 +162,19 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
         </div>
 
         <div className="lg:col-span-9 space-y-5">
-          {/* Desktop Quick Sort Bar */}
-          <div className="hidden lg:flex items-center justify-between gap-3 pb-3 border-b border-sx-border text-xs">
-            <span className="text-sx-muted font-medium">
-              Compare by:
+          {/* Mobile & Desktop Quick Sort Bar */}
+          <div className="flex items-center justify-between gap-3 pb-3 border-b border-sx-border text-xs overflow-x-auto no-scrollbar">
+            <span className="text-sx-muted font-medium shrink-0">
+              Sort by:
             </span>
-            <div className="flex items-center gap-1.5 flex-wrap">
+            <div className="flex items-center gap-1.5 shrink-0">
               {SORT_OPTIONS.map((opt) => {
                 const isSelected = activeSort === opt.id;
                 return (
                   <Link
                     key={opt.id}
                     href={buildQueryHref({ sortBy: opt.id, page: "1" })}
-                    className={`px-3 py-1.5 rounded-full border font-semibold transition-colors ${
+                    className={`px-3 py-1.5 rounded-full border font-semibold whitespace-nowrap transition-colors ${
                       isSelected
                         ? "bg-sx-green border-sx-green text-white"
                         : "bg-sx-subtle border-sx-border text-sx-ink hover:border-sx-border-strong"
@@ -189,51 +189,96 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
 
           {hasActiveFilters && (
             <div className="flex flex-wrap items-center gap-2 pb-3 border-b border-sx-border text-xs">
-              <span className="text-sx-muted font-medium mr-1">Filters:</span>
+              <span className="text-sx-muted font-medium mr-1">Active Filters:</span>
               {searchParams.search && (
-                <span className="px-2.5 py-1 rounded-full bg-sx-subtle border border-sx-border text-sx-ink font-medium">
-                  &ldquo;{searchParams.search}&rdquo;
-                </span>
+                <Link
+                  href={buildQueryHref({ search: undefined, page: "1" })}
+                  title="Remove search filter"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-sx-subtle hover:bg-sx-stone border border-sx-border text-sx-ink font-medium transition-colors"
+                >
+                  <span>&ldquo;{searchParams.search}&rdquo;</span>
+                  <X className="w-3 h-3 text-sx-muted" />
+                </Link>
               )}
               {searchParams.swap === "1" && (
-                <span className="px-2.5 py-1 rounded-full bg-sx-green-tint border border-sx-green-border text-sx-green-text font-semibold">
-                  Swap Open
-                </span>
+                <Link
+                  href={buildQueryHref({ swap: undefined, page: "1" })}
+                  title="Remove swap filter"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-sx-green-tint border border-sx-green-border text-sx-green-text font-semibold transition-colors"
+                >
+                  <span>Swap Open</span>
+                  <X className="w-3 h-3" />
+                </Link>
               )}
               {searchParams.minStrength && (
-                <span className="px-2.5 py-1 rounded-full bg-sx-subtle border border-sx-border text-sx-ink font-semibold">
-                  {searchParams.minStrength}+ OVR
-                </span>
+                <Link
+                  href={buildQueryHref({ minStrength: undefined, page: "1" })}
+                  title="Remove minimum OVR filter"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-sx-subtle hover:bg-sx-stone border border-sx-border text-sx-ink font-semibold transition-colors"
+                >
+                  <span>{searchParams.minStrength}+ OVR</span>
+                  <X className="w-3 h-3 text-sx-muted" />
+                </Link>
               )}
               {searchParams.minEpics && (
-                <span className="px-2.5 py-1 rounded-full bg-sx-subtle border border-sx-border text-sx-ink font-semibold">
-                  {searchParams.minEpics}+ Epics
-                </span>
+                <Link
+                  href={buildQueryHref({ minEpics: undefined, page: "1" })}
+                  title="Remove minimum Epics filter"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-sx-subtle hover:bg-sx-stone border border-sx-border text-sx-ink font-semibold transition-colors"
+                >
+                  <span>{searchParams.minEpics}+ Epics</span>
+                  <X className="w-3 h-3 text-sx-muted" />
+                </Link>
               )}
               {searchParams.platform && searchParams.platform !== "all" && (
-                <span className="px-2.5 py-1 rounded-full bg-sx-subtle border border-sx-border text-sx-ink capitalize font-medium">
-                  {searchParams.platform.replace(/_/g, " ")}
-                </span>
+                <Link
+                  href={buildQueryHref({ platform: undefined, page: "1" })}
+                  title="Remove platform filter"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-sx-subtle hover:bg-sx-stone border border-sx-border text-sx-ink capitalize font-medium transition-colors"
+                >
+                  <span>{searchParams.platform.replace(/_/g, " ")}</span>
+                  <X className="w-3 h-3 text-sx-muted" />
+                </Link>
               )}
               {searchParams.playstyle && searchParams.playstyle !== "all" && (
-                <span className="px-2.5 py-1 rounded-full bg-sx-subtle border border-sx-border text-sx-ink font-medium">
-                  {getPlaystyleLabel(searchParams.playstyle)}
-                </span>
+                <Link
+                  href={buildQueryHref({ playstyle: undefined, page: "1" })}
+                  title="Remove playstyle filter"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-sx-subtle hover:bg-sx-stone border border-sx-border text-sx-ink font-medium transition-colors"
+                >
+                  <span>{getPlaystyleLabel(searchParams.playstyle)}</span>
+                  <X className="w-3 h-3 text-sx-muted" />
+                </Link>
               )}
               {searchParams.minCoins && (
-                <span className="px-2.5 py-1 rounded-full bg-sx-subtle border border-sx-border text-sx-ink font-medium">
-                  {Number(searchParams.minCoins).toLocaleString()}+ Coins
-                </span>
+                <Link
+                  href={buildQueryHref({ minCoins: undefined, page: "1" })}
+                  title="Remove minimum coins filter"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-sx-subtle hover:bg-sx-stone border border-sx-border text-sx-ink font-medium transition-colors"
+                >
+                  <span>{Number(searchParams.minCoins).toLocaleString()}+ Coins</span>
+                  <X className="w-3 h-3 text-sx-muted" />
+                </Link>
               )}
               {searchParams.manager && (
-                <span className="px-2.5 py-1 rounded-full bg-sx-subtle border border-sx-border text-sx-ink font-medium">
-                  {searchParams.manager}
-                </span>
+                <Link
+                  href={buildQueryHref({ manager: undefined, page: "1" })}
+                  title="Remove manager filter"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-sx-subtle hover:bg-sx-stone border border-sx-border text-sx-ink font-medium transition-colors"
+                >
+                  <span>{searchParams.manager}</span>
+                  <X className="w-3 h-3 text-sx-muted" />
+                </Link>
               )}
               {(searchParams.minPrice || searchParams.maxPrice) && (
-                <span className="px-2.5 py-1 rounded-full bg-sx-subtle border border-sx-border text-sx-ink font-mono font-medium">
-                  KES {searchParams.minPrice || "0"} – {searchParams.maxPrice || "Any"}
-                </span>
+                <Link
+                  href={buildQueryHref({ minPrice: undefined, maxPrice: undefined, page: "1" })}
+                  title="Remove price filter"
+                  className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-sx-subtle hover:bg-sx-stone border border-sx-border text-sx-ink font-mono font-medium transition-colors"
+                >
+                  <span>KES {searchParams.minPrice || "0"} – {searchParams.maxPrice || "Any"}</span>
+                  <X className="w-3 h-3 text-sx-muted" />
+                </Link>
               )}
               <Link
                 href="/browse"

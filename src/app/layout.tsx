@@ -263,7 +263,7 @@ export default function RootLayout({
         )}
         <GoogleTagRouteTracker />
         <Header />
-        <main id="main-content" className="flex-1 flex flex-col pb-20 md:pb-0">
+        <main id="main-content" className="flex-1 flex flex-col">
           {children}
         </main>
         <Footer />

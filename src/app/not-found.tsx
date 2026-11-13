@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/Button";
-import { SearchX, Search, Phone } from "lucide-react";
+import { SmartSearchBar } from "@/components/marketplace/SmartSearchBar";
+import { SearchX, Phone } from "lucide-react";
 import Link from "next/link";
 
 export default function NotFound() {
@@ -13,29 +14,33 @@ export default function NotFound() {
           Page or Squad Not Found
         </h1>
         <p className="text-sm text-sx-muted leading-relaxed">
-          The listing, order, or URL you requested does not exist or has already been sold and completed under escrow.
+          The listing, order, or URL you requested does not exist or has already been sold and settled under escrow.
         </p>
       </div>
 
-      <form action="/browse" method="GET" className="w-full relative">
-        <Search className="w-4 h-4 text-sx-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-        <input
-          type="text"
-          name="search"
-          placeholder="Search for another squad (e.g. 3150 OVR, Gullit, Vieira)..."
-          className="w-full pl-10 pr-24 py-3 rounded-xl bg-sx-stone border border-sx-border-strong text-sm text-sx-ink placeholder:text-sx-muted focus:bg-sx-canvas focus:outline-none focus:border-sx-ink"
-        />
-        <Button
-          type="submit"
-          variant="primary"
-          size="sm"
-          className="absolute right-1.5 top-1.5"
-        >
-          Search
-        </Button>
-      </form>
+      <div className="w-full text-left">
+        <SmartSearchBar variant="hero" />
+      </div>
 
-      <div className="flex flex-wrap items-center justify-center gap-3 pt-2">
+      <div className="flex flex-wrap items-center justify-center gap-2 text-xs">
+        {[
+          { label: "Android Squads", href: "/browse?platform=android" },
+          { label: "iOS Squads", href: "/browse?platform=ios" },
+          { label: "3150+ OVR", href: "/browse?minStrength=3150" },
+          { label: "Middleman Desk", href: "/middleman" },
+          { label: "Phone Check", href: "/scammer-check" },
+        ].map((chip) => (
+          <Link
+            key={chip.href}
+            href={chip.href}
+            className="px-3 py-1.5 rounded-full bg-sx-stone hover:bg-sx-elevated border border-sx-border text-sx-ink font-medium transition-colors"
+          >
+            {chip.label}
+          </Link>
+        ))}
+      </div>
+
+      <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
         <Link href="/browse">
           <Button variant="primary" size="md">
             Browse Squads
@@ -43,7 +48,7 @@ export default function NotFound() {
         </Link>
         <Link href="/wanted">
           <Button variant="outline" size="md">
-            Buyer Requests
+            Request Custom Squad
           </Button>
         </Link>
         <Link href="/">

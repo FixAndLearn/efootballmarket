@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { AdBanner } from "@/components/common/AdBanner";
 import { QuietAlertOptIn } from "@/components/common/QuietAlertOptIn";
+import { useAuth } from "@/hooks/useAuth";
 import { formatCurrency, getPlatformLabel, getPlaystyleLabel } from "@/lib/utils";
 import { formatWhatsAppPhone, normalizePhoneNumber } from "@/lib/utils/phone";
 import { Platform, Playstyle, WantedRequest } from "@/types/database";
@@ -28,6 +29,7 @@ import {
 import Link from "next/link";
 
 export default function WantedBoardPage() {
+  const { displayName, profile } = useAuth();
   const [requests, setRequests] = useState<WantedRequest[]>([]);
   const [loading, setLoading] = useState(true);
   const [platformFilter, setPlatformFilter] = useState<string>("all");
@@ -47,6 +49,20 @@ export default function WantedBoardPage() {
   const [submitting, setSubmitting] = useState(false);
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [formError, setFormError] = useState("");
+
+  useEffect(() => {
+    if (displayName) setBuyerName((prev) => prev || displayName);
+    if (profile?.phone_number) setBuyerPhone((prev) => prev || profile.phone_number || "");
+  }, [displayName, profile?.phone_number]);
+
+  useEffect(() => {
+    if (!isModalOpen) return;
+    const onKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsModalOpen(false);
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, [isModalOpen]);
 
   const fetchRequests = useCallback(async () => {
     try {
@@ -75,8 +91,20 @@ export default function WantedBoardPage() {
     e.preventDefault();
     setFormError("");
 
-    if (!reqTitle || !reqBudget) {
-      setFormError("Title and budget are required.");
+    if (!reqTitle.trim() || !reqBudget) {
+      setFormError("Request title and KES budget are required.");
+      return;
+    }
+
+    const budgetNum = parseInt(reqBudget, 10);
+    if (!budgetNum || budgetNum < 200) {
+      setFormError("Please enter a valid budget of at least KES 200.");
+      return;
+    }
+
+    const normPhone = normalizePhoneNumber(buyerPhone);
+    if (!normPhone.isValid) {
+      setFormError("Enter a valid Kenyan mobile / WhatsApp number (e.g. 0712 345 678) so sellers can pitch matching squads.");
       return;
     }
 
@@ -86,14 +114,14 @@ export default function WantedBoardPage() {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          buyer_name: buyerName || "Verified Buyer",
-          buyer_phone: buyerPhone ? normalizePhoneNumber(buyerPhone).international : "+254794400365",
-          title: reqTitle,
-          description: reqDescription,
+          buyer_name: buyerName.trim() || "Verified Buyer",
+          buyer_phone: normPhone.international,
+          title: reqTitle.trim(),
+          description: reqDescription.trim(),
           min_overall_rating: parseInt(reqMinOvr, 10) || 3000,
           preferred_platform: reqPlatform,
           target_playstyle: reqPlaystyle,
-          budget_kes: parseInt(reqBudget, 10),
+          budget_kes: budgetNum,
           key_players_wanted: reqKeyPlayers
             .split(",")
             .map((s) => s.trim())
@@ -360,8 +388,17 @@ export default function WantedBoardPage() {
 
       {/* Post Wanted Request Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in">
-          <div className="w-full max-w-lg bg-pitch-surface border border-pitch-border rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]">
+        <div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Post Desired Account Request"
+          onClick={() => setIsModalOpen(false)}
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in"
+        >
+          <div
+            onClick={(e) => e.stopPropagation()}
+            className="w-full max-w-lg bg-sx-canvas border border-sx-border rounded-3xl shadow-2xl overflow-hidden flex flex-col max-h-[90vh]"
+          >
             <div className="p-6 border-b border-pitch-border bg-pitch-card/60 flex items-center justify-between">
               <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-xl bg-sx-amber-tint text-sx-amber-text flex items-center justify-center">

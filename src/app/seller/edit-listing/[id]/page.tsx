@@ -751,6 +751,7 @@ export default function EditListingPage() {
                     idx === 0 ? "border-emerald-500 ring-2 ring-emerald-500/20" : "border-sx-border"
                   }`}
                 >
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={img.url}
                     alt={`Squad screenshot ${idx + 1}`}
@@ -767,7 +768,7 @@ export default function EditListingPage() {
                     <button
                       type="button"
                       onClick={() => handleSetPrimaryCover(idx)}
-                      className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-md bg-black/80 hover:bg-sx-green text-white font-bold text-[9px] opacity-0 group-hover:opacity-100 transition-opacity"
+                      className="absolute top-1.5 left-1.5 px-2 py-0.5 rounded-md bg-black/80 hover:bg-sx-green text-white font-bold text-[9px] opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity cursor-pointer"
                     >
                       Set Cover
                     </button>
