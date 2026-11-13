@@ -43,7 +43,7 @@ export async function middleware(request: NextRequest) {
     const hostHeader =
       request.headers.get("x-forwarded-host") || request.headers.get("host");
 
-    if (!isServerBearerRoute && secFetchSite === "cross-site") {
+    if (!isServerBearerRoute && !originHeader && secFetchSite === "cross-site") {
       return NextResponse.json(
         { error: "Forbidden: Cross-site request blocked by Edge Fetch-Metadata policy." },
         { status: 403 }
