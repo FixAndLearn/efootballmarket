@@ -804,8 +804,11 @@ export default function MiddlemanPage() {
   return (
     <Suspense
       fallback={
-        <div className="py-24 text-center space-y-3">
-          <div className="w-8 h-8 rounded-full border-2 border-brand-400 border-t-transparent animate-spin mx-auto" />
+        <div className="max-w-5xl mx-auto px-4 py-16 text-center space-y-3">
+          <h1 className="text-2xl sm:text-3xl font-extrabold text-sx-ink font-display">
+            WhatsApp &amp; Facebook Middleman Escrow Desk
+          </h1>
+          <div className="w-8 h-8 rounded-full border-2 border-sx-green border-t-transparent animate-spin mx-auto" />
           <p className="text-xs text-sx-muted">Loading escrow contract room...</p>
         </div>
       }

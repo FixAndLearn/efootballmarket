@@ -56,11 +56,19 @@ export function FridayDropsSection({
               </span>
             </div>
 
-            <h2 className="text-xl sm:text-2xl font-bold text-sx-ink font-display tracking-tight">
-              {hasActiveCuratedDrops
-                ? "Fixed-Price Friday Drops"
-                : "Friday Drops Return Every Friday at 2:00 PM EAT"}
-            </h2>
+            {showFullHeader ? (
+              <h1 className="text-2xl sm:text-3xl font-extrabold text-sx-ink font-display tracking-tight">
+                {hasActiveCuratedDrops
+                  ? "Fixed-Price Friday Drops"
+                  : "Friday Drops Return Every Friday at 2:00 PM EAT"}
+              </h1>
+            ) : (
+              <h2 className="text-xl sm:text-2xl font-bold text-sx-ink font-display tracking-tight">
+                {hasActiveCuratedDrops
+                  ? "Fixed-Price Friday Drops"
+                  : "Friday Drops Return Every Friday at 2:00 PM EAT"}
+              </h2>
+            )}
             <p className="text-xs sm:text-sm text-sx-muted leading-relaxed">
               {hasActiveCuratedDrops
                 ? "Fixed-price featured squads during the Friday 2:00 PM – 10:00 PM EAT window. Payment goes to eFootballMarket's Till 1572931 and stays on hold during your 24-hour login & Link Data check."

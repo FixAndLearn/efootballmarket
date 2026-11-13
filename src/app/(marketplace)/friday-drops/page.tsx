@@ -56,7 +56,9 @@ export default async function FridayDropsPage() {
       </div>
 
       <div className="flex-1">
-        <FridayDropsSection listings={listings} />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10">
+          <FridayDropsSection listings={listings} showFullHeader />
+        </div>
 
         <section className="py-12 border-t border-sx-border bg-sx-subtle">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
