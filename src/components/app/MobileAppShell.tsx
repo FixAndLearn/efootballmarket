@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { Listing, Tournament, WantedRequest } from "@/types/database";
 import { useAuth } from "@/hooks/useAuth";
 import { calculateEscrowCommission } from "@/lib/utils/commission";
-import { formatCurrency, getShortPlatformLabel } from "@/lib/utils";
+import { formatCurrency, formatSmartListingTitle, getShortPlatformLabel } from "@/lib/utils";
 import {
   ensureNotificationServiceWorker,
   getBrowserNotificationPermission,
@@ -376,7 +376,7 @@ export function MobileAppShell({
       });
       const data = await res.json();
       if (res.ok && data.ping?.id) {
-        rememberWatchedPing(data.ping.id, squad.id, squad.title);
+        rememberWatchedPing(data.ping.id, squad.id, formatSmartListingTitle(squad));
         setPingedMap((prev) => ({ ...prev, [squad.id]: data.ping.status || "pending" }));
         setWatchedPings(getWatchedPings());
       }
@@ -789,7 +789,7 @@ export function MobileAppShell({
                     <div className="p-4 space-y-3">
                       <div className="flex items-start justify-between gap-2">
                         <h2 className="text-base font-extrabold text-white leading-snug line-clamp-2">
-                          {currentSquad.title}
+                          {formatSmartListingTitle(currentSquad)}
                         </h2>
                         <Link
                           href={`/listings/${currentSquad.id}`}
@@ -968,7 +968,7 @@ export function MobileAppShell({
                       </div>
                       <div className="p-2.5 space-y-1 flex-1 flex flex-col justify-between">
                         <p className="text-xs font-bold text-white line-clamp-2 leading-tight">
-                          {sq.title}
+                          {formatSmartListingTitle(sq)}
                         </p>
                         <p className="text-xs font-mono font-extrabold text-emerald-400 pt-1">
                           {formatCurrency(sq.price, sq.currency)}
@@ -1258,7 +1258,7 @@ export function MobileAppShell({
                     className="p-3 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2"
                   >
                     <p className="text-xs font-bold text-white">
-                      {ping.listing?.title || "Your Squad Listing"}
+                      {ping.listing ? formatSmartListingTitle(ping.listing) : "Your Squad Listing"}
                     </p>
                     <div className="flex gap-2">
                       <button
@@ -1351,7 +1351,7 @@ export function MobileAppShell({
                     href={`/listings/${sq.id}`}
                     className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-2"
                   >
-                    <span className="text-xs font-bold text-white truncate">{sq.title}</span>
+                    <span className="text-xs font-bold text-white truncate">{formatSmartListingTitle(sq)}</span>
                     <span className="text-xs font-mono font-extrabold text-emerald-400 shrink-0">
                       {formatCurrency(sq.price)}
                     </span>
@@ -1524,7 +1524,7 @@ export function MobileAppShell({
                   Instant App Bargain
                 </p>
                 <h3 className="text-sm font-extrabold text-white line-clamp-1">
-                  {bargainListing.title}
+                  {formatSmartListingTitle(bargainListing)}
                 </h3>
                 <p className="text-xs text-slate-400">
                   Listed at {formatCurrency(bargainListing.price, bargainListing.currency)}

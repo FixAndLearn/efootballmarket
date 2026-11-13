@@ -10,9 +10,16 @@ import { MobileAppShell } from "@/components/app/MobileAppShell";
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "eFootball Market App — Squad Swipe, KES Valuator & Live Radar",
+  title: "eFootball Market Pro App — Squad Swipe, Progression Lab & Live Radar",
   description:
-    "Official eFootball Market mobile trading app with Squad Swipe Deck, Instant KES Squad Valuator, Live Deal Radar, and 1-Tap Scammer Scanner.",
+    "Official eFootball Market Pro mobile trading super-app with eFHUB Progression Lab, 11v11 Pitch Builder, 150-Box Pack Sim, Squad Swipe Deck & 1-Tap Scammer Scanner.",
+  alternates: {
+    canonical: "https://www.efootballmarket.co.ke/app",
+  },
+  robots: {
+    index: false,
+    follow: true,
+  },
 };
 
 export default async function MobileAppExperiencePage() {

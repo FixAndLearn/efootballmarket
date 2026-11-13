@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import { StandaloneDocLayout } from "@/components/legal/StandaloneDocLayout";
 
 export const metadata: Metadata = {
-  title: "Safety & Anti-Fraud Policy | eFootballMarket Kenya",
+  title: "Safety & Anti-Fraud Policy",
   description:
     "Standalone Safety & Anti-Fraud Policy for eFootballMarket Kenya: server-verified M-Pesa Till 1572931 receipts, AES-256-GCM vault, dual-link recovery checks, and free Scammer Check appeals.",
   alternates: { canonical: "https://www.efootballmarket.co.ke/fraud-prevention" },

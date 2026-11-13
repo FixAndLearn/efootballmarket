@@ -4,7 +4,7 @@ import { StandaloneDocLayout } from "@/components/legal/StandaloneDocLayout";
 import { CheckCircle2, XCircle } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Refund & Dispute Policy | eFootballMarket Kenya",
+  title: "Buyer Refund & Dispute Policy",
   description:
     "Standalone Buyer Refund & Dispute Policy for eFootballMarket Kenya: when buyers receive a 100% M-Pesa refund, when sellers get paid, screen-recording proof, and 24–48h review.",
   alternates: { canonical: "https://www.efootballmarket.co.ke/dispute-policy" },

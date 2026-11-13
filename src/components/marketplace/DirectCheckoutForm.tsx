@@ -634,7 +634,7 @@ export function DirectCheckoutForm({
 
               <a
                 href={`https://wa.me/254794400365?text=${encodeURIComponent(
-                  `Hello eFootballMarket Support, I have paid KES ${payablePrice.toLocaleString()} to Buy Goods Till 1572931 for "${listing.title}" (ID: ${listing.id.slice(0, 8)}). My M-Pesa receipt code is: `
+                  `Hello eFootballMarket Support, I have paid KES ${payablePrice.toLocaleString()} to Buy Goods Till 1572931 for "${formatSmartListingTitle(listing)}" (ID: ${listing.id.slice(0, 8)}). My M-Pesa receipt code is: `
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"

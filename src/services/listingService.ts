@@ -20,6 +20,7 @@ export interface ListingFilterParams {
   sortBy?: "newest" | "price_asc" | "price_desc" | "strength_desc" | "coins_desc" | "views";
   limit?: number;
   offset?: number;
+  _skipPlayerSearchCol?: boolean;
 }
 
 export interface ListingQueryResult {
@@ -103,9 +104,29 @@ export class ListingService {
     }
 
     if (search && search.trim() !== "") {
-      const sanitizedTerm = search.trim().replace(/[,()]/g, " ").trim();
+      const sanitizedTerm = search.trim().replace(/[,()%]/g, " ").replace(/\s+/g, " ").trim();
       if (sanitizedTerm) {
-        query = query.or(`title.ilike.%${sanitizedTerm}%,description.ilike.%${sanitizedTerm}%,manager_name.ilike.%${sanitizedTerm}%`);
+        const ovrPlusMatch = sanitizedTerm.match(/^(\d{4})\+$/);
+        const exactOvrMatch = sanitizedTerm.match(/^(\d{4})$/);
+
+        if (ovrPlusMatch) {
+          const minOvr = Number(ovrPlusMatch[1]);
+          query = query.gte("overall_team_strength", minOvr);
+        } else {
+          const orClauses = [
+            `title.ilike.%${sanitizedTerm}%`,
+            `description.ilike.%${sanitizedTerm}%`,
+            `manager_name.ilike.%${sanitizedTerm}%`,
+            `dream_team_name.ilike.%${sanitizedTerm}%`,
+          ];
+          if (!filters._skipPlayerSearchCol) {
+            orClauses.push(`player_search_text.ilike.%${sanitizedTerm}%`);
+          }
+          if (exactOvrMatch) {
+            orClauses.push(`overall_team_strength.eq.${Number(exactOvrMatch[1])}`);
+          }
+          query = query.or(orClauses.join(","));
+        }
       }
     }
 
@@ -137,6 +158,12 @@ export class ListingService {
     const { data, count, error } = await query;
 
     if (error) {
+      if (!filters._skipPlayerSearchCol && error.message.includes("player_search_text")) {
+        return this.getListings({
+          ...filters,
+          _skipPlayerSearchCol: true,
+        });
+      }
       if (allowsSwap && error.message.includes("allows_swap")) {
         return this.getListings({
           ...filters,

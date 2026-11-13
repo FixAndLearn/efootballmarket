@@ -1,4 +1,5 @@
 import React from "react";
+import { Metadata } from "next";
 import Link from "next/link";
 import Image from "next/image";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -31,6 +32,12 @@ import {
 } from "lucide-react";
 
 export const revalidate = 0;
+
+export const metadata: Metadata = {
+  alternates: {
+    canonical: "https://www.efootballmarket.co.ke",
+  },
+};
 
 export default async function HomePage() {
   const supabase = createServerSupabaseClient();
@@ -74,15 +81,81 @@ export default async function HomePage() {
 
   const hasActiveTournaments = tournaments.length > 0;
   const hasActiveWanted = wantedRequests.length > 0;
+  const lowestPrice =
+    listings.length > 0
+      ? Math.min(...listings.map((l) => Number(l.price || 0)).filter((p) => p > 0))
+      : null;
+  const peakOvr =
+    listings.length > 0
+      ? Math.max(...listings.map((l) => Number(l.overall_team_strength || 0)))
+      : null;
+
+  const homeJsonLd = {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "WebSite",
+        "@id": "https://www.efootballmarket.co.ke/#website",
+        url: "https://www.efootballmarket.co.ke",
+        name: "eFootballMarket",
+        potentialAction: {
+          "@type": "SearchAction",
+          target: "https://www.efootballmarket.co.ke/browse?search={search_term_string}",
+          "query-input": "required name=search_term_string",
+        },
+      },
+      {
+        "@type": "Organization",
+        "@id": "https://www.efootballmarket.co.ke/#organization",
+        name: "eFootballMarket Kenya",
+        url: "https://www.efootballmarket.co.ke",
+        logo: "https://www.efootballmarket.co.ke/icon-512.png",
+        contactPoint: {
+          "@type": "ContactPoint",
+          telephone: "+254-794-400-365",
+          contactType: "customer support",
+          areaServed: "KE",
+          availableLanguage: ["en", "sw"],
+        },
+      },
+    ],
+  };
 
   return (
     <div className="min-h-screen bg-sx-canvas text-sx-ink pb-20 md:pb-0">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify(homeJsonLd).replace(/</g, "\\u003c"),
+        }}
+      />
       {/* 1. SQUAD-FIRST HERO SCREEN */}
       <section className="pt-5 pb-8 sm:pt-8 sm:pb-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-2xl bg-sx-subtle border border-sx-border overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-stretch">
             <div className="lg:col-span-7 p-6 sm:p-9 lg:p-11 flex flex-col justify-between space-y-6">
               <div className="space-y-4">
+                {totalSquads > 0 && (
+                  <div className="inline-flex flex-wrap items-center gap-2 px-3 py-1 rounded-full bg-sx-canvas border border-sx-border text-[11px] font-medium text-sx-muted">
+                    <span className="w-2 h-2 rounded-full bg-sx-green" />
+                    <span className="font-bold text-sx-ink">{totalSquads} Live Squads</span>
+                    {lowestPrice ? (
+                      <>
+                        <span>&middot;</span>
+                        <span>From {formatCurrency(lowestPrice, "KES")}</span>
+                      </>
+                    ) : null}
+                    {peakOvr && peakOvr > 3000 ? (
+                      <>
+                        <span>&middot;</span>
+                        <span className="font-mono font-semibold text-sx-green-text">
+                          Up to {peakOvr} OVR
+                        </span>
+                      </>
+                    ) : null}
+                  </div>
+                )}
+
                 <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-extrabold font-display tracking-[-0.03em] text-sx-ink leading-[1.1]">
                   Find Your Next eFootball Squad in Kenya.
                 </h1>
@@ -98,7 +171,7 @@ export default async function HomePage() {
                     <input
                       type="search"
                       name="search"
-                      placeholder="Search by player (Gullit, Vieira), OVR (3200), or coach..."
+                      placeholder="Search by player (Gullit, Messi), OVR (3200), or coach..."
                       className="w-full h-12 pl-10 pr-4 rounded-xl bg-sx-canvas border border-sx-border-strong text-sm text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-sx-green"
                     />
                   </div>
@@ -111,11 +184,12 @@ export default async function HomePage() {
                 <div className="flex items-center gap-1.5 flex-wrap text-xs">
                   <span className="text-sx-muted font-medium mr-0.5">Popular:</span>
                   {[
+                    { label: "Under KES 1,000", href: "/browse?maxPrice=1000" },
+                    { label: "3200+ OVR", href: "/browse?minStrength=3200" },
                     { label: "Android", href: "/browse?platform=android" },
                     { label: "iOS", href: "/browse?platform=ios" },
-                    { label: "3150+ OVR", href: "/browse?minStrength=3150" },
-                    { label: "Under KES 5,000", href: "/browse?maxPrice=5000" },
                     { label: "Lowest Price", href: "/browse?sortBy=price_asc" },
+                    { label: "Swap Open", href: "/browse?swap=1" },
                   ].map((pill) => (
                     <Link
                       key={pill.label}
@@ -195,11 +269,23 @@ export default async function HomePage() {
           </div>
 
           {listings.length > 0 ? (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-              {listings.map((listing, idx) => (
-                <ListingCard key={listing.id} listing={listing} priority={idx < 2} />
-              ))}
-            </div>
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
+                {listings.map((listing, idx) => (
+                  <ListingCard key={listing.id} listing={listing} priority={idx < 2} />
+                ))}
+              </div>
+              {totalSquads > listings.length && (
+                <div className="pt-2 flex justify-center">
+                  <Link href="/browse">
+                    <Button variant="outline" size="md">
+                      <span>View All {totalSquads} Verified Squads</span>
+                      <ArrowRight className="w-4 h-4" />
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </>
           ) : (
             <div className="rounded-xl bg-sx-subtle border border-sx-border p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
               <div className="space-y-1.5 max-w-lg">

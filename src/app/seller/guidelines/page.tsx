@@ -3,7 +3,7 @@ import { Metadata } from "next";
 import { StandaloneDocLayout } from "@/components/legal/StandaloneDocLayout";
 
 export const metadata: Metadata = {
-  title: "Seller Standards & M-Pesa Payout Rules | eFootballMarket",
+  title: "Seller Standards & M-Pesa Payout Rules",
   description:
     "Standalone Seller Handbook for eFootballMarket Kenya: Clean Konami ID preparation, permanent OVR screenshot rules, 5% commission cap (KES 50–500), 12h OTP handover, and M-Pesa payouts.",
   alternates: { canonical: "https://www.efootballmarket.co.ke/seller/guidelines" },

@@ -4,7 +4,7 @@ import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import { Listing } from "@/types/database";
 import { META_PLAYERS_DB, computeAllocatedStats } from "@/lib/data/appMetaPlayers";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatSmartListingTitle } from "@/lib/utils";
 import { Sparkles, RotateCcw, Swords, Trophy, ArrowRight } from "lucide-react";
 
 interface PackSimulatorAndVsLabProps {
@@ -389,7 +389,7 @@ export function PackSimulatorAndVsLab({ mode, listings }: PackSimulatorAndVsLabP
             >
               {listings.map((l) => (
                 <option key={l.id} value={l.id}>
-                  {l.overall_team_strength} OVR · {l.title.slice(0, 22)}
+                  {formatSmartListingTitle(l).slice(0, 30)} · {formatCurrency(l.price)}
                 </option>
               ))}
             </select>
@@ -401,7 +401,7 @@ export function PackSimulatorAndVsLab({ mode, listings }: PackSimulatorAndVsLabP
             >
               {listings.map((l) => (
                 <option key={l.id} value={l.id}>
-                  {l.overall_team_strength} OVR · {l.title.slice(0, 22)}
+                  {formatSmartListingTitle(l).slice(0, 30)} · {formatCurrency(l.price)}
                 </option>
               ))}
             </select>

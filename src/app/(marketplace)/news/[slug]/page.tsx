@@ -274,14 +274,14 @@ export async function generateMetadata({
 
     if (!article) {
       return {
-        title: "Guide Not Found | eFootballMarket",
+        title: "Guide Not Found",
       };
     }
 
     const canonicalUrl = `https://www.efootballmarket.co.ke/news/${article.slug}`;
 
     return {
-      title: `${article.title} | eFootballMarket`,
+      title: article.title,
       description: article.summary,
       alternates: {
         canonical: canonicalUrl,

@@ -10,6 +10,7 @@ import {
   formatCompactNumber,
   formatCurrency,
   formatSmartListingTitle,
+  getListingPriceContext,
   getShortPlatformLabel,
   getShortPlaystyleLabel,
 } from "@/lib/utils";
@@ -239,9 +240,16 @@ export function ListingCard({ listing, priority = false }: ListingCardProps) {
         {/* One Clear Price + Single Clear Seller Badge */}
         <div className="space-y-2.5 pt-2.5 border-t border-sx-border">
           <div className="flex items-center justify-between gap-2">
-            <span className="text-lg sm:text-[19px] font-extrabold text-sx-ink font-display tracking-tight leading-none">
-              {formatCurrency(listing.price, listing.currency)}
-            </span>
+            <div className="flex items-baseline gap-2 min-w-0">
+              <span className="text-lg sm:text-[19px] font-extrabold text-sx-ink font-display tracking-tight leading-none">
+                {formatCurrency(listing.price, listing.currency)}
+              </span>
+              {isAvailable && getListingPriceContext(listing).tier === "great_deal" && (
+                <span className="px-1.5 py-0.5 rounded bg-sx-green-tint border border-sx-green-border text-[10px] font-bold text-sx-green-text shrink-0">
+                  Great Value
+                </span>
+              )}
+            </div>
 
             <Link
               href={`/listings/${listing.id}`}

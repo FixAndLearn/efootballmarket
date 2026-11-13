@@ -15,7 +15,7 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Direct Services, Escrow Desk & Support | eFootballMarket Kenya",
+  title: "Direct Services, Escrow Desk & Support Kenya",
   description:
     "Book WhatsApp Middleman Escrow, Custom Squad Sourcing, Account Swaps, or Paid Cup Hosting with Brian Okibo's Nairobi Desk (M-Pesa Till 1572931 · +254 794 400 365).",
   alternates: {

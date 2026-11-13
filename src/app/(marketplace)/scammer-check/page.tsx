@@ -7,9 +7,19 @@ import { Button } from "@/components/ui/Button";
 import { DetailTabLink } from "@/components/ui/DetailTabLink";
 
 export const metadata: Metadata = {
-  title: "Scammer Phone & Handle Check",
+  title: "Scammer Phone & Handle Check Kenya",
   description:
-    "Check Kenyan phone numbers, WhatsApp contacts, and trader handles against reported fraud incidents before trading an eFootball account.",
+    "Check Kenyan 07... and 01... phone numbers, WhatsApp contacts, and trader handles against reported fraud incidents before trading an eFootball account.",
+  alternates: {
+    canonical: "https://www.efootballmarket.co.ke/scammer-check",
+  },
+  openGraph: {
+    title: "Scammer Phone & Handle Check | eFootballMarket Kenya",
+    description:
+      "Search any Kenyan 07/01 phone number or trader handle against verified fraud reports before paying for an eFootball squad.",
+    url: "https://www.efootballmarket.co.ke/scammer-check",
+    type: "website",
+  },
 };
 
 export default function ScammerCheckPage() {

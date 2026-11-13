@@ -4,7 +4,7 @@ import { StandaloneDocLayout } from "@/components/legal/StandaloneDocLayout";
 import { DetailTabLink } from "@/components/ui/DetailTabLink";
 
 export const metadata: Metadata = {
-  title: "Terms of Service | eFootballMarket Kenya",
+  title: "Terms of Service",
   description:
     "Standalone Terms of Service for eFootballMarket Kenya: M-Pesa Till 1572931 payment hold, 12-hour delivery, 24-hour buyer inspection, Middleman contracts, tournaments, and Kenyan governing law.",
   alternates: { canonical: "https://www.efootballmarket.co.ke/terms" },

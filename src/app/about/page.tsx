@@ -3,7 +3,7 @@ import Link from "next/link";
 import { ShieldCheck, Lock, Smartphone, Scale, Building2 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "About eFootballMarket Kenya | Who Operates the Marketplace & How Funds Are Held",
+  title: "About Us — Operator Disclosure & How Funds Are Held",
   description:
     "Who operates eFootballMarket.co.ke in Nairobi, Kenya, how M-Pesa Till 1572931 payment holding works vs Safaricom's payment-processor role, and our published fee schedule.",
   alternates: {

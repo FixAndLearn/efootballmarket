@@ -5,7 +5,7 @@ import { KonamiIdExplainerVideo } from "@/components/common/KonamiIdExplainerVid
 import { DetailTabLink } from "@/components/ui/DetailTabLink";
 
 export const metadata: Metadata = {
-  title: "How Payment Protection & Fees Work | eFootballMarket Kenya",
+  title: "How Payment Protection & Fees Work",
   description:
     "Standalone Payment Protection & Fee Schedule for eFootballMarket Kenya: M-Pesa Buy Goods Till 1572931 custody, 12h delivery, 24h buyer inspection, and complete fee table.",
   alternates: { canonical: "https://www.efootballmarket.co.ke/escrow-guarantee" },

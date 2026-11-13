@@ -217,7 +217,7 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
             </span>
           </div>
           <p className="text-sx-ink-soft bg-sx-subtle p-3 rounded-lg border border-sx-border leading-relaxed">
-            "{dispute.description}"
+            &ldquo;{dispute.description}&rdquo;
           </p>
         </div>
       )}

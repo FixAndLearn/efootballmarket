@@ -17,10 +17,13 @@ export interface UseRealtimeListingsOptions {
     minStrength?: number;
     minCoins?: number;
     minEpics?: number;
+    allowsSwap?: boolean;
     minPrice?: number;
     maxPrice?: number;
     manager?: string;
     sortBy?: string;
+    limit?: number;
+    offset?: number;
   };
   sortBy?: string;
   limit?: number;
@@ -33,7 +36,7 @@ export function useRealtimeListings(options: UseRealtimeListingsOptions = {}) {
     filters,
     sortBy,
     limit = 24,
-    autoRefreshIntervalMs = 7000,
+    autoRefreshIntervalMs = 25000,
   } = options;
 
   const [listings, setListings] = useState<Listing[]>(initialListings);
@@ -66,6 +69,9 @@ export function useRealtimeListings(options: UseRealtimeListingsOptions = {}) {
       if (filters.minEpics && (listing.epic_players_count || 0) < filters.minEpics) {
         return false;
       }
+      if (filters.allowsSwap && !listing.allows_swap) {
+        return false;
+      }
       if (filters.minPrice && (listing.price || 0) < filters.minPrice) {
         return false;
       }
@@ -81,7 +87,13 @@ export function useRealtimeListings(options: UseRealtimeListingsOptions = {}) {
         const titleMatch = listing.title?.toLowerCase().includes(q);
         const descMatch = listing.description?.toLowerCase().includes(q);
         const managerMatch = listing.manager_name?.toLowerCase().includes(q);
-        if (!titleMatch && !descMatch && !managerMatch) return false;
+        const playersMatch = (listing.key_players_list || []).some((p) =>
+          p.toLowerCase().includes(q)
+        );
+        const ovrMatch = String(listing.overall_team_strength || "").includes(q);
+        if (!titleMatch && !descMatch && !managerMatch && !playersMatch && !ovrMatch) {
+          return false;
+        }
       }
       return true;
     },
@@ -91,13 +103,16 @@ export function useRealtimeListings(options: UseRealtimeListingsOptions = {}) {
   // Build query string for API polling
   const buildQueryString = useCallback(() => {
     const params = new URLSearchParams();
-    if (limit) params.set("limit", String(limit));
+    const effectiveLimit = filters?.limit || limit;
+    if (effectiveLimit) params.set("limit", String(effectiveLimit));
+    if (filters?.offset) params.set("offset", String(filters.offset));
     if (filters?.search) params.set("search", filters.search);
     if (filters?.platform && filters.platform !== "all") params.set("platform", filters.platform);
     if (filters?.playstyle && filters.playstyle !== "all") params.set("playstyle", filters.playstyle);
     if (filters?.minStrength) params.set("minStrength", String(filters.minStrength));
     if (filters?.minCoins) params.set("minCoins", String(filters.minCoins));
     if (filters?.minEpics) params.set("minEpics", String(filters.minEpics));
+    if (filters?.allowsSwap) params.set("swap", "1");
     if (filters?.minPrice) params.set("minPrice", String(filters.minPrice));
     if (filters?.maxPrice) params.set("maxPrice", String(filters.maxPrice));
     if (filters?.manager) params.set("manager", filters.manager);
@@ -242,7 +257,7 @@ export function useRealtimeListings(options: UseRealtimeListingsOptions = {}) {
         clearTimeout(alertTimeoutRef.current);
       }
     };
-  }, [syncListings]);
+  }, [syncListings, satisfiesFilters]);
 
   // Secondary: Resilient heartbeat auto-refresh (only when browser tab is visible)
   useEffect(() => {

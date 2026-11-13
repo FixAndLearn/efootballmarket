@@ -160,6 +160,71 @@ export function getKonamiIdStatusInfo(status: string): { label: string; safe: bo
   }
 }
 
+/**
+ * Calibrated Kenyan eFootball squad price benchmark (KES) based on OVR, Epics, Coins & Division.
+ */
+export function getListingPriceContext(listing: {
+  price?: number | null;
+  overall_team_strength?: number | null;
+  epic_players_count?: number | null;
+  big_time_players_count?: number | null;
+  coin_balance?: number | null;
+  highest_division?: number | null;
+  current_division?: number | null;
+  platform?: string | null;
+}): {
+  tier: "great_deal" | "fair_price" | "premium";
+  label: string;
+  detail: string;
+} {
+  const price = Number(listing.price || 0);
+  const ovr = Number(listing.overall_team_strength || 3100);
+  const epics =
+    Number(listing.epic_players_count || 0) +
+    Number(listing.big_time_players_count || 0);
+  const coins = Number(listing.coin_balance || 0);
+  const peakDiv = Math.min(
+    Number(listing.highest_division || 10),
+    Number(listing.current_division || 10)
+  );
+
+  let fairMid = 650;
+  if (ovr >= 3240) fairMid = 2600 + (ovr - 3240) * 35;
+  else if (ovr >= 3200) fairMid = 1400 + (ovr - 3200) * 28;
+  else if (ovr >= 3150) fairMid = 850 + (ovr - 3150) * 11;
+  else if (ovr >= 3050) fairMid = 450 + (ovr - 3050) * 4;
+
+  fairMid += Math.min(1800, epics * 115);
+  fairMid += Math.min(1200, Math.round(coins * 0.8));
+  if (peakDiv <= 2) fairMid += 250;
+  if (listing.platform && listing.platform !== "android" && listing.platform !== "ios") {
+    fairMid += 350;
+  }
+
+  const lowEst = Math.max(150, Math.round((fairMid * 0.75) / 50) * 50);
+  const highEst = Math.max(lowEst + 250, Math.round((fairMid * 1.3) / 50) * 50);
+
+  if (price > 0 && price <= lowEst) {
+    return {
+      tier: "great_deal",
+      label: "Great Value",
+      detail: `Below typical KES ${lowEst.toLocaleString()}–${highEst.toLocaleString()} ask for ${ovr} OVR`,
+    };
+  }
+  if (price <= highEst) {
+    return {
+      tier: "fair_price",
+      label: "Fair Market Ask",
+      detail: `Within typical KES ${lowEst.toLocaleString()}–${highEst.toLocaleString()} range for ${ovr} OVR`,
+    };
+  }
+  return {
+    tier: "premium",
+    label: "Negotiable Ask",
+    detail: `Typical ${ovr} OVR range: KES ${lowEst.toLocaleString()}–${highEst.toLocaleString()} · Make Offer open`,
+  };
+}
+
 // Re-export phone normalization & WhatsApp helpers
 export {
   normalizePhoneNumber,

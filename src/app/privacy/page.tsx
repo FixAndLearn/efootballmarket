@@ -4,7 +4,7 @@ import { StandaloneDocLayout } from "@/components/legal/StandaloneDocLayout";
 import { ArrowUpRight } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Privacy & Cookie Policy | eFootballMarket Kenya",
+  title: "Privacy & Cookie Policy (Kenya DPA 2019)",
   description:
     "Standalone Privacy & Cookie Policy for eFootballMarket Kenya under the Kenya Data Protection Act, 2019: M-Pesa escrow records, AES-256-GCM handover encryption, Google Tag Manager (GTM-KSSS83QZ), and Google AdSense Consent Mode v2.",
   alternates: { canonical: "https://www.efootballmarket.co.ke/privacy" },

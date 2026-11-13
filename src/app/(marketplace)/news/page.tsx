@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "Blog, Guides & What's Coming | eFootballMarket Kenya",
+  title: "eFootball Blog, Meta Guides & Tactical Builds Kenya",
   description:
     "eFootballMarket's official blog & guides hub: upcoming Thursday pack drops, new platform features, Quick Counter & Long Ball Counter meta tactics, 88+ manager stat breakpoints, Konami ID 2FA transfers, and M-Pesa escrow safety.",
   alternates: {

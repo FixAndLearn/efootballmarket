@@ -155,19 +155,26 @@ export async function generateMetadata({
   const resolved = await Promise.resolve(params);
   const result = await fetchSellerByUsername(resolved.username);
   if (!result) {
-    return { title: "Seller Storefront Not Found | eFootballMarket" };
+    return { title: "Seller Storefront Not Found" };
   }
 
   const { seller, listings } = result;
+  const canonicalUrl = `https://www.efootballmarket.co.ke/u/${encodeURIComponent(
+    seller.username || resolved.username
+  )}`;
   const title = `@${seller.username} — eFootball Squads (${listings.length} Listed)`;
   const description = `Browse ${listings.length} eFootball squads listed by @${seller.username} on eFootballMarket Kenya. Payment held on M-Pesa Till 1572931 during 24-hour buyer inspection.`;
 
   return {
     title,
     description,
+    alternates: {
+      canonical: canonicalUrl,
+    },
     openGraph: {
       title,
       description,
+      url: canonicalUrl,
       type: "profile",
     },
   };

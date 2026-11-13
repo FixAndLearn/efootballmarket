@@ -3,6 +3,7 @@ import {
   formatCurrency,
   formatSmartListingTitle,
   getKonamiIdStatusInfo,
+  getListingPriceContext,
   getPlatformLabel,
   getPlaystyleLabel,
 } from "@/lib/utils";
@@ -60,7 +61,7 @@ export async function generateMetadata({ params }: ListingDetailPageProps): Prom
 
     if (!listing) {
       return {
-        title: "Squad Listing | eFootballMarket",
+        title: "Squad Listing",
       };
     }
 
@@ -96,7 +97,7 @@ export async function generateMetadata({ params }: ListingDetailPageProps): Prom
     };
   } catch {
     return {
-      title: "Squad Listing | eFootballMarket",
+      title: "Squad Listing",
     };
   }
 }
@@ -128,6 +129,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
   const isOwner = Boolean(user && listing.seller_id === user.id);
   const konamiStatus = getKonamiIdStatusInfo(listing.konami_id_status);
   const displayTitle = formatSmartListingTitle(listing);
+  const priceContext = getListingPriceContext(listing);
   const sellerReviews = listing.seller_id
     ? await getVerifiedSellerReviews(listing.seller_id, 6)
     : [];
@@ -136,6 +138,39 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
     listing.images?.find((img) => img.is_primary)?.image_url ||
     listing.images?.[0]?.image_url ||
     "https://www.efootballmarket.co.ke/opengraph-image";
+
+  const breadcrumbJsonLd = {
+    "@context": "https://schema.org",
+    "@type": "BreadcrumbList",
+    itemListElement: [
+      {
+        "@type": "ListItem",
+        position: 1,
+        name: "Home",
+        item: "https://www.efootballmarket.co.ke",
+      },
+      {
+        "@type": "ListItem",
+        position: 2,
+        name: "Browse Squads",
+        item: "https://www.efootballmarket.co.ke/browse",
+      },
+      {
+        "@type": "ListItem",
+        position: 3,
+        name: getPlatformLabel(listing.platform),
+        item: `https://www.efootballmarket.co.ke/browse?platform=${encodeURIComponent(
+          listing.platform
+        )}`,
+      },
+      {
+        "@type": "ListItem",
+        position: 4,
+        name: displayTitle,
+        item: `https://www.efootballmarket.co.ke/listings/${listing.id}`,
+      },
+    ],
+  };
 
   const productJsonLd: Record<string, any> = {
     "@context": "https://schema.org",
@@ -189,7 +224,10 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
-          __html: JSON.stringify(productJsonLd).replace(/</g, "\\u003c"),
+          __html: JSON.stringify([productJsonLd, breadcrumbJsonLd]).replace(
+            /</g,
+            "\\u003c"
+          ),
         }}
       />
       {/* Top Breadcrumb Bar */}
@@ -424,18 +462,37 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
         {/* Right Column: Sticky Checkout & Seller Box (4 cols) */}
         <div id="listing-inline-cta" className="lg:col-span-4 space-y-5 lg:sticky lg:top-28">
           <div className="store-panel rounded-2xl p-6 space-y-5">
-            <div className="pb-4 border-b border-sx-border">
-              <span className="text-[11px] font-mono uppercase tracking-wider text-sx-muted">
-                Purchase Price
-              </span>
-              <div className="flex items-baseline justify-between gap-2 mt-1">
-                <span className="text-3xl font-bold text-sx-ink font-mono">
-                  {formatCurrency(listing.price, listing.currency)}
+            <div className="pb-4 border-b border-sx-border space-y-2.5">
+              <div>
+                <span className="text-[11px] font-mono uppercase tracking-wider text-sx-muted">
+                  Purchase Price
                 </span>
-                <span className="px-2 py-0.5 rounded bg-sx-green-tint border border-sx-green-border text-[10px] font-mono font-bold text-sx-green-text uppercase">
-                  Till 1572931
-                </span>
+                <div className="flex items-baseline justify-between gap-2 mt-1">
+                  <span className="text-3xl font-bold text-sx-ink font-mono">
+                    {formatCurrency(listing.price, listing.currency)}
+                  </span>
+                  <span className="px-2 py-0.5 rounded bg-sx-green-tint border border-sx-green-border text-[10px] font-mono font-bold text-sx-green-text uppercase">
+                    Till 1572931
+                  </span>
+                </div>
               </div>
+
+              {listing.status === "published" && (
+                <div
+                  className={`px-3 py-2 rounded-xl border text-xs flex items-center justify-between gap-2 ${
+                    priceContext.tier === "great_deal"
+                      ? "bg-sx-green-tint border-sx-green-border text-sx-green-text"
+                      : "bg-sx-stone border-sx-border text-sx-muted"
+                  }`}
+                >
+                  <span className="font-bold text-sx-ink shrink-0">
+                    {priceContext.label}
+                  </span>
+                  <span className="text-[11px] text-right">
+                    {priceContext.detail}
+                  </span>
+                </div>
+              )}
             </div>
 
             {/* Konami Link Status */}

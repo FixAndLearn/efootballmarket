@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { ListingCard } from "./ListingCard";
 import { AdBanner } from "@/components/common/AdBanner";
 import { useRealtimeListings } from "@/hooks/useRealtimeListings";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatSmartListingTitle } from "@/lib/utils";
 
 export interface ListingGridProps {
   listings: Listing[];
@@ -19,10 +19,13 @@ export interface ListingGridProps {
     minStrength?: number;
     minCoins?: number;
     minEpics?: number;
+    allowsSwap?: boolean;
     minPrice?: number;
     maxPrice?: number;
     manager?: string;
     sortBy?: string;
+    limit?: number;
+    offset?: number;
   };
   isLoading?: boolean;
 }
@@ -31,13 +34,15 @@ export function ListingGrid({ listings: initialListings, filters, isLoading = fa
   const { listings, newListingAlert, dismissAlert } = useRealtimeListings({
     initialListings,
     filters,
-    limit: 24,
-    autoRefreshIntervalMs: 8000,
+    limit: filters?.limit || 24,
+    autoRefreshIntervalMs: 25000,
   });
 
   const hasActiveFilters = Boolean(
     filters?.search ||
       (filters?.platform && filters.platform !== "all") ||
+      (filters?.playstyle && filters.playstyle !== "all") ||
+      filters?.allowsSwap ||
       filters?.minStrength ||
       filters?.minCoins ||
       filters?.minEpics ||
@@ -69,7 +74,7 @@ export function ListingGrid({ listings: initialListings, filters, isLoading = fa
               New Verified Squad Listed
             </span>
             <p className="text-sm font-semibold text-sx-ink truncate">
-              {newListingAlert.title} &middot; {formatCurrency(newListingAlert.price)} ({newListingAlert.overall_team_strength} OVR)
+              {formatSmartListingTitle(newListingAlert)} &middot; {formatCurrency(newListingAlert.price)} ({newListingAlert.overall_team_strength} OVR)
             </p>
           </div>
 
@@ -128,6 +133,26 @@ export function ListingGrid({ listings: initialListings, filters, isLoading = fa
               </Button>
             </Link>
           </div>
+
+          {hasActiveFilters && (
+            <div className="flex flex-wrap items-center justify-center gap-1.5 pt-5 text-xs">
+              <span className="text-sx-muted mr-1">Try popular:</span>
+              {[
+                { label: "Under KES 1,000", href: "/browse?maxPrice=1000" },
+                { label: "3150+ OVR", href: "/browse?minStrength=3150" },
+                { label: "Android Squads", href: "/browse?platform=android" },
+                { label: "Lowest Price", href: "/browse?sortBy=price_asc" },
+              ].map((chip) => (
+                <Link
+                  key={chip.label}
+                  href={chip.href}
+                  className="px-2.5 py-1 rounded-full bg-sx-canvas border border-sx-border hover:border-sx-green text-sx-ink font-medium transition-colors"
+                >
+                  {chip.label}
+                </Link>
+              ))}
+            </div>
+          )}
         </div>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">

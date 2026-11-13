@@ -19,13 +19,17 @@ export async function generateMetadata({ params }: DirectPayPageProps): Promise<
   const listing = await listingService.getListingById(params.id);
 
   if (!listing) {
-    return { title: "Direct Checkout | eFootballMarket" };
+    return {
+      title: "Direct Checkout",
+      robots: { index: false, follow: false },
+    };
   }
 
   const displayTitle = formatSmartListingTitle(listing);
   return {
-    title: `Instant M-Pesa Checkout: ${displayTitle} | eFootballMarket`,
+    title: `Instant M-Pesa Checkout: ${displayTitle}`,
     description: `Pay KES ${listing.price.toLocaleString()} securely via Till 1572931 escrow for ${displayTitle}. Escrow-protected Konami ID transfer with 24-hour inspection.`,
+    robots: { index: false, follow: false },
   };
 }
 

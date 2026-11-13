@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { ListingOffer } from "@/types/database";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatSmartListingTitle } from "@/lib/utils";
 import { Button } from "@/components/ui/Button";
 import {
   Handshake,
@@ -196,12 +196,15 @@ export function SellerListingOffersPanel({
                   </div>
                   {offer.listing && (
                     <p className="text-xs text-sx-muted mt-0.5">
-                      Squad: <strong className="text-sx-ink-soft">{(offer.listing as any).title}</strong>
+                      Squad:{" "}
+                      <strong className="text-sx-ink-soft">
+                        {formatSmartListingTitle(offer.listing as any)}
+                      </strong>
                     </p>
                   )}
                   {offer.note && (
                     <p className="text-xs text-sx-ink-soft italic mt-1 bg-pitch-card p-2 rounded-lg border border-pitch-border/60">
-                      "{offer.note}"
+                      &ldquo;{offer.note}&rdquo;
                     </p>
                   )}
                 </div>

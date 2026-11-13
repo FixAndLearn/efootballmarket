@@ -2,7 +2,7 @@
 
 import React, { useRef, useState, useEffect } from "react";
 import { Listing } from "@/types/database";
-import { formatCurrency, getPlatformLabel, getPlaystyleLabel } from "@/lib/utils";
+import { formatCurrency, formatSmartListingTitle, getPlatformLabel, getPlaystyleLabel } from "@/lib/utils";
 import {
   Download,
   Copy,
@@ -32,7 +32,8 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
     listing.images?.find((img) => img.is_primary)?.image_url ||
     listing.images?.[0]?.image_url;
 
-  const viralText = `*HOT eFootball Account for Sale on EFootballMarket!* 🇰🇪\n\n*Squad*: ${listing.title}\n⭐ *Team OVR*: ${listing.overall_team_strength}\n*Epic / Boosters*: ${listing.epic_players_count} cards\n*Current Division*: Div ${listing.current_division}\n*Price*: ${formatCurrency(listing.price, listing.currency)}\n\n*Escrow Protected by Safaricom Till 1572931*\nFunds held safely until credentials are verified!\n\n*View Photos & Buy*: https://www.efootballmarket.co.ke/listings/${listing.id}`;
+  const smartTitle = formatSmartListingTitle(listing);
+  const viralText = `*HOT eFootball Account for Sale on EFootballMarket!* 🇰🇪\n\n*Squad*: ${smartTitle}\n⭐ *Team OVR*: ${listing.overall_team_strength}\n*Epic / Boosters*: ${listing.epic_players_count} cards\n*Current Division*: Div ${listing.current_division}\n*Price*: ${formatCurrency(listing.price, listing.currency)}\n\n*Escrow Protected by Safaricom Till 1572931*\nFunds held safely until credentials are verified!\n\n*View Photos & Buy*: https://www.efootballmarket.co.ke/listings/${listing.id}`;
 
   const drawFlyer = () => {
     const canvas = canvasRef.current;
@@ -81,7 +82,7 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
     // 3. Title Box
     ctx.fillStyle = "#F8FAFC";
     ctx.font = "900 48px system-ui, sans-serif";
-    const titleText = listing.title.length > 38 ? listing.title.slice(0, 35) + "..." : listing.title;
+    const titleText = smartTitle.length > 38 ? smartTitle.slice(0, 35) + "..." : smartTitle;
     ctx.fillText(titleText, 70, 170);
 
     // Badges Row

@@ -4,7 +4,7 @@ import React, { useCallback, useEffect, useState } from "react";
 import { BellRing, CheckCircle2, XCircle, Loader2 } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/Button";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatSmartListingTitle } from "@/lib/utils";
 
 interface AvailabilityPingItem {
   id: string;
@@ -156,7 +156,7 @@ export function SellerAvailabilityPingsPanel({ sellerId }: { sellerId?: string }
                     </span>
                   </div>
                   <p className="text-sm sm:text-base font-bold text-sx-ink">
-                    Is &ldquo;{ping.listing?.title || "Listed Squad"}&rdquo; still available?
+                    Is &ldquo;{ping.listing ? formatSmartListingTitle(ping.listing) : "Listed Squad"}&rdquo; still available?
                   </p>
                 </div>
 

@@ -14,6 +14,7 @@ import { LiveNotificationManager } from "@/components/notifications/LiveNotifica
 const inter = Inter({
   subsets: ["latin"],
   variable: "--font-sans",
+  weight: ["400", "500", "600", "700", "800"],
   display: "swap",
 });
 
@@ -69,9 +70,6 @@ export const metadata: Metadata = {
     email: false,
     address: false,
     telephone: false,
-  },
-  alternates: {
-    canonical: APP_URL,
   },
   icons: {
     icon: [

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { createPortal } from "react-dom";
 import { Button } from "@/components/ui/Button";
 import { Listing } from "@/types/database";
-import { formatCurrency } from "@/lib/utils";
+import { formatCurrency, formatSmartListingTitle } from "@/lib/utils";
 import { normalizePhoneNumber } from "@/lib/utils/phone";
 import { isListingOnFlashSale } from "@/lib/utils/flashSale";
 import {
@@ -267,7 +267,7 @@ export function MakeOfferModal({
                     Target Squad
                   </span>
                   <p className="text-xs font-bold text-sx-ink-soft mt-0.5 line-clamp-1">
-                    {listing.title}
+                    {formatSmartListingTitle(listing)}
                   </p>
                 </div>
                 <div className="text-right shrink-0">
