@@ -105,7 +105,7 @@ export function AppDownloadClient() {
           <div className="lg:col-span-7 space-y-5">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-sx-green-tint border border-sx-green-border text-sx-green-text text-xs font-bold">
               <Smartphone className="w-3.5 h-3.5" />
-              <span>Official Mobile App · v1.0.0 (1.6 MB)</span>
+              <span>Official Pro Super-App · v2.0.0 (23 MB Native APK)</span>
             </div>
 
             <div className="flex items-center gap-4">
@@ -129,11 +129,13 @@ export function AppDownloadClient() {
             </div>
 
             <p className="text-sm sm:text-base text-sx-ink-soft leading-relaxed">
-              Built completely different from the website: swipe verified squads in a{" "}
-              <strong>Full-Card Deck</strong>, price your roster with the{" "}
-              <strong>Instant KES Squad Valuator</strong>, track replies in{" "}
-              <strong>Live Deal Radar</strong>, and save bundles with{" "}
-              <strong>Safaricom Lite Mode</strong>.
+              Way more than the website: includes a full{" "}
+              <strong>eFHUB 24-Stat Progression &amp; Booster Simulator</strong>,{" "}
+              <strong>Interactive 11v11 Tactical Pitch Builder</strong>,{" "}
+              <strong>150-Box Epic Pack Spin Simulator</strong>,{" "}
+              <strong>Head-to-Head VS Comparator</strong>,{" "}
+              <strong>Full-Card Squad Swipe Deck</strong>, and{" "}
+              <strong>Offline Pro Mode</strong> when mobile data is off.
             </p>
 
             {isInstalled ? (
@@ -168,11 +170,11 @@ export function AppDownloadClient() {
                   {/* Direct Signed Android APK Download */}
                   <a
                     href="/download/efootball-market.apk"
-                    download="eFootball-Market.apk"
+                    download="eFootball-Market-Pro-v2.apk"
                     className="inline-flex items-center justify-center gap-2.5 px-6 py-4 rounded-xl bg-sx-green hover:bg-sx-green-hover text-white font-extrabold text-sm sm:text-base shadow-sm transition-all"
                   >
                     <Download className="w-5 h-5 shrink-0" />
-                    <span>Download Android APK (1.6 MB)</span>
+                    <span>Download Pro Android APK (23 MB)</span>
                   </a>
 
                   {/* 1-Tap Native Browser PWA Install (when supported by Chrome/Edge/Samsung) */}
@@ -233,7 +235,7 @@ export function AppDownloadClient() {
                     1
                   </span>
                   <span>
-                    Tap <strong>Download Android APK (1.6 MB)</strong> above (or{" "}
+                    Tap <strong>Download Pro Android APK (23 MB)</strong> above (or{" "}
                     <strong>1-Tap Instant Install</strong> if shown).
                   </span>
                 </li>
@@ -242,7 +244,7 @@ export function AppDownloadClient() {
                     2
                   </span>
                   <span>
-                    Open the downloaded <strong>eFootball-Market.apk</strong> file and tap{" "}
+                    Open the downloaded <strong>eFootball-Market-Pro-v2.apk</strong> file and tap{" "}
                     <strong>Install</strong> (allow browser install if prompted once).
                   </span>
                 </li>
@@ -323,10 +325,10 @@ export function AppDownloadClient() {
           <div className="w-9 h-9 rounded-xl bg-sx-green-tint text-sx-green-text flex items-center justify-center">
             <Zap className="w-4 h-4" />
           </div>
-          <h3 className="text-sm font-bold text-sx-ink">Data-Saver 1.6 MB Package</h3>
+          <h3 className="text-sm font-bold text-sx-ink">eFHUB Lab + Offline Pro Engine (23 MB)</h3>
           <p className="text-xs text-sx-muted leading-relaxed">
-            Uses 95% less storage than heavy store apps and updates automatically whenever new
-            Friday Drops or tournaments go live.
+            Includes interactive 24-stat Progression Simulator, 11v11 Pitch Builder, 150-Box Pack
+            Simulator, native Android haptics, and Offline Pro Mode when mobile data is off.
           </p>
         </div>
       </div>

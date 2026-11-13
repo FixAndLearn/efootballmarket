@@ -20,6 +20,9 @@ import {
   WatchedOfferEntry,
   WatchedPingEntry,
 } from "@/lib/notifications/browserPush";
+import { BuildLabTool } from "@/components/app/pro/BuildLabTool";
+import { SquadPitchBuilder } from "@/components/app/pro/SquadPitchBuilder";
+import { PackSimulatorAndVsLab } from "@/components/app/pro/PackSimulatorAndVsLab";
 import {
   Flame,
   Radio,
@@ -47,9 +50,12 @@ import {
   ExternalLink,
   RefreshCw,
   Handshake,
-  Smartphone,
   ShieldCheck,
   AlertTriangle,
+  Gamepad2,
+  Sliders,
+  Swords,
+  Gift,
 } from "lucide-react";
 
 interface MobileAppShellProps {
@@ -58,7 +64,8 @@ interface MobileAppShellProps {
   initialWanted: WantedRequest[];
 }
 
-type AppTab = "swipe" | "radar" | "sell" | "shield" | "vault";
+type AppTab = "swipe" | "efhub" | "sell" | "radar" | "vault";
+type EfHubSubTab = "build" | "pitch" | "pack" | "vs";
 
 const FAVORITES_STORAGE_KEY = "efm_app_saved_squads_v1";
 
@@ -81,6 +88,19 @@ function computeAppValuation(ovr: number, epics: number, coins: number) {
   return { low, mid, high, fee, net };
 }
 
+function computeSquadDealScore(sq: Listing): { score: string; label: string; isHot: boolean } {
+  const est = computeAppValuation(
+    sq.overall_team_strength || 3080,
+    (sq.epic_players_count || 0) + (sq.big_time_players_count || 0),
+    sq.coin_balance || 0
+  );
+  const price = Math.max(100, Number(sq.price) || est.mid);
+  const ratio = est.mid / price;
+  if (ratio >= 1.15) return { score: "9.6", label: "HOT STEAL", isHot: true };
+  if (ratio >= 0.95) return { score: "9.1", label: "GREAT DEAL", isHot: true };
+  return { score: "8.5", label: "VERIFIED", isHot: false };
+}
+
 export function MobileAppShell({
   initialListings,
   initialTournaments,
@@ -90,6 +110,7 @@ export function MobileAppShell({
   const { user, profile } = useAuth();
 
   const [activeTab, setActiveTab] = useState<AppTab>("swipe");
+  const [efSubTab, setEfSubTab] = useState<EfHubSubTab>("build");
   const [viewMode, setViewMode] = useState<"deck" | "grid">("deck");
   const [dataSaver, setDataSaver] = useState(false);
 
@@ -115,12 +136,16 @@ export function MobileAppShell({
     text: string;
   } | null>(null);
 
-  // Radar State
+  // Radar & Scammer Scanner State
   const [watchedPings, setWatchedPings] = useState<WatchedPingEntry[]>([]);
   const [watchedOffers, setWatchedOffers] = useState<WatchedOfferEntry[]>([]);
   const [sellerPings, setSellerPings] = useState<any[]>([]);
   const [updatingPingId, setUpdatingPingId] = useState<string | null>(null);
   const [alertsGranted, setAlertsGranted] = useState(false);
+  const [scanInput, setScanInput] = useState("");
+  const [scanning, setScanning] = useState(false);
+  const [scanResults, setScanResults] = useState<any[] | null>(null);
+  const [scanQueried, setScanQueried] = useState("");
 
   // Valuator State
   const [valOvr, setValOvr] = useState(3180);
@@ -128,21 +153,26 @@ export function MobileAppShell({
   const [valCoins, setValCoins] = useState(500);
   const [valPlatform, setValPlatform] = useState("android");
 
-  // Shield / Scammer Scanner State
-  const [scanInput, setScanInput] = useState("");
-  const [scanning, setScanning] = useState(false);
-  const [scanResults, setScanResults] = useState<any[] | null>(null);
-  const [scanQueried, setScanQueried] = useState("");
-
   // Vault / Orders State
   const [buyerOrders, setBuyerOrders] = useState<any[]>([]);
   const [sellerOrders, setSellerOrders] = useState<any[]>([]);
   const [loadingVault, setLoadingVault] = useState(false);
 
-  // Initialize local state & Service Worker
   useEffect(() => {
     ensureNotificationServiceWorker().catch(() => {});
     setAlertsGranted(getBrowserNotificationPermission() === "granted");
+
+    if (typeof window !== "undefined") {
+      const sp = new URLSearchParams(window.location.search);
+      const tabParam = sp.get("tab") as AppTab | null;
+      const subParam = sp.get("tool") as EfHubSubTab | null;
+      if (tabParam && ["swipe", "efhub", "sell", "radar", "vault"].includes(tabParam)) {
+        setActiveTab(tabParam);
+      }
+      if (subParam && ["build", "pitch", "pack", "vs"].includes(subParam)) {
+        setEfSubTab(subParam);
+      }
+    }
 
     try {
       const rawSaved = localStorage.getItem(FAVORITES_STORAGE_KEY);
@@ -162,15 +192,10 @@ export function MobileAppShell({
   }, []);
 
   useEffect(() => {
-    if (profile?.phone_number && !offerPhone) {
-      setOfferPhone(profile.phone_number);
-    }
-    if (profile?.username && !offerName) {
-      setOfferName(profile.username);
-    }
+    if (profile?.phone_number && !offerPhone) setOfferPhone(profile.phone_number);
+    if (profile?.username && !offerName) setOfferName(profile.username);
   }, [profile, offerPhone, offerName]);
 
-  // Filtered Squads
   const filteredListings = useMemo(() => {
     return listings.filter((item) => {
       if (filterChip === "android" && item.platform !== "android") return false;
@@ -194,6 +219,10 @@ export function MobileAppShell({
   }, [listings, filterChip, searchQuery]);
 
   const currentSquad = filteredListings[deckIndex] || null;
+  const currentDeal = useMemo(
+    () => (currentSquad ? computeSquadDealScore(currentSquad) : null),
+    [currentSquad]
+  );
 
   useEffect(() => {
     setDeckIndex(0);
@@ -206,13 +235,17 @@ export function MobileAppShell({
 
   const squadPhotos = useMemo(() => {
     if (!currentSquad) return [];
-    const urls = (currentSquad.images || [])
+    return (currentSquad.images || [])
       .map((img: any) => (typeof img === "string" ? img : img?.image_url))
       .filter(Boolean);
-    return urls;
   }, [currentSquad]);
 
   const toggleSaveSquad = (id: string) => {
+    try {
+      (window as any).EFMNative?.vibrate?.(15);
+    } catch {
+      // ignore
+    }
     setSavedIds((prev) => {
       const next = prev.includes(id) ? prev.filter((x) => x !== id) : [id, ...prev];
       try {
@@ -224,7 +257,6 @@ export function MobileAppShell({
     });
   };
 
-  // Refresh live feed
   const handleRefreshFeed = async () => {
     setRefreshingFeed(true);
     try {
@@ -243,7 +275,6 @@ export function MobileAppShell({
     }
   };
 
-  // Sync Radar Signals
   const refreshRadar = useCallback(async () => {
     const localPings = getWatchedPings();
     for (const p of localPings.slice(0, 6)) {
@@ -302,9 +333,7 @@ export function MobileAppShell({
   }, [user]);
 
   useEffect(() => {
-    if (activeTab === "radar") {
-      refreshRadar();
-    }
+    if (activeTab === "radar") refreshRadar();
     if (activeTab === "vault" && user) {
       setLoadingVault(true);
       Promise.all([
@@ -320,10 +349,14 @@ export function MobileAppShell({
     }
   }, [activeTab, user, refreshRadar]);
 
-  // 1-Tap Ping Seller Availability right inside Swipe Deck
   const handleInstantPing = async (squad: Listing) => {
     if (pingingId) return;
     setPingingId(squad.id);
+    try {
+      (window as any).EFMNative?.vibrate?.(20);
+    } catch {
+      // ignore
+    }
 
     if (getBrowserNotificationPermission() === "default") {
       requestBrowserNotificationPermission()
@@ -354,7 +387,6 @@ export function MobileAppShell({
     }
   };
 
-  // Seller 1-Tap Respond inside Radar
   const handleSellerPingAction = async (
     pingId: string,
     status: "available" | "unavailable"
@@ -378,7 +410,6 @@ export function MobileAppShell({
     }
   };
 
-  // Submit Quick Bargain Offer Sheet
   const handleSendOffer = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!bargainListing) return;
@@ -435,7 +466,6 @@ export function MobileAppShell({
     }
   };
 
-  // Scammer Phone Scanner
   const handleRunScan = async (e: React.FormEvent) => {
     e.preventDefault();
     const q = scanInput.trim();
@@ -466,16 +496,17 @@ export function MobileAppShell({
   const radarBadgeCount =
     sellerPings.filter((p) => p.status === "pending").length +
     watchedPings.filter((p) => p.lastStatus === "available").length +
-    watchedOffers.filter((o) => o.lastStatus === "accepted" || o.lastStatus === "countered")
-      .length;
+    watchedOffers.filter(
+      (o) => o.lastStatus === "accepted" || o.lastStatus === "countered"
+    ).length;
 
   return (
-    <div className="min-h-screen bg-[#070D19] text-slate-100 flex flex-col select-none">
-      {/* NATIVE APP TOP STATUS BAR */}
-      <header className="sticky top-0 z-40 bg-[#070D19]/95 backdrop-blur-xl border-b border-slate-800/80 px-4 py-3">
+    <div className="min-h-screen bg-[#050912] text-slate-100 flex flex-col select-none">
+      {/* NATIVE PRO SUPER-APP TOP BAR */}
+      <header className="sticky top-0 z-40 bg-[#050912]/95 backdrop-blur-xl border-b border-slate-800/80 px-3.5 py-2.5">
         <div className="max-w-md mx-auto flex items-center justify-between gap-2">
           <div className="flex items-center gap-2.5 min-w-0">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/15 border border-emerald-500/40 flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 rounded-xl bg-gradient-to-br from-emerald-500/25 to-amber-500/20 border border-emerald-400/50 flex items-center justify-center shrink-0">
               <ShieldCheck className="w-4 h-4 text-emerald-400" />
             </div>
             <div className="min-w-0">
@@ -483,13 +514,13 @@ export function MobileAppShell({
                 <span className="font-display font-extrabold text-sm tracking-tight text-white truncate">
                   eFootball Market
                 </span>
-                <span className="px-1.5 py-0.5 rounded bg-emerald-500/20 text-emerald-300 text-[9px] font-mono font-bold uppercase">
-                  APP
+                <span className="px-1.5 py-0.5 rounded bg-amber-400/20 text-amber-300 text-[9px] font-mono font-extrabold uppercase">
+                  PRO v2.0
                 </span>
               </div>
               <p className="text-[10px] text-slate-400 flex items-center gap-1">
                 <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                <span>Till 1572931 Escrow Live</span>
+                <span>Market · eFHUB Lab · Till 1572931</span>
               </p>
             </div>
           </div>
@@ -498,12 +529,12 @@ export function MobileAppShell({
             <button
               type="button"
               onClick={() => setDataSaver((d) => !d)}
-              className={`px-2.5 py-1.5 rounded-lg text-[10px] font-bold border transition-colors cursor-pointer ${
+              className={`px-2 py-1.5 rounded-lg text-[10px] font-bold border transition-colors cursor-pointer ${
                 dataSaver
                   ? "bg-amber-500/20 border-amber-500/50 text-amber-300"
                   : "bg-slate-900 border-slate-800 text-slate-400 hover:text-white"
               }`}
-              title="Toggle Safaricom Data-Saver Lite Mode"
+              title="Safaricom Data-Saver Lite Mode"
             >
               {dataSaver ? "LITE ON" : "LITE"}
             </button>
@@ -535,10 +566,38 @@ export function MobileAppShell({
       </header>
 
       {/* MAIN APP VIEWPORT */}
-      <div className="flex-1 max-w-md w-full mx-auto px-3.5 pt-3 pb-24 space-y-4">
-        {/* ==================== TAB 1: SWIPE DECK & FAST FEED ==================== */}
+      <div className="flex-1 max-w-md w-full mx-auto px-3.5 pt-3 pb-24 space-y-3.5">
+        {/* ==================== TAB 1: MARKET SWIPE DECK ==================== */}
         {activeTab === "swipe" && (
           <div className="space-y-3">
+            {/* Quick Pro Tools Launch Strip right at top of Market */}
+            <div className="grid grid-cols-4 gap-1.5">
+              {[
+                { id: "build" as const, label: "Build Lab", icon: Sliders, color: "text-emerald-400" },
+                { id: "pitch" as const, label: "11v11 Pitch", icon: Gamepad2, color: "text-amber-400" },
+                { id: "pack" as const, label: "150-Box Sim", icon: Gift, color: "text-fuchsia-400" },
+                { id: "vs" as const, label: "VS Compare", icon: Swords, color: "text-sky-400" },
+              ].map((tool) => {
+                const Icon = tool.icon;
+                return (
+                  <button
+                    key={tool.id}
+                    type="button"
+                    onClick={() => {
+                      setEfSubTab(tool.id);
+                      setActiveTab("efhub");
+                    }}
+                    className="p-2 rounded-2xl bg-slate-900/90 border border-slate-800 hover:border-emerald-500/40 flex flex-col items-center gap-1 cursor-pointer active:scale-95 transition-transform"
+                  >
+                    <Icon className={`w-4 h-4 ${tool.color}`} />
+                    <span className="text-[10px] font-extrabold text-slate-200 truncate">
+                      {tool.label}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
             {/* Search + View Toggle */}
             <div className="flex items-center gap-2">
               <div className="relative flex-1">
@@ -547,7 +606,7 @@ export function MobileAppShell({
                   type="search"
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  placeholder="Filter Gullit, 3200 OVR, Araùjo..."
+                  placeholder="Search Gullit, 3200 OVR, Messi..."
                   className="w-full h-9 pl-8 pr-3 rounded-xl bg-slate-900/90 border border-slate-800 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-emerald-500"
                 />
               </div>
@@ -577,11 +636,15 @@ export function MobileAppShell({
                 className="h-9 w-9 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 flex items-center justify-center cursor-pointer"
                 aria-label="Refresh live squads"
               >
-                <RefreshCw className={`w-3.5 h-3.5 ${refreshingFeed ? "animate-spin text-emerald-400" : ""}`} />
+                <RefreshCw
+                  className={`w-3.5 h-3.5 ${
+                    refreshingFeed ? "animate-spin text-emerald-400" : ""
+                  }`}
+                />
               </button>
             </div>
 
-            {/* Instant Filter Chips */}
+            {/* Filter Chips */}
             <div className="flex items-center gap-1.5 overflow-x-auto no-scrollbar pb-0.5">
               {[
                 { id: "all", label: `All (${listings.length})` },
@@ -606,12 +669,11 @@ export function MobileAppShell({
               ))}
             </div>
 
-            {/* DECK VIEW */}
+            {/* DECK MODE */}
             {viewMode === "deck" ? (
               currentSquad ? (
                 <div className="space-y-3">
                   <div className="rounded-3xl bg-slate-900 border border-slate-800 overflow-hidden shadow-2xl">
-                    {/* Story-Style Photo Viewer */}
                     <div className="relative aspect-[4/3] bg-slate-950 overflow-hidden">
                       {!dataSaver && squadPhotos.length > 0 ? (
                         <>
@@ -665,23 +727,33 @@ export function MobileAppShell({
                           </span>
                           <span className="text-[11px] text-slate-400 mt-1">
                             {dataSaver
-                              ? "Data-Saver Lite Mode (Images Paused)"
+                              ? "Safaricom Data-Saver Lite Mode"
                               : "Verified Konami ID Roster"}
                           </span>
                         </div>
                       )}
 
-                      {/* Floating Top Badges */}
+                      {/* Top Badges + AI Deal Score */}
                       <div className="absolute top-5 left-3 flex items-center gap-1.5">
-                        <span className="px-2.5 py-1 rounded-lg bg-black/75 backdrop-blur-md border border-white/15 text-[11px] font-mono font-extrabold text-emerald-400">
+                        <span className="px-2.5 py-1 rounded-lg bg-black/80 backdrop-blur-md border border-white/15 text-[11px] font-mono font-extrabold text-emerald-400">
                           {currentSquad.overall_team_strength || 3100} OVR
                         </span>
-                        <span className="px-2 py-1 rounded-lg bg-black/75 backdrop-blur-md border border-white/15 text-[10px] font-bold text-white uppercase">
+                        <span className="px-2 py-1 rounded-lg bg-black/80 backdrop-blur-md border border-white/15 text-[10px] font-bold text-white uppercase">
                           {getShortPlatformLabel(currentSquad.platform)}
                         </span>
+                        {currentDeal && (
+                          <span
+                            className={`px-2 py-1 rounded-lg backdrop-blur-md text-[10px] font-extrabold ${
+                              currentDeal.isHot
+                                ? "bg-amber-400 text-slate-950"
+                                : "bg-emerald-500/80 text-slate-950"
+                            }`}
+                          >
+                            ★ {currentDeal.score} {currentDeal.label}
+                          </span>
+                        )}
                       </div>
 
-                      {/* Save Heart */}
                       <button
                         type="button"
                         onClick={() => toggleSaveSquad(currentSquad.id)}
@@ -699,11 +771,10 @@ export function MobileAppShell({
                         />
                       </button>
 
-                      {/* Bottom Price Gradient */}
                       <div className="absolute bottom-0 inset-x-0 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent pt-8 pb-3 px-4 flex items-end justify-between">
                         <div>
                           <p className="text-[10px] uppercase tracking-wider text-slate-400 font-bold">
-                            Escrow Protected Price
+                            Till 1572931 Escrow Price
                           </p>
                           <p className="text-2xl font-mono font-black text-white">
                             {formatCurrency(currentSquad.price, currentSquad.currency)}
@@ -715,7 +786,6 @@ export function MobileAppShell({
                       </div>
                     </div>
 
-                    {/* Squad Specs Body */}
                     <div className="p-4 space-y-3">
                       <div className="flex items-start justify-between gap-2">
                         <h2 className="text-base font-extrabold text-white leading-snug line-clamp-2">
@@ -725,12 +795,11 @@ export function MobileAppShell({
                           href={`/listings/${currentSquad.id}`}
                           className="shrink-0 px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-[11px] font-bold text-emerald-300 flex items-center gap-1"
                         >
-                          <span>Full View</span>
+                          <span>Inspect</span>
                           <ExternalLink className="w-3 h-3" />
                         </Link>
                       </div>
 
-                      {/* Stat Pills */}
                       <div className="grid grid-cols-3 gap-2 text-center">
                         <div className="p-2 rounded-xl bg-slate-950/80 border border-slate-800/80">
                           <p className="text-[10px] text-slate-400">Epics / BT</p>
@@ -756,22 +825,6 @@ export function MobileAppShell({
                         </div>
                       </div>
 
-                      {/* Key Players Strip */}
-                      {currentSquad.key_players_list &&
-                        currentSquad.key_players_list.length > 0 && (
-                          <div className="flex flex-wrap gap-1">
-                            {currentSquad.key_players_list.slice(0, 5).map((player) => (
-                              <span
-                                key={player}
-                                className="px-2 py-0.5 rounded-md bg-slate-800/90 text-[10px] font-semibold text-slate-300"
-                              >
-                                {player}
-                              </span>
-                            ))}
-                          </div>
-                        )}
-
-                      {/* Live Ping Status Pill if already pinged */}
                       {pingedMap[currentSquad.id] && (
                         <div
                           className={`px-3 py-2 rounded-xl text-xs font-bold flex items-center justify-between ${
@@ -784,7 +837,7 @@ export function MobileAppShell({
                             <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
                             {pingedMap[currentSquad.id] === "available"
                               ? "Seller Confirmed: Squad Available!"
-                              : "Seller Pinged — Watching in Radar"}
+                              : "Seller Pinged — Live in Radar"}
                           </span>
                           <button
                             type="button"
@@ -798,7 +851,7 @@ export function MobileAppShell({
                     </div>
                   </div>
 
-                  {/* NATIVE DECK CONTROLS */}
+                  {/* TACTILE DECK CONTROLS */}
                   <div className="grid grid-cols-12 gap-2 items-center">
                     <button
                       type="button"
@@ -819,7 +872,7 @@ export function MobileAppShell({
                         setDeckIndex((i) => (i + 1) % Math.max(1, filteredListings.length))
                       }
                       className="col-span-2 h-12 rounded-2xl bg-slate-900 border border-rose-500/30 text-rose-400 hover:bg-rose-500/10 flex items-center justify-center active:scale-95 transition-transform cursor-pointer"
-                      title="Skip Squad"
+                      title="Next Squad"
                     >
                       <X className="w-5 h-5" />
                     </button>
@@ -845,7 +898,12 @@ export function MobileAppShell({
                       onClick={() => {
                         setBargainListing(currentSquad);
                         setOfferAmount(
-                          String(Math.max(100, Math.round((Number(currentSquad.price) * 0.9) / 50) * 50))
+                          String(
+                            Math.max(
+                              100,
+                              Math.round((Number(currentSquad.price) * 0.9) / 50) * 50
+                            )
+                          )
                         );
                         setOfferFeedback(null);
                       }}
@@ -880,7 +938,6 @@ export function MobileAppShell({
                 </div>
               )
             ) : (
-              /* COMPACT SPEED GRID VIEW */
               <div className="grid grid-cols-2 gap-2.5">
                 {filteredListings.map((sq) => {
                   const thumb = (sq.images || [])
@@ -925,190 +982,63 @@ export function MobileAppShell({
           </div>
         )}
 
-        {/* ==================== TAB 2: LIVE DEAL RADAR ==================== */}
-        {activeTab === "radar" && (
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div>
-                <h1 className="text-lg font-extrabold text-white font-display">
-                  Live Deal Radar
-                </h1>
-                <p className="text-xs text-slate-400">
-                  Real-time availability pings, bargain replies &amp; watchlist
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={refreshRadar}
-                className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-emerald-400 flex items-center gap-1.5 cursor-pointer"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-                <span>Sync</span>
-              </button>
+        {/* ==================== TAB 2: eFHUB PRO LAB (APP EXCLUSIVE!) ==================== */}
+        {activeTab === "efhub" && (
+          <div className="space-y-3.5">
+            {/* 4-Tool Sub-Navigation */}
+            <div className="grid grid-cols-4 gap-1 p-1 rounded-2xl bg-slate-900 border border-slate-800">
+              {[
+                { id: "build" as const, label: "Build Lab" },
+                { id: "pitch" as const, label: "11v11 Pitch" },
+                { id: "pack" as const, label: "150-Box" },
+                { id: "vs" as const, label: "VS Arena" },
+              ].map((sub) => (
+                <button
+                  key={sub.id}
+                  type="button"
+                  onClick={() => setEfSubTab(sub.id)}
+                  className={`py-2 rounded-xl text-[11px] font-extrabold transition-colors cursor-pointer ${
+                    efSubTab === sub.id
+                      ? "bg-emerald-500 text-slate-950 shadow"
+                      : "text-slate-400 hover:text-white"
+                  }`}
+                >
+                  {sub.label}
+                </button>
+              ))}
             </div>
 
-            {/* Seller Incoming Pings (1-Tap Reply!) */}
-            {sellerPings.length > 0 && (
-              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-3">
-                <p className="text-xs font-extrabold uppercase tracking-wider text-amber-300">
-                  Buyers Asking About Your Squads ({sellerPings.length})
-                </p>
-                {sellerPings.slice(0, 5).map((ping) => (
-                  <div
-                    key={ping.id}
-                    className="p-3 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2"
-                  >
-                    <p className="text-xs font-bold text-white">
-                      {ping.listing?.title || "Your Squad Listing"}
-                    </p>
-                    <p className="text-[11px] text-slate-400">
-                      Buyer: {ping.buyer_name || "Interested Buyer"} · Status:{" "}
-                      <strong className="text-white uppercase">{ping.status}</strong>
-                    </p>
-                    <div className="flex gap-2">
-                      <button
-                        type="button"
-                        disabled={updatingPingId === ping.id}
-                        onClick={() => handleSellerPingAction(ping.id, "available")}
-                        className="flex-1 py-2 rounded-lg bg-emerald-500 text-slate-950 text-xs font-extrabold cursor-pointer"
-                      >
-                        ✓ Yes, Available
-                      </button>
-                      <button
-                        type="button"
-                        disabled={updatingPingId === ping.id}
-                        onClick={() => handleSellerPingAction(ping.id, "unavailable")}
-                        className="py-2 px-3 rounded-lg bg-slate-800 text-slate-300 text-xs font-bold cursor-pointer"
-                      >
-                        Sold / Hold
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
+            {efSubTab === "build" && (
+              <BuildLabTool
+                onFindPlayerInMarket={(playerName) => {
+                  setSearchQuery(playerName);
+                  setFilterChip("all");
+                  setActiveTab("swipe");
+                }}
+              />
             )}
 
-            {/* Buyer Watched Availability Pings */}
-            <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
-              <p className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
-                My Availability Pings ({watchedPings.length})
-              </p>
-              {watchedPings.length === 0 ? (
-                <p className="text-xs text-slate-500">
-                  Tap <strong>Available?</strong> on any squad in Swipe Deck to ping the seller&apos;s phone directly.
-                </p>
-              ) : (
-                watchedPings.map((p) => (
-                  <div
-                    key={p.id}
-                    className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-3"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-xs font-bold text-white truncate">
-                        {p.listingTitle}
-                      </p>
-                      <p
-                        className={`text-[11px] font-semibold mt-0.5 ${
-                          p.lastStatus === "available"
-                            ? "text-emerald-400"
-                            : p.lastStatus === "unavailable"
-                            ? "text-rose-400"
-                            : "text-amber-300"
-                        }`}
-                      >
-                        {p.lastStatus === "available"
-                          ? "CONFIRMED AVAILABLE — Ready for Escrow"
-                          : p.lastStatus === "unavailable"
-                          ? "Marked Unavailable by Seller"
-                          : "Waiting for seller 1-tap reply..."}
-                      </p>
-                    </div>
-                    {p.lastStatus === "available" && (
-                      <Link
-                        href={`/pay/${p.listingId}`}
-                        className="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 text-xs font-extrabold shrink-0"
-                      >
-                        Pay Safe
-                      </Link>
-                    )}
-                  </div>
-                ))
-              )}
-            </div>
+            {efSubTab === "pitch" && (
+              <SquadPitchBuilder
+                onMatchSquadInMarket={() => {
+                  setFilterChip("3150");
+                  setSearchQuery("");
+                  setActiveTab("swipe");
+                }}
+              />
+            )}
 
-            {/* Buyer Watched Bargain Offers */}
-            <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
-              <p className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
-                My Live Bargain Offers ({watchedOffers.length})
-              </p>
-              {watchedOffers.length === 0 ? (
-                <p className="text-xs text-slate-500">
-                  Tap <strong>Offer</strong> on any squad card to negotiate KES price in real time.
-                </p>
-              ) : (
-                watchedOffers.map((o) => (
-                  <div
-                    key={o.id}
-                    className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-2"
-                  >
-                    <div>
-                      <p className="text-xs font-bold text-white">
-                        Squad #{o.listingId.slice(0, 6)}
-                      </p>
-                      <p className="text-[11px] text-emerald-400 font-semibold uppercase">
-                        Status: {o.lastStatus}
-                      </p>
-                    </div>
-                    <Link
-                      href={
-                        o.lastStatus === "accepted"
-                          ? `/pay/${o.listingId}?offer=${o.id}`
-                          : `/listings/${o.listingId}`
-                      }
-                      className="px-3 py-1.5 rounded-lg bg-slate-800 text-white text-xs font-bold"
-                    >
-                      Open &rarr;
-                    </Link>
-                  </div>
-                ))
-              )}
-            </div>
+            {efSubTab === "pack" && (
+              <PackSimulatorAndVsLab mode="pack" listings={listings} />
+            )}
 
-            {/* Saved Watchlist */}
-            <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
-              <p className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
-                Saved Watchlist ({savedSquadsList.length})
-              </p>
-              {savedSquadsList.length === 0 ? (
-                <p className="text-xs text-slate-500">
-                  Tap the ♥ heart on squads in Swipe Deck to compare them here.
-                </p>
-              ) : (
-                savedSquadsList.map((sq) => (
-                  <div
-                    key={sq.id}
-                    className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-2"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-xs font-bold text-white truncate">{sq.title}</p>
-                      <p className="text-[11px] font-mono text-emerald-400">
-                        {sq.overall_team_strength} OVR · {formatCurrency(sq.price, sq.currency)}
-                      </p>
-                    </div>
-                    <Link
-                      href={`/listings/${sq.id}`}
-                      className="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 text-xs font-extrabold shrink-0"
-                    >
-                      View
-                    </Link>
-                  </div>
-                ))
-              )}
-            </div>
+            {efSubTab === "vs" && (
+              <PackSimulatorAndVsLab mode="vs" listings={listings} />
+            )}
           </div>
         )}
 
-        {/* ==================== TAB 3: INSTANT KES SQUAD VALUATOR & EXPRESS SELL ==================== */}
+        {/* ==================== TAB 3: VALUATOR & EXPRESS SELL ==================== */}
         {activeTab === "sell" && (
           <div className="space-y-4">
             <div className="p-5 rounded-3xl bg-gradient-to-br from-emerald-950/80 via-slate-900 to-slate-900 border border-emerald-500/30 space-y-4">
@@ -1191,7 +1121,6 @@ export function MobileAppShell({
                 </div>
               </div>
 
-              {/* Live Valuation Output */}
               <div className="p-4 rounded-2xl bg-slate-950/90 border border-slate-800 space-y-2">
                 <div className="flex items-baseline justify-between">
                   <span className="text-xs text-slate-400">Recommended Fast-Sale Price</span>
@@ -1227,7 +1156,6 @@ export function MobileAppShell({
               </button>
             </div>
 
-            {/* External WhatsApp Deal Lock */}
             <Link
               href="/middleman"
               className="p-4 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-between gap-3 hover:border-emerald-500/40"
@@ -1238,10 +1166,10 @@ export function MobileAppShell({
                 </div>
                 <div>
                   <p className="text-xs font-extrabold text-white">
-                    Already Found a Buyer on WhatsApp / TikTok?
+                    Lock a WhatsApp / TikTok Deal (Middleman)
                   </p>
                   <p className="text-[11px] text-slate-400">
-                    Generate a Till 1572931 Middleman Escrow Room in 20 seconds
+                    Create a Till 1572931 Escrow Room in 20 seconds
                   </p>
                 </div>
               </div>
@@ -1250,26 +1178,42 @@ export function MobileAppShell({
           </div>
         )}
 
-        {/* ==================== TAB 4: SHIELD & ARENA ==================== */}
-        {activeTab === "shield" && (
+        {/* ==================== TAB 4: RADAR & SCAMMER SHIELD ==================== */}
+        {activeTab === "radar" && (
           <div className="space-y-4">
-            {/* Instant Scammer Phone Scanner */}
-            <div className="p-4 rounded-3xl bg-slate-900 border border-slate-800 space-y-3">
+            <div className="flex items-center justify-between">
+              <div>
+                <h1 className="text-lg font-extrabold text-white font-display">
+                  Radar &amp; Trader Shield
+                </h1>
+                <p className="text-xs text-slate-400">
+                  Live pings, bargain replies, watchlist &amp; 07/01 phone scanner
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={refreshRadar}
+                className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-xs font-bold text-emerald-400 flex items-center gap-1.5 cursor-pointer"
+              >
+                <RefreshCw className="w-3.5 h-3.5" />
+                <span>Sync</span>
+              </button>
+            </div>
+
+            {/* 1-Tap Scammer Phone Scanner */}
+            <div className="p-4 rounded-3xl bg-slate-900 border border-slate-800 space-y-2.5">
               <div className="flex items-center gap-2">
                 <ShieldAlert className="w-4 h-4 text-amber-400" />
-                <h2 className="text-sm font-extrabold text-white">
-                  1-Tap Kenyan Trader Phone Scanner
+                <h2 className="text-xs font-extrabold uppercase tracking-wider text-amber-300">
+                  Instant Kenyan Trader Phone Scanner
                 </h2>
               </div>
-              <p className="text-xs text-slate-400">
-                Trading in a WhatsApp or Telegram group? Scan their 07/01 number or @handle before sending a shilling.
-              </p>
               <form onSubmit={handleRunScan} className="flex gap-2">
                 <input
                   type="text"
                   value={scanInput}
                   onChange={(e) => setScanInput(e.target.value)}
-                  placeholder="Enter 07XX... or @username"
+                  placeholder="Scan 07XX / 01XX number or @handle..."
                   className="flex-1 h-10 px-3 rounded-xl bg-slate-950 border border-slate-800 text-xs text-white placeholder:text-slate-500 focus:outline-none focus:border-amber-400"
                 />
                 <button
@@ -1277,35 +1221,25 @@ export function MobileAppShell({
                   disabled={scanning}
                   className="px-4 h-10 rounded-xl bg-amber-400 text-slate-950 font-extrabold text-xs cursor-pointer"
                 >
-                  {scanning ? "Scanning..." : "Scan"}
+                  {scanning ? "..." : "Scan"}
                 </button>
               </form>
-
               {scanResults !== null && (
-                <div className="pt-1">
+                <div>
                   {scanResults.length === 0 ? (
-                    <div className="p-3 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs text-emerald-300 space-y-1">
-                      <p className="font-extrabold flex items-center gap-1.5">
-                        <CheckCircle2 className="w-4 h-4" />
-                        0 Verified Fraud Reports for &ldquo;{scanQueried}&rdquo;
-                      </p>
-                      <p className="text-[11px] text-slate-300">
-                        Always still lock payment through Buy Goods Till 1572931 Middleman so you get 24h login protection.
-                      </p>
-                    </div>
+                    <p className="p-2.5 rounded-xl bg-emerald-500/10 border border-emerald-500/30 text-xs font-bold text-emerald-300">
+                      ✓ 0 Verified Scam Reports for &ldquo;{scanQueried}&rdquo; — always pay via Till 1572931.
+                    </p>
                   ) : (
-                    <div className="p-3 rounded-xl bg-rose-500/15 border border-rose-500/40 text-xs text-rose-200 space-y-2">
-                      <p className="font-extrabold flex items-center gap-1.5 text-rose-300">
+                    <div className="p-2.5 rounded-xl bg-rose-500/15 border border-rose-500/40 text-xs text-rose-200 space-y-1">
+                      <p className="font-extrabold flex items-center gap-1 text-rose-300">
                         <AlertTriangle className="w-4 h-4" />
-                        DANGER: {scanResults.length} Verified Scam Report(s) Found!
+                        DANGER: {scanResults.length} Scam Report(s) Found!
                       </p>
                       {scanResults.map((r) => (
-                        <div key={r.id} className="p-2 rounded-lg bg-slate-950/80 text-[11px]">
-                          <p className="font-bold text-white">
-                            {r.username_alias} {r.phone_number ? `(${r.phone_number})` : ""}
-                          </p>
-                          <p className="text-slate-300 mt-0.5">{r.incident_summary}</p>
-                        </div>
+                        <p key={r.id} className="text-[11px]">
+                          <strong>{r.username_alias}:</strong> {r.incident_summary}
+                        </p>
                       ))}
                     </div>
                   )}
@@ -1313,84 +1247,122 @@ export function MobileAppShell({
               )}
             </div>
 
-            {/* Live 1v1 Cash Tournaments */}
-            <div className="p-4 rounded-3xl bg-slate-900 border border-slate-800 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-2 text-sm font-extrabold text-white">
-                  <Trophy className="w-4 h-4 text-amber-400" />
-                  Live 1v1 Cash Tournaments
-                </span>
-                <Link href="/tournaments" className="text-xs font-bold text-emerald-400">
-                  All &rarr;
-                </Link>
+            {sellerPings.length > 0 && (
+              <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30 space-y-3">
+                <p className="text-xs font-extrabold uppercase tracking-wider text-amber-300">
+                  Buyers Asking About Your Squads ({sellerPings.length})
+                </p>
+                {sellerPings.slice(0, 5).map((ping) => (
+                  <div
+                    key={ping.id}
+                    className="p-3 rounded-xl bg-slate-950/90 border border-slate-800 space-y-2"
+                  >
+                    <p className="text-xs font-bold text-white">
+                      {ping.listing?.title || "Your Squad Listing"}
+                    </p>
+                    <div className="flex gap-2">
+                      <button
+                        type="button"
+                        disabled={updatingPingId === ping.id}
+                        onClick={() => handleSellerPingAction(ping.id, "available")}
+                        className="flex-1 py-2 rounded-lg bg-emerald-500 text-slate-950 text-xs font-extrabold cursor-pointer"
+                      >
+                        ✓ Yes, Available
+                      </button>
+                      <button
+                        type="button"
+                        disabled={updatingPingId === ping.id}
+                        onClick={() => handleSellerPingAction(ping.id, "unavailable")}
+                        className="py-2 px-3 rounded-lg bg-slate-800 text-slate-300 text-xs font-bold cursor-pointer"
+                      >
+                        Sold / Hold
+                      </button>
+                    </div>
+                  </div>
+                ))}
               </div>
-              {initialTournaments.length === 0 ? (
-                <p className="text-xs text-slate-400">
-                  Next weekend cash bracket opens soon. Host your own verified tournament anytime!
+            )}
+
+            <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-3">
+              <p className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
+                My Availability Pings ({watchedPings.length}) &amp; Offers ({watchedOffers.length})
+              </p>
+              {watchedPings.length === 0 && watchedOffers.length === 0 ? (
+                <p className="text-xs text-slate-500">
+                  Tap <strong>Available?</strong> or <strong>Offer</strong> on any squad in Market to track live seller responses here.
                 </p>
               ) : (
-                initialTournaments.slice(0, 3).map((t) => (
-                  <Link
-                    key={t.id}
-                    href={`/tournaments/register?id=${t.id}`}
-                    className="p-3 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-3 hover:border-emerald-500/40"
-                  >
-                    <div className="min-w-0">
-                      <p className="text-xs font-bold text-white truncate">{t.title}</p>
-                      <p className="text-[11px] text-emerald-400 font-mono">
-                        Prize: KES {Number(t.prize_pool_kes || 0).toLocaleString()} · Entry:{" "}
-                        {Number(t.entry_fee_kes || 0) === 0
-                          ? "FREE"
-                          : `KES ${Number(t.entry_fee_kes).toLocaleString()}`}
-                      </p>
+                <>
+                  {watchedPings.map((p) => (
+                    <div
+                      key={p.id}
+                      className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-3"
+                    >
+                      <div className="min-w-0">
+                        <p className="text-xs font-bold text-white truncate">
+                          {p.listingTitle}
+                        </p>
+                        <p className="text-[11px] font-semibold text-emerald-400">
+                          Status: {p.lastStatus.toUpperCase()}
+                        </p>
+                      </div>
+                      {p.lastStatus === "available" && (
+                        <Link
+                          href={`/pay/${p.listingId}`}
+                          className="px-3 py-1.5 rounded-lg bg-emerald-500 text-slate-950 text-xs font-extrabold shrink-0"
+                        >
+                          Pay Safe
+                        </Link>
+                      )}
                     </div>
-                    <span className="px-2.5 py-1 rounded-lg bg-emerald-500 text-slate-950 text-[11px] font-extrabold shrink-0">
-                      Join
-                    </span>
-                  </Link>
-                ))
+                  ))}
+                  {watchedOffers.map((o) => (
+                    <div
+                      key={o.id}
+                      className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-2"
+                    >
+                      <span className="text-xs font-bold text-white">
+                        Offer #{o.id.slice(0, 6)} · {o.lastStatus.toUpperCase()}
+                      </span>
+                      <Link
+                        href={
+                          o.lastStatus === "accepted"
+                            ? `/pay/${o.listingId}?offer=${o.id}`
+                            : `/listings/${o.listingId}`
+                        }
+                        className="px-3 py-1.5 rounded-lg bg-slate-800 text-white text-xs font-bold"
+                      >
+                        Open &rarr;
+                      </Link>
+                    </div>
+                  ))}
+                </>
               )}
             </div>
 
-            {/* Live Buyer Wanted Bounties */}
-            <div className="p-4 rounded-3xl bg-slate-900 border border-slate-800 space-y-3">
-              <div className="flex items-center justify-between">
-                <span className="flex items-center gap-2 text-sm font-extrabold text-white">
-                  <Target className="w-4 h-4 text-emerald-400" />
-                  Active Buyer Cash Bounties
-                </span>
-                <Link href="/wanted" className="text-xs font-bold text-emerald-400">
-                  Post / View &rarr;
-                </Link>
-              </div>
-              {initialWanted.length === 0 ? (
-                <p className="text-xs text-slate-400">
-                  Looking for a specific Epic squad? Post your KES budget and verified sellers will match you.
+            {savedSquadsList.length > 0 && (
+              <div className="p-4 rounded-2xl bg-slate-900 border border-slate-800 space-y-2.5">
+                <p className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
+                  Saved Watchlist ({savedSquadsList.length})
                 </p>
-              ) : (
-                initialWanted.slice(0, 3).map((w) => (
+                {savedSquadsList.map((sq) => (
                   <Link
-                    key={w.id}
-                    href="/wanted"
-                    className="p-3 rounded-2xl bg-slate-950 border border-slate-800 block space-y-1"
+                    key={sq.id}
+                    href={`/listings/${sq.id}`}
+                    className="p-3 rounded-xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-2"
                   >
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-xs font-bold text-white truncate">{w.title}</p>
-                      <span className="text-xs font-mono font-extrabold text-emerald-400 shrink-0">
-                        KES {Number(w.budget_kes || 0).toLocaleString()}
-                      </span>
-                    </div>
-                    <p className="text-[11px] text-slate-400 line-clamp-1">
-                      {w.description || "Ready for Till 1572931 Escrow handover"}
-                    </p>
+                    <span className="text-xs font-bold text-white truncate">{sq.title}</span>
+                    <span className="text-xs font-mono font-extrabold text-emerald-400 shrink-0">
+                      {formatCurrency(sq.price)}
+                    </span>
                   </Link>
-                ))
-              )}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
         )}
 
-        {/* ==================== TAB 5: ESCROW VAULT & WALLET ==================== */}
+        {/* ==================== TAB 5: ESCROW VAULT & TOURNAMENTS ==================== */}
         {activeTab === "vault" && (
           <div className="space-y-4">
             {!user ? (
@@ -1403,7 +1375,7 @@ export function MobileAppShell({
                     Unlock Your Escrow Vault
                   </h2>
                   <p className="text-xs text-slate-400 leading-relaxed">
-                    Sign in to view your active Konami ID Order Rooms, 24-hour inspection timers, and M-Pesa seller payouts.
+                    Sign in to access your private Konami ID Order Rooms, 24-hour login inspection timers, and M-Pesa payouts.
                   </p>
                 </div>
                 <div className="flex gap-2">
@@ -1423,7 +1395,6 @@ export function MobileAppShell({
               </div>
             ) : (
               <>
-                {/* Wallet Card */}
                 <div className="p-5 rounded-3xl bg-gradient-to-br from-slate-900 to-emerald-950/50 border border-slate-800 space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-slate-400 flex items-center gap-1.5">
@@ -1453,7 +1424,6 @@ export function MobileAppShell({
                   </div>
                 </div>
 
-                {/* Active Orders */}
                 <div className="p-4 rounded-3xl bg-slate-900 border border-slate-800 space-y-3">
                   <p className="text-xs font-extrabold uppercase tracking-wider text-slate-400">
                     My Active Escrow Rooms
@@ -1464,7 +1434,7 @@ export function MobileAppShell({
                     </div>
                   ) : buyerOrders.length === 0 && sellerOrders.length === 0 ? (
                     <p className="text-xs text-slate-500">
-                      No active escrow rooms yet. Any squad you buy or sell appears here with live 24-hour protection.
+                      No active escrow rooms yet. Any squad you buy or sell appears here.
                     </p>
                   ) : (
                     [...buyerOrders, ...sellerOrders].slice(0, 8).map((ord) => (
@@ -1487,39 +1457,64 @@ export function MobileAppShell({
                     ))
                   )}
                 </div>
-
-                <div className="grid grid-cols-2 gap-2.5">
-                  <Link
-                    href="/dashboard/buyer"
-                    className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-xs font-bold text-center text-slate-200"
-                  >
-                    Buyer Dashboard
-                  </Link>
-                  <Link
-                    href="/dashboard/seller"
-                    className="p-3.5 rounded-2xl bg-slate-900 border border-slate-800 text-xs font-bold text-center text-slate-200"
-                  >
-                    Seller Studio
-                  </Link>
-                </div>
               </>
             )}
 
-            {/* Switch to Classic Website / Editorial Guides */}
-            <div className="p-4 rounded-2xl bg-slate-900/60 border border-slate-800/80 flex items-center justify-between text-xs">
-              <span className="text-slate-400 flex items-center gap-1.5">
-                <Smartphone className="w-3.5 h-3.5 text-emerald-400" />
-                <span>Need Player Progression Guides?</span>
-              </span>
-              <Link href="/news" className="font-bold text-emerald-400 hover:underline">
-                Open Guides &rarr;
-              </Link>
+            {/* Live Cash Tournaments & Buyer Bounties */}
+            <div className="p-4 rounded-3xl bg-slate-900 border border-slate-800 space-y-2.5">
+              <div className="flex items-center justify-between">
+                <span className="flex items-center gap-2 text-xs font-extrabold text-white">
+                  <Trophy className="w-4 h-4 text-amber-400" />
+                  Live 1v1 Cash Tournaments ({initialTournaments.length})
+                </span>
+                <Link href="/tournaments" className="text-xs font-bold text-emerald-400">
+                  Open &rarr;
+                </Link>
+              </div>
+              {initialTournaments.slice(0, 2).map((t) => (
+                <Link
+                  key={t.id}
+                  href={`/tournaments/register?id=${t.id}`}
+                  className="p-2.5 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-2"
+                >
+                  <span className="text-xs font-bold text-white truncate">{t.title}</span>
+                  <span className="text-[11px] font-mono font-extrabold text-emerald-400 shrink-0">
+                    KES {Number(t.prize_pool_kes || 0).toLocaleString()}
+                  </span>
+                </Link>
+              ))}
             </div>
+
+            {initialWanted.length > 0 && (
+              <div className="p-4 rounded-3xl bg-slate-900 border border-slate-800 space-y-2.5">
+                <div className="flex items-center justify-between">
+                  <span className="flex items-center gap-2 text-xs font-extrabold text-white">
+                    <Target className="w-4 h-4 text-emerald-400" />
+                    Active Buyer Cash Bounties
+                  </span>
+                  <Link href="/wanted" className="text-xs font-bold text-emerald-400">
+                    All &rarr;
+                  </Link>
+                </div>
+                {initialWanted.slice(0, 2).map((w) => (
+                  <Link
+                    key={w.id}
+                    href="/wanted"
+                    className="p-2.5 rounded-2xl bg-slate-950 border border-slate-800 flex items-center justify-between gap-2"
+                  >
+                    <span className="text-xs font-bold text-white truncate">{w.title}</span>
+                    <span className="text-[11px] font-mono font-extrabold text-amber-300 shrink-0">
+                      KES {Number(w.budget_kes || 0).toLocaleString()}
+                    </span>
+                  </Link>
+                ))}
+              </div>
+            )}
           </div>
         )}
       </div>
 
-      {/* SLIDE-UP QUICK BARGAIN BOTTOM SHEET */}
+      {/* SLIDE-UP QUICK BARGAIN SHEET */}
       {bargainListing && (
         <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-end justify-center p-3">
           <div className="w-full max-w-md rounded-3xl bg-slate-900 border border-slate-700 p-5 space-y-4 shadow-2xl">
@@ -1599,10 +1594,10 @@ export function MobileAppShell({
         </div>
       )}
 
-      {/* NATIVE 5-TAB APP DOCK */}
+      {/* NATIVE 5-TAB SUPER-APP DOCK */}
       <nav
-        aria-label="eFootball Market App Dock"
-        className="fixed bottom-0 inset-x-0 z-40 bg-[#070D19]/95 backdrop-blur-xl border-t border-slate-800/90 px-2 py-1.5"
+        aria-label="eFootball Market Pro App Dock"
+        className="fixed bottom-0 inset-x-0 z-40 bg-[#050912]/95 backdrop-blur-xl border-t border-slate-800/90 px-2 py-1.5"
       >
         <div className="max-w-md mx-auto grid grid-cols-5 items-center gap-1">
           <button
@@ -1613,23 +1608,18 @@ export function MobileAppShell({
             }`}
           >
             <Flame className="w-5 h-5" />
-            <span className="text-[10px] font-bold mt-0.5">Swipe</span>
+            <span className="text-[10px] font-bold mt-0.5">Market</span>
           </button>
 
           <button
             type="button"
-            onClick={() => setActiveTab("radar")}
+            onClick={() => setActiveTab("efhub")}
             className={`relative flex flex-col items-center py-1 rounded-xl cursor-pointer ${
-              activeTab === "radar" ? "text-emerald-400" : "text-slate-400"
+              activeTab === "efhub" ? "text-amber-300" : "text-slate-400"
             }`}
           >
-            <Radio className="w-5 h-5" />
-            <span className="text-[10px] font-bold mt-0.5">Radar</span>
-            {radarBadgeCount > 0 && (
-              <span className="absolute top-0.5 right-4 min-w-[16px] h-4 px-1 rounded-full bg-amber-400 text-slate-950 text-[9px] font-extrabold flex items-center justify-center">
-                {radarBadgeCount}
-              </span>
-            )}
+            <Gamepad2 className="w-5 h-5" />
+            <span className="text-[10px] font-extrabold mt-0.5">eF Hub</span>
           </button>
 
           <button
@@ -1657,13 +1647,18 @@ export function MobileAppShell({
 
           <button
             type="button"
-            onClick={() => setActiveTab("shield")}
-            className={`flex flex-col items-center py-1 rounded-xl cursor-pointer ${
-              activeTab === "shield" ? "text-emerald-400" : "text-slate-400"
+            onClick={() => setActiveTab("radar")}
+            className={`relative flex flex-col items-center py-1 rounded-xl cursor-pointer ${
+              activeTab === "radar" ? "text-emerald-400" : "text-slate-400"
             }`}
           >
-            <ShieldAlert className="w-5 h-5" />
-            <span className="text-[10px] font-bold mt-0.5">Shield</span>
+            <Radio className="w-5 h-5" />
+            <span className="text-[10px] font-bold mt-0.5">Radar</span>
+            {radarBadgeCount > 0 && (
+              <span className="absolute top-0.5 right-4 min-w-[16px] h-4 px-1 rounded-full bg-amber-400 text-slate-950 text-[9px] font-extrabold flex items-center justify-center">
+                {radarBadgeCount}
+              </span>
+            )}
           </button>
 
           <button

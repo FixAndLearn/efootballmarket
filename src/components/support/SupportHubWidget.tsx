@@ -81,7 +81,7 @@ export function SupportHubWidget() {
             >
               <span className="flex items-center gap-2.5 text-xs font-bold text-sx-green-text">
                 <Smartphone className="w-4 h-4 shrink-0" />
-                Download Mobile App (1.6 MB APK)
+                Download Pro App v2.0 (23 MB APK)
               </span>
               <span className="text-[11px] font-bold text-sx-green-text">
                 Install &rarr;

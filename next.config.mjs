@@ -65,7 +65,7 @@ const nextConfig = {
         },
         {
           key: 'Content-Disposition',
-          value: 'attachment; filename="eFootball-Market.apk"',
+          value: 'attachment; filename="eFootball-Market-Pro-v2.apk"',
         },
         {
           key: 'Cache-Control',
