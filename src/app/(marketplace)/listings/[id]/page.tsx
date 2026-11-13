@@ -544,17 +544,6 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                   </p>
                 )}
                 <ProposeSwapModal listing={listing} />
-                <a
-                  href={`https://wa.me/254794400365?text=${encodeURIComponent(
-                    `Hello eFootballMarket Support, I want to propose a Squad Swap + Cash Top-Up on "${displayTitle}" (https://www.efootballmarket.co.ke/listings/${listing.id}) via Till 1572931.`
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-1.5 text-[11px] font-semibold text-sx-muted hover:text-sx-ink transition-colors pt-0.5"
-                >
-                  <MessageCircle className="w-3 h-3" />
-                  <span>Or ask Escrow Desk about swap on WhatsApp</span>
-                </a>
               </div>
             )}
 

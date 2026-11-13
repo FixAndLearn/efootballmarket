@@ -139,3 +139,47 @@ export function updateWatchedOfferStatus(offerId: string, status: string) {
     // ignore
   }
 }
+
+const WATCHED_PINGS_KEY = "efm_watched_pings_v1";
+
+export interface WatchedPingEntry {
+  id: string;
+  listingId: string;
+  listingTitle: string;
+  lastStatus: string;
+}
+
+export function rememberWatchedPing(pingId: string, listingId: string, listingTitle = "Squad") {
+  if (typeof window === "undefined" || !pingId) return;
+  try {
+    const raw = localStorage.getItem(WATCHED_PINGS_KEY);
+    const list: WatchedPingEntry[] = raw ? JSON.parse(raw) : [];
+    const filtered = list.filter((x) => x.id !== pingId).slice(0, 14);
+    filtered.unshift({ id: pingId, listingId, listingTitle, lastStatus: "pending" });
+    localStorage.setItem(WATCHED_PINGS_KEY, JSON.stringify(filtered));
+  } catch {
+    // ignore storage quota errors
+  }
+}
+
+export function getWatchedPings(): WatchedPingEntry[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = localStorage.getItem(WATCHED_PINGS_KEY);
+    return raw ? JSON.parse(raw) : [];
+  } catch {
+    return [];
+  }
+}
+
+export function updateWatchedPingStatus(pingId: string, status: string) {
+  if (typeof window === "undefined") return;
+  try {
+    const list = getWatchedPings().map((item) =>
+      item.id === pingId ? { ...item, lastStatus: status } : item
+    );
+    localStorage.setItem(WATCHED_PINGS_KEY, JSON.stringify(list));
+  } catch {
+    // ignore
+  }
+}

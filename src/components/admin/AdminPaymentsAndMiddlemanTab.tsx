@@ -10,9 +10,11 @@ import {
   ExternalLink,
   Smartphone,
   ArrowRightLeft,
+  MessageCircle,
 } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import { formatCurrency } from "@/lib/utils";
+import { formatWhatsAppPhone } from "@/lib/utils/phone";
 
 interface AdminPaymentsAndMiddlemanTabProps {
   onFeedback: (fb: { type: "success" | "error"; message: string } | null) => void;
@@ -214,8 +216,49 @@ export function AdminPaymentsAndMiddlemanTab({
                   <p className="text-xs text-sx-muted">
                     Buyer: <strong>{order.buyer?.username || "Buyer"}</strong> (
                     {order.buyer?.phone_number || "N/A"}) · Seller:{" "}
-                    <strong>{order.seller?.username || "Seller"}</strong>
+                    <strong>{order.seller?.username || "Seller"}</strong> (
+                    {order.seller?.phone_number || "N/A"})
                   </p>
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
+                    {order.buyer?.phone_number && (
+                      <a
+                        href={`https://wa.me/${formatWhatsAppPhone(
+                          order.buyer.phone_number
+                        )}?text=${encodeURIComponent(
+                          `Hello @${
+                            order.buyer.username || "Buyer"
+                          }, this is eFootballMarket Admin regarding Order #${order.order_number} (${
+                            order.listing?.title || "Squad"
+                          }).`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-sx-subtle border border-sx-border text-[11px] font-bold text-sx-ink hover:bg-sx-stone"
+                      >
+                        <MessageCircle className="w-3 h-3 text-[#25D366]" />
+                        <span>WhatsApp Buyer</span>
+                      </a>
+                    )}
+                    {order.seller?.phone_number && (
+                      <a
+                        href={`https://wa.me/${formatWhatsAppPhone(
+                          order.seller.phone_number
+                        )}?text=${encodeURIComponent(
+                          `Hello @${
+                            order.seller.username || "Seller"
+                          }, this is eFootballMarket Admin regarding Order #${order.order_number} (${
+                            order.listing?.title || "Squad"
+                          }).`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-sx-subtle border border-sx-border text-[11px] font-bold text-sx-ink hover:bg-sx-stone"
+                      >
+                        <MessageCircle className="w-3 h-3 text-[#25D366]" />
+                        <span>WhatsApp Seller</span>
+                      </a>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2 shrink-0">
@@ -304,6 +347,40 @@ export function AdminPaymentsAndMiddlemanTab({
                     Buyer: <strong>{deal.buyer_name}</strong> ({deal.buyer_phone}) · Seller:{" "}
                     <strong>{deal.seller_name || "Seller"}</strong> ({deal.seller_phone})
                   </p>
+                  <div className="flex flex-wrap items-center gap-2 pt-1">
+                    {deal.buyer_phone && (
+                      <a
+                        href={`https://wa.me/${formatWhatsAppPhone(
+                          deal.buyer_phone
+                        )}?text=${encodeURIComponent(
+                          `Hello ${deal.buyer_name}, this is eFootballMarket Middleman Desk regarding deal ${deal.deal_code} ("${deal.deal_title}").`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-sx-subtle border border-sx-border text-[11px] font-bold text-sx-ink hover:bg-sx-stone"
+                      >
+                        <MessageCircle className="w-3 h-3 text-[#25D366]" />
+                        <span>WhatsApp Buyer</span>
+                      </a>
+                    )}
+                    {deal.seller_phone && (
+                      <a
+                        href={`https://wa.me/${formatWhatsAppPhone(
+                          deal.seller_phone
+                        )}?text=${encodeURIComponent(
+                          `Hello ${
+                            deal.seller_name || "Seller"
+                          }, this is eFootballMarket Middleman Desk regarding deal ${deal.deal_code} ("${deal.deal_title}").`
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-sx-subtle border border-sx-border text-[11px] font-bold text-sx-ink hover:bg-sx-stone"
+                      >
+                        <MessageCircle className="w-3 h-3 text-[#25D366]" />
+                        <span>WhatsApp Seller</span>
+                      </a>
+                    )}
+                  </div>
                 </div>
 
                 <div className="flex flex-wrap items-center gap-2 shrink-0">

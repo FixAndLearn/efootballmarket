@@ -24,6 +24,7 @@ import { WithdrawModal } from "@/components/seller/WithdrawModal";
 import { WhatsAppFlyerModal } from "@/components/seller/WhatsAppFlyerModal";
 import { FastBuyLinkButton } from "@/components/marketplace/FastBuyLinkButton";
 import { SellerListingOffersPanel } from "@/components/marketplace/SellerListingOffersPanel";
+import { SellerAvailabilityPingsPanel } from "@/components/seller/SellerAvailabilityPingsPanel";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { EmptyState } from "@/components/ui/EmptyState";
@@ -281,6 +282,9 @@ export function SellerDashboardView({
           </div>
         </div>
       )}
+
+      {/* 1.5. Live Buyer Availability Pings (1-tap Yes / Sold reply to buyer's phone) */}
+      <SellerAvailabilityPingsPanel sellerId={userId} />
 
       {/* 2. Incoming Buyer Price Offers */}
       {incomingOffers && incomingOffers.length > 0 && (

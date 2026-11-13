@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/Button";
 import { AdminBloggerStudio } from "@/components/admin/AdminBloggerStudio";
 import { AdminPaymentsAndMiddlemanTab } from "@/components/admin/AdminPaymentsAndMiddlemanTab";
+import { AdminAvailabilityPingsPanel } from "@/components/admin/AdminAvailabilityPingsPanel";
 import { useAuth } from "@/hooks/useAuth";
 import { isSuperAdminEmail, isUserAdmin } from "@/lib/security/adminAuth";
 import { formatCurrency } from "@/lib/utils";
@@ -682,6 +683,8 @@ function AdminControlCenterContent() {
             </div>
           </div>
 
+          <AdminAvailabilityPingsPanel />
+
           <div className="bg-pitch-surface border border-pitch-border rounded-2xl overflow-hidden shadow-xl">
             <div className="overflow-x-auto">
               <table className="w-full text-left text-xs">
@@ -709,7 +712,12 @@ function AdminControlCenterContent() {
                           <span className="text-[10px] text-sx-muted">ID: {l.id.slice(0, 8)}...</span>
                         </td>
                         <td className="p-3.5 text-sx-ink-soft">
-                          <span className="font-semibold">{l.seller?.username || "Unknown"}</span>
+                          <span className="font-semibold block">@{l.seller?.username || "Unknown"}</span>
+                          {l.seller?.phone_number && (
+                            <span className="block text-[10px] font-mono text-sx-muted">
+                              {formatDisplayPhone(l.seller.phone_number)}
+                            </span>
+                          )}
                           {l.seller?.is_suspended && (
                             <span className="block text-[10px] text-sx-red-text font-bold">Banned Seller</span>
                           )}
@@ -739,7 +747,27 @@ function AdminControlCenterContent() {
                         </td>
                         <td className="p-3.5 text-right">
                           <div className="flex items-center justify-end gap-2">
-                            {l.status === "active" ? (
+                            {l.seller?.phone_number && (
+                              <a
+                                href={`https://wa.me/${formatWhatsAppPhone(
+                                  l.seller.phone_number
+                                )}?text=${encodeURIComponent(
+                                  `Hello @${
+                                    l.seller.username || "Trader"
+                                  }, this is eFootballMarket Admin regarding your listed squad "${
+                                    l.title
+                                  }" (${formatCurrency(l.price, l.currency || "KES")}).`
+                                )}`}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                title="Reach seller on WhatsApp directly"
+                                className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#25D366]/15 border border-[#25D366]/40 text-sx-green-text hover:bg-[#25D366]/25 text-[11px] font-bold transition-colors"
+                              >
+                                <MessageCircle className="w-3.5 h-3.5" />
+                                <span>WhatsApp</span>
+                              </a>
+                            )}
+                            {l.status === "published" || l.status === "active" ? (
                               <Button
                                 type="button"
                                 variant="danger"
@@ -1238,7 +1266,12 @@ function AdminControlCenterContent() {
                       return (
                         <tr key={u.id} className="hover:bg-pitch-card/40 transition-colors">
                           <td className="p-3.5">
-                            <span className="font-bold text-sx-ink block">{u.username}</span>
+                            <span className="font-bold text-sx-ink block">@{u.username}</span>
+                            {u.phone_number && (
+                              <span className="text-[10px] font-mono text-sx-ink-soft block">
+                                {formatDisplayPhone(u.phone_number)}
+                              </span>
+                            )}
                             <span className="text-[10px] text-sx-muted">ID: {u.id.slice(0, 8)}...</span>
                           </td>
                           <td className="p-3.5 text-sx-ink-soft font-mono text-[11px]">
@@ -1277,6 +1310,22 @@ function AdminControlCenterContent() {
                           </td>
                           <td className="p-3.5 text-right">
                             <div className="flex items-center justify-end gap-1.5">
+                              {u.phone_number && (
+                                <a
+                                  href={`https://wa.me/${formatWhatsAppPhone(
+                                    u.phone_number
+                                  )}?text=${encodeURIComponent(
+                                    `Hello @${u.username || "Trader"}, this is eFootballMarket Admin.`
+                                  )}`}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  title="Reach user on WhatsApp directly"
+                                  className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-[#25D366]/15 border border-[#25D366]/40 text-sx-green-text hover:bg-[#25D366]/25 text-[11px] font-bold transition-colors"
+                                >
+                                  <MessageCircle className="w-3.5 h-3.5" />
+                                  <span>WhatsApp</span>
+                                </a>
+                              )}
                               {/* Cannot alter Super Admin */}
                               {isTargetSuperAdmin ? (
                                 <span className="text-[10px] font-bold text-sx-muted italic">

@@ -10,10 +10,12 @@ import {
   ensureNotificationServiceWorker,
   getBrowserNotificationPermission,
   getWatchedOffers,
+  getWatchedPings,
   isBrowserNotificationSupported,
   requestBrowserNotificationPermission,
   showNativeBrowserNotification,
   updateWatchedOfferStatus,
+  updateWatchedPingStatus,
 } from "@/lib/notifications/browserPush";
 
 interface PopupToastItem {
@@ -222,9 +224,46 @@ export function LiveNotificationManager() {
     }
   }, [triggerPopup]);
 
+  // Also watch any buyer availability pings so buyer's phone pops up the instant seller confirms
+  const checkWatchedAvailabilityPings = useCallback(async () => {
+    const watched = getWatchedPings().filter((p) => p.lastStatus === "pending");
+    if (watched.length === 0) return;
+
+    for (const entry of watched.slice(0, 4)) {
+      try {
+        const res = await fetch(`/api/listings/availability?pingId=${encodeURIComponent(entry.id)}`);
+        if (!res.ok) continue;
+        const data = await res.json();
+        const ping = data.ping;
+        if (!ping || !ping.status || ping.status === "pending") continue;
+
+        updateWatchedPingStatus(entry.id, ping.status);
+
+        if (ping.status === "available") {
+          triggerPopup({
+            id: `ping-avail-${entry.id}`,
+            title: "Seller Confirmed: Squad is Available!",
+            message: `${entry.listingTitle} is ready for handover. Tap to pay securely via M-Pesa Till 1572931 Escrow.`,
+            actionUrl: `/pay/${entry.listingId}`,
+          });
+        } else if (ping.status === "unavailable") {
+          triggerPopup({
+            id: `ping-unavail-${entry.id}`,
+            title: "Squad No Longer Available",
+            message: `${entry.listingTitle} was marked unavailable by the seller. Tap to browse other verified squads.`,
+            actionUrl: `/browse`,
+          });
+        }
+      } catch {
+        // non-blocking
+      }
+    }
+  }, [triggerPopup]);
+
   useEffect(() => {
     checkNewNotifications();
     checkWatchedGuestOffers();
+    checkWatchedAvailabilityPings();
 
     let channel: any = null;
     let supabase: any = null;
@@ -254,6 +293,7 @@ export function LiveNotificationManager() {
     const interval = setInterval(() => {
       checkNewNotifications();
       checkWatchedGuestOffers();
+      checkWatchedAvailabilityPings();
     }, 10000);
 
     return () => {
@@ -262,7 +302,7 @@ export function LiveNotificationManager() {
         supabase.removeChannel(channel).catch(() => {});
       }
     };
-  }, [user, checkNewNotifications, checkWatchedGuestOffers]);
+  }, [user, checkNewNotifications, checkWatchedGuestOffers, checkWatchedAvailabilityPings]);
 
   const handleEnableAlerts = async () => {
     const res = await requestBrowserNotificationPermission();

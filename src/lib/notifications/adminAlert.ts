@@ -3,7 +3,7 @@
  * Directly routes all high-priority platform events to admin support desk at +254 794 400 365.
  */
 
-import { formatDisplayPhone, formatInternationalPhone } from "@/lib/utils/phone";
+import { formatDisplayPhone, formatInternationalPhone, formatWhatsAppPhone } from "@/lib/utils/phone";
 import { isMetaCloudApiConfigured, sendWhatsAppMessage } from "@/lib/whatsapp/cloudApi";
 import { sendSmsAlert } from "./smsAlert";
 
@@ -22,6 +22,7 @@ export type AdminEventType =
   | "DISPUTE_OPENED"
   | "POST_RELEASE_DISPUTE_OPENED"
   | "NEW_OFFER_SUBMITTED"
+  | "AVAILABILITY_PING"
   | "MIDDLEMAN_DEAL_CREATED"
   | "WANTED_REQUEST_POSTED"
   | "WITHDRAWAL_REQUESTED"
@@ -136,8 +137,25 @@ export function formatAdminWhatsAppMessage(payload: AdminAlertPayload): string {
       lines = [
         `*Squad:* ${payload.listingTitle}`,
         `*Offered Price:* ${formattedAmount}`,
-        payload.buyerPhone ? `*Buyer Phone:* ${formatDisplayPhone(payload.buyerPhone)}` : "",
+        payload.buyerPhone ? `*Buyer Phone:* ${formatDisplayPhone(payload.buyerPhone)} (https://wa.me/${formatWhatsAppPhone(payload.buyerPhone)})` : "",
+        payload.sellerPhone ? `*Seller Phone:* ${formatDisplayPhone(payload.sellerPhone)} (https://wa.me/${formatWhatsAppPhone(payload.sellerPhone)})` : "",
         payload.details ? `*Note:* "${payload.details}"` : "",
+      ];
+      break;
+
+    case "AVAILABILITY_PING":
+      header = "*BUYER CHECKING SQUAD AVAILABILITY*";
+      lines = [
+        `*Squad:* ${payload.listingTitle || "Listed Squad"}`,
+        payload.amount !== undefined ? `*Price:* ${formattedAmount}` : "",
+        payload.username ? `*Seller:* @${payload.username}` : "",
+        payload.sellerPhone
+          ? `*WhatsApp Seller:* https://wa.me/${formatWhatsAppPhone(payload.sellerPhone)}`
+          : "",
+        payload.buyerPhone
+          ? `*WhatsApp Buyer:* https://wa.me/${formatWhatsAppPhone(payload.buyerPhone)}`
+          : "",
+        payload.details ? `*Status:* ${payload.details}` : "",
       ];
       break;
 
@@ -245,6 +263,25 @@ export async function dispatchAdminWhatsAppAlert(payload: AdminAlertPayload): Pr
       }
     } catch (err: any) {
       console.warn("Meta Cloud API alert notice:", err.message);
+    }
+  }
+
+  // 2. Automated Telegram Bot Dispatch (uses TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID on Vercel)
+  const tgToken = process.env.TELEGRAM_BOT_TOKEN?.trim();
+  const tgChatId = process.env.TELEGRAM_CHAT_ID?.trim();
+  if (tgToken && tgChatId) {
+    try {
+      await fetch(`https://api.telegram.org/bot${tgToken}/sendMessage`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          chat_id: tgChatId,
+          text: alertText,
+          disable_web_page_preview: true,
+        }),
+      });
+    } catch (tgErr: any) {
+      console.warn("Telegram admin alert dispatch note:", tgErr?.message);
     }
   }
 

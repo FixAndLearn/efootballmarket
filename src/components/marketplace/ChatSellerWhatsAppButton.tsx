@@ -1,8 +1,15 @@
 "use client";
 
-import React from "react";
-import { formatCurrency } from "@/lib/utils";
+import React, { useEffect, useState } from "react";
+import Link from "next/link";
+import { BellRing, CheckCircle2, Loader2, XCircle, Smartphone } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 import { sanitizePublicUsername } from "@/lib/security/publicSanitizer";
+import {
+  getBrowserNotificationPermission,
+  rememberWatchedPing,
+  requestBrowserNotificationPermission,
+} from "@/lib/notifications/browserPush";
 
 export interface ChatSellerWhatsAppButtonProps {
   sellerPhone?: string | null;
@@ -17,114 +24,273 @@ export interface ChatSellerWhatsAppButtonProps {
   label?: string;
 }
 
-function WhatsAppIcon({ className = "w-4 h-4" }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 24 24"
-      width="24"
-      height="24"
-      stroke="currentColor"
-      strokeWidth="0"
-      fill="currentColor"
-      className={className}
-    >
-      <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z" />
-    </svg>
-  );
-}
-
 /**
- * Pre-sale questions route to the official eFootballMarket Support & Escrow Desk
- * (+254 794 400 365) with the Listing ID attached so seller personal phone numbers
- * are never exposed in public HTML or scraped by bots.
+ * 1-Tap Direct Phone Availability Check Button
+ * Replaces off-platform WhatsApp redirects under listed squads:
+ * - Buyer taps -> Seller immediately receives direct phone notifications (SMS + Phone Push + Email).
+ * - Seller taps "Yes, Available" in Seller Hub -> Buyer receives an instant phone/browser/SMS alert.
  */
 export function ChatSellerWhatsAppButton({
   sellerUsername,
   listingId,
   listingTitle,
-  listingPrice,
-  listingCurrency = "KES",
-  overallTeamStrength,
   variant = "primary",
   className = "",
   label,
 }: ChatSellerWhatsAppButtonProps) {
-  const officialDesk = "254794400365";
-  const baseUrl =
-    typeof window !== "undefined"
-      ? window.location.origin
-      : "https://www.efootballmarket.co.ke";
-  const listingUrl = `${baseUrl}/listings/${listingId}`;
+  const { user, profile } = useAuth();
 
-  const formattedPrice = formatCurrency(listingPrice, listingCurrency);
+  const [recentConfirmedAt, setRecentConfirmedAt] = useState<string | null>(null);
+  const [showGuestInput, setShowGuestInput] = useState(false);
+  const [phoneInput, setPhoneInput] = useState("");
+  const [sending, setSending] = useState(false);
+  const [pingId, setPingId] = useState<string | null>(null);
+  const [pingState, setPingState] = useState<"idle" | "sent" | "available" | "unavailable">("idle");
+  const [feedbackMsg, setFeedbackMsg] = useState("");
+
   const safeHandle = sellerUsername
     ? `@${sanitizePublicUsername(sellerUsername)}`
-    : "the seller";
+    : "Seller";
 
-  const message =
-    `Hello eFootballMarket Support, I have a question about this listing (${safeHandle}):\n\n` +
-    `*Squad:* ${listingTitle}${overallTeamStrength ? ` (${overallTeamStrength} OVR)` : ""}\n` +
-    `*Price:* ${formattedPrice}\n` +
-    `*Listing:* ${listingUrl}\n\n` +
-    `Please confirm availability before I pay via M-Pesa Till 1572931.`;
+  // Check if seller already confirmed availability within the last 6 hours
+  useEffect(() => {
+    let mounted = true;
+    fetch(`/api/listings/availability?listingId=${encodeURIComponent(listingId)}`)
+      .then((res) => res.json())
+      .then((data) => {
+        if (mounted && data?.recentAvailableAt) {
+          setRecentConfirmedAt(data.recentAvailableAt);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      mounted = false;
+    };
+  }, [listingId]);
 
-  const whatsappUrl = `https://wa.me/${officialDesk}?text=${encodeURIComponent(message)}`;
+  // Live-poll active ping while buyer is viewing the page
+  useEffect(() => {
+    if (!pingId || pingState !== "sent") return;
+    const interval = setInterval(async () => {
+      try {
+        const res = await fetch(`/api/listings/availability?pingId=${encodeURIComponent(pingId)}`);
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data?.ping?.status === "available") {
+          setPingState("available");
+          clearInterval(interval);
+        } else if (data?.ping?.status === "unavailable") {
+          setPingState("unavailable");
+          clearInterval(interval);
+        }
+      } catch {
+        // non-blocking
+      }
+    }, 6000);
+    return () => clearInterval(interval);
+  }, [pingId, pingState]);
+
+  const sendPing = async (explicitPhone?: string) => {
+    setSending(true);
+    setFeedbackMsg("");
+    try {
+      // Request phone/browser push permission silently on user gesture if still default
+      if (getBrowserNotificationPermission() === "default") {
+        requestBrowserNotificationPermission().catch(() => {});
+      }
+
+      const res = await fetch("/api/listings/availability", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          listingId,
+          buyerPhone: explicitPhone ?? profile?.phone_number ?? undefined,
+          buyerName: profile?.username || user?.email?.split("@")[0] || undefined,
+        }),
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setFeedbackMsg(data.error || "Could not notify seller right now.");
+        return;
+      }
+
+      if (data.ping?.id) {
+        setPingId(data.ping.id);
+        rememberWatchedPing(data.ping.id, listingId, listingTitle);
+      }
+      setShowGuestInput(false);
+      setPingState("sent");
+      setFeedbackMsg(
+        data.message ||
+          `${safeHandle} has been notified on their phone! We'll alert you as soon as they confirm.`
+      );
+    } catch {
+      setFeedbackMsg("Network error. Please tap again.");
+    } finally {
+      setSending(false);
+    }
+  };
+
+  const handleTap = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (sending || pingState === "sent") return;
+
+    // Signed-in user with phone on profile -> true 1-tap instant seller phone alert!
+    if (user && profile?.phone_number) {
+      sendPing(profile.phone_number);
+      return;
+    }
+
+    // Guest or user without saved phone -> show compact 1-line phone box (or 1-tap browser-only ping)
+    setShowGuestInput((prev) => !prev);
+  };
 
   if (variant === "icon") {
     return (
-      <a
-        href={whatsappUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={(e) => e.stopPropagation()}
-        title="Ask eFootballMarket Support on WhatsApp"
-        className={`w-8 h-8 rounded-full bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 flex items-center justify-center transition-all shadow-sm shrink-0 ${className}`}
+      <button
+        type="button"
+        onClick={handleTap}
+        disabled={sending || pingState === "sent"}
+        title={
+          pingState === "sent"
+            ? "Seller notified on phone"
+            : `Ping ${safeHandle} to check availability`
+        }
+        className={`w-8 h-8 rounded-full bg-sx-green-tint border border-sx-green-border text-sx-green-text flex items-center justify-center transition-all shrink-0 cursor-pointer ${className}`}
       >
-        <WhatsAppIcon className="w-4 h-4 fill-slate-950" />
-      </a>
+        {sending ? (
+          <Loader2 className="w-4 h-4 animate-spin" />
+        ) : pingState === "sent" || pingState === "available" ? (
+          <CheckCircle2 className="w-4 h-4" />
+        ) : (
+          <BellRing className="w-4 h-4" />
+        )}
+      </button>
     );
   }
 
   if (variant === "compact") {
     return (
-      <a
-        href={whatsappUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={(e) => e.stopPropagation()}
-        className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-sx-subtle border border-sx-border-strong text-sx-ink font-bold text-xs transition-colors shrink-0 whitespace-nowrap ${className}`}
+      <button
+        type="button"
+        onClick={handleTap}
+        disabled={sending || pingState === "sent"}
+        className={`inline-flex items-center justify-center gap-1.5 px-3 py-2 rounded-xl bg-sx-subtle border border-sx-border-strong text-sx-ink font-bold text-xs transition-colors shrink-0 whitespace-nowrap cursor-pointer ${className}`}
       >
-        <WhatsAppIcon className="w-3.5 h-3.5 text-[#25D366] shrink-0" />
-        <span>{label || "Ask Desk"}</span>
-      </a>
+        {sending ? (
+          <Loader2 className="w-3.5 h-3.5 animate-spin text-sx-green-text shrink-0" />
+        ) : pingState === "sent" ? (
+          <CheckCircle2 className="w-3.5 h-3.5 text-sx-green-text shrink-0" />
+        ) : (
+          <BellRing className="w-3.5 h-3.5 text-sx-green-text shrink-0" />
+        )}
+        <span>{pingState === "sent" ? "Seller Pinged" : label || "Is It Available?"}</span>
+      </button>
     );
   }
 
-  if (variant === "secondary") {
+  if (pingState === "available") {
     return (
-      <a
-        href={whatsappUrl}
-        target="_blank"
-        rel="noopener noreferrer"
-        onClick={(e) => e.stopPropagation()}
-        className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sx-subtle border border-sx-border hover:border-sx-border-strong text-sx-ink font-semibold text-xs transition-colors ${className}`}
-      >
-        <WhatsAppIcon className="w-4 h-4 text-[#25D366] shrink-0" />
-        <span>{label || "Ask Escrow Desk on WhatsApp"}</span>
-      </a>
+      <div className="p-3.5 rounded-xl bg-sx-green-tint border border-sx-green-border space-y-2 text-xs">
+        <div className="flex items-center gap-2 font-bold text-sx-green-text">
+          <CheckCircle2 className="w-4 h-4 shrink-0" />
+          <span>{safeHandle} Confirmed: Squad is Available Now!</span>
+        </div>
+        <Link
+          href={`/pay/${listingId}`}
+          className="w-full py-2 px-3 rounded-lg bg-sx-green text-white font-bold text-xs inline-flex items-center justify-center"
+        >
+          Lock via M-Pesa Till 1572931 Escrow &rarr;
+        </Link>
+      </div>
+    );
+  }
+
+  if (pingState === "unavailable") {
+    return (
+      <div className="p-3 rounded-xl bg-sx-red-tint border border-sx-red-border flex items-center gap-2 text-xs font-semibold text-sx-red-text">
+        <XCircle className="w-4 h-4 shrink-0" />
+        <span>Seller marked this squad as no longer available.</span>
+      </div>
     );
   }
 
   return (
-    <a
-      href={whatsappUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      onClick={(e) => e.stopPropagation()}
-      className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sx-subtle hover:bg-sx-stone border border-sx-border-strong text-sx-ink font-semibold text-xs transition-colors ${className}`}
-    >
-      <WhatsAppIcon className="w-4 h-4 text-[#25D366] shrink-0" />
-      <span>{label || "Ask Escrow Desk on WhatsApp"}</span>
-    </a>
+    <div className="space-y-2" onClick={(e) => e.stopPropagation()}>
+      {recentConfirmedAt && pingState === "idle" && (
+        <div className="px-3 py-1.5 rounded-lg bg-sx-green-tint border border-sx-green-border text-[11px] font-semibold text-sx-green-text flex items-center gap-1.5">
+          <CheckCircle2 className="w-3.5 h-3.5 shrink-0" />
+          <span>Seller confirmed this account available recently</span>
+        </div>
+      )}
+
+      {pingState === "sent" ? (
+        <div className="p-3 rounded-xl bg-sx-green-tint border border-sx-green-border text-xs text-sx-ink space-y-1">
+          <div className="flex items-center gap-1.5 font-bold text-sx-green-text">
+            <CheckCircle2 className="w-4 h-4 shrink-0" />
+            <span>{safeHandle} Notified on Phone!</span>
+          </div>
+          <p className="text-[11px] text-sx-ink-soft leading-relaxed">
+            {feedbackMsg ||
+              "We sent a direct alert to the seller's phone. You'll get an instant notification the moment they tap Available."}
+          </p>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={handleTap}
+          disabled={sending}
+          className={`w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sx-subtle hover:bg-sx-stone border border-sx-border-strong text-sx-ink font-semibold text-xs transition-colors cursor-pointer ${className}`}
+        >
+          {sending ? (
+            <>
+              <Loader2 className="w-4 h-4 animate-spin text-sx-green-text shrink-0" />
+              <span>Alerting {safeHandle}&apos;s Phone...</span>
+            </>
+          ) : (
+            <>
+              <BellRing className="w-4 h-4 text-sx-green-text shrink-0" />
+              <span>{label || `Check if Account is Available (Ping ${safeHandle})`}</span>
+            </>
+          )}
+        </button>
+      )}
+
+      {showGuestInput && pingState === "idle" && (
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            sendPing(phoneInput.trim() || undefined);
+          }}
+          className="p-3 rounded-xl bg-sx-canvas border border-sx-border space-y-2"
+        >
+          <label className="flex items-center gap-1.5 text-[11px] font-semibold text-sx-ink">
+            <Smartphone className="w-3.5 h-3.5 text-sx-green-text shrink-0" />
+            <span>Your phone for instant SMS reply (optional):</span>
+          </label>
+          <div className="flex items-center gap-2">
+            <input
+              type="tel"
+              value={phoneInput}
+              onChange={(e) => setPhoneInput(e.target.value)}
+              placeholder="0712 345 678"
+              className="flex-1 min-w-0 px-3 py-2 rounded-lg bg-sx-stone border border-sx-border text-xs font-mono text-sx-ink focus:outline-none focus:border-sx-green"
+            />
+            <button
+              type="submit"
+              disabled={sending}
+              className="px-3.5 py-2 rounded-lg bg-sx-green text-white font-bold text-xs shrink-0 cursor-pointer hover:opacity-95 disabled:opacity-60"
+            >
+              {sending ? "Sending..." : "Notify Seller"}
+            </button>
+          </div>
+          {feedbackMsg && (
+            <p className="text-[11px] text-sx-red-text font-medium">{feedbackMsg}</p>
+          )}
+        </form>
+      )}
+    </div>
   );
 }
