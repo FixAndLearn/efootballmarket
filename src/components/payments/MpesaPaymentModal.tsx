@@ -6,7 +6,7 @@ import { createClient } from "@/lib/supabase/client";
 import { formatCurrency } from "@/lib/utils";
 import { normalizePhoneNumber } from "@/lib/utils/phone";
 import { CheckCircle2, Phone, Smartphone, X, AlertCircle, Loader2, RefreshCw, ShieldCheck, Zap } from "lucide-react";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 
 export interface MpesaPaymentModalProps {
   orderId: string;
@@ -40,15 +40,17 @@ export function MpesaPaymentModal({
   const [receiptError, setReceiptError] = useState("");
 
   const completedRef = useRef(false);
+  const onSuccessRef = useRef(onSuccess);
+  onSuccessRef.current = onSuccess;
 
-  const handleCompleteSuccess = () => {
+  const handleCompleteSuccess = useCallback(() => {
     if (completedRef.current) return;
     completedRef.current = true;
     setStatus("completed");
     setTimeout(() => {
-      onSuccess();
+      onSuccessRef.current();
     }, 800);
-  };
+  }, []);
 
   // 1. Supabase Realtime Listener for instant payment detection
   useEffect(() => {
@@ -94,7 +96,7 @@ export function MpesaPaymentModal({
     } catch (e) {
       console.warn("Supabase Realtime subscription error:", e);
     }
-  }, [isOpen, status, orderId]);
+  }, [isOpen, status, orderId, handleCompleteSuccess]);
 
   // 2. High-frequency Poller (every 1.5s) while awaiting PIN
   useEffect(() => {
@@ -136,7 +138,7 @@ export function MpesaPaymentModal({
       }, 1500);
     }
     return () => clearInterval(interval);
-  }, [status, checkoutRequestId, orderId]);
+  }, [status, checkoutRequestId, orderId, handleCompleteSuccess]);
 
   // 3. Countdown timer (runs down from 45s, polling continues regardless)
   useEffect(() => {

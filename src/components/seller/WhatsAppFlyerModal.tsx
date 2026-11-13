@@ -181,9 +181,13 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
     }
   };
 
+  const drawFlyerRef = useRef(drawFlyer);
+  drawFlyerRef.current = drawFlyer;
+
   useEffect(() => {
     if (isOpen) {
-      setTimeout(drawFlyer, 150);
+      const t = setTimeout(() => drawFlyerRef.current(), 150);
+      return () => clearTimeout(t);
     }
   }, [isOpen]);
 

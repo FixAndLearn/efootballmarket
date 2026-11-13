@@ -148,6 +148,12 @@ export default function RootLayout({
     process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID || DEFAULT_ADSENSE_CLIENT_ID;
   const gtmId = process.env.NEXT_PUBLIC_GTM_ID || DEFAULT_GTM_ID;
   const gaId = process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID;
+  const rawSupabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+  const supabaseOrigin =
+    rawSupabaseUrl.startsWith("https://") &&
+    !rawSupabaseUrl.includes("placeholder")
+      ? new URL(rawSupabaseUrl).origin
+      : null;
 
   return (
     <html
@@ -156,7 +162,13 @@ export default function RootLayout({
       className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
     >
       <head>
-        {/* Zero-FOUC Exchange Theme Bootstrap */}
+        {supabaseOrigin && (
+          <>
+            <link rel="preconnect" href={supabaseOrigin} crossOrigin="anonymous" />
+            <link rel="dns-prefetch" href={supabaseOrigin} />
+          </>
+        )}
+        {/* Zero-FOUC Theme Bootstrap */}
         <script
           id="efm-theme-init"
           dangerouslySetInnerHTML={{
@@ -172,7 +184,7 @@ export default function RootLayout({
             `,
           }}
         />
-        {/* Google Consent Mode v2 + Google Tag / GTM Bootstrap */}
+        {/* Google Consent Mode v2 Bootstrap */}
         <script
           id="google-consent-mode"
           dangerouslySetInnerHTML={{
@@ -203,9 +215,18 @@ export default function RootLayout({
             `,
           }}
         />
+      </head>
+      <body className="font-sans antialiased flex flex-col min-h-screen bg-sx-canvas text-sx-ink selection:bg-sx-green selection:text-white">
+        <a
+          href="#main-content"
+          className="sr-only focus:not-sr-only focus:fixed focus:top-3 focus:left-3 focus:z-[200] focus:px-4 focus:py-2 focus:rounded-lg focus:bg-sx-green focus:text-white focus:text-xs focus:font-bold focus:shadow-lg"
+        >
+          Skip to main content
+        </a>
         {gtmId && (
-          <script
-            async
+          <Script
+            id="gtm-loader"
+            strategy="afterInteractive"
             src={`https://www.googletagmanager.com/gtm.js?id=${gtmId}`}
           />
         )}
@@ -229,8 +250,6 @@ export default function RootLayout({
             />
           </>
         )}
-      </head>
-      <body className="font-sans antialiased flex flex-col min-h-screen bg-sx-canvas text-sx-ink selection:bg-sx-green selection:text-white">
         {gtmId && (
           <noscript>
             <iframe
@@ -244,7 +263,9 @@ export default function RootLayout({
         )}
         <GoogleTagRouteTracker />
         <Header />
-        <main className="flex-1 flex flex-col pb-20 md:pb-0">{children}</main>
+        <main id="main-content" className="flex-1 flex flex-col pb-20 md:pb-0">
+          {children}
+        </main>
         <Footer />
         <MobileBottomNav />
         <CookieConsentBanner />

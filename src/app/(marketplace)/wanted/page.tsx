@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
@@ -48,7 +48,7 @@ export default function WantedBoardPage() {
   const [submitSuccess, setSubmitSuccess] = useState(false);
   const [formError, setFormError] = useState("");
 
-  const fetchRequests = async () => {
+  const fetchRequests = useCallback(async () => {
     try {
       setLoading(true);
       const url =
@@ -65,11 +65,11 @@ export default function WantedBoardPage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [platformFilter]);
 
   useEffect(() => {
     fetchRequests();
-  }, [platformFilter]);
+  }, [fetchRequests]);
 
   const handleCreateRequest = async (e: React.FormEvent) => {
     e.preventDefault();

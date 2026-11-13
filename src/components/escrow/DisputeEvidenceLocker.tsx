@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import Image from "next/image";
 import { Order } from "@/types/database";
 import { Button } from "@/components/ui/Button";
@@ -50,7 +50,7 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
   const isBuyer = currentUserId === order.buyer_id;
   const userRole = isBuyer ? "Buyer" : "Seller";
 
-  const fetchDisputeData = async () => {
+  const fetchDisputeData = useCallback(async () => {
     try {
       setLoading(true);
       const res = await fetch(`/api/escrow/dispute?orderId=${order.id}`, { cache: "no-store" });
@@ -64,11 +64,11 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
     } finally {
       setLoading(false);
     }
-  };
+  }, [order.id]);
 
   useEffect(() => {
     fetchDisputeData();
-  }, [order.id]);
+  }, [fetchDisputeData]);
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];

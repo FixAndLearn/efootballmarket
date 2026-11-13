@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/Button";
 import {
   ArrowUpDown,
+  Loader2,
   Repeat2,
   RotateCcw,
   Search,
@@ -10,11 +11,12 @@ import {
   X,
 } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useState, useEffect } from "react";
+import { useEffect, useState, useTransition } from "react";
 
 export function ListingFilters() {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const [isPending, startTransition] = useTransition();
 
   const [search, setSearch] = useState(searchParams.get("search") || "");
   const [platform, setPlatform] = useState(searchParams.get("platform") || "all");
@@ -110,7 +112,21 @@ export function ListingFilters() {
     if (finalSortBy && finalSortBy !== "newest") params.set("sortBy", finalSortBy);
 
     setIsMobileDrawerOpen(false);
-    router.push(`/browse?${params.toString()}`);
+    const qs = params.toString();
+    startTransition(() => {
+      router.push(qs ? `/browse?${qs}` : "/browse", { scroll: false });
+    });
+  };
+
+  /**
+   * Desktop instant filter commit: updates results immediately via React transition
+   * without forcing a manual "Apply Filters" click, while keeping mobile drawer
+   * selections batched until "Show Squads" is tapped.
+   */
+  const commitIfDesktop = (overrides: Record<string, string>) => {
+    if (!isMobileDrawerOpen && typeof window !== "undefined" && window.innerWidth >= 1024) {
+      applyFilters(overrides);
+    }
   };
 
   const resetFilters = () => {
@@ -126,7 +142,9 @@ export function ListingFilters() {
     setMaxPrice("");
     setSortBy("newest");
     setIsMobileDrawerOpen(false);
-    router.push("/browse");
+    startTransition(() => {
+      router.push("/browse", { scroll: false });
+    });
   };
 
   const toggleQuickFilter = (key: string, value: string) => {
@@ -162,20 +180,27 @@ export function ListingFilters() {
           />
         </div>
         <div className="flex flex-wrap gap-1.5">
-          {notablePlayers.map((player) => (
-            <button
-              key={player}
-              type="button"
-              onClick={() => setSearch(search === player ? "" : player)}
-              className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors cursor-pointer ${
-                search.toLowerCase() === player.toLowerCase()
-                  ? "bg-sx-green border-sx-green text-white font-semibold"
-                  : "bg-sx-canvas border-sx-border text-sx-ink hover:border-sx-border-strong"
-              }`}
-            >
-              {player}
-            </button>
-          ))}
+          {notablePlayers.map((player) => {
+            const isSelected = search.toLowerCase() === player.toLowerCase();
+            return (
+              <button
+                key={player}
+                type="button"
+                onClick={() => {
+                  const next = isSelected ? "" : player;
+                  setSearch(next);
+                  commitIfDesktop({ search: next });
+                }}
+                className={`text-[11px] px-2.5 py-1 rounded-full border transition-colors cursor-pointer ${
+                  isSelected
+                    ? "bg-sx-green border-sx-green text-white font-semibold"
+                    : "bg-sx-canvas border-sx-border text-sx-ink hover:border-sx-border-strong"
+                }`}
+              >
+                {player}
+              </button>
+            );
+          })}
         </div>
       </div>
 
@@ -186,7 +211,11 @@ export function ListingFilters() {
         </label>
         <select
           value={platform}
-          onChange={(e) => setPlatform(e.target.value)}
+          onChange={(e) => {
+            const val = e.target.value;
+            setPlatform(val);
+            commitIfDesktop({ platform: val });
+          }}
           className="w-full min-h-[40px] bg-sx-canvas border border-sx-border rounded-lg px-3 py-2 text-xs font-medium text-sx-ink focus:outline-none focus:border-sx-green"
         >
           <option value="all">All Platforms</option>
@@ -211,6 +240,7 @@ export function ListingFilters() {
             placeholder="Min KES"
             value={minPrice}
             onChange={(e) => setMinPrice(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && applyFilters()}
             className="w-full min-h-[40px] bg-sx-canvas border border-sx-border rounded-lg px-2.5 py-2 text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-sx-green font-mono"
           />
           <input
@@ -219,6 +249,7 @@ export function ListingFilters() {
             placeholder="Max KES"
             value={maxPrice}
             onChange={(e) => setMaxPrice(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && applyFilters()}
             className="w-full min-h-[40px] bg-sx-canvas border border-sx-border rounded-lg px-2.5 py-2 text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-sx-green font-mono"
           />
         </div>
@@ -227,7 +258,11 @@ export function ListingFilters() {
             <button
               key={p.val}
               type="button"
-              onClick={() => setMaxPrice(maxPrice === p.val ? "" : p.val)}
+              onClick={() => {
+                const next = maxPrice === p.val ? "" : p.val;
+                setMaxPrice(next);
+                commitIfDesktop({ maxPrice: next });
+              }}
               className={`py-1.5 rounded-lg text-[11px] font-semibold border transition-colors cursor-pointer ${
                 maxPrice === p.val
                   ? "bg-sx-green text-white border-sx-green"
@@ -250,7 +285,11 @@ export function ListingFilters() {
             <button
               key={ovr}
               type="button"
-              onClick={() => setMinStrength(minStrength === ovr ? "" : ovr)}
+              onClick={() => {
+                const next = minStrength === ovr ? "" : ovr;
+                setMinStrength(next);
+                commitIfDesktop({ minStrength: next });
+              }}
               className={`min-h-[38px] py-2 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
                 minStrength === ovr
                   ? "bg-sx-green text-white border-sx-green"
@@ -270,7 +309,11 @@ export function ListingFilters() {
         </label>
         <select
           value={minCoins}
-          onChange={(e) => setMinCoins(e.target.value)}
+          onChange={(e) => {
+            const val = e.target.value;
+            setMinCoins(val);
+            commitIfDesktop({ minCoins: val });
+          }}
           className="w-full min-h-[40px] bg-sx-canvas border border-sx-border rounded-lg px-3 py-2 text-xs font-medium text-sx-ink focus:outline-none focus:border-sx-green"
         >
           <option value="">Any Coin Balance</option>
@@ -292,7 +335,11 @@ export function ListingFilters() {
               <button
                 key={ep}
                 type="button"
-                onClick={() => setMinEpics(minEpics === ep ? "" : ep)}
+                onClick={() => {
+                  const next = minEpics === ep ? "" : ep;
+                  setMinEpics(next);
+                  commitIfDesktop({ minEpics: next });
+                }}
                 className={`py-1.5 rounded-lg text-xs font-semibold border transition-colors cursor-pointer ${
                   minEpics === ep
                     ? "bg-sx-green text-white border-sx-green"
@@ -311,7 +358,11 @@ export function ListingFilters() {
           </label>
           <select
             value={playstyle}
-            onChange={(e) => setPlaystyle(e.target.value)}
+            onChange={(e) => {
+              const val = e.target.value;
+              setPlaystyle(val);
+              commitIfDesktop({ playstyle: val });
+            }}
             className="w-full min-h-[40px] bg-sx-canvas border border-sx-border rounded-lg px-3 py-2 text-xs font-medium text-sx-ink focus:outline-none focus:border-sx-green"
           >
             <option value="all">All Playstyles</option>
@@ -345,7 +396,11 @@ export function ListingFilters() {
           <input
             type="checkbox"
             checked={allowsSwap}
-            onChange={(e) => setAllowsSwap(e.target.checked)}
+            onChange={(e) => {
+              const checked = e.target.checked;
+              setAllowsSwap(checked);
+              commitIfDesktop({ swap: checked ? "1" : "" });
+            }}
             className="w-4 h-4 accent-emerald-500 cursor-pointer"
           />
         </label>
@@ -397,7 +452,11 @@ export function ListingFilters() {
                 : "bg-sx-subtle border-sx-border text-sx-ink"
             }`}
           >
-            <SlidersHorizontal className="w-3.5 h-3.5" />
+            {isPending ? (
+              <Loader2 className="w-3.5 h-3.5 animate-spin" />
+            ) : (
+              <SlidersHorizontal className="w-3.5 h-3.5" />
+            )}
             <span>Filters {activeFiltersCount > 0 ? `(${activeFiltersCount})` : ""}</span>
           </button>
         </div>
@@ -452,9 +511,17 @@ export function ListingFilters() {
       {/* Desktop Left Rail */}
       <div className="hidden lg:block rounded-xl bg-sx-subtle border border-sx-border p-5 space-y-5">
         <div className="flex items-center justify-between border-b border-sx-border pb-3">
-          <span className="text-sm font-bold text-sx-ink uppercase tracking-wider">
-            Compare &amp; Filter
-          </span>
+          <div className="flex items-center gap-2">
+            <span className="text-sm font-bold text-sx-ink uppercase tracking-wider">
+              Compare &amp; Filter
+            </span>
+            {isPending && (
+              <Loader2
+                className="w-3.5 h-3.5 animate-spin text-sx-green-text"
+                aria-label="Updating squads"
+              />
+            )}
+          </div>
           {activeFiltersCount > 0 && (
             <button
               type="button"
@@ -473,6 +540,7 @@ export function ListingFilters() {
           variant="primary"
           size="md"
           className="w-full"
+          isLoading={isPending}
           onClick={() => applyFilters()}
         >
           Apply Filters
@@ -501,7 +569,13 @@ export function ListingFilters() {
               <Button variant="outline" size="md" onClick={resetFilters} className="flex-1">
                 Reset
               </Button>
-              <Button variant="primary" size="md" onClick={() => applyFilters()} className="flex-1">
+              <Button
+                variant="primary"
+                size="md"
+                isLoading={isPending}
+                onClick={() => applyFilters()}
+                className="flex-1"
+              >
                 Show Squads
               </Button>
             </div>

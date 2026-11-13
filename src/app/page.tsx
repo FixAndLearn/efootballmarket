@@ -1,35 +1,36 @@
-import React from "react";
+import React, { Suspense } from "react";
 import { Metadata } from "next";
 import Link from "next/link";
+import Image from "next/image";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { ListingService } from "@/services/listingService";
 import { TournamentService } from "@/services/tournamentService";
 import { NewsService } from "@/services/newsService";
 import { Listing, NewsArticle, Tournament, WantedRequest } from "@/types/database";
-import { ListingCard } from "@/components/marketplace/ListingCard";
-import { HeroSquadSpotlight } from "@/components/exchange/HeroSquadSpotlight";
-import { SquadValuatorCalculator } from "@/components/exchange/SquadValuatorCalculator";
+import { HomeSquadCatalog } from "@/components/home/HomeSquadCatalog";
+import { SmartSearchBar } from "@/components/marketplace/SmartSearchBar";
+import { RecentlyViewedRow } from "@/components/marketplace/RecentlyViewedRow";
 import { QuietAlertOptIn } from "@/components/common/QuietAlertOptIn";
 import { getCategoryLabel } from "@/lib/data/editorialGuides";
 import { Button } from "@/components/ui/Button";
 import { DetailTabLink } from "@/components/ui/DetailTabLink";
-import { formatCurrency, getPlatformLabel } from "@/lib/utils";
+import {
+  formatCurrency,
+  formatSmartListingTitle,
+  getPlatformLabel,
+  getShortPlatformLabel,
+} from "@/lib/utils";
 import {
   ArrowLeftRight,
   ArrowRight,
   Bell,
   BookOpen,
-  Calculator,
   Clock,
-  Flame,
   Handshake,
   Lock,
-  Scale,
-  Search,
   ShieldAlert,
   ShieldCheck,
-  Sparkles,
   Store,
   Target,
   Trophy,
@@ -43,49 +44,295 @@ export const metadata: Metadata = {
   },
 };
 
-export default async function HomePage() {
+/**
+ * Streamed async RSC: Live Tournaments & Buyer Squad Requests.
+ * Isolated inside <Suspense> so slower secondary queries never delay the
+ * above-the-fold Hero or Available Squads LCP!
+ */
+async function CommunityActivitySection() {
   const supabase = createServerSupabaseClient();
   const adminOrUser = hasServiceRoleKey() ? createAdminClient() : supabase;
-  const listingService = new ListingService(supabase);
-  const newsService = new NewsService(supabase);
 
-  let listings: Listing[] = [];
-  let totalSquads = 0;
   let tournaments: Tournament[] = [];
   let wantedRequests: WantedRequest[] = [];
-  let articles: NewsArticle[] = [];
 
   try {
-    const [listingsResult, tourneysResult, wantedResult, articlesResult] = await Promise.all([
-      listingService
-        .getListings({ limit: 16, sortBy: "newest" })
-        .catch(() => ({ listings: [], totalCount: 0 })),
-      TournamentService.getAllTournaments().catch(() => []),
-      Promise.resolve(
-        adminOrUser
-          .from("wanted_requests")
-          .select("*")
-          .eq("status", "active")
-          .order("created_at", { ascending: false })
-          .limit(3)
-      )
-        .then((r) => (r.data as WantedRequest[]) || [])
-        .catch(() => [] as WantedRequest[]),
-      newsService.getPublishedArticles().catch(() => []),
-    ]);
+    const sbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+    const isRealDb = sbUrl && !sbUrl.includes("placeholder-project");
 
-    listings = listingsResult.listings || [];
-    totalSquads = listingsResult.totalCount || listings.length;
-    tournaments = (tourneysResult || []).filter((t) => t.status !== "completed").slice(0, 3);
-    wantedRequests = wantedResult || [];
-    articles = (articlesResult || []).slice(0, 3);
-  } catch (err) {
-    console.error("HomePage query error:", err);
+    if (isRealDb) {
+      const [tourneysResult, wantedResult] = await Promise.all([
+        TournamentService.getAllTournaments().catch(() => []),
+        Promise.resolve(
+          adminOrUser
+            .from("wanted_requests")
+            .select("*")
+            .eq("status", "active")
+            .order("created_at", { ascending: false })
+            .limit(3)
+        )
+          .then((r) => (r.data as WantedRequest[]) || [])
+          .catch(() => [] as WantedRequest[]),
+      ]);
+
+      tournaments = (tourneysResult || [])
+        .filter((t) => t.status !== "completed")
+        .slice(0, 3);
+      wantedRequests = wantedResult || [];
+    }
+  } catch {
+    // graceful fallback
   }
 
   const hasActiveTournaments = tournaments.length > 0;
   const hasActiveWanted = wantedRequests.length > 0;
-  const showcaseListings = listings.slice(0, 8);
+
+  return (
+    <section className="py-8 sm:py-10 border-t border-sx-border">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {hasActiveTournaments || hasActiveWanted ? (
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+            {/* Active Tournaments Column */}
+            <div className="lg:col-span-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base sm:text-lg font-bold text-sx-ink font-display flex items-center gap-2">
+                  <Trophy className="w-4 h-4 text-sx-green-text" />
+                  <span>Open 1v1 Tournaments</span>
+                </h2>
+                <Link
+                  href="/tournaments"
+                  className="text-xs font-semibold text-sx-green-text hover:underline"
+                >
+                  All Cups &rarr;
+                </Link>
+              </div>
+
+              {hasActiveTournaments ? (
+                <div className="space-y-3">
+                  {tournaments.map((t) => (
+                    <Link
+                      key={t.id}
+                      href="/tournaments"
+                      className="block rounded-xl bg-sx-subtle border border-sx-border hover:border-sx-green-border p-4 transition-colors"
+                    >
+                      <div className="flex items-center justify-between gap-2 text-xs mb-1">
+                        <span className="font-bold text-sx-ink truncate">{t.title}</span>
+                        <span className="font-mono font-bold text-sx-green-text shrink-0">
+                          Prize: {formatCurrency(t.prize_pool_kes, "KES")}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-[11px] text-sx-muted">
+                        <span>
+                          {t.entry_fee_kes > 0
+                            ? `Entry: ${formatCurrency(t.entry_fee_kes, "KES")}`
+                            : "Free Entry"}{" "}
+                          &middot; {t.registered_count || 0}/{t.max_players} Players
+                        </span>
+                        <span>Join Bracket &rarr;</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-xl bg-sx-subtle border border-sx-border p-4 space-y-2.5">
+                  <p className="text-xs text-sx-muted">
+                    No open tournament brackets right now. Get notified when the next cup opens:
+                  </p>
+                  <QuietAlertOptIn topic="tournament" compact />
+                </div>
+              )}
+            </div>
+
+            {/* Active Buyer Requests Column */}
+            <div className="lg:col-span-6 space-y-4">
+              <div className="flex items-center justify-between">
+                <h2 className="text-base sm:text-lg font-bold text-sx-ink font-display flex items-center gap-2">
+                  <Target className="w-4 h-4 text-sx-amber-text" />
+                  <span>Buyer Squad Requests</span>
+                </h2>
+                <Link
+                  href="/wanted"
+                  className="text-xs font-semibold text-sx-green-text hover:underline"
+                >
+                  Wanted Board &rarr;
+                </Link>
+              </div>
+
+              {hasActiveWanted ? (
+                <div className="space-y-3">
+                  {wantedRequests.map((req) => (
+                    <Link
+                      key={req.id}
+                      href="/wanted"
+                      className="block rounded-xl bg-sx-subtle border border-sx-border hover:border-sx-amber-border p-4 transition-colors"
+                    >
+                      <div className="flex items-center justify-between gap-2 text-xs mb-1">
+                        <span className="font-bold text-sx-ink line-clamp-1">
+                          {req.title}
+                        </span>
+                        <span className="font-mono font-bold text-sx-amber-text shrink-0">
+                          Budget: {formatCurrency(req.budget_kes, "KES")}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between text-[11px] text-sx-muted">
+                        <span>
+                          {getPlatformLabel(req.preferred_platform)} &middot;{" "}
+                          {req.min_overall_rating}+ OVR
+                        </span>
+                        <span>Pitch Squad &rarr;</span>
+                      </div>
+                    </Link>
+                  ))}
+                </div>
+              ) : (
+                <div className="rounded-xl bg-sx-subtle border border-sx-border p-4 flex items-center justify-between gap-3">
+                  <p className="text-xs text-sx-muted">
+                    Looking for a specific OVR or Epic card? Post what you want and let sellers come to you.
+                  </p>
+                  <Link href="/wanted" className="shrink-0">
+                    <Button variant="outline" size="sm">
+                      Post Request
+                    </Button>
+                  </Link>
+                </div>
+              )}
+            </div>
+          </div>
+        ) : (
+          <div className="rounded-xl bg-sx-subtle border border-sx-border p-4 sm:p-5 grid grid-cols-1 md:grid-cols-2 gap-5 items-center">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2 text-xs font-bold text-sx-ink">
+                <Bell className="w-4 h-4 text-sx-green-text shrink-0" />
+                <span>
+                  Tournaments are quiet right now — get alerted when the next cup opens
+                </span>
+              </div>
+              <QuietAlertOptIn topic="tournament" compact />
+            </div>
+
+            <div className="md:border-l md:border-sx-border md:pl-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div className="space-y-0.5">
+                <span className="text-xs font-bold text-sx-ink block">
+                  Can&apos;t find the exact squad you want?
+                </span>
+                <span className="text-xs text-sx-muted block">
+                  Post your target OVR, players, and KES budget for sellers to match.
+                </span>
+              </div>
+              <Link href="/wanted" className="shrink-0">
+                <Button variant="outline" size="sm">
+                  Request a Squad
+                </Button>
+              </Link>
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}
+
+/**
+ * Streamed async RSC: Editorial Guides & Platform Updates.
+ */
+async function GuidesSection() {
+  const supabase = createServerSupabaseClient();
+  const newsService = new NewsService(supabase);
+
+  let articles: NewsArticle[] = [];
+  try {
+    const result = await newsService.getPublishedArticles();
+    articles = (result || []).slice(0, 3);
+  } catch {
+    articles = [];
+  }
+
+  if (articles.length === 0) return null;
+
+  return (
+    <section className="py-9 sm:py-10 border-t border-sx-border">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
+        <div className="flex items-baseline justify-between gap-4">
+          <div>
+            <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-sx-green-text" />
+              <span>Guides &amp; Platform Updates</span>
+            </h2>
+            <p className="text-xs text-sx-muted mt-0.5">
+              Safe Konami ID transfer steps, manager builds, and what&apos;s coming next.
+            </p>
+          </div>
+          <Link
+            href="/news"
+            className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-sx-green-text hover:underline shrink-0"
+          >
+            <span>All Guides</span>
+            <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
+          {articles.map((article) => {
+            const badge = getCategoryLabel(article.category);
+            const readMin = Math.max(
+              3,
+              Math.ceil((article.content || "").split(/\s+/).length / 195)
+            );
+            return (
+              <Link
+                key={article.id}
+                href={`/news/${article.slug}`}
+                className="group flex flex-col justify-between rounded-xl border border-sx-border hover:border-sx-green-border bg-sx-subtle p-5 transition-colors space-y-3"
+              >
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-[11px]">
+                    <span className={`px-2 py-0.5 rounded border font-bold ${badge.color}`}>
+                      {badge.label}
+                    </span>
+                    <span className="text-sx-muted flex items-center gap-1">
+                      <Clock className="w-3 h-3" />
+                      {readMin} min
+                    </span>
+                  </div>
+                  <h3 className="text-sm sm:text-[15px] font-bold font-display text-sx-ink group-hover:text-sx-green-text transition-colors line-clamp-2 leading-snug">
+                    {article.title}
+                  </h3>
+                  <p className="text-xs text-sx-muted line-clamp-2 leading-relaxed">
+                    {article.summary}
+                  </p>
+                </div>
+
+                <span className="text-xs font-semibold text-sx-green-text inline-flex items-center gap-1 pt-1">
+                  <span>Read guide</span>
+                  <ArrowRight className="w-3.5 h-3.5" />
+                </span>
+              </Link>
+            );
+          })}
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default async function HomePage() {
+  const supabase = createServerSupabaseClient();
+  const listingService = new ListingService(supabase);
+
+  let listings: Listing[] = [];
+  let totalSquads = 0;
+
+  try {
+    const listingsResult = await listingService
+      .getListings({ limit: 16, sortBy: "newest" })
+      .catch(() => ({ listings: [], totalCount: 0 }));
+
+    listings = listingsResult.listings || [];
+    totalSquads = listingsResult.totalCount || listings.length;
+  } catch (err) {
+    console.error("HomePage listings query error:", err);
+  }
+
   const lowestPrice =
     listings.length > 0
       ? Math.min(...listings.map((l) => Number(l.price || 0)).filter((p) => p > 0))
@@ -94,15 +341,14 @@ export default async function HomePage() {
     listings.length > 0
       ? Math.max(...listings.map((l) => Number(l.overall_team_strength || 0)))
       : null;
-  const under1000Count = listings.filter((l) => Number(l.price || 0) <= 1000).length;
-  const elite3200Count = listings.filter(
-    (l) => Number(l.overall_team_strength || 0) >= 3200
-  ).length;
-  const epicStackedCount = listings.filter(
-    (l) =>
-      Number(l.epic_players_count || 0) + Number(l.big_time_players_count || 0) >= 3
-  ).length;
-  const swapReadyCount = listings.filter((l) => Boolean(l.allows_swap)).length;
+
+  // Top squad with a screenshot for the contextual hero preview card
+  const heroSpotlightSquad =
+    listings.find(
+      (l) =>
+        (l.images?.length || 0) > 0 &&
+        Number(l.overall_team_strength || 0) >= 3100
+    ) || listings[0];
 
   const homeJsonLd = {
     "@context": "https://schema.org",
@@ -136,23 +382,26 @@ export default async function HomePage() {
   };
 
   return (
-    <div className="min-h-screen bg-sx-canvas text-sx-ink pb-20 md:pb-0">
+    <div className="min-h-screen bg-sx-canvas text-sx-ink">
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{
           __html: JSON.stringify(homeJsonLd).replace(/</g, "\\u003c"),
         }}
       />
+
       {/* 1. SQUAD-FIRST HERO SCREEN */}
       <section className="pt-5 pb-8 sm:pt-8 sm:pb-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-2xl bg-sx-subtle border border-sx-border overflow-hidden grid grid-cols-1 lg:grid-cols-12 items-stretch">
+          <div className="rounded-2xl bg-sx-subtle border border-sx-border grid grid-cols-1 lg:grid-cols-12 items-stretch">
             <div className="lg:col-span-7 p-6 sm:p-9 lg:p-11 flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 {totalSquads > 0 && (
                   <div className="inline-flex flex-wrap items-center gap-2 px-3 py-1 rounded-full bg-sx-canvas border border-sx-border text-[11px] font-medium text-sx-muted">
                     <span className="w-2 h-2 rounded-full bg-sx-green" />
-                    <span className="font-bold text-sx-ink">{totalSquads} Live Squads</span>
+                    <span className="font-bold text-sx-ink">
+                      {totalSquads} Live Squads
+                    </span>
                     {lowestPrice ? (
                       <>
                         <span>&middot;</span>
@@ -174,25 +423,8 @@ export default async function HomePage() {
                   Find Your Next eFootball Squad in Kenya.
                 </h1>
 
-                {/* Primary Squad Search Bar */}
-                <form
-                  action="/browse"
-                  method="GET"
-                  className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 pt-1"
-                >
-                  <div className="relative flex-1">
-                    <Search className="w-4 h-4 text-sx-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
-                    <input
-                      type="search"
-                      name="search"
-                      placeholder="Search by player (Gullit, Messi), OVR (3200), or coach..."
-                      className="w-full h-12 pl-10 pr-4 rounded-xl bg-sx-canvas border border-sx-border-strong text-sm text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-sx-green"
-                    />
-                  </div>
-                  <Button type="submit" variant="primary" size="lg" className="h-12 shrink-0">
-                    <span>Search</span>
-                  </Button>
-                </form>
+                {/* Predictive Squad & Service Search Bar */}
+                <SmartSearchBar variant="hero" />
 
                 {/* Quick Filter Pills */}
                 <div className="flex items-center gap-1.5 flex-wrap text-xs">
@@ -216,9 +448,9 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              {/* Primary CTAs: Browse Squads + Sell + Instant Valuator */}
+              {/* Primary CTAs: Browse Squads beside Sell Your Squad */}
               <div className="space-y-4 pt-1">
-                <div className="flex flex-wrap items-center gap-2.5">
+                <div className="flex flex-wrap items-center gap-3">
                   <Link href="/browse" className="flex-1 sm:flex-initial">
                     <Button variant="primary" size="lg" className="w-full sm:w-auto min-h-[46px]">
                       <span>Browse Squads{totalSquads > 0 ? ` (${totalSquads})` : ""}</span>
@@ -228,12 +460,6 @@ export default async function HomePage() {
                   <Link href="/seller/create-listing" className="flex-1 sm:flex-initial">
                     <Button variant="outline" size="lg" className="w-full sm:w-auto min-h-[46px]">
                       <span>Sell Your Squad</span>
-                    </Button>
-                  </Link>
-                  <Link href="/valuator" className="w-full sm:w-auto">
-                    <Button variant="ghost" size="lg" className="w-full sm:w-auto min-h-[46px]">
-                      <Calculator className="w-4 h-4 text-sx-green-text" />
-                      <span>Value My Squad</span>
                     </Button>
                   </Link>
                 </div>
@@ -253,85 +479,52 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div className="lg:col-span-5 relative min-h-[360px] bg-sx-elevated border-t lg:border-t-0 lg:border-l border-sx-border">
-              <HeroSquadSpotlight listings={listings} />
-            </div>
-          </div>
+            {/* Contextual Hero Media Panel */}
+            <div className="hidden lg:block lg:col-span-5 relative min-h-[360px] bg-sx-elevated border-l border-sx-border rounded-r-2xl overflow-hidden">
+              <Image
+                src="/images/sx-hero-banner.jpg"
+                alt="eFootball Mobile and PlayStation squads in Kenya"
+                fill
+                priority
+                sizes="42vw"
+                className="object-cover object-center"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/15 to-transparent pointer-events-none" />
 
-          {/* StockX-Style Market Shelves (Shop by Budget & Meta Tier) */}
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-4">
-            {[
-              {
-                icon: Flame,
-                title: "Under KES 1,000",
-                sub:
-                  under1000Count > 0
-                    ? `${under1000Count} budget & starter gems`
-                    : "Starter & budget squads",
-                href: "/browse?maxPrice=1000",
-                accent: "text-sx-green-text",
-              },
-              {
-                icon: Trophy,
-                title: "3200+ OVR Meta",
-                sub:
-                  elite3200Count > 0
-                    ? `${elite3200Count} Division 1 ready rosters`
-                    : "High collective strength",
-                href: "/browse?minStrength=3200",
-                accent: "text-sx-amber-text",
-              },
-              {
-                icon: Sparkles,
-                title: "Epic & Booster Vaults",
-                sub:
-                  epicStackedCount > 0
-                    ? `${epicStackedCount} stacked 3+ Epic squads`
-                    : "Double-Booster & Big Time",
-                href: "/browse?minEpics=3",
-                accent: "text-sx-green-text",
-              },
-              {
-                icon: Scale,
-                title:
-                  swapReadyCount > 0
-                    ? `Swap Ready (${swapReadyCount})`
-                    : "Compare Side-by-Side",
-                sub:
-                  swapReadyCount > 0
-                    ? "Trade squad + M-Pesa top-up"
-                    : "Matrix winner highlights",
-                href: swapReadyCount > 0 ? "/browse?swap=1" : "/compare",
-                accent: "text-sx-info-text",
-              },
-            ].map((shelf) => {
-              const Icon = shelf.icon;
-              return (
+              {heroSpotlightSquad && (
                 <Link
-                  key={shelf.title}
-                  href={shelf.href}
-                  className="group sx-card-lift p-3.5 sm:p-4 rounded-2xl bg-sx-subtle hover:bg-sx-stone border border-sx-border hover:border-sx-green-border flex items-center justify-between gap-3"
+                  href={`/listings/${heroSpotlightSquad.id}`}
+                  className="group absolute bottom-4 left-4 right-4 p-3.5 rounded-xl bg-black/80 backdrop-blur-md border border-white/15 hover:border-emerald-400/60 transition-colors flex items-center justify-between gap-3"
                 >
                   <div className="min-w-0">
-                    <div className="flex items-center gap-1.5">
-                      <Icon className={`w-3.5 h-3.5 shrink-0 ${shelf.accent}`} />
-                      <span className="text-xs sm:text-sm font-bold text-sx-ink font-display truncate">
-                        {shelf.title}
+                    <div className="flex items-center gap-1.5 text-[10px] font-mono uppercase tracking-wider text-emerald-300 font-bold">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                      <span>
+                        In Stock &middot; {getShortPlatformLabel(heroSpotlightSquad.platform)} &middot;{" "}
+                        {heroSpotlightSquad.overall_team_strength} OVR
                       </span>
                     </div>
-                    <p className="text-[11px] text-sx-muted truncate mt-0.5">
-                      {shelf.sub}
+                    <p className="text-sm font-bold text-white truncate mt-0.5 font-display">
+                      {formatSmartListingTitle(heroSpotlightSquad)}
                     </p>
                   </div>
-                  <ArrowRight className="w-3.5 h-3.5 text-sx-muted group-hover:text-sx-green-text transition-transform group-hover:translate-x-0.5 shrink-0" />
+                  <div className="text-right shrink-0">
+                    <span className="block text-sm font-extrabold font-mono text-white">
+                      {formatCurrency(heroSpotlightSquad.price, heroSpotlightSquad.currency)}
+                    </span>
+                    <span className="inline-flex items-center gap-0.5 text-[11px] font-semibold text-emerald-300 group-hover:underline">
+                      <span>Inspect</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </span>
+                  </div>
                 </Link>
-              );
-            })}
+              )}
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 2. AVAILABLE SQUADS GRID */}
+      {/* 2. AVAILABLE SQUADS GRID (With Instant Zero-Reload Category Tabs) */}
       <section className="py-8 sm:py-10 border-t border-sx-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
           <div className="flex items-baseline justify-between gap-4">
@@ -340,45 +533,20 @@ export default async function HomePage() {
                 Available Squads
               </h2>
               <p className="text-xs text-sx-muted mt-0.5">
-                Hover or tap photos to preview full rosters · Tap <strong>Compare</strong> to benchmark up to 4 squads side-by-side
+                Compare OVR, Epics, Coins, and KES prices · Buyer pays KES 0 extra fee
               </p>
             </div>
-            <div className="flex items-center gap-3 shrink-0">
-              <Link
-                href="/compare"
-                className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold text-sx-muted hover:text-sx-ink"
-              >
-                <Scale className="w-3.5 h-3.5" />
-                <span>Compare Matrix</span>
-              </Link>
-              <Link
-                href="/browse"
-                className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-sx-green-text hover:underline"
-              >
-                <span>All Squads</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
+            <Link
+              href="/browse"
+              className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-sx-green-text hover:underline shrink-0"
+            >
+              <span>Compare All Squads</span>
+              <ArrowRight className="w-3.5 h-3.5" />
+            </Link>
           </div>
 
-          {showcaseListings.length > 0 ? (
-            <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                {showcaseListings.map((listing, idx) => (
-                  <ListingCard key={listing.id} listing={listing} priority={idx < 2} />
-                ))}
-              </div>
-              {totalSquads > showcaseListings.length && (
-                <div className="pt-2 flex justify-center">
-                  <Link href="/browse">
-                    <Button variant="outline" size="md">
-                      <span>View All {totalSquads} Verified Squads</span>
-                      <ArrowRight className="w-4 h-4" />
-                    </Button>
-                  </Link>
-                </div>
-              )}
-            </>
+          {listings.length > 0 ? (
+            <HomeSquadCatalog listings={listings} totalSquads={totalSquads} />
           ) : (
             <div className="rounded-xl bg-sx-subtle border border-sx-border p-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-5">
               <div className="space-y-1.5 max-w-lg">
@@ -402,14 +570,10 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 2A. INTERACTIVE KES SQUAD VALUATOR & SELLER PAYOUT ENGINE */}
-      <section className="py-9 sm:py-11 border-t border-sx-border bg-sx-subtle sx-exchange-grid">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <SquadValuatorCalculator compact />
-        </div>
-      </section>
+      {/* 2B. RECENTLY INSPECTED SQUADS (Client Island — Only Visible When Returning Buyer Viewed 2+ Squads) */}
+      <RecentlyViewedRow minItems={2} />
 
-      {/* 2B. OUR MARKETPLACE, ESCROW & CONCIERGE SERVICES */}
+      {/* 3. OUR MARKETPLACE, ESCROW & CONCIERGE SERVICES */}
       <section className="py-9 sm:py-11 border-t border-sx-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
           <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
@@ -489,9 +653,7 @@ export default async function HomePage() {
                     <h3 className="text-sm sm:text-[15px] font-bold text-sx-ink font-display group-hover:text-sx-green-text transition-colors">
                       {srv.title}
                     </h3>
-                    <p className="text-xs text-sx-muted leading-relaxed">
-                      {srv.desc}
-                    </p>
+                    <p className="text-xs text-sx-muted leading-relaxed">{srv.desc}</p>
                   </div>
                   <span className="inline-flex items-center gap-1 text-xs font-bold text-sx-green-text">
                     <span>{srv.cta}</span>
@@ -504,7 +666,7 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* 3. COMPACT 4-STEP ESCROW STRIP */}
+      {/* 4. COMPACT 4-STEP ESCROW STRIP */}
       <section className="py-8 sm:py-9 border-t border-sx-border bg-sx-subtle">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
@@ -553,213 +715,46 @@ export default async function HomePage() {
                 <span className="text-[10px] font-mono font-bold text-sx-green-text">
                   STEP {item.num}
                 </span>
-                <h3 className="text-xs sm:text-sm font-bold text-sx-ink font-display">
-                  {item.step}
-                </h3>
-                <p className="text-[11px] sm:text-xs text-sx-muted leading-snug">
-                  {item.desc}
-                </p>
+                <h3 className="text-sm font-bold text-sx-ink font-display">{item.step}</h3>
+                <p className="text-xs text-sx-muted leading-relaxed">{item.desc}</p>
               </div>
             ))}
           </div>
         </div>
       </section>
 
-      {/* 4. ADAPTIVE TOURNAMENTS & BUYER REQUESTS (Prominent when active, compact alert strip when quiet) */}
-      <section className="py-9 sm:py-10 border-t border-sx-border">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-6">
-          {(hasActiveTournaments || hasActiveWanted) ? (
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
-              {/* Active Tournaments Column */}
-              <div className="lg:col-span-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-base sm:text-lg font-bold text-sx-ink font-display flex items-center gap-2">
-                    <Trophy className="w-4 h-4 text-sx-green-text" />
-                    <span>Open Tournaments</span>
-                  </h2>
-                  <Link href="/tournaments" className="text-xs font-semibold text-sx-green-text hover:underline">
-                    View Brackets &rarr;
-                  </Link>
-                </div>
-
-                {hasActiveTournaments ? (
-                  <div className="space-y-3">
-                    {tournaments.map((t) => (
-                      <Link
-                        key={t.id}
-                        href="/tournaments"
-                        className="block rounded-xl bg-sx-subtle border border-sx-border hover:border-sx-green-border p-4 transition-colors"
-                      >
-                        <div className="flex items-center justify-between gap-2 text-xs mb-1">
-                          <span className="font-bold text-sx-ink">{t.title}</span>
-                          <span className="font-mono font-bold text-sx-green-text">
-                            Prize: {formatCurrency(t.prize_pool_kes, "KES")}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-[11px] text-sx-muted">
-                          <span>{t.subtitle || "1v1 / Knockout Cup"}</span>
-                          <span className="font-mono">
-                            {t.registered_count || 0}/{t.max_players} players
-                          </span>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="rounded-xl bg-sx-subtle border border-sx-border p-4 space-y-2.5">
-                    <p className="text-xs text-sx-muted">
-                      No open tournament brackets right now. Get notified when the next cup opens:
-                    </p>
-                    <QuietAlertOptIn topic="tournament" compact />
-                  </div>
-                )}
-              </div>
-
-              {/* Active Buyer Requests Column */}
-              <div className="lg:col-span-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h2 className="text-base sm:text-lg font-bold text-sx-ink font-display flex items-center gap-2">
-                    <Target className="w-4 h-4 text-sx-amber-text" />
-                    <span>Buyer Squad Requests</span>
-                  </h2>
-                  <Link href="/wanted" className="text-xs font-semibold text-sx-green-text hover:underline">
-                    Wanted Board &rarr;
-                  </Link>
-                </div>
-
-                {hasActiveWanted ? (
-                  <div className="space-y-3">
-                    {wantedRequests.map((req) => (
-                      <Link
-                        key={req.id}
-                        href="/wanted"
-                        className="block rounded-xl bg-sx-subtle border border-sx-border hover:border-sx-amber-border p-4 transition-colors"
-                      >
-                        <div className="flex items-center justify-between gap-2 text-xs mb-1">
-                          <span className="font-bold text-sx-ink line-clamp-1">{req.title}</span>
-                          <span className="font-mono font-bold text-sx-amber-text shrink-0">
-                            Budget: {formatCurrency(req.budget_kes, "KES")}
-                          </span>
-                        </div>
-                        <div className="flex items-center justify-between text-[11px] text-sx-muted">
-                          <span>{getPlatformLabel(req.preferred_platform)} · {req.min_overall_rating}+ OVR</span>
-                          <span>Pitch Squad &rarr;</span>
-                        </div>
-                      </Link>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="rounded-xl bg-sx-subtle border border-sx-border p-4 flex items-center justify-between gap-3">
-                    <p className="text-xs text-sx-muted">
-                      Looking for a specific OVR or Epic card? Post what you want and let sellers come to you.
-                    </p>
-                    <Link href="/wanted" className="shrink-0">
-                      <Button variant="outline" size="sm">
-                        Post Request
-                      </Button>
-                    </Link>
-                  </div>
-                )}
-              </div>
+      {/* 5. STREAMED TOURNAMENTS & BUYER SQUAD REQUESTS */}
+      <Suspense
+        fallback={
+          <section className="py-8 sm:py-10 border-t border-sx-border">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+              <div className="h-24 rounded-xl bg-sx-subtle border border-sx-border animate-pulse" />
             </div>
-          ) : (
-            /* Quiet Mode: Compact 2-Column Strip instead of big empty sections */
-            <div className="rounded-xl bg-sx-subtle border border-sx-border p-4 sm:p-5 grid grid-cols-1 md:grid-cols-2 gap-5 items-center">
-              <div className="space-y-2">
-                <div className="flex items-center gap-2 text-xs font-bold text-sx-ink">
-                  <Bell className="w-4 h-4 text-sx-green-text shrink-0" />
-                  <span>Tournaments are quiet right now — get alerted when the next cup opens</span>
-                </div>
-                <QuietAlertOptIn topic="tournament" compact />
-              </div>
+          </section>
+        }
+      >
+        <CommunityActivitySection />
+      </Suspense>
 
-              <div className="md:border-l md:border-sx-border md:pl-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-                <div className="space-y-0.5">
-                  <span className="text-xs font-bold text-sx-ink block">
-                    Can&apos;t find the exact squad you want?
-                  </span>
-                  <span className="text-xs text-sx-muted block">
-                    Post your target OVR, players, and KES budget for sellers to match.
-                  </span>
-                </div>
-                <Link href="/wanted" className="shrink-0">
-                  <Button variant="outline" size="sm">
-                    Request a Squad
-                  </Button>
-                </Link>
-              </div>
+      {/* 6. STREAMED GUIDES & PLATFORM UPDATES */}
+      <Suspense
+        fallback={
+          <section className="py-9 sm:py-10 border-t border-sx-border">
+            <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 grid grid-cols-1 md:grid-cols-3 gap-5">
+              {[0, 1, 2].map((i) => (
+                <div
+                  key={i}
+                  className="h-44 rounded-xl bg-sx-subtle border border-sx-border animate-pulse"
+                />
+              ))}
             </div>
-          )}
-        </div>
-      </section>
+          </section>
+        }
+      >
+        <GuidesSection />
+      </Suspense>
 
-      {/* 5. COMPACT GUIDES & PLATFORM UPDATES */}
-      {articles.length > 0 && (
-        <section className="py-9 sm:py-10 border-t border-sx-border">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
-            <div className="flex items-baseline justify-between gap-4">
-              <div>
-                <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display flex items-center gap-2">
-                  <BookOpen className="w-4 h-4 text-sx-green-text" />
-                  <span>Guides &amp; Platform Updates</span>
-                </h2>
-                <p className="text-xs text-sx-muted mt-0.5">
-                  Safe Konami ID transfer steps, manager builds, and what&apos;s coming next.
-                </p>
-              </div>
-              <Link
-                href="/news"
-                className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-sx-green-text hover:underline shrink-0"
-              >
-                <span>All Guides</span>
-                <ArrowRight className="w-3.5 h-3.5" />
-              </Link>
-            </div>
-
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-              {articles.map((article) => {
-                const badge = getCategoryLabel(article.category);
-                const readMin = Math.max(
-                  3,
-                  Math.ceil((article.content || "").split(/\s+/).length / 195)
-                );
-                return (
-                  <Link
-                    key={article.id}
-                    href={`/news/${article.slug}`}
-                    className="group flex flex-col justify-between rounded-xl border border-sx-border hover:border-sx-green-border bg-sx-subtle p-5 transition-colors space-y-3"
-                  >
-                    <div className="space-y-2">
-                      <div className="flex items-center justify-between text-[11px]">
-                        <span className={`px-2 py-0.5 rounded border font-bold ${badge.color}`}>
-                          {badge.label}
-                        </span>
-                        <span className="text-sx-muted flex items-center gap-1">
-                          <Clock className="w-3 h-3" />
-                          {readMin} min
-                        </span>
-                      </div>
-                      <h3 className="text-sm sm:text-[15px] font-bold font-display text-sx-ink group-hover:text-sx-green-text transition-colors line-clamp-2 leading-snug">
-                        {article.title}
-                      </h3>
-                      <p className="text-xs text-sx-muted line-clamp-2 leading-relaxed">
-                        {article.summary}
-                      </p>
-                    </div>
-
-                    <span className="text-xs font-semibold text-sx-green-text inline-flex items-center gap-1 pt-1">
-                      <span>Read guide</span>
-                      <ArrowRight className="w-3.5 h-3.5" />
-                    </span>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 6. CLEAN QUICK-REFERENCE & SUPPORT STRIP (Opens Detailed Info in New Tab) */}
+      {/* 7. CLEAN QUICK-REFERENCE & SUPPORT STRIP (Opens Detailed Info in New Tab) */}
       <section className="py-8 sm:py-10 border-t border-sx-border bg-sx-subtle">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-2xl bg-sx-canvas border border-sx-border p-5 sm:p-7 flex flex-col lg:flex-row lg:items-center justify-between gap-6">

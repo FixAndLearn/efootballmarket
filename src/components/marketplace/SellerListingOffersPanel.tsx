@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { ListingOffer } from "@/types/database";
 import { formatCurrency, formatSmartListingTitle } from "@/lib/utils";
@@ -49,7 +49,7 @@ export function SellerListingOffersPanel({
   const [activeDeclineOfferId, setActiveDeclineOfferId] = useState<string | null>(null);
   const [declineReasonInput, setDeclineReasonInput] = useState<string>("Offer is lower than expected");
 
-  const fetchOffers = async () => {
+  const fetchOffers = useCallback(async () => {
     try {
       const param = listingId
         ? `listingId=${encodeURIComponent(listingId)}`
@@ -69,7 +69,7 @@ export function SellerListingOffersPanel({
     } finally {
       setLoading(false);
     }
-  };
+  }, [listingId, sellerId]);
 
   useEffect(() => {
     fetchOffers();
@@ -108,7 +108,7 @@ export function SellerListingOffersPanel({
         supabase.removeChannel(channel).catch(() => {});
       }
     };
-  }, [listingId, sellerId]);
+  }, [listingId, sellerId, fetchOffers]);
 
   const handleAction = async (
     offerId: string,

@@ -23,6 +23,10 @@ import { SellerListingOffersPanel } from "@/components/marketplace/SellerListing
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import { FavoriteButton } from "@/components/marketplace/FavoriteButton";
 import { CompareButton } from "@/components/marketplace/CompareButton";
+import {
+  RecentlyViewedRow,
+  RecentlyViewedTracker,
+} from "@/components/marketplace/RecentlyViewedRow";
 import { ListingActionsBar } from "@/components/marketplace/ListingActionsBar";
 import { ListingStickyBottomBar } from "@/components/marketplace/ListingStickyBottomBar";
 import { AdBanner } from "@/components/common/AdBanner";
@@ -232,6 +236,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
         }}
       />
       {/* Top Breadcrumb Bar */}
+      <RecentlyViewedTracker listing={listing} />
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-sx-border">
         <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-xs text-sx-muted flex-wrap">
           <Link href="/" className="hover:text-sx-ink transition-colors">
@@ -239,10 +244,17 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
           </Link>
           <span className="text-sx-muted">/</span>
           <Link href="/browse" className="hover:text-sx-ink transition-colors">
-            Marketplace
+            Browse Squads
           </Link>
           <span className="text-sx-muted">/</span>
-          <span className="text-sx-ink-soft font-medium truncate max-w-[260px] sm:max-w-md">
+          <Link
+            href={`/browse?platform=${encodeURIComponent(listing.platform)}`}
+            className="hover:text-sx-ink transition-colors"
+          >
+            {getPlatformLabel(listing.platform)}
+          </Link>
+          <span className="text-sx-muted">/</span>
+          <span className="text-sx-ink-soft font-medium truncate max-w-[220px] sm:max-w-sm">
             {displayTitle}
           </span>
         </nav>
@@ -297,6 +309,38 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
               <h1 className="text-2xl sm:text-3xl font-bold text-sx-ink font-display">
                 {displayTitle}
               </h1>
+
+              {/* Above-the-Fold Seller Trust & Review Summary (Baymard PDP Standard) */}
+              {listing.seller && (
+                <div className="pt-1 flex flex-wrap items-center gap-2.5 text-xs text-sx-muted">
+                  {listing.seller.username ? (
+                    <Link
+                      href={`/u/${encodeURIComponent(listing.seller.username)}`}
+                      className="font-semibold text-sx-ink hover:text-sx-green-text hover:underline"
+                    >
+                      @{listing.seller.username}
+                    </Link>
+                  ) : null}
+                  <VerifiedSellerBadge seller={listing.seller} size="sm" showPopover={true} />
+                  {(listing.seller.completed_sales_count || 0) > 0 && (
+                    <span className="inline-flex items-center gap-1 text-sx-ink-soft font-medium">
+                      {listing.seller.seller_rating ? (
+                        <>
+                          <Star className="w-3.5 h-3.5 text-sx-amber-text fill-amber-400" />
+                          <span className="font-mono font-bold">
+                            {Number(listing.seller.seller_rating).toFixed(1)}
+                          </span>
+                          <span>&middot;</span>
+                        </>
+                      ) : null}
+                      <span>
+                        {listing.seller.completed_sales_count} verified{" "}
+                        {listing.seller.completed_sales_count === 1 ? "sale" : "sales"}
+                      </span>
+                    </span>
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Standardized Squad Comparison Specs */}
@@ -722,6 +766,9 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
           </div>
         </section>
       )}
+
+      {/* Recently Inspected Squads */}
+      <RecentlyViewedRow excludeId={listing.id} minItems={1} />
 
       {/* Smart Mobile Sticky Action Bar (auto-hides whenever inline Purchase Card is visible on screen) */}
       <ListingStickyBottomBar

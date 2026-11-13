@@ -10,7 +10,7 @@ const nextConfig = {
         : false,
   },
   images: {
-    formats: ['image/webp'],
+    formats: ['image/avif', 'image/webp'],
     dangerouslyAllowSVG: false,
     contentDispositionType: 'attachment',
     contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
@@ -27,6 +27,9 @@ const nextConfig = {
         hostname: 'images.unsplash.com',
       },
     ],
+  },
+  experimental: {
+    optimizePackageImports: ['lucide-react'],
   },
   headers: async () => [
     {
@@ -105,6 +108,11 @@ const nextConfig = {
     {
       source: '/seller',
       destination: '/dashboard/seller',
+      permanent: true,
+    },
+    {
+      source: '/valuator',
+      destination: '/seller/create-listing',
       permanent: true,
     },
   ],

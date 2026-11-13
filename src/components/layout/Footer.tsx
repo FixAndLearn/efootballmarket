@@ -60,11 +60,6 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/valuator" className="hover:text-sx-ink transition-colors">
-                  KES Squad Valuator
-                </Link>
-              </li>
-              <li>
                 <Link href="/compare" className="hover:text-sx-ink transition-colors">
                   Compare Squads
                 </Link>

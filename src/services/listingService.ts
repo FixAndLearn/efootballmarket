@@ -186,28 +186,37 @@ export class ListingService {
    * Retrieves a single listing by its primary ID, with sanitized public seller info and images.
    */
   async getListingById(id: string): Promise<Listing | null> {
-    const { data, error } = await this.supabase
-      .from("listings")
-      .select(`*, seller:profiles(${PUBLIC_SELLER_PROFILE_SELECT}), images:listing_images(*)`)
-      .eq("id", id)
-      .is("deleted_at", null)
-      .single();
+    const sbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
+    if (!sbUrl || sbUrl.includes("placeholder-project")) {
+      return null;
+    }
 
-    if (error) {
-      if (error.code === "PGRST116") {
+    try {
+      const { data, error } = await this.supabase
+        .from("listings")
+        .select(`*, seller:profiles(${PUBLIC_SELLER_PROFILE_SELECT}), images:listing_images(*)`)
+        .eq("id", id)
+        .is("deleted_at", null)
+        .single();
+
+      if (error) {
+        if (error.code === "PGRST116") {
+          return null;
+        }
+        console.warn(`getListingById warning (${id}):`, error.message);
         return null;
       }
-      throw new Error(`Failed to load listing: ${error.message}`);
-    }
 
-    // Increment view count asynchronously
-    try {
-      await this.supabase.rpc("increment_listing_views", { listing_id: id });
-    } catch {
-      // Non-critical metric increment failure can be safely ignored
-    }
+      // Non-blocking view increment so SSR TTFB never waits on analytics RPC
+      void Promise.resolve(
+        this.supabase.rpc("increment_listing_views", { listing_id: id })
+      ).catch(() => {});
 
-    return sanitizeListingForPublic(data as unknown as Listing);
+      return sanitizeListingForPublic(data as unknown as Listing);
+    } catch (err) {
+      console.warn(`getListingById network error (${id}):`, err);
+      return null;
+    }
   }
 
   /**

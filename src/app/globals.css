@@ -129,9 +129,17 @@ html[data-theme="dark"] {
   .font-mono {
     font-variant-numeric: tabular-nums;
   }
+
+  a:focus-visible,
+  button:focus-visible,
+  select:focus-visible,
+  summary:focus-visible {
+    outline: 2px solid var(--sx-green);
+    outline-offset: 2px;
+  }
 }
 
-/* Device-Adaptive StockX × Exchange Surfaces */
+/* Device-Adaptive Surfaces */
 .store-panel {
   background-color: var(--sx-canvas);
   border: 1px solid var(--sx-border);
@@ -146,11 +154,6 @@ html[data-theme="dark"] {
   background-color: var(--sx-stone);
 }
 
-.sx-exchange-grid {
-  background-image: radial-gradient(var(--sx-border) 1px, transparent 1px);
-  background-size: 20px 20px;
-}
-
 .sx-card-lift {
   transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
     border-color 180ms ease,
@@ -162,30 +165,13 @@ html[data-theme="dark"] {
   box-shadow: 0 10px 26px -8px rgba(0, 0, 0, 0.14);
 }
 
-@keyframes sx-marquee {
-  0% {
-    transform: translateX(0%);
-  }
-  100% {
-    transform: translateX(-50%);
-  }
-}
-
-.sx-marquee-track {
-  display: flex;
-  width: max-content;
-  animation: sx-marquee 38s linear infinite;
-}
-
-.sx-marquee-track:hover {
-  animation-play-state: paused;
-}
-
 @media (prefers-reduced-motion: reduce) {
-  .sx-marquee-track {
-    animation: none;
+  html {
+    scroll-behavior: auto;
   }
+  .sx-card-lift,
   .sx-card-lift:hover {
+    transition: none;
     transform: none;
   }
 }

@@ -112,7 +112,7 @@ export function LiveNotificationManager() {
     window.addEventListener("efm-notif-permission-changed", syncPerm);
     return () =>
       window.removeEventListener("efm-notif-permission-changed", syncPerm);
-  }, []);
+  }, [router]);
 
   // Decide when to show the polite opt-in banner (seller/buyer hubs, orders, create-listing, or watched bargain)
   useEffect(() => {

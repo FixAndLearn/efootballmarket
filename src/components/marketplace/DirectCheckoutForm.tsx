@@ -71,8 +71,12 @@ export function DirectCheckoutForm({
           (data.offer.status === "accepted" || data.offer.status === "countered")
         ) {
           setActiveOffer(data.offer);
-          if (data.offer.buyer_name && !buyerName) setBuyerName(data.offer.buyer_name);
-          if (data.offer.buyer_phone && !phoneNumber) setPhoneNumber(data.offer.buyer_phone);
+          if (data.offer.buyer_name) {
+            setBuyerName((prev) => prev || data.offer.buyer_name);
+          }
+          if (data.offer.buyer_phone) {
+            setPhoneNumber((prev) => prev || data.offer.buyer_phone);
+          }
         }
       })
       .catch(() => {});
