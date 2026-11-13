@@ -59,32 +59,18 @@ const nextConfig = {
         { key: 'Cache-Control', value: 'private, no-store, max-age=0' },
       ],
     },
-    {
-      source: '/download/efootball-market.apk',
-      headers: [
-        {
-          key: 'Content-Type',
-          value: 'application/vnd.android.package-archive',
-        },
-        {
-          key: 'Content-Disposition',
-          value: 'attachment; filename="eFootball-Market-Pro-v2.apk"',
-        },
-        {
-          key: 'Cache-Control',
-          value: 'public, max-age=3600',
-        },
-      ],
-    },
-    {
-      source: '/.well-known/assetlinks.json',
-      headers: [
-        { key: 'Content-Type', value: 'application/json; charset=utf-8' },
-        { key: 'Cache-Control', value: 'public, max-age=3600' },
-      ],
-    },
   ],
   redirects: async () => [
+    {
+      source: '/app',
+      destination: '/',
+      permanent: true,
+    },
+    {
+      source: '/mobile',
+      destination: '/',
+      permanent: true,
+    },
     {
       source: '/marketplace',
       destination: '/browse',

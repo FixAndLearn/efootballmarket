@@ -16,7 +16,6 @@ export function SquadCompareTray() {
 
   if (
     count === 0 ||
-    pathname.startsWith("/mobile") ||
     pathname.startsWith("/compare") ||
     pathname.startsWith("/pay/") ||
     pathname.startsWith("/orders/") ||

@@ -10,7 +10,7 @@ import { isStandaloneDocPath } from "@/components/legal/StandaloneDocLayout";
 export function Footer() {
   const pathname = usePathname();
 
-  if (isStandaloneDocPath(pathname) || pathname?.startsWith("/mobile")) {
+  if (isStandaloneDocPath(pathname)) {
     return null;
   }
 
@@ -62,11 +62,6 @@ export function Footer() {
               <li>
                 <Link href="/compare" className="hover:text-sx-ink transition-colors">
                   Compare Squads
-                </Link>
-              </li>
-              <li>
-                <Link href="/app" className="font-semibold text-sx-green-text hover:underline transition-colors">
-                  Download Mobile App (APK)
                 </Link>
               </li>
             </ul>

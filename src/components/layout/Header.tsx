@@ -8,7 +8,6 @@ import { isSuperAdminEmail } from "@/lib/security/adminAuth";
 import { Logo } from "@/components/brand/Logo";
 import { NotificationBell } from "@/components/layout/NotificationBell";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
-import { AppDropdownWidget } from "@/components/app/AppDropdownWidget";
 import { SmartSearchBar } from "@/components/marketplace/SmartSearchBar";
 import { isStandaloneDocPath } from "@/components/legal/StandaloneDocLayout";
 import { useCompareSquads } from "@/lib/compare/compareStore";
@@ -127,7 +126,7 @@ export function Header() {
     setProfileDropdownOpen(false);
   }, [pathname]);
 
-  if (isStandaloneDocPath(pathname) || pathname?.startsWith("/mobile")) {
+  if (isStandaloneDocPath(pathname)) {
     return null;
   }
 
@@ -188,7 +187,6 @@ export function Header() {
               )}
 
               <ThemeToggle />
-              <AppDropdownWidget viewportMode="desktop" />
 
               <Link
                 href="/seller/create-listing"
@@ -342,11 +340,8 @@ export function Header() {
           </div>
 
           {/* Mobile & Tablet (< lg) Top Right Controls */}
-          <div className="flex items-center gap-1 sm:gap-1.5 lg:hidden shrink-0">
-            <div className="hidden sm:block">
-              <ThemeToggle compact />
-            </div>
-            <AppDropdownWidget viewportMode="mobile" />
+          <div className="flex items-center gap-1.5 sm:gap-2 lg:hidden shrink-0">
+            <ThemeToggle compact />
             {user ? (
               <>
                 <NotificationBell />
@@ -451,7 +446,7 @@ export function Header() {
               { name: "1v1 Tournaments", href: "/tournaments", newTab: false },
               { name: "Buyer Wanted Board", href: "/wanted", newTab: false },
               { name: "Friday Drops", href: "/friday-drops", newTab: false },
-              { name: "Download App (APK)", href: "/app", newTab: false },
+              { name: "Compare Squads", href: "/compare", newTab: false },
               { name: "How Escrow Works ↗", href: "/escrow-guarantee", newTab: true },
             ].map((link) => (
               <Link

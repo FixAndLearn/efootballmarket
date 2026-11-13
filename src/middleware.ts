@@ -16,18 +16,7 @@ const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
  * 3. Enforces strict Role-Based Access Control (RBAC) on /admin routes.
  */
 export async function middleware(request: NextRequest) {
-  const { pathname, searchParams } = request.nextUrl;
-
-  // 0. Route APK (?source=android_app) and installed PWA (?source=app) launches straight into the Native Mobile App Shell (/mobile)
-  const appSource = searchParams.get("source");
-  if (
-    pathname === "/" &&
-    (appSource === "android_app" || appSource === "app")
-  ) {
-    const mobileUrl = request.nextUrl.clone();
-    mobileUrl.pathname = "/mobile";
-    return NextResponse.redirect(mobileUrl, 307);
-  }
+  const { pathname } = request.nextUrl;
 
   // 1. Edge CSRF Origin Firewall for browser-initiated state mutations
   if (

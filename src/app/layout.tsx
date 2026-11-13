@@ -84,12 +84,6 @@ export const metadata: Metadata = {
     shortcut: "/favicon.ico",
     apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
   },
-  applicationName: "eFootball Market",
-  appleWebApp: {
-    capable: true,
-    statusBarStyle: "black-translucent",
-    title: "eFootball Market",
-  },
   manifest: "/manifest.webmanifest",
   openGraph: {
     type: "website",

@@ -82,18 +82,9 @@ export function LiveNotificationManager() {
     }).catch(() => {});
   }, []);
 
-  // Register PWA Service Worker + route standalone installed app launches at "/" straight into "/mobile"
+  // Register browser notification Service Worker
   useEffect(() => {
     ensureNotificationServiceWorker().catch(() => {});
-
-    if (typeof window !== "undefined" && window.location.pathname === "/") {
-      const isStandaloneApp =
-        window.matchMedia("(display-mode: standalone)").matches ||
-        (window.navigator as any).standalone === true;
-      if (isStandaloneApp) {
-        router.replace("/mobile");
-      }
-    }
 
     if (!isBrowserNotificationSupported()) {
       setPermission("unsupported");

@@ -13,7 +13,6 @@ import {
   Handshake,
   Target,
   ExternalLink,
-  Smartphone,
 } from "lucide-react";
 import { isStandaloneDocPath } from "@/components/legal/StandaloneDocLayout";
 
@@ -43,10 +42,9 @@ export function SupportHubWidget() {
     };
   }, [open]);
 
-  // Hide floating help pill inside Mobile App Shell, Checkout, Order Rooms, Auth forms & Standalone Policy pages
+  // Hide floating help pill inside Checkout, Order Rooms, Auth forms & Standalone Policy pages
   if (
     isStandaloneDocPath(pathname) ||
-    pathname?.startsWith("/mobile") ||
     pathname?.startsWith("/pay/") ||
     pathname?.startsWith("/orders/") ||
     pathname === "/login" ||
@@ -99,20 +97,6 @@ export function SupportHubWidget() {
           </div>
 
           <div className="p-3 space-y-1">
-            <Link
-              href="/app"
-              onClick={() => setOpen(false)}
-              className="flex items-center justify-between px-3 py-2.5 rounded-xl bg-sx-green-tint/60 hover:bg-sx-green-tint transition-colors group"
-            >
-              <span className="flex items-center gap-2.5 text-xs font-bold text-sx-green-text">
-                <Smartphone className="w-4 h-4 shrink-0" />
-                Download Pro App v2.0 (23 MB APK)
-              </span>
-              <span className="text-[11px] font-bold text-sx-green-text">
-                Install &rarr;
-              </span>
-            </Link>
-
             <Link
               href="/middleman"
               onClick={() => setOpen(false)}

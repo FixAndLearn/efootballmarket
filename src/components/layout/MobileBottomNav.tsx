@@ -9,7 +9,7 @@ import { isStandaloneDocPath } from "@/components/legal/StandaloneDocLayout";
 export function MobileBottomNav() {
   const pathname = usePathname() || "/";
 
-  if (isStandaloneDocPath(pathname) || pathname.startsWith("/mobile")) {
+  if (isStandaloneDocPath(pathname)) {
     return null;
   }
 
