@@ -256,10 +256,10 @@ async function GuidesSection() {
           <div>
             <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display flex items-center gap-2">
               <BookOpen className="w-4 h-4 text-sx-green-text" />
-              <span>Guides &amp; Platform Updates</span>
+              <span>eFootball 2027 Blog &amp; Meta Guides</span>
             </h2>
             <p className="text-xs text-sx-muted mt-0.5">
-              Safe Konami ID transfer steps, manager builds, and what&apos;s coming next.
+              Fluid Formation, v6.1 Select Tokens, Dual Link-Up managers, and safe Konami ID escrow.
             </p>
           </div>
           <Link

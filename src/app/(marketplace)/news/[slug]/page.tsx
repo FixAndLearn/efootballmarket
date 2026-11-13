@@ -414,7 +414,7 @@ export default async function NewsArticlePage({
               </span>
 
               <span className="px-2 py-0.5 rounded bg-sx-stone border border-sx-border font-mono text-[11px] text-sx-ink-soft">
-                eFootball v4.x · 2026 Season
+                eFootball 2027 · v6.1 Season
               </span>
 
               <span className="flex items-center gap-1">
@@ -454,7 +454,7 @@ export default async function NewsArticlePage({
                 </span>
               </div>
               <p className="text-xs text-sx-muted max-w-xl leading-relaxed">
-                Verified against eFootball 2026 Mobile &amp; Console mechanics and eFootballMarket Kenya escrow safety rules. Independent community platform — not affiliated with Konami Digital Entertainment.
+                Verified against eFootball™ 2027 (v6.0 – v6.1.1) Mobile, Console &amp; PC mechanics and eFootballMarket Kenya escrow safety rules. Independent community platform — not affiliated with Konami Digital Entertainment.
               </p>
             </div>
             <div className="flex flex-wrap items-center gap-2 shrink-0">

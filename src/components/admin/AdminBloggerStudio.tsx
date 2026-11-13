@@ -31,12 +31,12 @@ interface AdminBloggerStudioProps {
 }
 
 const PRESET_COVERS = [
-  { label: "Night Stadium", url: "/images/articles/live-update-condition-night.jpg" },
-  { label: "Team Tactics", url: "/images/articles/team-playstyles-stadium.jpg" },
-  { label: "Konami 2FA", url: "/images/articles/konami-id-two-step-pin.jpg" },
-  { label: "M-Pesa Escrow", url: "/images/articles/mpesa-escrow-payment.jpg" },
-  { label: "Mobile 60 FPS", url: "/images/articles/mobile-60fps-gaming.jpg" },
-  { label: "Scam Alert", url: "/images/articles/whatsapp-scam-protection.jpg" },
+  { label: "Fluid Formation", url: "/images/articles/ef27-fluid-formation-konami.jpg" },
+  { label: "Select Tokens", url: "/images/articles/ef27-select-tokens-yamal.jpg" },
+  { label: "Link-Up Manager", url: "/images/articles/ef27-klopp-linkup-manager.jpg" },
+  { label: "Dynamic Volley", url: "/images/articles/ef27-dynamic-volley-konami.jpg" },
+  { label: "Championship 27", url: "/images/articles/ef27-championship-2027-trophy.jpg" },
+  { label: "Konami 2FA", url: "/images/articles/ef27-konami-security-pin.jpg" },
 ];
 
 export function AdminBloggerStudio({
@@ -64,7 +64,10 @@ export function AdminBloggerStudio({
   const inlineImgInputRef = useRef<HTMLInputElement | null>(null);
 
   const isStaticGuide = (id: string) =>
-    id.startsWith("guide-") || id.startsWith("update-");
+    id.startsWith("guide-") ||
+    id.startsWith("update-") ||
+    id.startsWith("announcement-") ||
+    id.startsWith("alert-");
 
   const resetForm = () => {
     setEditingId(null);

@@ -4,80 +4,70 @@ export function getCategoryLabel(category: NewsCategory | string) {
   switch (category) {
     case "scammer_alert":
       return {
-        label: "Safety Advisory",
+        label: "Safety & Ban Alerts",
         color: "bg-sx-red-tint border-sx-red-border text-sx-red-text",
       };
     case "escrow_guide":
       return {
-        label: "Verification & Escrow",
+        label: "Konami ID & Escrow",
         color: "bg-sx-green-tint border-sx-green-border text-sx-green-text",
       };
     case "efootball_news":
       return {
-        label: "Meta & Tactics",
+        label: "eFootball 2027 Meta",
         color: "bg-sx-stone border-sx-border-strong text-sx-ink",
       };
     case "announcement":
       return {
-        label: "What's Coming",
+        label: "Esports & Events",
         color: "bg-sx-amber-tint border-sx-amber-border text-sx-amber-text",
       };
     case "update":
       return {
-        label: "Upcoming & Patches",
+        label: "v6.1 Patch & Drops",
         color: "bg-sx-amber-tint border-sx-amber-border text-sx-amber-text",
       };
     default:
       return {
-        label: "Editorial Guide",
+        label: "eFootball 2027 Guide",
         color: "bg-sx-stone border-sx-border text-sx-ink",
       };
   }
 }
 
 const ARTICLE_REAL_PHOTO_BY_SLUG: Record<string, string> = {
-  "whats-coming-efootballmarket-kenya-2026-roadmap":
-    "/images/articles/escrow-vault-lock.jpg",
-  "upcoming-efootball-thursday-pack-drops-and-season-carryover-watch":
-    "/images/articles/live-update-condition-night.jpg",
-  "new-video-guide-konami-id-email-2fa-mpesa-escrow-masterclass":
-    "/images/articles/konami-id-two-step-pin.jpg",
-  "efootball-2026-team-playstyles-meta-guide":
-    "/images/articles/team-playstyles-stadium.jpg",
-  "booster-managers-88-proficiency-stat-breakpoints":
-    "/images/articles/manager-tactics-coach.jpg",
-  "custom-player-progression-builds-guide":
-    "/images/articles/custom-progression-controller.jpg",
-  "essential-player-skills-legacy-transfer-guide":
-    "/images/articles/player-skills-dribbling.jpg",
-  "live-update-condition-ratings-permanent-b-form":
-    "/images/articles/live-update-condition-night.jpg",
-  "division-1-defending-match-up-individual-instructions":
-    "/images/articles/division-1-defending-tackle.jpg",
-  "efootball-mobile-60fps-ping-optimization-kenya":
-    "/images/articles/mobile-60fps-gaming.jpg",
-  "how-to-check-google-play-and-game-center-links-in-efootball":
-    "/images/articles/account-links-verification.jpg",
-  "konami-id-email-transfer-and-two-step-verification-guide":
-    "/images/articles/konami-id-two-step-pin.jpg",
-  "how-mpesa-escrow-protection-works-in-kenya":
-    "/images/articles/mpesa-escrow-payment.jpg",
-  "avoiding-whatsapp-and-facebook-efootball-scams-in-kenya":
-    "/images/articles/whatsapp-scam-protection.jpg",
-  "how-to-prepare-and-price-your-efootball-squad-for-sale":
-    "/images/articles/seller-squad-setup-guide.jpg",
+  "efootball-2027-v6-season-update-fluid-formation-overload-guide":
+    "/images/articles/ef27-fluid-formation-konami.jpg",
+  "efootball-v6-1-select-skill-and-select-position-tokens-guide":
+    "/images/articles/ef27-select-tokens-yamal.jpg",
+  "efootball-2027-dual-link-up-managers-90-proficiency-meta":
+    "/images/articles/ef27-klopp-linkup-manager.jpg",
+  "efootball-2027-dynamic-volley-and-new-show-time-skills-meta":
+    "/images/articles/ef27-dynamic-volley-konami.jpg",
+  "efootball-2027-showdown-mode-and-custom-tournaments-guide":
+    "/images/articles/ef27-custom-tournament-bracket.jpg",
+  "efootball-league-division-1-no-relegation-match-analysis-guide":
+    "/images/articles/ef27-match-analysis-konami.jpg",
+  "efootball-championship-2027-300k-prize-pool-and-caf-afcon-roadmap":
+    "/images/articles/ef27-championship-2027-trophy.jpg",
+  "efootball-2027-november-pack-watch-quaresma-ballon-dor-black-friday":
+    "/images/articles/ef27-messi-yamal-season-art.jpg",
+  "how-to-verify-clean-konami-id-before-releasing-escrow":
+    "/images/articles/ef27-konami-security-pin.jpg",
+  "efootball-account-scams-and-konami-ban-waves-kenya-2026":
+    "/images/articles/ef27-stadium-night-lights.jpg",
 };
 
 const CATEGORY_FALLBACK_REAL_PHOTO: Record<string, string> = {
-  efootball_news: "/images/articles/team-playstyles-stadium.jpg",
-  escrow_guide: "/images/articles/mpesa-escrow-payment.jpg",
-  scammer_alert: "/images/articles/whatsapp-scam-protection.jpg",
-  announcement: "/images/articles/live-update-condition-night.jpg",
-  update: "/images/articles/mobile-60fps-gaming.jpg",
+  efootball_news: "/images/articles/ef27-overload-playstyle-konami.jpg",
+  escrow_guide: "/images/articles/ef27-konami-security-pin.jpg",
+  scammer_alert: "/images/articles/ef27-stadium-night-lights.jpg",
+  announcement: "/images/articles/ef27-championship-2027-trophy.jpg",
+  update: "/images/articles/ef27-fluid-formation-konami.jpg",
 };
 
 /**
- * Ensures every article uses a real photograph rather than legacy 3D/AI category icons.
+ * Ensures every article uses an authentic eFootball 2027 screen or real visual.
  */
 export function resolveRealArticlePhoto(
   slug?: string | null,
@@ -97,597 +87,56 @@ export function resolveRealArticlePhoto(
 
   return (
     (category && CATEGORY_FALLBACK_REAL_PHOTO[category]) ||
-    "/images/articles/team-playstyles-stadium.jpg"
+    "/images/articles/ef27-fluid-formation-konami.jpg"
   );
 }
 
 export const EDITORIAL_GUIDES: NewsArticle[] = [
   {
-    id: "guide-team-playstyles-meta-2026",
-    title: "eFootball 2026 Team Playstyles Compared: Quick Counter, Long Ball Counter & Possession Game",
-    slug: "efootball-2026-team-playstyles-meta-guide",
-    category: "efootball_news",
-    summary:
-      "A mechanical breakdown of defensive line height, compactness, support range, and stamina drain across Quick Counter, Long Ball Counter, Possession Game, Out Wide, and Long Ball in eFootball 2026.",
-    content: `## Why Team Playstyle Dictates 70% of Your Match Behavior
-
-In eFootball 2026, your chosen Team Playstyle does far more than boost squad stats when paired with an 88-proficiency manager. Under the hood, Team Playstyle hard-codes four tactical parameters that players can no longer adjust with manual sliders: defensive line height during settled play, defensive line drop timing after losing possession, attacking support spacing, and forward run trigger frequency.
-
-Many Division 2 and Division 3 players blame their defenders' Speed stats when conceding chipped through balls, when the actual culprit is running a ultra-high Quick Counter defensive line without an Anchor Man or Defensive fullback to cover the space behind. Understanding the exact trade-offs of each system lets you build a squad—and a sub-tactic—that survives all 90 minutes.
-
-## Quick Counter: High-Octane Pressing and Vertical Runs
-
-Quick Counter remains the most aggressive transition playstyle in competitive eFootball. The moment your team wins possession, Goal Poachers, Hole Players, and Roaming Flanks sprint vertically into half-spaces before the opponent's back four can reset.
-
-1. Defensive Line Behavior: Holds the highest defensive line in the game (roughly the halfway line when in settled possession) and triggers immediate counter-pressing for 3 to 4 seconds after a turnover.
-2. Stamina Cost: Heavy. Midfielders with Box-to-Box or Destroyer playstyles routinely hit red stamina by the 68th minute unless they carry 88+ Stamina and Fighting Spirit.
-3. Ideal Formations: 4-2-1-3 (narrow with two SS/CF hybrids and one wide winger), 4-1-2-3, and 4-2-2-2 with dual AMF Hole Players.
-4. Mandatory Squad Profile: Centre-backs need at least 84+ Speed and 82+ Acceleration to recover against lofted passes over the top, paired with an Offensive Goalkeeper who sweeps outside the penalty box.
-
-## Long Ball Counter: Compact Low Block for Division 1 Consistency
-
-![Touchline tactical organization determines how compact your back four stays during counter-attacks](/images/articles/manager-tactics-coach.jpg)
-
-Despite its name, Long Ball Counter does not force you to hoof long clearances. Instead, it combines the deepest, most compact defensive block in eFootball with immediate forward runs once you win the ball back near your own 18-yard box.
-
-1. Defensive Line Behavior: Instead of stepping up to press after losing the ball, your back four immediately drops toward your own penalty arc, denying space in behind against Mbappé, Owen, Rumme, or Eto'o cards.
-2. Spacing Caveat: Because the defensive block sits deep while forwards sprint ahead on turnovers, a large gap can open between your DMF and AMF if you rush passes through central congestion.
-3. Ideal Formations: 4-2-2-2 (two DMFs—one Anchor Man, one Orchestrator—behind two creative AMFs and two CFs) or 4-3-1-2 narrow diamond.
-4. Goalkeeper Pairing: Defensive Goalkeepers (such as Courtois, Cech, or Schmeichel profiles) excel here because shots come from sharper angles rather than 1v1 breakaways from the halfway line.
-
-## Possession Game: Patient Overload and Triangle Support
-
-Possession Game instructs teammates to check toward the ball carrier rather than sprinting away from them, creating short passing triangles across midfield.
-
-1. Attacking Movement: Forwards rarely make blind runs behind the back line unless triggered manually with Pass-and-Run (flicking after passing) or unless you deploy a dedicated Goal Poacher and Hole Player to break static lines.
-2. Defensive Line Risk: Nearly as high as Quick Counter, but with slightly less aggressive immediate pressing—meaning slow Build Up centre-backs can get caught flat-footed if you lose the ball on a careless square pass in midfield.
-3. Who Should Use It: Players on low-ping fiber connections who enjoy 60%+ ball retention, Double Touch combinations around the box, and patient cutbacks rather than three-pass transitions.
-
-## Out Wide and Sub-Tactic Switching Mid-Match
-
-Out Wide stretches play to both touchlines, instructing opposite-side wingers and fullbacks to crash the far post when a cross is loaded. While pure Out Wide struggles centrally against compact two-DMF blocks, pairing a Dual-Proficiency Manager (for example, an 88 Quick Counter / 88 Long Ball Counter or 88 Possession / 88 Quick Counter tactician) unlocks the strongest competitive adjustment in eFootball:
-
-- Start matches in Quick Counter or Possession Game to press opponents early and test their composure under pressure.
-- Switch to your Sub-Tactic set to Long Ball Counter after taking a two-goal lead or entering the 70th minute, dropping your defensive line automatically while keeping full +3 manager stat boosts across your entire squad.`,
-    author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/articles/team-playstyles-stadium.jpg",
-    is_pinned: true,
-    is_published: true,
-    views_count: 0,
-    created_at: "2026-10-28T09:00:00.000Z",
-    updated_at: "2026-11-05T09:00:00.000Z",
-  },
-  {
-    id: "guide-booster-managers-88-breakpoints",
-    title: "How 88+ Manager Proficiency & Stat Boosters Work in eFootball 2026 (Exact +2 and +3 Breakpoints)",
-    slug: "booster-managers-88-proficiency-stat-breakpoints",
-    category: "efootball_news",
-    summary:
-      "Learn the exact attribute thresholds where an 88-proficiency manager upgrades player stats from +2 to +3, how Manager Boosters stack with Epic Double Boosters, and how to save progression points.",
-    content: `## Why Manager Proficiency Changed Squad Building Forever
-
-When Konami raised flagship Manager Team Playstyle proficiency from 85 to 88—and later introduced single-stat and dual-stat Booster Managers—custom player builds changed overnight. An 88-proficiency manager does not give a flat +3 bonus to every attribute on a card. Instead, eFootball calculates the manager bonus proportionally based on each raw attribute's base + progression value (after card boosters are applied, depending on booster order).
-
-Knowing the exact numerical breakpoint where an attribute jumps from +2 to +3 lets you stop investing expensive progression points one notch early and reallocate 4 to 8 saved points into Stamina, Balance, or Weak Foot support stats.
-
-## Exact Stat Breakpoints Under an 88-Proficiency Manager
-
-When your active Team Playstyle matches an 88-proficiency manager (and every starter stands in a valid familiarity position), attributes scale according to three tiers:
-
-1. Attributes at 39 to 56: Receive +1 in-game squad boost.
-2. Attributes at 57 to 84: Receive +2 in-game squad boost.
-3. Attributes at 85 to 99: Receive +3 in-game squad boost (capped at 99 on the squad sheet).
-
-Compare that against older 85-proficiency GP managers, where a player needed 88 in a raw stat before receiving the +3 jump! Under an 88-proficiency manager, hitting **85** is the magic threshold across every card you train:
-
-- A midfielder trained to **85 Low Pass** automatically jumps to **88 Low Pass** on the pitch.
-- A striker trained to **85 Finishing** and **85 Offensive Awareness** reaches **88** in both categories without paying 3 progression points per level for levels 9 through 12.
-- Raising any attribute above **96** before manager boosts wastes points if an 88 manager already pushes 96 straight to the **99** ceiling.
-
-## How Manager Stat Boosters (+1 Speed, Acceleration, or Finishing) Stack
-
-Booster Managers carry an additional passive +1 (or two separate +1s on Double-Booster Managers) to specific attributes such as Speed, Acceleration, Tight Possession, Physical Contact, or Lofted Pass.
-
-Here is the critical calculation rule: a Manager's +1 stat booster applies **on top of** the 88-proficiency bonus, up to the hard attribute cap of 99.
-
-1. Suppose a winger has **84 Acceleration** after player progression.
-2. With a standard 88-proficiency manager (no Acceleration booster), 84 falls just short of the 85 threshold, so it receives +2 and lands at **86 Acceleration**.
-3. With an **88-proficiency +1 Acceleration Booster Manager**, that player receives the proficiency boost plus the +1 manager stat booster—pushing threshold builds cleanly to **88** or turning an **85** raw stat into **89** (85 + 3 proficiency + 1 manager booster)!
-
-## Practical Progression Rules Before Resetting Your Squad
-
-Before spending GP on progression resets (or during free progression reset campaigns), audit your starting XI with these four checkpoints:
-
-1. Never leave key technical stats at **84**: Find 1 or 2 progression points elsewhere to hit **85**, converting a +2 manager bonus into a +3 bonus—essentially buying two stat points for the price of one level.
-2. Never train a stat to **97, 98, or 99** raw: Under an 88 manager, **96** already hits **99** (and **95** hits **99** if your manager also holds the matching +1 attribute booster).
-3. Account for Epic Card Boosters first: On Epic and Show Time cards with active +2/+3 slot boosters, verify whether the card booster already lifts a stat from 83 to 85 before committing extra progression points.
-4. Keep both Main and Sub-Tactic at 88 if switching playstyles: If your manager has 88 Quick Counter and only 75 Long Ball Counter, switching to Long Ball Counter mid-match strips away your +3 squad boosts and tanks pass accuracy. Always pair dual-88 managers when running two playstyles.`,
-    author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/articles/manager-tactics-coach.jpg",
-    is_pinned: false,
-    is_published: true,
-    views_count: 0,
-    created_at: "2026-10-25T10:00:00.000Z",
-    updated_at: "2026-11-04T10:00:00.000Z",
-  },
-  {
-    id: "guide-custom-player-progression-builds",
-    title: "Why Auto-Allocate Hurts Your Squad: Custom Progression Point Builds by Position",
-    slug: "custom-player-progression-builds-guide",
-    category: "efootball_news",
-    summary:
-      "Auto-Allocate optimizes exclusively for headline Overall Rating (OVR), often wasting 8 to 14 progression points. Here is how to build Goal Poachers, Hole Players, Anchor Men, and Centre-Backs for real match performance.",
-    content: `## The Overall Rating (OVR) Illusion in eFootball
-
-Tapping "Recommended / Auto-Allocate" on a newly packed Epic, Highlight, or POTW-style trainable card produces the highest possible Overall Rating number on your squad screen—say, 103 instead of 101. Unfortunately, eFootball's Overall Rating formula weights position-specific attributes regardless of how diminishing progression costs work.
-
-Every progression category (Shooting, Passing, Dribbling, Dexterity, Lower Body Strength, Aerial Strength, Defending) scales in cost every four levels:
-
-- Levels 1 to 4: Cost **1 point** per level (4 points total)
-- Levels 5 to 8: Cost **2 points** per level (8 points total — 12 cumulative)
-- Levels 9 to 12: Cost **3 points** per level (12 points total — 24 cumulative)
-- Levels 13 to 16: Cost **4 points** per level (16 points total — 40 cumulative)
-
-When Auto-Allocate pushes a striker's Shooting or Dexterity from Level 12 to Level 15, those final three ticks cost **12 progression points**—enough to raise Passing from 0 to Level 6 AND Dribbling by 3 levels! Worse still, Overall Rating has zero direct effect on gameplay physics; the match engine reads only the 22 individual attributes and player skills.
-
-## Blueprint 1: Goal Poacher / Fox in the Box (CF)
-
-A meta striker needs explosive first-step separation, clean ball control under centre-back contact, and reliable finishing angles—not inflated Heading if they are 176 cm tall.
-
-1. Shooting (Target 88–90 Finishing after manager boost): Usually 7 to 9 levels. Once Finishing hits 90+ in-game, curl and shot power matter more than pushing Finishing from 92 to 95.
-2. Dribbling (Target 85+ Ball Control & Tight Possession): Never leave a CF at 76 Tight Possession just to hit 102 OVR. Raising Dribbling to 8–10 levels stops heavy first touches inside crowded penalty boxes.
-3. Dexterity (Target 90+ Offensive Awareness & Acceleration): Acceleration governs the first 5–8 meters of a burst onto a through ball—prioritize it slightly ahead of top-end Speed for penalty-box strikers.
-4. Lower Body Strength (Target 88+ Speed & 85+ Kicking Power): Kicking Power determines shot velocity from the edge of the area; low Kicking Power makes even 94 Finishing easy for tall keepers to parry.
-5. Aerial / Physical Contact: Invest 4 cheap points into Aerial Strength even on nimble strikers so Physical Contact reaches 75–80, preventing instant shoulder-barge dispossessions.
-
-## Blueprint 2: Hole Player / Creative Playmaker (AMF & SS)
-
-AMFs touch the ball under 360-degree midfield pressure and arrive late for second-wave finishes.
-
-1. Dribbling (88–92 Tight Possession & Dribbling): Tight Possession controls turn radius when holding left-stick micro-dribbles without sprint.
-2. Passing (85–88 Low Pass): Hit the 85 raw breakpoint so an 88 manager pushes Low Pass to 88; combine with One-Touch Pass and Through Passing skills rather than overspending to 94 pass stats.
-3. Lower Body Strength (85+ Speed & 84+ Stamina): AMFs cover the most ground in Quick Counter and Long Ball Counter; aim for at least 85 in-game Stamina.
-4. Shooting (80–85 Finishing): Even 4 to 6 levels into Shooting transforms wasted cutback chances into reliable low driven goals.
-
-## Blueprint 3: Anchor Man (DMF) & Build Up / Destroyer (CB)
-
-Auto-Allocate frequently dumps 14 to 16 levels into Defending while leaving centre-backs with 73 Speed and 68 Acceleration—fatal against Division 1 counter-attacks.
-
-1. Cap Defending at 10–12 levels on elite Epic/Highlight CBs if Defensive Awareness and Tackling already hit 92–95 after manager boosts.
-2. Reallocate those saved 8–12 points into **Lower Body Strength (Speed 84–88)** and **Dexterity (Acceleration 78–83)**. A CB with 93 Defensive Awareness and 86 Speed recovers far more breakaways than a CB with 99 Defensive Awareness and 75 Speed.
-3. On Anchor Man DMFs, invest 4 levels into Passing and 4 levels into Dribbling so your pivot does not gift immediate turnovers when pressed after winning a header.`,
-    author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/articles/custom-progression-controller.jpg",
-    is_pinned: false,
-    is_published: true,
-    views_count: 0,
-    created_at: "2026-10-22T11:00:00.000Z",
-    updated_at: "2026-11-03T11:00:00.000Z",
-  },
-  {
-    id: "guide-player-skills-legacy-transfer",
-    title: "Best Additional Player Skills by Position & Zero-Waste Raquel Lombardo Legacy Transfer Guide",
-    slug: "essential-player-skills-legacy-transfer-guide",
-    category: "efootball_news",
-    summary:
-      "Never roll Skill Training Programs directly on Epic or Highlight cards. Learn how to use 0-GP Standard players and Legacy Transfer to build custom 5-skill loadouts without overwriting slots.",
-    content: `## Why Rolling Skill Tokens Directly Wastes Months of Rewards
-
-Every trainable Standard, Highlight, Show Time, Big Time, and Epic player in eFootball 2026 has five empty **Additional Skill** slots alongside their default base skills. However, when you apply a Skill Training Program directly onto a flagship player:
-
-1. The game rolls completely at random from dozens of skills—and **cannot roll a skill the card already owns**, EXCEPT it can roll useless positional mismatches like Sombrero on a Centre-Back or Long Throw on a Striker.
-2. Once all five Additional Skill slots are full, using a token directly forces you to overwrite an existing Additional Skill at random, risking the loss of a rare roll like Double Touch or Blocker.
-
-The community-standard **Dummy Player Legacy Transfer** method eliminates random slot waste completely in exchange for GP.
-
-## Step-by-Step: The 0-GP Raquel Lombardo Legacy Transfer Method
-
-To bank every single Skill Training Program cleanly so zero tokens ever go to waste:
-
-1. Open **Contract -> Standard Player List**, filter by **Price: Lowest**, and sign multiple copies of a **0-GP Free Agent** carrying zero base skills (such as **Raquel Lombardo** or similar 50-OVR outfield players with an empty base skill sheet).
-2. Apply **exactly ONE** Skill Training Program to each fresh 0-GP dummy card. Because the dummy player has zero base skills and zero filled slots, nothing is ever overwritten.
-3. Lock and rename or tag your dummy players by skill (or review them in My Team -> Players) until you collect the exact five skills your star card needs.
-4. Select your target star player -> **Legacy Transfer**, and pick the 0-GP dummy card carrying the exact skill you want (costs roughly **257,000 GP** for a single-skill transfer).
-5. Advanced GP-Saving Tip: If you want to transfer multiple skills onto the *same* target player in one go and check total GP math first, compare single transfers vs chaining—single 1-skill transfers at ~257,000 GP each give you clean, modular control without locking incompatible skill bundles together.
-
-## Priority 5-Skill Loadouts by Position
-
-### Strikers (CF / Goal Poacher / Deep-Lying Forward)
-- **Double Touch** (combine with **Sole Control** + **Flip Flap** to unlock the fast, tight-angle **Level 3 Ball Roll Double Touch** animation!)
-- **One-Touch Pass** (essential for instant 1-2 wall passes with your AMF or strike partner)
-- **First-Time Shot** (prevents awkward extra touches on low crosses and rebounds)
-- **Long-Range Curler** or **Long-Range Shooting** (unlocks high-accuracy finesse and driven finishes from 20 yards)
-- **Fighting Spirit** (reduces shot accuracy penalties under physical pressure and low stamina—or **Super-Sub** if used strictly off the bench after halftime)
-
-### Attacking & Central Midfielders (AMF / CMF)
-- **One-Touch Pass** & **Through Passing** (Through Passing adds roughly a +15–20% curl/accuracy assist on threaded passes past defenders' hips)
-- **Double Touch** & **Sole Control**
-- **Interception** or **Track Back** (gives creative playmakers bite during high counter-pressing)
-
-### Defensive Midfielders & Defenders (DMF / CB / Defensive FB)
-- **Blocker** (triggers automated outstretched-leg lunge animations against shots and cutbacks—mandatory on every defender and DMF)
-- **Interception** (widens the auto-reach radius during Match-Up)
-- **Man Marking** (keeps AI defenders glued to runners inside the box)
-- **Aerial Superiority** (boosts jump duel win rates against tall Target Men and corner routines)
-- **One-Touch Pass** or **Weighted Pass** (cleans up first-time clearances and outlet balls under press)`,
-    author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/articles/player-skills-dribbling.jpg",
-    is_pinned: false,
-    is_published: true,
-    views_count: 0,
-    created_at: "2026-10-19T12:00:00.000Z",
-    updated_at: "2026-11-02T12:00:00.000Z",
-  },
-  {
-    id: "guide-condition-ratings-permanent-b-form",
-    title: "Live Update Condition Ratings (A–E) vs Permanent B Form: Pre-Match Arrows Explained",
-    slug: "live-update-condition-ratings-permanent-b-form",
-    category: "efootball_news",
-    summary:
-      "How Thursday Live Update ratings (A through E) interact with Unwavering, Standard, and Inconsistent player form to determine pre-match Condition Arrows—and why Epic cards hold Permanent B condition.",
-    content: `## Two Separate Systems: Form Type vs Weekly Live Update Rating
-
-New and intermediate eFootball players frequently confuse a player's permanent **Form** trait (Unwavering, Standard, or Inconsistent) with their weekly **Live Update Condition Rating** (A, B, C, D, or E, refreshed during Thursday maintenance based on real-world weekend league performances).
-
-Before every PvP or AI match kicks off, the match engine combines **both** values to roll one of five pre-match **Condition Arrows** for each starter and substitute:
-
-- **Top Arrow (Cyan / Up ↗↑)**: Significant across-the-board boost to technical and physical attributes (roughly +6% to +9% across outfield stats, often +2 to +4 points per attribute even near high tiers).
-- **Good Arrow (Green / Diagonal Up ↗)**: Moderate stat bonus (+1 to +2 across core attributes).
-- **Normal Arrow (Yellow / Horizontal →)**: Zero penalty, zero bonus—the player performs at exact squad-sheet numbers.
-- **Poor Arrow (Orange / Diagonal Down ↘)**: Noticeable penalty (-4% to -6% across stats and faster stamina drain).
-- **Terrible Arrow (Red / Down ↓)**: Severe penalty (-9% to -12% across speed, passing, finishing, and defensive awareness—virtually unplayable in Division 1).
-
-## How A, B, C, D & E Ratings Control Arrow Probabilities
-
-1. **A Rating**: Eliminates downward orange and red arrows completely! Even players with Standard form roll exclusively Normal (→), Diagonal Up (↗), or Top Up (↑) arrows, with Top Up triggering in roughly 35% to 45% of matches.
-2. **B Rating**: Also **eliminates downward orange and red arrows completely** on Unwavering and Standard form players! You are guaranteed at worst a Horizontal Normal (→) arrow every single match, with frequent Green (↗) and Cyan (↑) rolls.
-3. **C Rating (Default / Off-Season / International Break)**: Here your card's **Form trait** matters enormously:
-   - **Unwavering + C**: Very rare downward arrows; overwhelmingly Normal (→) or Green (↗).
-   - **Standard + C**: Roughly 15–20% risk of rolling an Orange (↘) or Red (↓) arrow, forcing you to carry bench cover.
-   - **Inconsistent + C**: High variance—capable of rolling Top Cyan (↑) frequently, yet equally likely to roll Red (↓). Ironically, **Inconsistent + B or A** is prized on Super-Subs because B/A removes the downward arrows while preserving higher Top-Arrow spikes!
-4. **D and E Ratings**: Heavily weighted toward Orange (↘) and Red (↓) arrows. Unless a card is irreplaceable and happens to roll Horizontal in the pre-match lobby, rotate D/E cards out of your matchday 23 until next Thursday's update.
-
-## Why Epic, Big Time & Legendary Cards Dominate Squad Depth
-
-Every **Epic**, **Big Time**, and **Legendary** card—along with select **Show Time** releases depending on Konami's seasonal series rules—carries a **Permanent B Live Update Rating** 365 days a year, regardless of club off-seasons, injuries, or retirement.
-
-In practical squad building, fielding 6 to 8 Permanent-B starters shrinks the number of bench slots you need for injury/arrow insurance. Instead of carrying three spare Centre-Backs in case C-rated defenders roll downward arrows, two Permanent-B Centre-Backs let you pack your bench with specialized **Super-Sub** wingers, physical target strikers, and tactical midfield closers.`,
-    author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/articles/live-update-condition-night.jpg",
-    is_pinned: false,
-    is_published: true,
-    views_count: 0,
-    created_at: "2026-10-16T09:30:00.000Z",
-    updated_at: "2026-11-01T09:30:00.000Z",
-  },
-  {
-    id: "guide-division-1-defending-instructions",
-    title: "Climbing to eFootball League Division 1: Match-Up Timing, Defensive Line Discipline & Individual Instructions",
-    slug: "division-1-defending-match-up-individual-instructions",
-    category: "efootball_news",
-    summary:
-      "Breaking past the 1,700–1,800 rating wall into Division 1 comes down to defensive restraint, Semi-Assisted cursor switching, and smart Individual Instructions rather than blind Dash-Pressing.",
-    content: `## Why Most Players Stall at Division 2 (1,650–1,780 Rating)
-
-Watch any Division 3 vs Division 1 replay and the sharpest difference is not attacking skill moves—it is **what happens in the first two seconds after losing possession**. Lower-division players hold **Dash + Press** continuously with their Centre-Backs, dragging one defender out of the back four and opening a straight passing lane for Goal Poachers to run into.
-
-Consistent Division 1 players defend **passing lanes first and the ball carrier second**, letting their defensive structure compress space until the opponent takes a heavy touch.
-
-## Mastering Match-Up vs Dash Tracking
-
-![Timed defensive tackles inside the penalty box rely on holding Match-Up at the moment of release rather than sprinting out of line](/images/articles/match-up-box-defense.jpg)
-
-1. **Never hold Match-Up while sprinting full-distance in open space**: Holding Match-Up drops your player into a wide-stance jockey with slower top speed. Use **Dash** alone to sprint back toward your own goal along the runner's inside shoulder, then tap/hold **Match-Up** only at the exact moment the passer winds up their foot.
-2. **Defend with your DMF and CMFs—leave your CBs in line**: Manually select your Anchor Man or Box-to-Box midfielder using right-stick player switching (or swipe cursor directional switching on Mobile) and drag them backward into the central pocket in front of your two Centre-Backs. Only switch onto a CB to track a manual deep run or block an imminent shot.
-3. **Semi-Assisted Cursor Change**: Switch Cursor Change from *Assisted* to **Semi-Assisted** in controller/touch settings. Assisted auto-switches your active defender on lofted balls and rebounds, often causing accidental directional inputs that pull your last defender the wrong way.
-
-## High-Impact Individual Instructions That Fix Formation Flaws
-
-Game Plan -> **Individual Instructions** gives you two Attacking slots and two Defensive slots. Used surgically, they solve 90% of structural counter-attack goals:
-
-1. **Defensive (Attacking Slot 1) on an Offensive Fullback**: If you lack a natural Defensive Fullback card (such as Costacurta, Tomiyasu, Araujo, or Wan-Bissaka profiles), placing **Defensive** on one fullback transforms your back four into an asymmetric back-three in buildup, stopping 2v2 counter-attacks down the channels.
-2. **Anchored (Attacking Slot 2) on your DMF or Central AMF**: Prevents a central pivot from drifting out to the touchline to chase triangular overlaps, keeping the middle of the pitch locked.
-3. **Deep Line (Defensive Slot 1) vs Tight Marking**:
-   - **Deep Line** on a tall, fast DMF instructs them to drop directly between your two CBs out of possession, creating a temporary 5-at-the-back or 3-CB shield against two-CF narrow formations (4-2-2-2 / 4-3-1-2).
-   - **Tight Marking** works best against isolated lone wingers or lone target men—avoid putting **Man Marking** on both opposition CFs if they use Deep-Lying Forwards, or your CBs will follow them to the halfway line and leave craters behind!
-4. **Counter Target on an Aging or Low-Stamina Classic No. 10 / SS**: Keeps one elite finisher (such as Messi, Gullit, or Romário profiles) hovering in dangerous transition pockets with full green stamina in the 85th minute.
-
-## Kick-Off Glitch & Stoppage-Time Management
-
-During kick-offs (0', 45', and immediately after scoring), AI defensive awareness briefly lags while forward lines remain compact:
-
-- Immediately flick **Attack/Defense Level down one notch (Blue 1)** before the opponent kicks off, manually select your **DMF or fastest CB**, and sprint straight back 10 yards toward your penalty spot to head away any lofted kick-off chip—then return to balanced level once play settles.`,
-    author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/articles/division-1-defending-tackle.jpg",
-    is_pinned: false,
-    is_published: true,
-    views_count: 0,
-    created_at: "2026-10-13T14:00:00.000Z",
-    updated_at: "2026-10-31T14:00:00.000Z",
-  },
-  {
-    id: "guide-mobile-60fps-ping-kenya",
-    title: "Optimizing eFootball Mobile for Locked 60 FPS & Stable Ping on Safaricom 4G/5G and Fiber in Kenya",
-    slug: "efootball-mobile-60fps-ping-optimization-kenya",
-    category: "efootball_news",
-    summary:
-      "Input delay in Kenyan online matches comes from two separate bottlenecks: local frame-time throttling and wireless packet jitter. Here are the exact graphics and network settings for smooth matches.",
-    content: `## Frame Rate vs Visual Presets: Why Standard + 60 FPS Wins Matches
-
-On eFootball Mobile (Android and iOS), touch input polling and pass-power bar responsiveness are tied directly to frame pacing. At **30 FPS**, each frame takes **33.3 milliseconds** to render; at **60 FPS**, frame time drops in half to **16.6 milliseconds**.
-
-When players select **High Graphics + 60 FPS** on mid-range Snapdragon 7-series, Dimensity 7000/8000, Helio G99, or older iPhone devices, the phone plays smoothly for the first 25 in-game minutes—until battery temperature crosses ~41°C. Once thermal throttling kicks in during the second half, frame rates dip unpredictably between 38 and 52 FPS, causing delayed First-Time Shots and mistimed Double Touches.
-
-### Recommended Competitive Graphics Setup (Title Screen -> Menu -> Graphics)
-1. **Graphics**: Set to **Standard** (or **Low** during summer heat / tournament Best-of-3 series on mid-range Android devices). Standard keeps player models, pitch lines, and ball physics crisp while stripping away heavy crowd and stadium lighting shaders that overheat your GPU.
-2. **Frame Rate**: Always lock to **60 fps**. Never trade 60 fps down to 30 fps for prettier stadium shadows.
-3. **Device Prep Before Division Matches**: Disable Android Battery Saver / iOS Low Power Mode (both hard-cap display refresh or throttle CPU boost clocks), unplug fast-charging cables while playing (charging adds 4–7°C of battery heat), and close background WhatsApp media auto-downloads or TikTok processes.
-
-## Reducing Online Input Lag & Jitter in Nairobi, Mombasa, Kisumu & Eldoret
-
-eFootball Mobile uses regional cloud relay servers (primarily nearest African/Middle Eastern/European cloud nodes depending on matchmaking pool) rather than pure peer-to-peer hosting for Division matches, alongside room relays for Friend Match lobbies. What ruins responsiveness is rarely raw download speed—eFootball uses less than **15–25 MB per match**—it is **packet jitter** (ping spiking from 45 ms to 190 ms every few seconds).
-
-1. **5 GHz Fiber Wi-Fi Beats 2.4 GHz Every Time**: If you play on Safaricom Home Fibre, Zuku, JTL Faiba, or Liquid Home, connect your phone strictly to the **5 GHz** SSID band and play within clear line-of-sight of the router. Legacy 2.4 GHz Wi-Fi suffers severe Bluetooth and apartment interference, causing micro-freezes followed by fast-forward speed-up lag.
-2. **Safaricom 4G LTE vs 5G Stability Tip**: In areas where 5G signal sits at only 1–2 bars indoors, phones constantly hand over between 5G NSA and 4G LTE mid-match—creating a 1.5-second freeze right as an opponent enters your penalty box! Locking Preferred Network Type to **4G / LTE Only** during tournament games often delivers flatter, jitter-free frame pacing than weak indoor 5G.
-3. **Matchmaking Search Area Setting**: Inside **eFootball League -> Matchmaking Settings**, choose **Search Nearby Area Only**. Widening matchmaking searches pairs you onto distant overseas relay servers (130 ms+ round-trip latency) where One-Touch Passes register half a second late. Only accept **4-bar or 5-bar antenna** pre-match connections during ranked Division climbs.`,
-    author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/articles/mobile-60fps-gaming.jpg",
-    is_pinned: false,
-    is_published: true,
-    views_count: 0,
-    created_at: "2026-10-10T08:30:00.000Z",
-    updated_at: "2026-10-30T08:30:00.000Z",
-  },
-  {
-    id: "guide-unlink-verification",
-    title: "How to Check If an eFootball Account Has Google Play or Game Center Linked",
-    slug: "how-to-check-google-play-and-game-center-links-in-efootball",
-    category: "escrow_guide",
-    summary:
-      "Before confirming any account purchase, buyers must verify that only a Konami ID is linked. Here is where to check inside eFootball Mobile and why linked Google Play or Apple IDs are rejected.",
-    content: `## Why Dual-Linked Accounts Are the #1 Peer-to-Peer Risk
-
-One of the most common ways buyers lose money in informal WhatsApp or Telegram eFootball trades is purchasing an account that still has the seller's **Google Play Games** (Android) or **Apple Game Center** (iOS) profile attached. Even after you change the Konami ID email address, password, and two-step verification code, a still-linked Google Play or Apple Game Center profile can sign back into that exact squad from the eFootball title screen without ever entering your new Konami password.
-
-## Why eFootballMarket Enforces "Clean Konami ID Only"
-
-Unlike a Konami ID—where the registered email address, login password, and authenticator 2FA can be transferred 100% to a new owner—Google Play and Apple Game Center links bind permanently to the seller's personal phone OS account unless unlinked through official Konami support procedures. Because sellers cannot hand over their personal Gmail or iCloud device accounts, any squad carrying an active Google Play or Game Center link remains vulnerable to shared sessions or unauthorized logins.
-
-For that reason, eFootballMarket requires every listed Mobile account to be linked **exclusively via Konami ID ("Clean Konami ID")**.
-
-## Exact Menu Path to Verify Link Status Inside eFootball Mobile
-
-During your 24-hour escrow inspection window—before releasing seller payout—open eFootball on your phone, complete the **Data Transfer** from the title screen (bottom-right menu icon -> Data Transfer -> Transfer Data Linked to Konami ID), and inspect the in-game link screen immediately:
-
-1. From the main clubhouse menu inside the game, tap **Extras** in the top-right navigation bar.
-2. Tap **Support**, then open **Link Data**.
-3. Check every row displayed on the Link Data status panel:
-   - **Link Data Using Konami ID** must display **Linked** (pointing to the Konami ID you just took over).
-   - **Link Data Using Google Play** (on Android) or **Link Data Using Game Center** (on iOS) must display **Not Linked**.
-4. Also note Konami's monthly transfer quota: eFootball Mobile enforces a hard limit of **10 Data Transfers per calendar month** (resetting on the 1st UTC). Always check that remaining transfers have not been exhausted before completing handover.
-
-## What to Do If Google Play or Game Center Shows "Linked"
-
-Do **not** click Release Funds, do **not** link your own Google/Apple account over an unclear state, and do **not** spend eFootball Coins or Skill Tokens on the squad. Instead:
-
-1. Capture a full, uncropped screenshot of **Extras -> Support -> Link Data** clearly showing the status of both rows alongside the current timestamp.
-2. Open your active order room on eFootballMarket and click **Raise Dispute** well before the 24-hour inspection timer expires.
-3. Upload the Link Data screenshot directly inside the dispute evidence panel.
-
-Once our moderation desk confirms that a third-party Google Play or Game Center link is attached contrary to listing terms, the held M-Pesa escrow balance is refunded in full to your Safaricom number.`,
-    author_name: "eFootballMarket Support",
-    cover_image_url: "/images/articles/account-links-verification.jpg",
-    is_pinned: false,
-    is_published: true,
-    views_count: 0,
-    created_at: "2026-10-08T09:00:00.000Z",
-    updated_at: "2026-10-29T09:00:00.000Z",
-  },
-  {
-    id: "guide-konami-id-2fa-transfer",
-    title: "Complete Guide: Changing Konami ID Email, Password & Two-Step Verification Safely",
-    slug: "konami-id-email-transfer-and-two-step-verification-guide",
-    category: "escrow_guide",
-    summary:
-      "Step-by-step walkthrough for securing a newly transferred Konami ID at my.konami.net, rotating email ownership, enabling Two-Step Verification, and clearing old active sessions.",
-    content: `## Securing Ownership at my.konami.net During Escrow Handover
-
-Receiving a Konami ID username and password inside your eFootballMarket order room is only step one of taking permanent ownership. Until you update the **registered email address**, rotate the **Konami ID password**, and activate **Two-Step Verification (2FA)** under your own inbox, the previous email holder could still trigger a password reset link.
-
-Follow this exact sequence inside your 24-hour escrow inspection window before clicking **Confirm & Release Funds**.
-
-## Step 1: Verify In-Game Squad & Clean Link Status First
-
-Before changing credentials, perform a **Data Transfer** from the eFootball title screen and verify three things inside the game:
-
-1. Collective Team Strength, Epic/Big Time/Show Time player roster, and eFootball Coin balance match the listing photos and description (remembering that Coins do not carry across Android <-> iOS platform switches, though players and GP do).
-2. **Extras -> Support -> Link Data** confirms **Google Play / Game Center: Not Linked**.
-3. The squad is not under any Konami match suspension or negative coin balance restriction.
-
-Only after the squad passes inspection should you proceed to rebind the Konami ID credentials—this keeps potential return disputes clean and fast if a seller misrepresented a card.
-
-## Step 2: Change the Registered Email Address at my.konami.net
-
-1. Open a clean browser tab and navigate directly to **https://my.konami.net** (never click shortened login links sent over third-party chats).
-2. Sign in with the seller-supplied Konami ID email and password, entering the 6-digit OTP code forwarded by the seller in your order chat.
-3. Open **Personal Information -> Email Address -> Edit**.
-4. Enter a **brand-new or dedicated personal Gmail/Outlook address** that already has its own 2FA enabled and has never been linked to another Konami ID.
-5. Konami will send a 6-digit confirmation code to your new email inbox. Enter that code to finalize the email swap—from this second onward, all future Konami security notices route exclusively to your inbox.
-
-## Step 3: Rotate Password & Enable Konami Two-Step Verification
-
-1. Still inside **my.konami.net**, open **Security -> Password** and set a unique 12–20 character alphanumeric password never reused on any other gaming site.
-2. Navigate to **Security -> Two-Step Verification** and activate OTP protection (either Authenticator App TOTP via Google Authenticator / Authy or Konami email OTP tied to your newly bound address).
-3. Review **Connected Apps / Personal Information** to verify country/region accuracy and confirm no unfamiliar recovery email remains attached.
-
-Once your new email, new password, and 2FA are live—and your device is signed into the squad—you can safely click **Confirm & Release Funds** inside the order room.`,
-    author_name: "eFootballMarket Support",
-    cover_image_url: "/images/articles/konami-id-two-step-pin.jpg",
-    is_pinned: false,
-    is_published: true,
-    views_count: 0,
-    created_at: "2026-10-06T10:00:00.000Z",
-    updated_at: "2026-10-28T10:00:00.000Z",
-  },
-  {
-    id: "guide-mpesa-escrow-kenya",
-    title: "How M-Pesa Escrow Protection Works on eFootballMarket Kenya",
-    slug: "how-mpesa-escrow-protection-works-in-kenya",
-    category: "escrow_guide",
-    summary:
-      "Understand every stage of an eFootballMarket escrow order—from Safaricom Buy Goods Till 1572931 verification to the 24-hour buyer inspection window and seller M-Pesa settlement.",
-    content: `## Solving the Classic "Who Goes First?" Trap in Kenyan Gaming Trades
-
-In unregulated peer-to-peer gaming groups across Kenya, every direct trade stalls on the same deadlock: if the buyer sends M-Pesa directly to a stranger's phone number first, the seller can block them on WhatsApp immediately; if the seller hands over Konami ID credentials and OTP codes first, a dishonest buyer can rebind the email without paying a shilling.
-
-Escrow removes trust guesswork by placing neutral payment custody between both parties until verified delivery is complete.
-
-## Stage-by-Stage Lifecycle of an Escrow Order
-
-### Stage 1: Checkout & Safaricom Till Deposit
-When a buyer clicks **Buy Now** on a verified listing, eFootballMarket creates a unique tracked order record. The buyer completes payment in Kenyan Shillings (KES) via our official **Safaricom M-Pesa Buy Goods Till 1572931** (or instant STK push / verified receipt submission) and logs the M-Pesa transaction code (for example, \`SJK84M29LP\`) on the order screen.
-
-Never send funds to a seller's personal M-Pesa phone number, Pochi la Biashara, or external Paybill—any off-platform transfer bypasses escrow custody and cannot be reversed by eFootballMarket.
-
-### Stage 2: Payment Verification & Seller Delivery Lock
-
-![Escrow custody locks funds until Konami ID credentials and clean Link Data status are confirmed](/images/articles/escrow-vault-lock.jpg)
-
-Once the M-Pesa Till receipt is matched against the exact order total:
-
-1. The listing is automatically locked from other buyers on the storefront so double-selling cannot occur.
-2. The seller receives an instant order notification instructing them to deliver the Konami ID credentials and assist with the login verification code inside the tracked order room—while knowing 100% that the buyer's KES funds are already secured in escrow.
-
-### Stage 3: The Buyer Inspection & Rebinding Window
-After credentials are delivered, the buyer enters the protected inspection window to:
-
-- Perform in-game Data Transfer and verify squad Collective Strength, Epic/Booster cards, and GP/Coin balances.
-- Check **Extras -> Support -> Link Data** to confirm **Google Play / Game Center: Not Linked**.
-- Rebind the Konami ID email address, password, and 2FA at **my.konami.net**.
-
-### Stage 4: Payout Settlement or Evidence-Backed Dispute
-- **Smooth Handover**: As soon as the buyer confirms ownership (or when valid delivery expires uncontested per dispute policy rules), eFootballMarket disburses the seller's net payout directly to their registered Safaricom M-Pesa number.
-- **Discrepancy Found**: If Google Play is linked, cards are missing, or the seller fails to provide valid credentials within the delivery SLA, the buyer clicks **Raise Dispute**, freezing payout while moderators inspect uncropped screenshots and refund the buyer's M-Pesa payment when listing rules were violated.`,
-    author_name: "eFootballMarket Support",
-    cover_image_url: "/images/articles/mpesa-escrow-payment.jpg",
-    is_pinned: false,
-    is_published: true,
-    views_count: 0,
-    created_at: "2026-10-04T11:00:00.000Z",
-    updated_at: "2026-10-27T11:00:00.000Z",
-  },
-  {
-    id: "guide-avoid-whatsapp-scams-kenya",
-    title: "7 Common WhatsApp, Telegram & Facebook eFootball Scams in Kenya (And How to Spot Them)",
-    slug: "avoiding-whatsapp-and-facebook-efootball-scams-in-kenya",
-    category: "scammer_alert",
-    summary:
-      "From fake M-Pesa confirmation SMS edits to the Konami OTP pre-transfer hijack and impersonated group admins, learn the exact red flags Kenyan scammers use in social media trades.",
-    content: `## Why Social Media Account Trading Groups Attract Repeat Fraudsters
-
-Because SIM cards, burner Facebook profiles, and Telegram handles take less than ten minutes to replace, scammers recycle the same stolen 3200+ Epic squad screenshots across dozens of Kenyan eFootball groups every week. Knowing the mechanics behind each scam makes them effortless to spot before you ever share a code or send KES 100.
-
-## The 7 Most Frequent eFootball Scams in Kenya
-
-1. **The "Too-Good-To-Be-True" 3210+ Double-Booster Squad for KES 1,800**: A squad stacked with 15+ endgame Double-Booster Epics (Gullit, Vieira, Rijkaard, Maldini, Messi, Rummenigge) takes tens of thousands of shillings or years of luck to assemble. When a stranger lists a true whale squad for KES 1,500–2,500 claiming an "urgent school fees / emergency quick sale today," the screenshots were almost certainly lifted from TikTok or another seller.
-2. **Cropped Link Data Screenshots**: Fraudulent sellers willingly send screenshots of the Game Plan pitch—but crop out the top bar or refuse to record a continuous 15-second screen capture opening **Extras -> Support -> Link Data**. Behind the scenes, their personal Google Play account remains linked so they can log back in 48 hours after you pay.
-3. **The "Let Me Log In First to Check Your Squad" Buyer Hijack**: Dishonest "buyers" ask sellers for the Konami ID email, password, and a single 6-digit Konami OTP "just to view the squad in-game before sending M-Pesa." Instead of opening eFootball, they enter that OTP on **my.konami.net** to swap your registered email address and lock you out within 30 seconds!
-4. **Fake Edited M-Pesa Confirmation SMS Screenshots**: Scammers use SMS generator templates to send fake **Confirmed. Ksh4,500.00 sent to...** screenshots while claiming "Safaricom network is delaying messages, hand over the password quickly." Always verify real M-Pesa statement balances directly via \`*334#\` or the official M-Pesa App—never trust a chat screenshot.
-5. **Fake Group Admin / Colluding Middleman**: A seller invites you into a WhatsApp or Telegram group with 800 members and points to a "trusted group admin" to hold the money. In reality, the seller owns both WhatsApp numbers (or splits stolen funds 50/50 with the group creator).
-6. **Zero Monthly Data Transfers Remaining**: A seller hands over a real Konami ID that has already burned all **10 monthly Data Transfers**, leaving you locked at the title screen unable to load the squad onto your phone until next month—while they attempt to rush payout release.
-7. **Off-Platform "Save the Fee" Bait**: Someone finds your listing on eFootballMarket, contacts you privately, and asks to pay directly on WhatsApp to skip verification steps. Moving off-platform strips away escrow custody immediately.
-
-## Pre-Trade Verification Checklist
-
-- Run unknown phone numbers, Till numbers, and usernames through the **Scammer Check** database before engaging.
-- Never share a **my.konami.net** 6-digit verification code until verified escrow payment is locked inside an active order room.
-- Insist on full-screen, uncropped Link Data proof on every Mobile transaction.`,
-    author_name: "eFootballMarket Trust & Safety",
-    cover_image_url: "/images/articles/whatsapp-scam-protection.jpg",
-    is_pinned: false,
-    is_published: true,
-    views_count: 0,
-    created_at: "2026-10-02T12:00:00.000Z",
-    updated_at: "2026-10-26T12:00:00.000Z",
-  },
-  {
-    id: "guide-prepare-price-squad-for-sale",
-    title: "Seller's Guide: How to Prepare, Photograph & Price Your eFootball Squad for a Fast Sale",
-    slug: "how-to-prepare-and-price-your-efootball-squad-for-sale",
-    category: "efootball_news",
-    summary:
-      "Practical valuation benchmarks in Kenyan Shillings (KES) for starter, mid-tier, and Double-Booster Epic squads—plus how to prepare a clean Konami ID for frictionless escrow handover.",
-    content: `## What Serious Kenyan Buyers Actually Pay For in 2026
-
-One of the biggest pricing mistakes first-time sellers make is pricing an account strictly by **Collective Team Strength** (for example, assuming any 3140+ squad commands KES 10,000+). Experienced buyers look past raw OVR inflation from free login cards and evaluate **card permanence, meta playstyles, manager roster, and link cleanliness**.
-
-### Core Valuation Drivers in KES
-1. **Endgame Meta Double-Booster Epics & Big Time Cards**: Anchors like Vieira, Rijkaard,Gullit, Maldini, Araujo, Schmeichel, Cech, Rummenigge, Eto'o, Bale, and Blitz Curler / Phenomenal Finishing Show Time attackers carry 70% of secondary-market resale value because they cannot be packed on demand once their 150-player box expires.
-2. **88-Proficiency Booster Managers**: Accounts carrying scarce pack managers (especially dual-88 proficiency or +1 Speed / Acceleration / Finishing booster managers) sell significantly faster because buyers cannot purchase expired club/national pack managers in the GP shop.
-3. **Unspent eFootball Coins & Skill Dummies**: Mention your exact Android vs iOS vs PlayStation/Steam coin balance clearly—remembering that eFootball Coins stay bound to the OS family where they were earned/purchased (Android coins show as 0 on iOS and vice versa, though remain intact on Android).
-4. **Typical Kenyan Market Tiers (Reference Ranges)**:
-   - **Starter / Budget Clean IDs (3050–3110 Strength, 1–3 Epics + POTWs)**: Typically clear quickly between **KES 1,200 and KES 3,500**.
-   - **Competitive Division 1 Mid-Tier (3120–3175 Strength, 5–9 Meta Epics/Show Times + 88 Manager)**: Typically trade between **KES 4,000 and KES 11,500** depending on spine quality (GK, CB, DMF, CF).
-   - **Stacked Collector / Tournament Whale Squads (3185–3230+ Strength, full Permanent-B starting XI + bench)**: Command **KES 12,000 to KES 35,000+** when backed by clean Konami ID documentation.
-
-## 5-Step Pre-Listing Preparation Checklist
-
-1. **Confirm Clean Konami ID Status First**: Open **Extras -> Support -> Link Data** and verify Google Play / Game Center reads **Not Linked** *before* creating a listing. Listings with third-party OS links are rejected or refunded upon buyer inspection.
-2. **Move the Konami ID Onto a Dedicated Clean Email**: If your Konami ID is currently tied to your personal university, work, or primary Gmail address, rebind it at **my.konami.net** to a clean dedicated email before listing so handover takes under five minutes once an order lands.
-3. **Upload 4 Clear, Uncropped Screenshots**:
-   - Full **Game Plan** pitch showing Collective Strength, active Manager, and starting XI + bench.
-   - **My Team -> Players** sorted by Overall Rating / Rarity showing reserve Epics, Show Times, and Big Time cards.
-   - **Extras -> Support -> Link Data** proving **Konami ID: Linked** and **Google Play / Game Center: Not Linked** (never show your actual email address or login ID in public screenshots!).
-   - **Managers** list highlighting 88-proficiency Booster Managers.
-4. **Preserve Monthly Data Transfers**: Avoid hopping between multiple phones right before selling so the buyer has plenty of Konami's 10 monthly Data Transfers available.
-5. **Stay Reachable After Listing**: Sellers who respond rapidly when an M-Pesa escrow order locks earn 5-star verified seller ratings and faster repeat sales.`,
-    author_name: "eFootballMarket Editorial Desk",
-    cover_image_url: "/images/articles/seller-squad-setup-guide.jpg",
-    is_pinned: false,
-    is_published: true,
-    views_count: 0,
-    created_at: "2026-09-29T09:00:00.000Z",
-    updated_at: "2026-10-25T09:00:00.000Z",
-  },
-  {
-    id: "update-whats-coming-efootballmarket-roadmap-2026",
+    id: "update-efootball-2027-v6-fluid-formation-overload",
     title:
-      "What's Coming Next on eFootballMarket Kenya: Verified Squad Swap Escrow, Weekend Cash Cups & Video Roster Proofs",
-    slug: "whats-coming-efootballmarket-kenya-2026-roadmap",
-    category: "announcement",
+      "eFootball 2027 (v6.0 – v6.1.1) Tactical Overhaul: Fluid Formation, Overload Playstyle & Split Playing Styles",
+    slug: "efootball-2027-v6-season-update-fluid-formation-overload-guide",
+    category: "update",
     summary:
-      "A look at the upcoming features rolling out on eFootballMarket—including protected two-way Konami ID swap rooms, M-Pesa automated weekend 1v1 brackets, and 15-second in-app squad video verification.",
-    content: `## Building Kenya's Complete eFootball Exchange & Community Hub
+      "Konami's v6.0.0 season update (and October's v6.1.1 patch) fundamentally changed Game Plan setup—retiring old Deep Line instructions in favor of automatic Fluid Formations, the 6th Team Playstyle (Overload), and separate Attacking vs Defensive Playing Styles.",
+    content: `## Why Your Old Static Game Plan No Longer Works in eFootball 2027
 
-Over the past months, our primary focus at **eFootballMarket Kenya** has been making **Clean Konami ID + Safaricom M-Pesa Till 1572931 Escrow** the safest way to buy and sell squads without WhatsApp middleman risk. Now, here is everything coming next to the platform over our upcoming releases.
+Since Konami rolled out the **eFootball 2027 Season Update (v6.0.0 on Console/PC and v11.0 on Mobile)** and followed up with **v6.1.0 / v6.1.1 in October 2026**, copying and pasting an old 2025/early-2026 static formation into Division 1 is a trap. Konami didn't just add new cards—they rebuilt three core systems inside **Game Plan**:
 
-## 1. Protected Squad-for-Squad Swap Rooms (With Cash Top-Up Escrow)
+1. **Fluid Formation** now shifts your XI between two distinct shapes automatically whenever possession changes hands.
+2. **Attacking** and **Deep Line** were **removed from Individual Instructions**, meaning players who used to drop a DMF into a back-five via *Deep Line* must now build that transition natively inside Fluid Formation.
+3. Every player card is now evaluated across **separate Attacking Playing Styles and Defensive Playing Styles**, alongside a brand-new 6th Team Playstyle: **Overload**.
 
-Many Kenyan players already own a clean 3150+ OVR squad and want to **trade up** (for example, swapping a 3160 Quick Counter squad + KES 2,500 M-Pesa top-up for a 3220 Double-Booster Epic roster).
+## 1. Setting Up Fluid Formation Without Opening Midfield Gaps
 
-- Listings that accept swaps already display the **Swap** badge on marketplace cards.
-- Next up, we are launching **Guided Two-Way Swap Rooms** where both traders submit Link Data verification (**Google Play / Game Center: Not Linked**) and any cash difference is locked in **Till 1572931** until both Konami IDs are verified on **my.konami.net**.
+With **Fluid Formation** turned on in **Game Plan -> Tactics -> Set Formation**, you configure an **Attack (In Possession)** shape and a **Defence (Out of Possession)** shape using the exact same eleven starters—no manual sub-tactic toggling required during open play.
 
-## 2. Automated Weekend 1v1 Cash Cups & Instant Bracket Seeding
+- **Meta Setup A (3-2-5 Attack -> 4-4-2 / 4-5-1 Defence)**: Push one Offensive Fullback high into wide midfield or inverted CMF while your opposite Defensive Fullback slides inside to form a back three in buildup; out of possession, both wingers drop into a compact four- or five-man midfield line.
+- **Meta Setup B (4-2-2-2 Attack -> 5-3-2 Defence)**: Place your Anchor Man DMF between your two Centre-Backs on the *Out of Possession* board to recreate the discontinued *Deep Line* shield against two-striker counter-attacks.
+- **Crucial Sprint-Distance Rule**: Never drag a player from LWF in Attack all the way to LB in Defence! If a player has to sprint 45 meters every time you lose the ball, they get caught out of position during the first 4 seconds of a transition and hit red stamina by the 60th minute. Keep positional shifts within one adjacent zone.
 
-Our **Community Tournaments** hub is expanding with recurring Friday Night & Sunday Afternoon knockout cups:
+## 2. Overload: How the 6th Team Playstyle Actually Plays
 
-- **Automated Room Code Check-In**: Players check in 15 minutes before kickoff and submit match score screenshots directly inside the bracket match card.
-- **Verified Prize Pool Custody**: Tournament entry pools are held in escrow and disbursed straight to verified M-Pesa numbers immediately after finals verification.
-- **Division & Strength Brackets**: Separate **Open Whale Cups** (unlimited Epic rosters) and **U-3120 Tactical Cups** so skill and tactical discipline shine.
+![Konami's Overload Team Playstyle concentrates teammates near the ball side for short passing triangles and rapid ball-side pressing](/images/articles/ef27-overload-playstyle-konami.jpg)
 
-## 3. 15-Second Roster Scroll Video Proofs on High-Value Listings
+Joining Possession Game, Quick Counter, Long Ball Counter, Out Wide, and Long Ball, **Overload** pulls midfielders and near-side fullbacks toward whichever flank or half-space currently holds the ball.
 
-Screenshots show the starting XI, but high-tier buyers also want to inspect reserve Show Time cards, Booster Managers, and live **Link Data** status in motion. Sellers listing squads above **KES 10,000** will soon be able to attach a short **15-second screen recording** scrolling from Game Plan -> Reserve Players -> Link Data.
+1. **When Attacking**: Creates instant 4v3 numerical superiority around the ball carrier, making one-touch triangles and \`1-2 Cut-In\` combinations far harder to intercept.
+2. **When Defending**: Compresses aggressively around the opponent's ball carrier with a high line to suffocate short buildup.
+3. **The Weak-Side Risk**: Because Overload drags your central midfielders toward the strong side, opponents with \`Visionary Pass\` or \`Edged Crossing\` wingers can punish you with diagonal switches to the far touchline. Always keep a fast fullback (\`88+ Speed\`) on the weak side when running Overload managers like **Frank Lampard**, **Mikel Arteta**, or **Tomoaki Makino**.
 
-## 4. Seller Price Benchmarks & Instant WhatsApp Deal Alerts
+## 3. Split Attacking & Defensive Playing Styles (v6.0 & v6.1 Additions)
 
-- **Live OVR & Epic Valuation Hints**: When creating a listing, sellers will see recent Kenyan market clearing ranges based on Epic count, 88+ Booster Managers, and Team Strength so squads are priced to sell fast.
-- **Saved Search Alerts**: Watchlist specific legends (**Gullit**, **Vieira**, **Maldini**, **Blitz Curler Messi**) and get notified the moment a matching Clean Konami ID squad drops under your target KES budget.
+Player behaviour is now split into **Attacking Playing Style** (active with the ball) and **Defensive Playing Style** (active without the ball), with Konami adding four standout roles in **v6.1.0**:
 
-Have a feature request or tournament format you want to see next? Reach our team anytime via the [Contact Desk](/contact) or check out active squads on the [Live Marketplace](/browse).`,
-    author_name: "eFootballMarket Product Team",
-    cover_image_url: "/images/articles/escrow-vault-lock.jpg",
+- **Build-up GK (Attacking GK Role)**: Goalkeepers step noticeably higher outside their six-yard box during settled possession to act as an extra passing outlet against high presses.
+- **Press Back & Front Line Poacher (Defensive Forward Roles)**: Dictates whether your CF/RWF tracks back into midfield passing lanes (*Press Back*) or hovers aggressively on the last defender's shoulder (*Front Line Poacher*, as seen on the new **Epic Ricardo Quaresma**).
+- **Tough Marker (Defensive Role for DMF, CB, LB, RB)**: Tightens physical contact engagement and body-check timing against ball-carrying AMFs inside Zone 14.
+
+Checking both halves of a card's Playing Style sheet is now mandatory before buying or building any squad on the [Live Marketplace](/browse).`,
+    author_name: "eFootballMarket Tactical Desk",
+    cover_image_url: "/images/articles/ef27-fluid-formation-konami.jpg",
     is_pinned: true,
     is_published: true,
     views_count: 0,
@@ -695,73 +144,384 @@ Have a feature request or tournament format you want to see next? Reach our team
     updated_at: "2026-11-10T09:00:00.000Z",
   },
   {
-    id: "update-thursday-pack-drops-season-carryover-watch",
+    id: "guide-efootball-v6-1-select-skill-position-tokens",
     title:
-      "Upcoming eFootball Thursday Pack Drops, Season Carryover Rules & Double-Booster Meta Watch",
-    slug: "upcoming-efootball-thursday-pack-drops-and-season-carryover-watch",
-    category: "update",
+      "Select Skill & Select Position Tokens in eFootball v6.1: How the 100-Token System Ends RNG Pain",
+    slug: "efootball-v6-1-select-skill-and-select-position-tokens-guide",
+    category: "efootball_news",
     summary:
-      "How weekly Thursday UTC maintenance updates affect squad prices in Kenya, what always carries over across major eFootball version updates, and which upcoming Double-Booster archetypes hold long-term value.",
-    content: `## Why Thursday Maintenance Shapes the Kenyan Squad Market
+      "Released on October 8, 2026 in eFootball v6.1.0, Select Skill Tokens and Select Position Tokens let you hand-pick exact skills and dark-green positions for 100 tokens—while retiring Advanced Skill Tokens at a 1:20 conversion rate.",
+    content: `## Goodbye Pure RNG: What Changed in the v6.1.0 Token Overhaul
 
-Every Thursday between **05:00 EAT and 11:00 EAT** (02:00–08:00 UTC), Konami runs weekly eFootball maintenance—refreshing **Live Update Condition Ratings (A–E)**, rotating **150-player Epic / Show Time boxes**, and introducing **POTW (Players of the Week)** selections. Understanding this rhythm helps both buyers and sellers time the market smartly.
+For years, building an endgame Epic or Show Time player meant burning dozens of random Skill Training Programs—or spending millions of GP on 0-GP dummy Legacy Transfers—just to avoid rolling *Sombrero* on a Centre-Back. With **eFootball v6.1.0 (released October 8, 2026)**, Konami introduced two deterministic training items alongside **Additional Skill Deletion**:
 
-## 1. What Upcoming Pack Cycles Mean for Squad Value
+1. **Select Skill Token**: Collect **100 Select Skill Tokens** to pick the **exact** eligible Additional Skill you want from the Skill Training list—zero randomness.
+2. **Select Position Token**: Collect **100 Select Position Tokens** to upgrade a player's **Position Proficiency** to full dark-green familiarity in a chosen eligible role.
+3. **Advanced Skill Tokens Retired (1 : 20 Conversion)**: Konami permanently discontinued *Advanced Skill Tokens* in v6.1.0, automatically converting every leftover Advanced Skill Token in player inventories into **20 Select Skill Tokens**.
+4. **Direct Skill Deletion**: You can now delete an unwanted Additional Skill directly off a card to free up one of its five slots cleanly before applying a guaranteed skill.
 
-Not all 103–106 rated cards hold secondary-market value equally over time:
+Standard 1-token **Random Skill Training Programs** and **Random Position Tokens** still remain in the game for budget rolls, so save your 100-stack Select Tokens strictly for high-impact meta upgrades.
 
-- **Endgame Defensive & Midfield Anchors Hold Highest Value**: Double-Booster ** Vieira, Rijkaard, Maldini, Thuram, Araujo, Gullit, Schmeichel, and Cech** consistently retain top resale demand in Kenya even months after their banner ends because physical model + leg coverage + Permanent **B Condition** never go out of meta.
-- **Show Time Skills That Move Prices**: Cards carrying **Blitz Curler**, **Phenomenal Finishing**, **Momentum Dribbling**, **Fortress**, and **Visionary Pass** command a noticeable premium on [eFootballMarket](/browse) whenever their banner rotates out of the store.
-- **88+ Dual-Proficiency Booster Managers**: Keep a close eye on upcoming club & national pack managers offering **88 proficiency in two playstyles** (such as Quick Counter + Long Ball Counter) paired with **+1 Speed** or **+1 Acceleration**—once those packs expire, accounts holding them become scarce.
+## Best Priority Picks for Your First 100 Select Skill Tokens
 
-## 2. Major Version Carryover Checklist: What Buyers Keep Forever
+Because accumulating 100 Select Skill Tokens through **Showdown PvP events**, Campaign Hubs, and login objectives takes discipline, never spend 100 Select Tokens on common filler skills. Target the animations that swing Division 1 matches:
 
-Whenever Konami prepares a major seasonal title update, new buyers often ask whether their purchased squad carries over intact. Based on Konami's established carryover architecture:
+- **One-Touch Pass (AMF / CMF / CF)**: Midfield pressing in v6.1 punishes slow two-touch trapping animations; putting guaranteed *One-Touch Pass* on a physical striker or destroyer midfielder transforms transition speed overnight.
+- **Double Touch (CF / Wingers / Playmakers)**: Especially lethal on cards that already hold *Sole Control* and *Flip Flap*, immediately unlocking the tight **Level 3 Ball-Roll Double Touch**.
+- **Blocker & Aerial Superiority (CB / DMF / Defensive FB)**: *Blocker* triggers automated outstretched-leg blocks on cutbacks, while *Aerial Superiority* is non-negotiable against cross-heavy \`Edged Crossing\` and \`Dynamic Volley\` setups.
+- **Through Passing (AMF / Orchestrator DMF)**: Adds critical curl and lane-bending accuracy to ground and lofted through balls feeding your \`Key Man\`.
 
-- **eFootball Coins & GP**: Carry over **100%** (remembering that Coins remain bound to the OS family—Android vs iOS vs PlayStation/Steam—where they were acquired).
-- **Epic, Big Time, Show Time & Legend Cards**: Carry over **intact** with Permanent B Condition and no contract-renewal lockouts in modern eFootball builds.
-- **Booster Managers, Skill Tokens & Position Trainers**: Carry over with your Dream Team inventory unless an individual manager license expires (in which case Konami issues standard compensation).
-- **Clean Konami ID Binding**: Once transferred to your personal email and 2FA on **my.konami.net**, your ownership persists seamlessly across every future season update.
+## Smartest Ways to Spend 100 Select Position Tokens
 
-## 3. Thursday Pre-Maintenance Safety Tip for Traders
+Remember Konami's eligibility rule: **Select Position Tokens** only upgrade positions where a card already holds partial (light-green) compatibility—you cannot turn a pure CB into a CF. Where 100 Select Position Tokens shine brightest:
 
-Never initiate an in-game **Data Transfer** during Konami's Thursday **05:00–11:00 EAT** server maintenance window, because the eFootball title screen cannot complete **Link Data** verification until servers come back online. If you purchase a squad during Thursday morning maintenance, your M-Pesa payment remains safely locked in **Till 1572931** while you wait for servers to reopen and complete your 24-hour inspection.`,
+1. **Unlocking AMF on Explosive Wingers (LWF/RWF/RMF -> AMF)**: Essential if you run narrow **4-2-2-2** or **4-2-1-3** Fluid Formations and want wingers like Lamine Yamal, Bale, or Quaresma operating centrally without an OVR/stat penalty.
+2. **Unlocking CF on Goal-Scoring SS / Wingers**: Gives hybrid forwards full familiarity as lone or paired strikers.
+3. **Unlocking CB or DMF on Hybrid Fullbacks**: Lets fast Defensive Fullbacks slide into a back-three or double-pivot cleanly.
+
+## Don't Forget Position-Aware Booster Crafting (15-Booster Pool)
+
+Pair your Select Tokens with Konami's expanded **Booster Crafting** pool—which includes specialized boosters like **Regista**, **Ball Protector**, **Accuracy**, and **Duelling**—where Random Booster Tokens draw from a filtered pool of 15 position-relevant boosters rather than wasting striker boosters on defenders.`,
     author_name: "eFootballMarket Meta Desk",
-    cover_image_url: "/images/articles/live-update-condition-night.jpg",
+    cover_image_url: "/images/articles/ef27-select-tokens-yamal.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
-    created_at: "2026-11-08T14:00:00.000Z",
+    created_at: "2026-11-09T14:00:00.000Z",
+    updated_at: "2026-11-10T08:30:00.000Z",
+  },
+  {
+    id: "guide-dual-link-up-managers-90-proficiency",
+    title:
+      "Dual Link-Up Play & 90-Proficiency Managers in eFootball 2027: Klopp, Conte, Kovač & Mourinho",
+    slug: "efootball-2027-dual-link-up-managers-90-proficiency-meta",
+    category: "efootball_news",
+    summary:
+      "Managers in eFootball 2027 now reach 89–90 Team Playstyle proficiency and carry TWO simultaneous Link-Up Plays. Here is how Centrepiece + Key Man triggers work and which 750–1,500 Coin managers are worth owning.",
+    content: `## From +1 Stat Boosters to Dual Link-Up Play Tacticians
+
+Manager selection in **eFootball 2027** is no longer just about buying any 88-proficiency coach. Over the past two cycles, Konami introduced **Link-Up Play**—special tactical combination moves triggered between two designated roles in your starting XI—and in **v6.0 / v6.1** escalated the meta with **Dual Link-Up Managers** and **89–90 Team Playstyle Proficiency** ratings.
+
+When scouting an account to buy on [eFootballMarket](/browse) (or deciding where to spend 750 to 1,500 eFootball Coins), expired and limited-edition Link-Up Managers are now some of the highest-value assets a Dream Team can hold.
+
+## How Link-Up Play (\`Centrepiece\` + \`Key Man\`) Actually Triggers
+
+![In-game Link-Up Play setup showing how the Centrepiece and Key Man positions and playing styles activate boosted passing and runs](/images/articles/ef27-mourinho-linkup-play.jpg)
+
+Inside **Game Plan -> Tactics -> Link-up Play**, each manager's skill specifies an exact **position** and **Playing Style** for two players:
+
+1. **The Centrepiece (Passer / Trigger)**: For example, a *Creative Playmaker* at \`AMF\` or \`LWF/RWF\`, or an *Orchestrator* at \`DMF\`.
+2. **The Key Man (Runner / Finisher)**: For example, a *Goal Poacher* at \`CF\` or a *Hole Player* at \`LMF/RMF\`.
+
+When both slots are filled by matching players and the **Centrepiece** receives possession in the trigger zone, the **Key Man** automatically fires a scripted high-priority run while through passes, chipped balls, and first-touch trapping between the pair receive a noticeable accuracy and speed buff.
+
+## Top Meta Managers in eFootball 2027 Right Now
+
+1. **Jürgen Klopp (2018–19 Liverpool Pack — 750 Coins, v6.1.1)**:
+   - **Proficiency**: **90 Quick Counter** & **83 Overload**
+   - **Boosters**: **+1 Defensive Awareness** & **+1 Stamina** (ideal for heavy counter-pressing!)
+   - **Dual Link-Up Plays**: **2-Man Press A** + **Breakthrough Pass D** (*Creative Playmaker* LWF/RWF -> *Goal Poacher* CF), plus Highlight **Alexis Mac Allister** and **Wataru Endo** included in the bundle.
+2. **Niko Kovač (Borussia Dortmund 26–27 Club Pack — Oct 2026)**:
+   - **Proficiency**: **90 Possession Game** & **89 Out Wide**
+   - **Boosters**: **+1 Ball Control** & **+1 Defensive Engagement**
+   - **Dual Link-Up Plays**: **Aggressive Centring B** + **Shadow Link B**. One of the strongest dual-playstyle Possession/Out Wide managers ever released.
+3. **Antonio Conte (v6.0 Launch Pioneer)**:
+   - The very first manager introduced with **two Link-Up Plays** (**Touchdown Pass C** + **One-Two Cut-In B**), giving counter-attacking 3-5-2 and 3-4-3 squads lethal automatisms.
+4. **Specialist Single & Dual Link-Up Options**:
+   - **Christian Chivu** (Inter 26–27 Club Pack, 1,500 Coins alongside Show Time *Low Screamer* Lautaro Martínez).
+   - **Ricardo Rodríguez** (**88 Possession Game**, Dual Link-Up: *Over-the-Top Pass A* + *Breakthrough Pass A*) & **Tomoaki Makino** (*Overload* specialist, *Over-the-Top Pass C* + *1-2 Cut-in B*) for 750 Coins each.
+   - **Frank Rijkaard** (*89 Quick Counter / Out Wide*, *Over-the-Top Pass B*, +1 Tight Possession & +1 Balance), **Fabio Capello** (*Over-the-Top Pass A*), **Ronald Koeman** (*89 Out Wide / 88 Possession*, *Aggressive Centering A*), and **José Mourinho** (*Diagonal Long Pass A*).
+
+## Why 88–90 Proficiency Saves Custom Progression Points
+
+Under an **88–90 proficiency manager**, attributes at **85+** jump by **+3** on the pitch (and **+4** if stacked with one of the manager's +1 stat boosters!). Never waste expensive 3-point and 4-point progression levels pushing raw stats to 97–99 when **95–96 raw** already hits the **99 cap** automatically in your Game Plan.`,
+    author_name: "eFootballMarket Meta Desk",
+    cover_image_url: "/images/articles/ef27-klopp-linkup-manager.jpg",
+    is_pinned: false,
+    is_published: true,
+    views_count: 0,
+    created_at: "2026-11-08T15:30:00.000Z",
     updated_at: "2026-11-10T08:00:00.000Z",
   },
   {
-    id: "update-new-konami-id-video-masterclass-guide",
+    id: "guide-dynamic-volley-and-2026-showtime-skills",
     title:
-      "New Release: Watch Our Full 4-Minute Konami ID Email & 2FA Escrow Masterclass (Till 1572931)",
-    slug: "new-video-guide-konami-id-email-2fa-mpesa-escrow-masterclass",
-    category: "escrow_guide",
+      "Mastering Dynamic Volley & Late-2026 Show Time Skills: Low Screamer, Magnetic Feet & Trusted Shields",
+    slug: "efootball-2027-dynamic-volley-and-new-show-time-skills-meta",
+    category: "efootball_news",
     summary:
-      "We just published our complete real-screenshot video walkthrough showing every click of an eFootballMarket escrow trade—from checking Link Data and paying Safaricom Till 1572931 to changing the email, password, and 2FA on my.konami.net.",
-    content: `## Every Step of a Safe Konami ID Handover—On Real Screens
+      "How to trigger v6.0.0's mid-air Dynamic Volley command instead of weak headers, plus a practical breakdown of the newest Show Time skills—Low Screamer, Magnetic Feet, Snap Strike, Attack Trigger, and Aerial Fort.",
+    content: `## Dynamic Volley: Turning Crosses & Second Balls Into Rockets
 
-Whether you are buying your first **KES 2,500** starter team or selling a **KES 25,000** stacked Division 1 roster, knowing the exact sequence of a **Clean Konami ID transfer** guarantees zero mistakes and zero recovery risk.
+Before **eFootball v6.0.0**, firing at goal off a waist-high cross or a cleared corner bounce frequently forced your striker into a weak, looping header straight into the goalkeeper's gloves. Konami solved this directly with the **Dynamic Volley** mechanic.
 
-Our new **4-minute narrated video masterclass** (embedded directly above and on our [Escrow Guarantee](/escrow-guarantee) page) walks through actual eFootball Mobile and **my.konami.net** screens with zoomed-in highlights on every security setting.
+### How to Trigger Dynamic Volley on Mobile & Console/PC
+- **The Exact Input**: Perform a **Stunning Shot** command (*Flick Shoot Left/Right* on Classic Mobile touch controls, or *R2/RT + Shoot* on Console/PC) **while the incoming ball is still airborne**—whether from an early cross, a chipped \`Over-the-Top\` Link-Up pass, or a penalty-box clearance.
+- **Visual Confirmation**: Your striker's power gauge turns **purple**, and players with high *Finishing*, *Kicking Power*, and *Acrobatic Finishing* adjust their body stride using v6.0's new cross-step animations to unleash scissor volleys, side-volleys, or driven downward strikes regardless of ball height.
+- **Timing Caveat**: Because Stunning Shots require a slightly longer wind-up than standard shots, trigger the Dynamic Volley **before** the ball reaches your striker's chest—if a *Tough Marker* CB is already touching your striker's back, use a normal first-time tap instead so you aren't dispossessed mid-swing.
+- **Smart Assist Interaction**: When *Smart Assist* is enabled, the engine can automatically convert high-ball opportunities in front of goal into Dynamic Volleys—one reason crosses from \`Edged Crossing\` specialists have surged in the v6.1 meta.
 
-## Quick Chapter Breakdown of the Video Masterclass
+## Late-2026 Show Time Skills Ranked by Real Pitch Impact
 
-1. **Pre-Trade Link Check (0:00 – 0:45)**: How to verify inside **Extras -> Support -> Link Data** that **Konami ID** says *Linked* while **Google Play / Apple Game Center** says *Not Linked*.
-2. **Locking Escrow via Safaricom Till 1572931 (0:45 – 1:15)**: Why paying into eFootballMarket escrow protects both the buyer's cash and the seller's squad before any OTP is shared.
-3. **Title Screen Data Transfer & Roster Audit (1:15 – 2:30)**: Logging in from the **bottom-right menu icon on the eFootball title screen** (never inside the in-game Extras menu!) to inspect Team Strength, Epic reserves, and Link Data live.
-4. **Securing Full Ownership at my.konami.net (2:30 – 4:25)**: Replacing the seller's **Email Address**, setting a fresh **Password**, and activating **Two-Step Verification (2FA)** before tapping **Confirm & Release Payout**.
+Konami has rapidly expanded the **Show Time** skill roster across recent Epic, Big Time, and Club Packs. Here is what the newest skills actually do in Division 1 matches:
 
-Ready to put it into practice? Browse verified Clean Konami ID rosters on the [Marketplace](/browse) or protect an off-platform WhatsApp deal using [Middleman Escrow](/middleman).`,
-    author_name: "eFootballMarket Trust & Safety",
-    cover_image_url: "/images/articles/konami-id-two-step-pin.jpg",
+1. **Low Screamer (Shooting)**: Drives venomous, low-trajectory skimming strikes into the bottom corners that beat tall goalkeepers before they can fold their legs—featured on **Epic Marco van Basten**, **Show Time Lautaro Martínez** (Inter 26–27 pack), **Epic Diego Forlán**, and **Show Time Adama Traoré**.
+2. **Magnetic Feet & Snap Strike (Dribbling / Finishing)**: Headlined by **Epic Ruud Gullit** and **Clarence Seedorf** in October 2026, *Magnetic Feet* keeps close-control touches glued to the boot during v6.0's rebalanced slower Dash Dribble speed, while *Snap Strike* accelerates short-backlift shots inside crowded penalty boxes.
+3. **Attack Trigger (Midfield Transition)**: Seen on **Epic Xabi Alonso**, **Clarence Seedorf**, and **Show Time Martin Ødegaard**, sharpening forward movement and progressive ball release the moment midfield possession is secured.
+4. **Aerial Fort, Shadow Hunt & GK Directing Defence (Defensive Meta)**: Featured in October's **Show Time: Trusted Shields** box (**Micky van de Ven** carrying *Fortress + Aerial Fort + Shadow Hunt*, and **Thibaut Courtois** with *GK Directing Defence*), directly countering \`Bullet Header\` and \`Dynamic Volley\` cross spam.
+5. **Edged Crossing + Momentum Dribbling**: The signature combo on newly debuted **Epic Ricardo Quaresma** and **Show Time Wesley**, whipping dipping early crosses behind high \`Overload\` defensive lines.`,
+    author_name: "eFootballMarket Tactical Desk",
+    cover_image_url: "/images/articles/ef27-dynamic-volley-konami.jpg",
     is_pinned: false,
     is_published: true,
     views_count: 0,
-    created_at: "2026-11-09T16:30:00.000Z",
-    updated_at: "2026-11-10T09:30:00.000Z",
+    created_at: "2026-11-07T12:00:00.000Z",
+    updated_at: "2026-11-09T18:00:00.000Z",
+  },
+  {
+    id: "update-showdown-and-custom-tournaments-efootball-2027",
+    title:
+      "Inside eFootball 2027's New Modes: \"Do-or-Die\" Showdown PvP & 8-Player Custom Tournaments",
+    slug: "efootball-2027-showdown-mode-and-custom-tournaments-guide",
+    category: "update",
+    summary:
+      "How v6.1's high-stakes Showdown knockout mode rewards Select Skill Tokens, and how v6.0's in-game 8-player Custom Tournament mode (with live organizer spectating) powers community cups.",
+    content: `## Two Competitive Modes That Changed Weekly Grinding
+
+For seasons, players complained that outside of **eFootball League** Division pushes and repetitive 50-Coin Thursday events, Dream Team lacked genuine tournament tension. In **eFootball 2027 (v6.0.0 and v6.1.0/v6.1.1)**, Konami answered with two dedicated tournament modes: **Showdown** for solo PvP rewards, and **Custom Tournament** for community organizers and friend groups.
+
+## 1. Showdown PvP: Win to Advance, One Loss Ends Your Run
+
+![Reaching the Showdown Final in eFootball 2027—every round is single-elimination with Select Skill Tokens on the line](/images/articles/ef27-showdown-final-mode.jpg)
+
+Introduced in **October 2026 (v6.1.0 / v6.1.1)**, **Showdown** is a limited-attempt, bracket-style online PvP gauntlet where every single match carries knockout stakes:
+
+- **Single-Elimination Format**: Win your match to advance deeper toward the **Showdown Final**; lose once and your current run resets, consuming one of your limited event entries.
+- **High-Value Token Rewards**: Showdown is one of the primary free-to-play sources of **Select Skill Tokens**—making every run count toward your next 100-token guaranteed skill pick.
+- **Survival Tips for Showdown Runs**:
+  1. Check **Live Update Condition Arrows** carefully—prioritize **Permanent-B Condition** Epics and **A/B-rated** starters so a red arrow never ruins a Final.
+  2. Prepare **at least 2 of your 20 Game Plan Lists** specifically for Showdown: a balanced starter Fluid Formation, and a compact **Long Ball Counter** 5-at-the-back closing setup for protecting a 1-0 lead after the 75th minute.
+  3. Never enter a Showdown match on unstable 1–2 bar mobile signal—wait for a clean **4-bar or 5-bar** connection on 5 GHz Fiber or locked 4G LTE.
+
+## 2. Custom Tournament Mode: Native 8-Player Brackets & Live Spectating
+
+Launched in **v6.0.0**, **Custom Tournament** lets any player create and host structured tournaments for **up to 8 participants** directly inside eFootball without external spreadsheets:
+
+- **Custom Squad & Match Rules**: Organizers can run open Dream Team whale brackets, enforce themed club/nationality rules, or customize match timers and extra-time/penalty settings.
+- **Real-Time Organizer Spectating**: Tournament hosts can **spectate live matches** between participants in real time—making dispute verification, fair-play monitoring, and live TikTok/YouTube commentary effortless for Kenyan clans!
+- **900 Backup Player Slots & 20 Game Plans**: Combined with Konami's expansion to **900 Backup Player Slots** and **20 Game Plan Lists** (up from 10 in v5.5.0), serious competitors can maintain dedicated U-3100, Partner Club, African National Team, and Unlimited Whale squads simultaneously.
+
+Want to test your Dream Team in organized Kenyan cash brackets with M-Pesa Till prize custody? Check active brackets in our [Tournaments Arena](/tournaments).`,
+    author_name: "eFootballMarket Competitions Desk",
+    cover_image_url: "/images/articles/ef27-custom-tournament-bracket.jpg",
+    is_pinned: false,
+    is_published: true,
+    views_count: 0,
+    created_at: "2026-11-06T11:00:00.000Z",
+    updated_at: "2026-11-09T11:00:00.000Z",
+  },
+  {
+    id: "guide-efootball-league-ranked-rules-match-analysis",
+    title:
+      "eFootball League Ranked Guide (2026/27): No Mid-Phase Relegation, Smart Assist Lock & 10-Match Analysis",
+    slug: "efootball-league-division-1-no-relegation-match-analysis-guide",
+    category: "efootball_news",
+    summary:
+      "How Division 1–3 relegation protection, previous-phase Rating seeding, locked PvP Smart Assist settings, 10-Match Analysis charts, and 60 FPS Kenyan network tuning help you climb faster.",
+    content: `## Modern eFootball League Rules Every Division Grinder Must Know
+
+Between **v5.5.0** and **v6.1.1 (October 2026)**, Konami quietly rewrote the rules of **eFootball™ League (PvP Category)**—changing how promotions, relegations, rating resets, and assistive controls work in ranked play:
+
+1. **Zero Mid-Phase Relegation in Divisions 1, 2 & 3**: Once you break into **Division 3, Division 2, or Division 1** during an active Phase, **you can no longer be relegated back down mid-Phase**, even if you hit a tough losing streak while testing a new Fluid Formation!
+2. **Previous-Phase Division Affects Starting Rating**: At the start of each new Phase (such as October's Phase 3/4 cycle), your initial PvP Rating calculation now factors in the highest Division you reached in the previous Phase—rewarding late-season pushes.
+3. **Smart Assist Locked During PvP Matches**: Players can **no longer toggle Smart Assist on or off mid-match** in PvP games. Furthermore, **patch v6.1.1 (October 15, 2026)** fixed the annoying visual bug where power gauges failed to display in online PvP matches against opponents using Smart Assist.
+4. **Phase Rank Show Time Rewards**: Reaching high ranks in eFootball League continues to award exclusive **Highlight / Show Time** cards (such as Phase 3's **Show Time Adama Traoré** with *Acceleration Burst* and *Low Screamer*).
+
+## Using the 10-Match PvP Match Analysis Tool to Fix Leaks
+
+Instead of guessing why you plateau around 1,750 Rating, open Konami's built-in **Match Analysis** screen, which audits your **last 10 PvP matches** and benchmarks your tendencies against players in higher divisions:
+
+- **Goal Type Ratio**: Tracks what percentage of your goals scored—and goals conceded!—come from *Low Through Balls*, *Chipped Through Balls*, *Crosses*, *Low Crosses*, *Dribbling*, *Set Pieces*, *Rebounds*, or *Right After Stealing*.
+- **Attacking & Defensive Habit Charts**: Reveals how frequently you rely on *Dash Dribbling* vs *Finesse Dribbling*, and how often you commit to *Pressing* vs *Match-Up* jockeying.
+- **Quick Diagnostic Fix**: If your chart shows 60%+ of goals conceded come from *Low Through Balls* and *Right After Stealing*, you are holding Dash-Press with your Centre-Backs and forcing risky central passes out from the back. Switch cursor change to **Semi-Assisted**, track runners manually with your DMF, and let your Fluid Formation settle before playing forward.
+
+## Smooth 60 FPS & Low-Jitter Matchmaking in Kenya
+
+Even the best 3220+ squad loses 50/50 duels if thermal throttling or wireless packet jitter delays your inputs:
+
+1. **Graphics -> Standard + 60 FPS**: On Android and iOS, locking **Standard Graphics + 60 FPS** keeps frame pacing flat at **16.6 ms** across all 90 minutes without overheating mid-range Snapdragon/Dimensity phones in the second half.
+2. **5 GHz Fiber or Locked 4G LTE**: On Safaricom Home Fibre, Zuku, or Faiba, always connect to the **5 GHz** Wi-Fi band. When playing on mobile data indoors where 5G fluctuates at 1–2 bars, lock your network mode to **4G / LTE Only** to prevent mid-match 5G-to-4G handover freezes.
+3. **Matchmaking Area**: Keep **Search Nearby Area Only** enabled and accept **4-bar or 5-bar** connections so One-Touch Passes and Dynamic Volleys register instantaneously.`,
+    author_name: "eFootballMarket Editorial Desk",
+    cover_image_url: "/images/articles/ef27-match-analysis-konami.jpg",
+    is_pinned: false,
+    is_published: true,
+    views_count: 0,
+    created_at: "2026-11-05T10:00:00.000Z",
+    updated_at: "2026-11-08T10:00:00.000Z",
+  },
+  {
+    id: "announcement-efootball-championship-2027-300k-caf",
+    title:
+      "eFootball Championship 2027 ($300,000 Prize Pool), Partner Club Qualifiers & Konami × CAF African Content",
+    slug: "efootball-championship-2027-300k-prize-pool-and-caf-afcon-roadmap",
+    category: "announcement",
+    summary:
+      "Konami tripled the official eFootball Championship 2027 prize pool to $300,000, expanded World Finals to 24 players with Africa Regional Finals, and deepened African football content through its official CAF partnership.",
+    content: `## Biggest Esports Expansion in Franchise History: $300,000 on the Line
+
+Konami officially kicked off the **eFootball™ Championship 2027** circuit in October 2026 with two headline upgrades for competitive Mobile and Console/PC players worldwide—including **Africa**:
+
+1. **Prize Pool Tripled to $300,000**: Up three-fold from the previous season's global pool.
+2. **Expanded 24-Player World Finals (Summer / July 2027)**: More qualification berths across both **eFootball Championship Open** (with dedicated **Africa**, Europe, Americas, East Asia, and West Asia Regional Finals in May–June 2027) and the **6 Official Partner Club Events**.
+
+## Complete 2026–2027 Partner Club Event Calendar
+
+Every Partner Club competition features **5 stages**—Round 1 (VS AI), Round 2 (PvP), Round 3 (15-Match Ranking Round where the **Top 16 Mobile and Top 16 Console players** advance), Club Regional Qualifiers, and live **LAN Club Finals**—each accompanied by themed Club Packs and Chance Deals in-game:
+
+- **FC Internazionale Milano**: Online Qualifiers started October 8, 2026 · **Club Finals: November 28, 2026**
+- **Borussia Dortmund**: Online Qualifiers **November – December 2026** · Club Finals: December 2026
+- **Arsenal FC**: Online Qualifiers **December 2026 – January 2027** · Club Finals: January 2027
+- **FC Barcelona**: Online Qualifiers **January – February 2027** · Club Finals: March 2027
+- **Manchester United**: Online Qualifiers **February – March 2027** · Club Finals: May 2027
+- **AC Milan**: Online Qualifiers **March – April 2027** · Club Finals: April – May 2027
+
+Meanwhile, **eFootball Championship 2027 Open** in-game First Qualifiers run **January – April 2027**, Second Qualifiers **April – May 2027**, and **Africa Regional Finals** in **May – June 2027**.
+
+## Konami × CAF Partnership & African Football Rising
+
+African players have more official representation in **eFootball 2027** than ever before:
+
+- **Official Konami × CAF Collaboration**: Following Konami's landmark partnership with the **Confederation of African Football (CAF)**, eFootball has already rolled out **Road to CAF AFCON 2027** Show Time packs (headlined by African stars like Achraf Hakimi, Nicolas Jackson, Calvin Bassey, and Ibrahim Mazza) alongside the **Moroccan League** addition in v6.0.0.
+- **National Legends & East African Hype**: With East Africa (Kenya, Uganda, and Tanzania) co-hosting AFCON 2027 and Konami expanding its **Epic: National Legends** series across African footballing nations, Kenyan squad builders can finally pair elite African icons with European club legends.
+
+Sharpen your tournament nerve every weekend ahead of the Open qualifiers in our local [eFootballMarket Tournaments Arena](/tournaments).`,
+    author_name: "eFootballMarket Esports Desk",
+    cover_image_url: "/images/articles/ef27-championship-2027-trophy.jpg",
+    is_pinned: false,
+    is_published: true,
+    views_count: 0,
+    created_at: "2026-11-04T09:00:00.000Z",
+    updated_at: "2026-11-09T09:00:00.000Z",
+  },
+  {
+    id: "update-november-2026-pack-watch-squad-valuation",
+    title:
+      "eFootball 2027 Pack & Market Radar: Epic Quaresma, Ballon d'Or Big Time, Free Forlán & Black Friday Watch",
+    slug: "efootball-2027-november-pack-watch-quaresma-ballon-dor-black-friday",
+    category: "update",
+    summary:
+      "Which recent October–November 2026 eFootball 2027 packs actually hold long-term resale value in Kenya, what to watch in November's Black Friday campaign, and how to price Clean Konami ID squads in KES.",
+    content: `## How Recent eFootball 2027 Packs Shape Kenyan Squad Prices
+
+Between October's **v6.1.0 / v6.1.1** cycle and November's **Black Friday** build-up, Konami has dropped a dense streak of 150-player boxes, 50-player packs, and 1,500-Coin Partner Club bundles. If you are buying, selling, or swapping an account on [eFootballMarket Kenya](/browse), knowing which cards move real secondary-market value—and which are free login inflation—saves thousands of shillings.
+
+## Standout Q4 2026 Releases That Hold Resale Demand
+
+1. **Netherlands Epic Trio (Van Basten, Gullit, Rijkaard)**: Still the gold standard for spine value. **Hole Player Ruud Gullit** (*Magnetic Feet + Snap Strike*) and **Build Up CB Frank Rijkaard** (*Fortress + Long-Reach Tackle*) fit every Fluid Formation in the game and command instant buyer interest in Kenya.
+2. **European Clubs Midfielders (Seedorf, Yaya Touré, Xabi Alonso)**: **Yaya Touré** (*Phenomenal Pass + Long-Reach Tackle*) alongside Patrick Vieira remains the benchmark physical midfield pivot in Division 1.
+3. **Epic Ricardo Quaresma (50-Player Debut Pack)**: Making his long-awaited eFootball 2027 Legend debut as a *Cross Specialist / Front Line Poacher* with *Momentum Dribbling* and *Edged Crossing*, Quaresma's 50-player box odds made him a collector favourite.
+4. **World Player of the Year / Ballon d'Or 2026 Pack & Partner Club Packs**: High-ceiling **104+ Big Time / Show Time** attackers (**Kane**, **Mbappé**, **Lamine Yamal**) plus the **Inter 26–27** (Christian Chivu + *Low Screamer* Lautaro Martínez) and **Borussia Dortmund 26–27** (90-Possession Niko Kovač + Show Time Nmecha) 1,500-Coin Club Packs offer tremendous value-per-coin compared to deep 150-box gambles.
+5. **Free Campaign Epics vs Rare Box Epics**: Because **Epic Diego Forlán** (*Low Screamer*) was obtainable via the Halloween Daily Free Draw / 12-attempt guarantee (Oct 22 – Nov 5), experienced Kenyan buyers won't overpay for an account *just* because it shows Forlán or free tutorial Messi—buyers pay premiums for scarce 150-box spines (Vieira, Gullit, Maldini, Araujo, Courtois/Schmeichel/Cech) and **Dual Link-Up 90-Proficiency Managers**.
+
+## Mid-November Black Friday Campaign Watch
+
+November's Thursday maintenance cycles traditionally usher in Konami's **Black Friday Campaign**—featuring tiered Campaign Hub tickets (with Coin jackpot draws), Partner Club **Arsenal** legend & manager hype, and **National Legends Selection** drops.
+
+- **Buyer Tip**: Sellers looking to fund fresh Black Friday spins frequently list clean, well-built 3150–3210+ squads at sharp KES prices on [Friday Drops](/friday-drops) and the [Main Marketplace](/browse).
+- **Coin Carryover Reminder**: eFootball Coins **do not transfer across Android <-> iOS** OS families during Data Transfer (Android coins stay on Android; iOS coins stay on iOS), though all **Epic/Big Time/Show Time players, GP, Select Skill Tokens, and Managers** transfer 100% intact! Always match the listing's platform badge if you are buying an account specifically for its unspent Coin stash.`,
+    author_name: "eFootballMarket Valuation Desk",
+    cover_image_url: "/images/articles/ef27-messi-yamal-season-art.jpg",
+    is_pinned: false,
+    is_published: true,
+    views_count: 0,
+    created_at: "2026-11-03T13:00:00.000Z",
+    updated_at: "2026-11-10T07:30:00.000Z",
+  },
+  {
+    id: "guide-verify-clean-konami-id-k-id-escrow-2027",
+    title:
+      "eFootball 2027 Konami ID Buyer Checklist: Google Play Unlink, New v6.0 k-ID Child Check & M-Pesa Escrow",
+    slug: "how-to-verify-clean-konami-id-before-releasing-escrow",
+    category: "escrow_guide",
+    summary:
+      "Updated for eFootball 2027 (v6.0 – v6.1.1): how to verify Google Play / Game Center is Not Linked, check for Konami's new k-ID Child Account restriction, avoid the Android OTP space bug, and rebind 2FA under Till 1572931 escrow.",
+    content: `## 4 Checks Every Buyer Must Run Inside the 24-Hour Escrow Window
+
+When you purchase a squad on **eFootballMarket Kenya** (or lock an external deal via our [Middleman Escrow Desk](/middleman)), your KES payment sits safely in **Safaricom Buy Goods Till 1572931** while you inspect the account. With **eFootball 2027 (v6.0.0 – v6.1.1)**, there are **four mandatory security checks** to complete before clicking **Confirm & Release Payout**.
+
+## Check 1: Perform Title-Screen Data Transfer & Inspect \`Link Data\`
+
+Never tap *Link Data* inside your own existing account—that overwrites links! Instead, from the **eFootball 2027 Title Screen**, tap the **bottom-right menu circle -> Data Transfer -> Transfer Data Linked to KONAMI ID**. Once inside the clubhouse:
+
+1. Navigate to **Extras -> Support -> Link Data**.
+2. Confirm **Link Data Using KONAMI ID** says **Linked**.
+3. Confirm **Google Play** (Android) / **Game Center** (iOS) says **Not Linked**.
+   - If Google Play or Apple Game Center shows *Linked*, **stop immediately**—a linked OS account lets the previous owner log back in without your Konami password. Take an uncropped screenshot and click **Raise Dispute** in your order room for a full M-Pesa escrow refund.
+
+## Check 2: Verify It Is NOT a \`k-ID\` Restricted Child Account (New in v6.0.0!)
+
+Starting with the **August 13, 2026 Season Update (v6.0.0)**, Konami integrated **\`k-ID\`** for parental consent and guardian controls on **KONAMI ID Child Accounts**:
+
+- On a Child Account, performing **Data Transfers** or spending **eFootball™ Points** can trigger mandatory **parent/guardian KONAMI ID consent or guardian 2FA**, locking out a new buyer!
+- **How to Verify**: Sign in at **https://my.konami.net** -> **Personal Information** during inspection and verify the registered Date of Birth / account type is a standard adult KONAMI ID with unrestricted **Email Address** and **Two-Step Verification** settings.
+
+## Check 3: Check Monthly Data Transfers & Avoid the Android OTP Space Bug
+
+- **10 Data Transfers Per Month Cap**: Konami enforces a hard limit of **10 Data Transfers per calendar month** (resetting on the 1st UTC). Once you transfer the squad onto your main phone, avoid hopping between multiple devices.
+- **Fixing the Android \`"Left Spaces"\` OTP Loop**: When pasting the 6-digit Konami verification code on some Android keyboards (Gboard/Samsung clipboard), invisible trailing spaces can trigger a *"left spaces in the code"* error loop. Always **type the 6 digits manually** on the keypad rather than long-pressing Paste.
+
+## Check 4: Rebind Email, Password & Two-Step Verification at \`my.konami.net\`
+
+Once the roster, OVR, Epics, and clean \`Link Data\` check out:
+
+1. Open **https://my.konami.net** -> **Personal Information -> Email Address** and change the email to a **fresh personal Gmail/Outlook** that already has its own 2FA turned on.
+2. Open **Security -> Password** and set a brand-new 12–20 character password.
+3. Open **Security -> Two-Step Verification** and bind OTP generation strictly to your new email or Authenticator app.
+4. Return to your eFootballMarket order room and click **Confirm & Release Payout**—completing a 100% irreversible, clean handover!`,
+    author_name: "eFootballMarket Trust & Safety",
+    cover_image_url: "/images/articles/ef27-konami-security-pin.jpg",
+    is_pinned: false,
+    is_published: true,
+    views_count: 0,
+    created_at: "2026-11-02T09:30:00.000Z",
+    updated_at: "2026-11-10T09:15:00.000Z",
+  },
+  {
+    id: "alert-konami-ban-waves-and-kenya-account-scams-2026",
+    title:
+      "2026/27 Safety Alert: Konami Auto-Clicker Ban Waves, Modding Warnings & WhatsApp Escrow Scams in Kenya",
+    slug: "efootball-account-scams-and-konami-ban-waves-kenya-2026",
+    category: "scammer_alert",
+    summary:
+      "Konami's October 2026 enforcement wave suspended accounts using automated macro tools and unauthorized client mods. Learn how to spot flagged accounts, fake M-Pesa SMS edits, and OTP hijacks before trading.",
+    content: `## Konami's October 2026 Enforcement Wave: What Got Accounts Suspended
+
+During **October 2026 maintenance updates** in **eFootball 2027**, Konami issued formal enforcement actions and permanent/temporary suspensions targeting two specific violations that directly affect secondary-market buyers:
+
+1. **Automated Farming & Auto-Clicker Tools**: Konami suspended waves of accounts detected running third-party screen-macro / auto-clicker apps to farm GP, Tour Events, and My League matches unattended.
+2. **Unauthorized Client Modding, Reverse Engineering & Void-Match Exploits**: Following earlier v5.5–v6.1 anti-cheat updates, Konami reiterated strict bans against modified mobile APKs, reverse-engineered clients, and network manipulation in **eFootball League** and **Showdown**.
+
+**Why Escrow Inspection Saves You**: In blind WhatsApp/Telegram cash trades, scammers rush to dump accounts that have just received a Konami match restriction or negative-coin chargeback flag. On **eFootballMarket Kenya**, your M-Pesa payment stays locked in **Till 1572931** until you sign in on the official Play Store / App Store / Steam / PlayStation client and verify the account enters online matchmaking cleanly.
+
+## 5 Active WhatsApp & Facebook eFootball Scams in Kenya Right Now
+
+1. **The Pre-Payment \`my.konami.net\` OTP Hijack ("Let Me Log In Just to Check")**: A scammer posing as a serious buyer asks for your Konami ID email, password, and a single 6-digit OTP *"just to view your Fluid Formation in-game before sending M-Pesa."* Instead of opening eFootball, they enter that 6-digit OTP on **my.konami.net** to swap your registered email address and steal your squad in 25 seconds! **Never share a Konami OTP until escrow payment is verified inside an active order room.**
+2. **Edited M-Pesa Confirmation SMS Screenshots**: Fraudsters use fake SMS generators to send \`Confirmed. Ksh6,500.00 sent to...\` screenshots while pressuring you over a phone call that *"Safaricom messages are delayed."* Always check your real M-Pesa balance via \`*334#\` or the M-Pesa App—or trade exclusively through **Till 1572931** escrow.
+3. **Stolen 3230+ Ballon d'Or / Henry / Gullit Whale Screenshots for KES 2,000**: Any stranger advertising a squad loaded with 15+ Double-Booster Epics and 90-proficiency managers for KES 1,800 *"urgent school fees quick sale"* is recycling screenshots lifted from TikTok or Telegram.
+4. **Cropped \`Link Data\` Screenshots**: Sellers who crop out the bottom half of **Extras -> Support -> Link Data** are almost always hiding an active **Google Play** or **Game Center** link so they can log back in two days after you pay.
+5. **Fake WhatsApp Group "Trusted Admins"**: Colluding scammers run 900-member trading groups where the "seller" and the "official group middleman" are the exact same person operating two SIM cards.
+
+## Trade With Zero Guesswork
+
+- Run every unknown phone number, Till number, or social handle through our free [Scammer Check Database](/scammer-check) before replying.
+- Found a genuine seller on WhatsApp, TikTok, or Facebook? Generate an instant protected deal link on our [Middleman Escrow Desk](/middleman) so neither side ever goes first blindly.`,
+    author_name: "eFootballMarket Trust & Safety",
+    cover_image_url: "/images/articles/ef27-stadium-night-lights.jpg",
+    is_pinned: false,
+    is_published: true,
+    views_count: 0,
+    created_at: "2026-11-01T10:00:00.000Z",
+    updated_at: "2026-11-09T15:00:00.000Z",
   },
 ];

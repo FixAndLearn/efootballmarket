@@ -8,16 +8,16 @@ export const dynamic = "force-dynamic";
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "eFootball Blog, Meta Guides & Tactical Builds Kenya",
+  title: "eFootball 2027 (v6.1) Blog, Fluid Formation, Select Tokens & Meta Guides",
   description:
-    "eFootballMarket's official blog & guides hub: upcoming Thursday pack drops, new platform features, Quick Counter & Long Ball Counter meta tactics, 88+ manager stat breakpoints, Konami ID 2FA transfers, and M-Pesa escrow safety.",
+    "Official eFootballMarket Kenya blog: real eFootball 2027 (v6.0 – v6.1.1) patch breakdowns, Fluid Formation & Overload tactics, Select Skill & Position Tokens, Dual Link-Up 90-proficiency managers, Showdown PvP, $300K Championship 2027, and Clean Konami ID escrow.",
   alternates: {
     canonical: "https://www.efootballmarket.co.ke/news",
   },
   openGraph: {
-    title: "Blog, Guides & What's Coming | eFootballMarket Kenya",
+    title: "eFootball 2027 (v6.1) Blog & Meta Guides | eFootballMarket Kenya",
     description:
-      "Upcoming eFootball drops & platform features, tactical meta guides, 88+ manager stat breakpoints, and safe Konami ID M-Pesa escrow walkthroughs.",
+      "Fluid Formation & Overload setups, v6.1 Select Skill Tokens, Dual Link-Up Managers (Klopp, Conte, Kovač), Showdown & Custom Tournaments, and safe Konami ID M-Pesa escrow.",
     url: "https://www.efootballmarket.co.ke/news",
     type: "website",
   },

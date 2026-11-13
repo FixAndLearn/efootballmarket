@@ -138,13 +138,13 @@ export function NewsFeedClient({
         <div className="space-y-2.5 max-w-3xl">
           <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md bg-sx-green-tint border border-sx-green-border text-[11px] font-bold uppercase tracking-wider text-sx-green-text">
             <BookOpen className="w-3.5 h-3.5" />
-            <span>eFootballMarket Blog &amp; Guides Hub</span>
+            <span>eFootball 2027 · v6.1 Blog &amp; Meta Hub</span>
           </div>
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-extrabold text-sx-ink font-display tracking-tight">
-            Guides, Meta Tactics &amp; What&apos;s Coming Next
+            Real eFootball 2027 Updates, Tactics &amp; Trading Guides
           </h1>
           <p className="text-xs sm:text-sm text-sx-ink-soft leading-relaxed">
-            Stay ahead with upcoming eFootball Thursday pack drops, new eFootballMarket features &amp; weekend cash cups, Division 1 tactical guides, 88+ manager stat breakpoints, and step-by-step Clean Konami ID + M-Pesa Till 1572931 escrow walkthroughs.
+            Verified breakdowns of Konami&apos;s latest eFootball 2027 (v6.0 – v6.1.1) mechanics: Fluid Formation, the Overload playstyle, 100-stack Select Skill &amp; Position Tokens, Dual Link-Up 90-proficiency managers, Showdown &amp; Custom Tournaments, $300K Championship 2027 qualifiers, and Clean Konami ID M-Pesa escrow safety.
           </p>
         </div>
 
@@ -194,7 +194,7 @@ export function NewsFeedClient({
           <Search className="w-4 h-4 text-sx-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
-            placeholder="Search upcoming drops, tactics, 2FA..."
+            placeholder="Search Fluid Formation, Select Tokens, Klopp..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             aria-label="Search blog posts and guides"
