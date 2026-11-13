@@ -1,11 +1,12 @@
 "use client";
 
-import React from "react";
+import React, { useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { Listing } from "@/types/database";
 import { VerifiedSellerBadge } from "@/components/marketplace/VerifiedSellerBadge";
 import { FavoriteButton } from "@/components/marketplace/FavoriteButton";
+import { CompareButton } from "@/components/marketplace/CompareButton";
 import {
   formatCompactNumber,
   formatCurrency,
@@ -18,6 +19,7 @@ import { isListingOnFlashSale } from "@/lib/utils/flashSale";
 import {
   ArrowRight,
   Coins,
+  Images,
   Lock,
   Repeat2,
   Sparkles,
@@ -81,9 +83,19 @@ function SquadPlaceholder({ ovr }: { ovr?: number }) {
 }
 
 export function ListingCard({ listing, priority = false }: ListingCardProps) {
-  const primaryImage =
-    listing.images?.find((img) => img.is_primary)?.image_url ||
-    listing.images?.[0]?.image_url;
+  const galleryImages = useMemo(() => {
+    const raw = Array.isArray(listing.images) ? [...listing.images] : [];
+    return raw
+      .filter((img) => Boolean(img?.image_url))
+      .sort((a, b) => {
+        if (a.is_primary && !b.is_primary) return -1;
+        if (!a.is_primary && b.is_primary) return 1;
+        return (a.display_order || 0) - (b.display_order || 0);
+      });
+  }, [listing.images]);
+
+  const [imgIdx, setImgIdx] = useState(0);
+  const activeImage = galleryImages[imgIdx]?.image_url || galleryImages[0]?.image_url;
 
   const isFlashDrop = isListingOnFlashSale(listing);
   const isAvailable = listing.status === "published";
@@ -98,33 +110,61 @@ export function ListingCard({ listing, priority = false }: ListingCardProps) {
   const playstyle = getShortPlaystyleLabel(listing.primary_playstyle);
   const displayTitle = formatSmartListingTitle(listing);
   const keyPlayers = (listing.key_players_list || []).filter(Boolean).slice(0, 3);
+  const priceContext = getListingPriceContext(listing);
 
   const canOptimize =
-    Boolean(primaryImage) &&
-    (primaryImage!.startsWith("/") ||
-      primaryImage!.includes(".supabase.co") ||
-      primaryImage!.includes("images.unsplash.com"));
+    Boolean(activeImage) &&
+    (activeImage!.startsWith("/") ||
+      activeImage!.includes(".supabase.co") ||
+      activeImage!.includes("images.unsplash.com"));
 
   return (
-    <article className="group relative w-full h-full flex flex-col rounded-xl bg-sx-subtle border border-sx-border hover:border-sx-green-border transition-colors overflow-hidden shadow-sm">
-      {/* 1. Squad Screenshot */}
+    <article className="group sx-card-lift relative w-full h-full flex flex-col rounded-2xl bg-sx-subtle border border-sx-border hover:border-sx-green-border overflow-hidden shadow-sm">
+      {/* 1. Squad Screenshot + Multi-Photo Scrubber */}
       <Link
         href={`/listings/${listing.id}`}
+        onMouseLeave={() => setImgIdx(0)}
         className="block relative aspect-[4/3] w-full bg-sx-stone overflow-hidden border-b border-sx-border"
       >
-        {primaryImage ? (
+        {activeImage ? (
           <Image
-            src={primaryImage}
+            src={activeImage}
             alt={displayTitle}
             fill
             priority={priority}
             loading={priority ? "eager" : "lazy"}
             sizes="(max-width: 640px) 94vw, (max-width: 1024px) 46vw, 24vw"
             unoptimized={!canOptimize}
-            className="object-cover"
+            className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
           />
         ) : (
           <SquadPlaceholder ovr={listing.overall_team_strength} />
+        )}
+
+        {/* Desktop Hover Scrub Zones when seller uploaded multiple screenshots */}
+        {galleryImages.length > 1 && isAvailable && (
+          <>
+            <div className="hidden md:grid absolute inset-0 z-10" style={{ gridTemplateColumns: `repeat(${galleryImages.length}, minmax(0, 1fr))` }}>
+              {galleryImages.map((img, i) => (
+                <span
+                  key={img.id || i}
+                  onMouseEnter={() => setImgIdx(i)}
+                  className="h-full w-full"
+                />
+              ))}
+            </div>
+            {/* Top Progress Segments */}
+            <div className="absolute top-1.5 left-2.5 right-2.5 flex items-center gap-1 z-20 pointer-events-none opacity-80">
+              {galleryImages.map((img, i) => (
+                <span
+                  key={img.id || i}
+                  className={`h-0.5 flex-1 rounded-full transition-colors ${
+                    i === imgIdx ? "bg-emerald-400" : "bg-white/35"
+                  }`}
+                />
+              ))}
+            </div>
+          </>
         )}
 
         {!isAvailable && (
@@ -137,7 +177,11 @@ export function ListingCard({ listing, priority = false }: ListingCardProps) {
         )}
 
         {/* Top Bar: Platform & OVR */}
-        <div className="absolute top-2.5 left-2.5 right-2.5 flex items-center justify-between gap-1.5 pointer-events-none z-20">
+        <div
+          className={`absolute ${
+            galleryImages.length > 1 ? "top-3.5" : "top-2.5"
+          } left-2.5 right-2.5 flex items-center justify-between gap-1.5 pointer-events-none z-20`}
+        >
           <div className="flex items-center gap-1.5">
             <span className="px-2 py-0.5 rounded-md bg-black/75 border border-white/15 text-[10.5px] font-bold text-white uppercase tracking-wide">
               {getShortPlatformLabel(listing.platform)}
@@ -155,9 +199,9 @@ export function ListingCard({ listing, priority = false }: ListingCardProps) {
           </span>
         </div>
 
-        {/* Bottom Overlay: Optional Division / Drop + Save Heart */}
+        {/* Bottom Overlay: Optional Division / Photo Count + Compare & Save */}
         <div className="absolute bottom-2 left-2.5 right-2.5 flex items-center justify-between gap-2 z-20 pointer-events-none">
-          <div>
+          <div className="flex items-center gap-1.5">
             {isFlashDrop ? (
               <span className="px-2 py-0.5 rounded-md bg-sx-green text-white text-[10px] font-bold uppercase tracking-wide">
                 Friday Drop
@@ -168,10 +212,29 @@ export function ListingCard({ listing, priority = false }: ListingCardProps) {
                 <span>Div {division}</span>
               </span>
             ) : null}
+
+            {galleryImages.length > 1 && (
+              <button
+                type="button"
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  setImgIdx((prev) => (prev + 1) % galleryImages.length);
+                }}
+                title="Tap to cycle squad screenshots"
+                className="pointer-events-auto px-1.5 py-0.5 rounded-md bg-black/75 border border-white/15 text-[10px] font-mono font-bold text-white inline-flex items-center gap-1 cursor-pointer"
+              >
+                <Images className="w-2.5 h-2.5 text-emerald-300" />
+                <span>
+                  {imgIdx + 1}/{galleryImages.length}
+                </span>
+              </button>
+            )}
           </div>
 
           {isAvailable && (
-            <div className="pointer-events-auto">
+            <div className="pointer-events-auto flex items-center gap-1.5">
+              <CompareButton listing={listing} variant="icon" />
               <FavoriteButton
                 listingId={listing.id}
                 initialCount={listing.favorites_count || 0}
@@ -241,10 +304,10 @@ export function ListingCard({ listing, priority = false }: ListingCardProps) {
         <div className="space-y-2.5 pt-2.5 border-t border-sx-border">
           <div className="flex items-center justify-between gap-2">
             <div className="flex items-baseline gap-2 min-w-0">
-              <span className="text-lg sm:text-[19px] font-extrabold text-sx-ink font-display tracking-tight leading-none">
+              <span className="text-lg sm:text-[19px] font-extrabold text-sx-ink font-display tracking-tight leading-none font-mono">
                 {formatCurrency(listing.price, listing.currency)}
               </span>
-              {isAvailable && getListingPriceContext(listing).tier === "great_deal" && (
+              {isAvailable && priceContext.tier === "great_deal" && (
                 <span className="px-1.5 py-0.5 rounded bg-sx-green-tint border border-sx-green-border text-[10px] font-bold text-sx-green-text shrink-0">
                   Great Value
                 </span>
@@ -255,7 +318,7 @@ export function ListingCard({ listing, priority = false }: ListingCardProps) {
               href={`/listings/${listing.id}`}
               className="inline-flex items-center gap-1 min-h-[34px] px-3 py-1.5 rounded-lg bg-sx-canvas hover:bg-sx-green hover:text-white border border-sx-border-strong/70 hover:border-sx-green text-xs font-bold text-sx-ink transition-colors shrink-0"
             >
-              <span>View</span>
+              <span>Inspect</span>
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>

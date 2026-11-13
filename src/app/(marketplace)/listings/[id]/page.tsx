@@ -22,6 +22,7 @@ import { ChatSellerWhatsAppButton } from "@/components/marketplace/ChatSellerWha
 import { SellerListingOffersPanel } from "@/components/marketplace/SellerListingOffersPanel";
 import { ListingCard } from "@/components/marketplace/ListingCard";
 import { FavoriteButton } from "@/components/marketplace/FavoriteButton";
+import { CompareButton } from "@/components/marketplace/CompareButton";
 import { ListingActionsBar } from "@/components/marketplace/ListingActionsBar";
 import { ListingStickyBottomBar } from "@/components/marketplace/ListingStickyBottomBar";
 import { AdBanner } from "@/components/common/AdBanner";
@@ -247,6 +248,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
         </nav>
 
         <div className="flex items-center gap-2 flex-wrap">
+          <CompareButton listing={listing} variant="pill" />
           <ListingActionsBar listingId={listing.id} listingTitle={displayTitle} />
           <FavoriteButton
             listingId={listing.id}
@@ -493,6 +495,28 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                   </span>
                 </div>
               )}
+
+              {/* Transparent Buyer Cost Breakdown */}
+              <div className="p-3 rounded-xl bg-sx-subtle border border-sx-border space-y-1.5 text-xs">
+                <div className="flex items-center justify-between text-sx-muted">
+                  <span>Squad Ask Price</span>
+                  <span className="font-mono font-semibold text-sx-ink">
+                    {formatCurrency(listing.price, listing.currency)}
+                  </span>
+                </div>
+                <div className="flex items-center justify-between text-sx-muted">
+                  <span>Buyer Escrow Protection Fee</span>
+                  <span className="font-mono font-bold text-sx-green-text">
+                    KES 0 (Free)
+                  </span>
+                </div>
+                <div className="pt-1.5 border-t border-sx-border flex items-center justify-between font-bold text-sx-ink">
+                  <span>Total M-Pesa Till 1572931</span>
+                  <span className="font-mono text-sm">
+                    {formatCurrency(listing.price, listing.currency)}
+                  </span>
+                </div>
+              </div>
             </div>
 
             {/* Konami Link Status */}

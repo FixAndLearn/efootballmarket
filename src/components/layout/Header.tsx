@@ -8,7 +8,11 @@ import { isSuperAdminEmail } from "@/lib/security/adminAuth";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/brand/Logo";
 import { NotificationBell } from "@/components/layout/NotificationBell";
+import { ThemeToggle } from "@/components/layout/ThemeToggle";
+import { LiveMarketTicker } from "@/components/exchange/LiveMarketTicker";
+import { CommandSearchModal } from "@/components/exchange/CommandSearchModal";
 import { AppDropdownWidget } from "@/components/app/AppDropdownWidget";
+import { useCompareSquads } from "@/lib/compare/compareStore";
 import { isStandaloneDocPath } from "@/components/legal/StandaloneDocLayout";
 import {
   Menu,
@@ -28,14 +32,28 @@ export function Header() {
   const pathname = usePathname();
   const router = useRouter();
   const { user, profile, signOut } = useAuth();
+  const { count: compareCount } = useCompareSquads();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
+  const [spotlightOpen, setSpotlightOpen] = useState(false);
   const [headerSearch, setHeaderSearch] = useState("");
 
   useEffect(() => {
     setMobileMenuOpen(false);
     setProfileDropdownOpen(false);
+    setSpotlightOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    const onKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setSpotlightOpen((prev) => !prev);
+      }
+    };
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
 
   if (isStandaloneDocPath(pathname) || pathname?.startsWith("/mobile")) {
     return null;
@@ -46,15 +64,16 @@ export function Header() {
 
   const categoryStrip = [
     { name: "All Squads", href: "/browse" },
-    { name: "Epic Rosters", href: "/browse?minStrength=3150" },
+    { name: "Under KES 1,000", href: "/browse?maxPrice=1000" },
+    { name: "3200+ OVR", href: "/browse?minStrength=3200" },
     { name: "Android", href: "/browse?platform=android" },
     { name: "iOS", href: "/browse?platform=ios" },
-    { name: "PS5 & PC", href: "/browse?platform=playstation_5" },
-    { name: "Blog & Guides", href: "/news" },
-    { name: "Friday Drops", href: "/friday-drops" },
+    { name: "KES Valuator", href: "/valuator" },
+    { name: "Compare", href: "/compare", badge: compareCount },
     { name: "Middleman", href: "/middleman" },
     { name: "Tournaments", href: "/tournaments" },
     { name: "Scammer Check", href: "/scammer-check" },
+    { name: "Guides", href: "/news" },
   ];
 
   const handleHeaderSearch = (e: React.FormEvent) => {
@@ -69,7 +88,9 @@ export function Header() {
   };
 
   return (
-    <header className="sticky top-0 z-50 w-full bg-sx-canvas border-b border-sx-border">
+    <>
+    <header className="sticky top-0 z-50 w-full bg-sx-canvas/95 backdrop-blur-md border-b border-sx-border">
+      <LiveMarketTicker />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-2 sm:gap-5 lg:gap-8 h-16">
           <Logo size="md" />
@@ -83,10 +104,21 @@ export function Header() {
               type="text"
               value={headerSearch}
               onChange={(e) => setHeaderSearch(e.target.value)}
+              onFocus={() => {
+                if (!headerSearch) setSpotlightOpen(true);
+              }}
               placeholder="Search squads, Epic players, OVR..."
               aria-label="Search marketplace squads"
-              className="w-full h-10 pl-10 pr-4 rounded-full bg-sx-stone border border-sx-border hover:border-sx-border-strong focus:bg-sx-canvas focus:border-sx-ink text-sm text-sx-ink placeholder:text-sx-muted focus:outline-none transition-colors"
+              className="w-full h-10 pl-10 pr-16 rounded-full bg-sx-stone border border-sx-border hover:border-sx-border-strong focus:bg-sx-canvas focus:border-sx-ink text-sm text-sx-ink placeholder:text-sx-muted focus:outline-none transition-colors"
             />
+            <button
+              type="button"
+              onClick={() => setSpotlightOpen(true)}
+              title="Open instant spotlight search (⌘K / Ctrl+K)"
+              className="absolute right-2.5 px-2 py-0.5 rounded-md bg-sx-canvas border border-sx-border text-[10.5px] font-mono font-semibold text-sx-muted hover:text-sx-ink transition-colors cursor-pointer"
+            >
+              ⌘K
+            </button>
           </form>
 
           <div className="hidden md:flex items-center gap-4 lg:gap-5 shrink-0">
@@ -94,20 +126,21 @@ export function Header() {
               <Link href="/browse" className="text-sx-ink font-semibold hover:text-sx-green-text transition-colors">
                 Browse Squads
               </Link>
+              <Link href="/valuator" className="hover:text-sx-ink transition-colors">
+                Valuator
+              </Link>
               <Link
                 href="/escrow-guarantee"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="hover:text-sx-ink transition-colors"
               >
-                How Escrow Works &nearr;
-              </Link>
-              <Link href="/news" className="hover:text-sx-ink transition-colors">
-                Guides
+                Escrow &nearr;
               </Link>
             </nav>
 
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2">
+              <ThemeToggle />
               <AppDropdownWidget viewportMode="desktop" />
               <Link
                 href="/seller/create-listing"
@@ -252,6 +285,15 @@ export function Header() {
           </div>
 
           <div className="flex items-center gap-1.5 md:hidden shrink-0">
+            <button
+              type="button"
+              onClick={() => setSpotlightOpen(true)}
+              aria-label="Open spotlight search"
+              className="w-8 h-8 inline-flex items-center justify-center rounded-full bg-sx-stone border border-sx-border text-sx-ink cursor-pointer"
+            >
+              <Search className="w-3.5 h-3.5" />
+            </button>
+            <ThemeToggle compact />
             <AppDropdownWidget viewportMode="mobile" />
             {user ? (
               <>
@@ -313,13 +355,18 @@ export function Header() {
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`relative h-full inline-flex items-center whitespace-nowrap text-[13px] font-medium transition-colors ${
+                  className={`relative h-full inline-flex items-center gap-1.5 whitespace-nowrap text-[13px] font-medium transition-colors ${
                     isActive
                       ? "text-sx-green-text font-semibold"
                       : "text-sx-muted hover:text-sx-ink"
                   }`}
                 >
                   <span>{item.name}</span>
+                  {Boolean((item as any).badge) && (
+                    <span className="px-1.5 py-0.2 rounded-full bg-sx-green text-white text-[10px] font-mono font-bold leading-tight">
+                      {(item as any).badge}
+                    </span>
+                  )}
                   {isActive && (
                     <span className="absolute bottom-0 left-0 right-0 h-[2px] bg-sx-green-text" />
                   )}
@@ -353,13 +400,14 @@ export function Header() {
             {[
               { name: "Browse Market", href: "/browse", newTab: false },
               { name: "Sell Your Squad", href: "/seller/create-listing", newTab: false },
-              { name: "Blog & Guides", href: "/news", newTab: false },
+              { name: "KES Squad Valuator", href: "/valuator", newTab: false },
+              { name: `Compare Squads${compareCount > 0 ? ` (${compareCount})` : ""}`, href: "/compare", newTab: false },
               { name: "Middleman Escrow", href: "/middleman", newTab: false },
               { name: "Scammer Check", href: "/scammer-check", newTab: false },
               { name: "1v1 Tournaments", href: "/tournaments", newTab: false },
+              { name: "Blog & Guides", href: "/news", newTab: false },
               { name: "Download App (APK)", href: "/app", newTab: false },
               { name: "How Escrow Works ↗", href: "/escrow-guarantee", newTab: true },
-              { name: "Services & Support", href: "/contact", newTab: false },
             ].map((link) => (
               <Link
                 key={link.href}
@@ -431,5 +479,10 @@ export function Header() {
         </div>
       )}
     </header>
+    <CommandSearchModal
+      isOpen={spotlightOpen}
+      onClose={() => setSpotlightOpen(false)}
+    />
+    </>
   );
 }

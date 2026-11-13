@@ -11,10 +11,12 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const staticRoutes: MetadataRoute.Sitemap = [
     { url: `${siteUrl}`, lastModified: new Date(), changeFrequency: "daily", priority: 1.0 },
     { url: `${siteUrl}/browse`, lastModified: new Date(), changeFrequency: "daily", priority: 0.95 },
+    { url: `${siteUrl}/valuator`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
     { url: `${siteUrl}/app`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.9 },
     { url: `${siteUrl}/news`, lastModified: new Date(), changeFrequency: "daily", priority: 0.9 },
     { url: `${siteUrl}/tournaments`, lastModified: new Date(), changeFrequency: "daily", priority: 0.85 },
     { url: `${siteUrl}/scammer-check`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.85 },
+    { url: `${siteUrl}/compare`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
     { url: `${siteUrl}/wanted`, lastModified: new Date(), changeFrequency: "daily", priority: 0.8 },
     { url: `${siteUrl}/friday-drops`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },
     { url: `${siteUrl}/middleman`, lastModified: new Date(), changeFrequency: "weekly", priority: 0.8 },

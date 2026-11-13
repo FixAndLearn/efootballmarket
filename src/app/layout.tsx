@@ -10,6 +10,7 @@ import { AdSenseScript } from "@/components/common/AdSenseScript";
 import { GoogleTagRouteTracker } from "@/components/common/GoogleTagRouteTracker";
 import { SupportHubWidget } from "@/components/support/SupportHubWidget";
 import { LiveNotificationManager } from "@/components/notifications/LiveNotificationManager";
+import { SquadCompareTray } from "@/components/marketplace/SquadCompareTray";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -151,9 +152,26 @@ export default function RootLayout({
   return (
     <html
       lang="en"
+      suppressHydrationWarning
       className={`${inter.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable}`}
     >
       <head>
+        {/* Zero-FOUC Exchange Theme Bootstrap */}
+        <script
+          id="efm-theme-init"
+          dangerouslySetInnerHTML={{
+            __html: `
+              (function() {
+                try {
+                  var savedTheme = localStorage.getItem('efm_theme_mode');
+                  if (savedTheme === 'dark' || savedTheme === 'light') {
+                    document.documentElement.setAttribute('data-theme', savedTheme);
+                  }
+                } catch (e) {}
+              })();
+            `,
+          }}
+        />
         {/* Google Consent Mode v2 + Google Tag / GTM Bootstrap */}
         <script
           id="google-consent-mode"
@@ -230,6 +248,7 @@ export default function RootLayout({
         <Footer />
         <MobileBottomNav />
         <CookieConsentBanner />
+        <SquadCompareTray />
         <SupportHubWidget />
         <LiveNotificationManager />
         <AdSenseScript clientId={adsenseId} />

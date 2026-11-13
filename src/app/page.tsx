@@ -1,7 +1,6 @@
 import React from "react";
 import { Metadata } from "next";
 import Link from "next/link";
-import Image from "next/image";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { ListingService } from "@/services/listingService";
@@ -9,6 +8,8 @@ import { TournamentService } from "@/services/tournamentService";
 import { NewsService } from "@/services/newsService";
 import { Listing, NewsArticle, Tournament, WantedRequest } from "@/types/database";
 import { ListingCard } from "@/components/marketplace/ListingCard";
+import { HeroSquadSpotlight } from "@/components/exchange/HeroSquadSpotlight";
+import { SquadValuatorCalculator } from "@/components/exchange/SquadValuatorCalculator";
 import { QuietAlertOptIn } from "@/components/common/QuietAlertOptIn";
 import { getCategoryLabel } from "@/lib/data/editorialGuides";
 import { Button } from "@/components/ui/Button";
@@ -19,13 +20,16 @@ import {
   ArrowRight,
   Bell,
   BookOpen,
+  Calculator,
   Clock,
+  Flame,
   Handshake,
   Lock,
+  Scale,
   Search,
   ShieldAlert,
   ShieldCheck,
-  Smartphone,
+  Sparkles,
   Store,
   Target,
   Trophy,
@@ -54,7 +58,7 @@ export default async function HomePage() {
   try {
     const [listingsResult, tourneysResult, wantedResult, articlesResult] = await Promise.all([
       listingService
-        .getListings({ limit: 8, sortBy: "newest" })
+        .getListings({ limit: 16, sortBy: "newest" })
         .catch(() => ({ listings: [], totalCount: 0 })),
       TournamentService.getAllTournaments().catch(() => []),
       Promise.resolve(
@@ -81,6 +85,7 @@ export default async function HomePage() {
 
   const hasActiveTournaments = tournaments.length > 0;
   const hasActiveWanted = wantedRequests.length > 0;
+  const showcaseListings = listings.slice(0, 8);
   const lowestPrice =
     listings.length > 0
       ? Math.min(...listings.map((l) => Number(l.price || 0)).filter((p) => p > 0))
@@ -89,6 +94,15 @@ export default async function HomePage() {
     listings.length > 0
       ? Math.max(...listings.map((l) => Number(l.overall_team_strength || 0)))
       : null;
+  const under1000Count = listings.filter((l) => Number(l.price || 0) <= 1000).length;
+  const elite3200Count = listings.filter(
+    (l) => Number(l.overall_team_strength || 0) >= 3200
+  ).length;
+  const epicStackedCount = listings.filter(
+    (l) =>
+      Number(l.epic_players_count || 0) + Number(l.big_time_players_count || 0) >= 3
+  ).length;
+  const swapReadyCount = listings.filter((l) => Boolean(l.allows_swap)).length;
 
   const homeJsonLd = {
     "@context": "https://schema.org",
@@ -202,9 +216,9 @@ export default async function HomePage() {
                 </div>
               </div>
 
-              {/* Primary CTAs: Browse Squads beside Sell Your Squad */}
+              {/* Primary CTAs: Browse Squads + Sell + Instant Valuator */}
               <div className="space-y-4 pt-1">
-                <div className="flex flex-wrap items-center gap-3">
+                <div className="flex flex-wrap items-center gap-2.5">
                   <Link href="/browse" className="flex-1 sm:flex-initial">
                     <Button variant="primary" size="lg" className="w-full sm:w-auto min-h-[46px]">
                       <span>Browse Squads{totalSquads > 0 ? ` (${totalSquads})` : ""}</span>
@@ -214,6 +228,12 @@ export default async function HomePage() {
                   <Link href="/seller/create-listing" className="flex-1 sm:flex-initial">
                     <Button variant="outline" size="lg" className="w-full sm:w-auto min-h-[46px]">
                       <span>Sell Your Squad</span>
+                    </Button>
+                  </Link>
+                  <Link href="/valuator" className="w-full sm:w-auto">
+                    <Button variant="ghost" size="lg" className="w-full sm:w-auto min-h-[46px]">
+                      <Calculator className="w-4 h-4 text-sx-green-text" />
+                      <span>Value My Squad</span>
                     </Button>
                   </Link>
                 </div>
@@ -233,16 +253,80 @@ export default async function HomePage() {
               </div>
             </div>
 
-            <div className="hidden lg:block lg:col-span-5 relative min-h-[360px] bg-sx-elevated border-l border-sx-border">
-              <Image
-                src="/images/sx-hero-banner.jpg"
-                alt="eFootball Mobile and PlayStation squads in Kenya"
-                fill
-                priority
-                sizes="42vw"
-                className="object-cover object-center"
-              />
+            <div className="lg:col-span-5 relative min-h-[360px] bg-sx-elevated border-t lg:border-t-0 lg:border-l border-sx-border">
+              <HeroSquadSpotlight listings={listings} />
             </div>
+          </div>
+
+          {/* StockX-Style Market Shelves (Shop by Budget & Meta Tier) */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 pt-4">
+            {[
+              {
+                icon: Flame,
+                title: "Under KES 1,000",
+                sub:
+                  under1000Count > 0
+                    ? `${under1000Count} budget & starter gems`
+                    : "Starter & budget squads",
+                href: "/browse?maxPrice=1000",
+                accent: "text-sx-green-text",
+              },
+              {
+                icon: Trophy,
+                title: "3200+ OVR Meta",
+                sub:
+                  elite3200Count > 0
+                    ? `${elite3200Count} Division 1 ready rosters`
+                    : "High collective strength",
+                href: "/browse?minStrength=3200",
+                accent: "text-sx-amber-text",
+              },
+              {
+                icon: Sparkles,
+                title: "Epic & Booster Vaults",
+                sub:
+                  epicStackedCount > 0
+                    ? `${epicStackedCount} stacked 3+ Epic squads`
+                    : "Double-Booster & Big Time",
+                href: "/browse?minEpics=3",
+                accent: "text-sx-green-text",
+              },
+              {
+                icon: Scale,
+                title:
+                  swapReadyCount > 0
+                    ? `Swap Ready (${swapReadyCount})`
+                    : "Compare Side-by-Side",
+                sub:
+                  swapReadyCount > 0
+                    ? "Trade squad + M-Pesa top-up"
+                    : "Matrix winner highlights",
+                href: swapReadyCount > 0 ? "/browse?swap=1" : "/compare",
+                accent: "text-sx-info-text",
+              },
+            ].map((shelf) => {
+              const Icon = shelf.icon;
+              return (
+                <Link
+                  key={shelf.title}
+                  href={shelf.href}
+                  className="group sx-card-lift p-3.5 sm:p-4 rounded-2xl bg-sx-subtle hover:bg-sx-stone border border-sx-border hover:border-sx-green-border flex items-center justify-between gap-3"
+                >
+                  <div className="min-w-0">
+                    <div className="flex items-center gap-1.5">
+                      <Icon className={`w-3.5 h-3.5 shrink-0 ${shelf.accent}`} />
+                      <span className="text-xs sm:text-sm font-bold text-sx-ink font-display truncate">
+                        {shelf.title}
+                      </span>
+                    </div>
+                    <p className="text-[11px] text-sx-muted truncate mt-0.5">
+                      {shelf.sub}
+                    </p>
+                  </div>
+                  <ArrowRight className="w-3.5 h-3.5 text-sx-muted group-hover:text-sx-green-text transition-transform group-hover:translate-x-0.5 shrink-0" />
+                </Link>
+              );
+            })}
           </div>
         </div>
       </section>
@@ -256,26 +340,35 @@ export default async function HomePage() {
                 Available Squads
               </h2>
               <p className="text-xs text-sx-muted mt-0.5">
-                Compare OVR, Epics, Coins, and KES prices · Buyer pays KES 0 extra fee
+                Hover or tap photos to preview full rosters · Tap <strong>Compare</strong> to benchmark up to 4 squads side-by-side
               </p>
             </div>
-            <Link
-              href="/browse"
-              className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-sx-green-text hover:underline shrink-0"
-            >
-              <span>Compare All Squads</span>
-              <ArrowRight className="w-3.5 h-3.5" />
-            </Link>
+            <div className="flex items-center gap-3 shrink-0">
+              <Link
+                href="/compare"
+                className="hidden sm:inline-flex items-center gap-1 text-xs font-semibold text-sx-muted hover:text-sx-ink"
+              >
+                <Scale className="w-3.5 h-3.5" />
+                <span>Compare Matrix</span>
+              </Link>
+              <Link
+                href="/browse"
+                className="inline-flex items-center gap-1 text-xs sm:text-sm font-semibold text-sx-green-text hover:underline"
+              >
+                <span>All Squads</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </Link>
+            </div>
           </div>
 
-          {listings.length > 0 ? (
+          {showcaseListings.length > 0 ? (
             <>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                {listings.map((listing, idx) => (
+                {showcaseListings.map((listing, idx) => (
                   <ListingCard key={listing.id} listing={listing} priority={idx < 2} />
                 ))}
               </div>
-              {totalSquads > listings.length && (
+              {totalSquads > showcaseListings.length && (
                 <div className="pt-2 flex justify-center">
                   <Link href="/browse">
                     <Button variant="outline" size="md">
@@ -306,6 +399,13 @@ export default async function HomePage() {
               </div>
             </div>
           )}
+        </div>
+      </section>
+
+      {/* 2A. INTERACTIVE KES SQUAD VALUATOR & SELLER PAYOUT ENGINE */}
+      <section className="py-9 sm:py-11 border-t border-sx-border bg-sx-subtle sx-exchange-grid">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <SquadValuatorCalculator compact />
         </div>
       </section>
 
