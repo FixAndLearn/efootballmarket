@@ -385,13 +385,13 @@ export default function RegisterTournamentPage() {
   return (
     <div className="min-h-screen bg-sx-canvas text-sx-ink pb-36">
       {/* Top Header Navigation */}
-      <header className="sticky top-0 z-30 border-b border-pitch-border bg-sx-canvas backdrop-blur-xl px-4 sm:px-8 py-3.5 shadow-xl">
-        <div className="max-w-4xl mx-auto flex items-center justify-between gap-4">
+      <div className="sticky top-14 sm:top-16 md:top-[105px] z-30 border-b border-pitch-border bg-sx-canvas/95 backdrop-blur-xl shadow-sm">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-4">
           <Link
             href="/tournaments"
-            className="inline-flex items-center gap-2 text-xs font-bold text-sx-ink-soft hover:text-sx-ink transition-colors p-1.5 -ml-1.5 rounded-lg hover:bg-sx-stone"
+            className="inline-flex items-center gap-2 text-xs font-bold text-sx-ink-soft hover:text-sx-ink transition-colors px-3 py-1.5 rounded-xl border border-pitch-border bg-pitch-card hover:bg-sx-stone"
           >
-            <ArrowLeft className="w-4 h-4 text-sx-amber-text" />
+            <ArrowLeft className="w-3.5 h-3.5 text-sx-amber-text" />
             <span>Tournaments Arena</span>
           </Link>
 
@@ -403,9 +403,9 @@ export default function RegisterTournamentPage() {
             <span>Marketplace</span>
           </Link>
         </div>
-      </header>
+      </div>
 
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 pt-6 sm:pt-8 space-y-6">
+      <div className="max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 sm:pt-8 space-y-6">
         {/* Banner */}
         <div className="rounded-3xl bg-sx-stone border border-sx-amber-border p-6 sm:p-8 shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-sx-amber-tint rounded-full blur-3xl pointer-events-none" />

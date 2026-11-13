@@ -135,7 +135,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full max-w-full bg-sx-canvas/95 backdrop-blur-md border-b border-sx-border">
-      <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between gap-2 sm:gap-4 lg:gap-6 h-14 sm:h-16 min-w-0">
           <div className="min-w-0 shrink">
             <div className="sm:hidden">
@@ -371,11 +371,11 @@ export function Header() {
             <button
               type="button"
               onClick={() => setMobileMenuOpen((prev) => !prev)}
-              className="w-8 h-8 sm:w-9 sm:h-9 inline-flex items-center justify-center rounded-md text-sx-ink hover:bg-sx-stone shrink-0"
+              className="w-8 h-8 sm:w-9 sm:h-9 inline-flex items-center justify-center rounded-full bg-sx-stone hover:bg-sx-elevated border border-sx-border text-sx-ink transition-colors shrink-0"
               aria-label="Toggle menu"
               aria-expanded={mobileMenuOpen}
             >
-              {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
+              {mobileMenuOpen ? <X className="w-4 h-4 sm:w-5 sm:h-5" /> : <Menu className="w-4 h-4 sm:w-5 sm:h-5" />}
             </button>
           </div>
         </div>

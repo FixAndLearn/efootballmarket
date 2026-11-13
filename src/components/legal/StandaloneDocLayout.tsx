@@ -49,7 +49,7 @@ export function StandaloneDocLayout({
     <div className="min-h-screen bg-sx-canvas text-sx-ink flex flex-col">
       {/* Minimalist Standalone Document Header */}
       <header className="sticky top-0 z-40 bg-sx-canvas/95 backdrop-blur-md border-b border-sx-border">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
+        <div className="max-w-3xl w-full mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-3">
           <Logo size="sm" clickable={true} href="/" />
 
           {canCloseTab ? (

@@ -229,11 +229,11 @@ export function NotificationBell() {
       <button
         type="button"
         onClick={handleToggle}
-        className="w-8 h-8 sm:w-9 sm:h-9 inline-flex items-center justify-center rounded-xl text-sx-ink-soft hover:text-sx-ink hover:bg-pitch-surface transition-all relative"
+        className="w-8 h-8 sm:w-9 sm:h-9 inline-flex items-center justify-center rounded-full bg-sx-stone hover:bg-sx-elevated border border-sx-border hover:border-sx-border-strong text-sx-ink-soft hover:text-sx-ink transition-colors relative"
         aria-label="Notifications"
         title="View Notifications"
       >
-        <Bell className="w-4 h-4 sm:w-5 sm:h-5" />
+        <Bell className="w-4 h-4" />
 
         {/* Unread Counter Badge */}
         {unreadCount > 0 && (

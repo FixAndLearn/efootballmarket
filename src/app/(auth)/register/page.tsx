@@ -594,7 +594,7 @@ function RegisterForm() {
 
 export default function RegisterPage() {
   return (
-    <div className="flex-1 flex items-start sm:items-center justify-center px-4 py-6 sm:py-10">
+    <div className="flex-1 w-full flex items-center justify-center px-4 py-8 sm:py-12">
       <Suspense fallback={<div className="text-sx-muted text-sm py-12">Loading registration...</div>}>
         <RegisterForm />
       </Suspense>

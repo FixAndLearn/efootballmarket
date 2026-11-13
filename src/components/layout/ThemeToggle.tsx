@@ -51,7 +51,7 @@ export function ThemeToggle({ compact = false }: { compact?: boolean }) {
       <div
         className={
           compact
-            ? "w-8 h-8 rounded-full bg-sx-stone border border-sx-border"
+            ? "w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-sx-stone border border-sx-border"
             : "w-9 h-9 rounded-full bg-sx-stone border border-sx-border"
         }
         aria-hidden="true"
@@ -66,7 +66,7 @@ export function ThemeToggle({ compact = false }: { compact?: boolean }) {
       title={resolvedDark ? "Switch to Light Exchange Mode" : "Switch to Dark Exchange Mode"}
       aria-label={resolvedDark ? "Switch to Light Mode" : "Switch to Dark Mode"}
       className={`${
-        compact ? "w-8 h-8" : "w-9 h-9"
+        compact ? "w-8 h-8 sm:w-9 sm:h-9" : "w-9 h-9"
       } inline-flex items-center justify-center rounded-full bg-sx-stone hover:bg-sx-elevated border border-sx-border hover:border-sx-border-strong text-sx-ink transition-colors cursor-pointer shrink-0`}
     >
       {resolvedDark ? (

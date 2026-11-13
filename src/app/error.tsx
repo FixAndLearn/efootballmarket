@@ -17,7 +17,7 @@ export default function ErrorPage({
   }, [error]);
 
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-lg mx-auto py-16">
+    <div className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-lg w-full mx-auto py-16">
       <div className="w-16 h-16 rounded-2xl bg-sx-red-tint border border-sx-red-border flex items-center justify-center text-sx-red-text mb-6">
         <AlertTriangle className="w-8 h-8" />
       </div>

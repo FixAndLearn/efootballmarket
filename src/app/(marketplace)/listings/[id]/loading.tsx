@@ -2,16 +2,16 @@ import { Skeleton } from "@/components/ui/Skeleton";
 
 export default function ListingDetailLoading() {
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 animate-in fade-in duration-300">
+    <div className="max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 animate-in fade-in duration-300">
       {/* Top back navigation skeleton */}
       <div className="mb-6 flex items-center justify-between">
         <Skeleton className="h-5 w-36" />
         <Skeleton className="h-8 w-24 rounded-lg" />
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Left Column: Gallery & Squad Details (2 cols) */}
-        <div className="lg:col-span-2 space-y-6">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-7">
+        {/* Left Column: Gallery & Squad Details (8 cols) */}
+        <div className="lg:col-span-8 space-y-6">
           {/* Main Gallery Screenshot Skeleton */}
           <div className="rounded-2xl border border-pitch-border bg-pitch-card overflow-hidden p-2">
             <Skeleton className="w-full aspect-[16/9] rounded-xl" />
@@ -49,8 +49,8 @@ export default function ListingDetailLoading() {
           </div>
         </div>
 
-        {/* Right Column: Pricing & Escrow Sidebar (1 col) */}
-        <div className="space-y-6">
+        {/* Right Column: Pricing & Escrow Sidebar (4 cols) */}
+        <div className="lg:col-span-4 space-y-6">
           <div className="p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-5">
             {/* Price block */}
             <div className="space-y-2">

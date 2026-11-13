@@ -17,11 +17,11 @@ export function Logo({
   clickable = true,
   href = "/",
 }: LogoProps) {
-  const iconDimensions = {
-    sm: "w-8 h-8 sm:w-9 sm:h-9",
-    md: "w-9 h-9 sm:w-11 sm:h-11",
-    lg: "w-12 h-12 sm:w-14 sm:h-14",
-    xl: "w-16 h-16 sm:w-20 sm:h-20",
+  const iconHeights = {
+    sm: "h-8 sm:h-9",
+    md: "h-9 sm:h-11",
+    lg: "h-12 sm:h-14",
+    xl: "h-16 sm:h-20",
   }[size];
 
   const titleSizes = {
@@ -39,20 +39,15 @@ export function Logo({
   }[size];
 
   const LogoIcon = (
-    <div
-      className={cn(
-        "relative shrink-0 group-hover:scale-105 transition-transform duration-200 drop-shadow-[0_2px_8px_rgba(16,185,129,0.24)]",
-        iconDimensions
-      )}
-    >
+    <div className="relative shrink-0 inline-flex items-center group-hover:scale-105 transition-transform duration-200 drop-shadow-[0_2px_8px_rgba(16,185,129,0.24)]">
       {/* eslint-disable-next-line @next/next/no-img-element */}
       <img
         src="/images/efm-logo-header.webp"
         alt="eFootballMarket Crowned Lion Crest"
-        width={192}
+        width={149}
         height={192}
         decoding="async"
-        className="w-full h-full object-contain select-none"
+        className={cn("w-auto object-contain select-none block", iconHeights)}
       />
     </div>
   );

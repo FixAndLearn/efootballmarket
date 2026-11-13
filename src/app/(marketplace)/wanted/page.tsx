@@ -215,8 +215,9 @@ export default function WantedBoardPage() {
           ].map((tab) => (
             <button
               key={tab.id}
+              type="button"
               onClick={() => setPlatformFilter(tab.id)}
-              className={`px-3.5 py-1.5 rounded-xl text-xs font-semibold transition-colors cursor-pointer ${
+              className={`inline-flex items-center justify-center h-9 px-3.5 rounded-full text-xs font-semibold transition-colors cursor-pointer ${
                 platformFilter === tab.id
                   ? "bg-sx-green hover:bg-sx-green-hover text-white font-bold shadow-sm"
                   : "bg-pitch-surface border border-pitch-border text-sx-ink-soft hover:text-sx-ink hover:border-sx-border-strong"
@@ -228,14 +229,14 @@ export default function WantedBoardPage() {
         </div>
 
         {/* Search */}
-        <div className="relative min-w-[240px]">
-          <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-sx-muted" />
+        <div className="relative w-full sm:w-64 shrink-0">
+          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-sx-muted pointer-events-none" />
           <input
             type="text"
             placeholder="Search wanted players or OVR..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-9 pr-3 py-2 rounded-xl bg-pitch-surface border border-pitch-border text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-amber-400"
+            className="w-full h-9 pl-9 pr-3.5 rounded-full bg-pitch-surface border border-pitch-border text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-sx-green"
           />
         </div>
       </div>

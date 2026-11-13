@@ -255,7 +255,7 @@ function ForgotPasswordForm() {
 
 export default function ForgotPasswordPage() {
   return (
-    <div className="flex-1 flex items-center justify-center p-4 py-10">
+    <div className="flex-1 w-full flex items-center justify-center px-4 py-8 sm:py-12">
       <Suspense fallback={<div className="text-sx-muted text-sm">Loading recovery...</div>}>
         <ForgotPasswordForm />
       </Suspense>

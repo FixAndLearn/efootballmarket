@@ -242,7 +242,7 @@ function MiddlemanContent() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 w-full space-y-8">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 w-full space-y-8">
       {/* Clean Compact Header */}
       <div className="relative rounded-2xl store-panel p-6 sm:p-8 overflow-hidden">
         <div
@@ -804,7 +804,7 @@ export default function MiddlemanPage() {
   return (
     <Suspense
       fallback={
-        <div className="max-w-5xl mx-auto px-4 py-16 text-center space-y-3">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 w-full text-center space-y-3">
           <h1 className="text-2xl sm:text-3xl font-extrabold text-sx-ink font-display">
             WhatsApp &amp; Facebook Middleman Escrow Desk
           </h1>

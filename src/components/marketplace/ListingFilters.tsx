@@ -411,7 +411,7 @@ export function ListingFilters() {
   return (
     <>
       {/* Mobile One-Handed Sticky Search, Sort & Filter Bar */}
-      <div className="lg:hidden space-y-2.5 sticky top-16 z-30 bg-sx-canvas/95 backdrop-blur-md py-2.5 -mx-4 px-4 border-b border-sx-border">
+      <div className="lg:hidden space-y-2.5 sticky top-14 sm:top-16 md:top-[105px] z-30 bg-sx-canvas/95 backdrop-blur-md py-2.5 -mx-4 px-4 sm:-mx-6 sm:px-6 border-b border-sx-border">
         <div className="flex items-center gap-2">
           <form
             onSubmit={(e) => {

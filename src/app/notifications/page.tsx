@@ -627,7 +627,7 @@ export default function NotificationsPage() {
   return (
     <Suspense
       fallback={
-        <div className="max-w-4xl mx-auto px-4 py-20 text-center space-y-3">
+        <div className="max-w-4xl mx-auto w-full px-4 py-20 text-center space-y-3">
           <Loader2 className="w-8 h-8 text-sx-green-text animate-spin mx-auto" />
           <p className="text-xs text-sx-muted">Opening Notification Center...</p>
         </div>

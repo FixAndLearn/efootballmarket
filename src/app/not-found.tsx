@@ -5,7 +5,7 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <div className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-xl mx-auto py-16 space-y-6">
+    <div className="flex-1 flex flex-col items-center justify-center p-6 text-center max-w-xl w-full mx-auto py-16 space-y-6">
       <div className="w-16 h-16 rounded-2xl bg-sx-stone border border-sx-border flex items-center justify-center text-sx-muted mx-auto">
         <SearchX className="w-8 h-8" />
       </div>

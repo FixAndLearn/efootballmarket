@@ -252,7 +252,7 @@ async function GuidesSection() {
   return (
     <section className="py-9 sm:py-10 border-t border-sx-border">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
-        <div className="flex items-baseline justify-between gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
           <div>
             <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display flex items-center gap-2">
               <BookOpen className="w-4 h-4 text-sx-green-text" />
@@ -535,7 +535,7 @@ export default async function HomePage() {
       {/* 2. AVAILABLE SQUADS GRID (With Instant Zero-Reload Category Tabs) */}
       <section className="py-8 sm:py-10 border-t border-sx-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-5">
-          <div className="flex items-baseline justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-3">
             <div>
               <h2 className="text-xl sm:text-2xl font-bold text-sx-ink font-display tracking-tight">
                 Available Squads
@@ -575,13 +575,11 @@ export default async function HomePage() {
               </div>
             </div>
           )}
-
-          <RecentlyViewedRow title="Continue Inspecting" minItems={1} />
         </div>
       </section>
 
-      {/* 2B. RECENTLY INSPECTED SQUADS (Client Island — Only Visible When Returning Buyer Viewed 2+ Squads) */}
-      <RecentlyViewedRow minItems={2} />
+      {/* 2B. RECENTLY INSPECTED SQUADS (Aligned Full-Width Section) */}
+      <RecentlyViewedRow title="Continue Inspecting" minItems={1} />
 
       {/* 3. OUR MARKETPLACE, ESCROW & CONCIERGE SERVICES */}
       <section className="py-9 sm:py-11 border-t border-sx-border">

@@ -502,7 +502,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
         </div>
 
         {/* Right Column: Sticky Checkout & Seller Box (4 cols) */}
-        <div id="listing-inline-cta" className="lg:col-span-4 min-w-0 space-y-5 lg:sticky lg:top-28">
+        <div id="listing-inline-cta" className="lg:col-span-4 min-w-0 space-y-5 lg:sticky lg:top-[120px]">
           <div className="store-panel rounded-2xl p-6 space-y-5">
             <div className="pb-4 border-b border-sx-border space-y-2.5">
               <div>

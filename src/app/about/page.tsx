@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function AboutPage() {
   return (
-    <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-12 w-full space-y-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 w-full space-y-10">
       <header className="space-y-3 border-b border-sx-border pb-6">
         <p className="text-xs font-semibold uppercase tracking-wider text-sx-green-text">
           About &amp; Operator Disclosure
@@ -21,7 +21,7 @@ export default function AboutPage() {
         <h1 className="text-2xl sm:text-3xl font-bold text-sx-ink font-display tracking-tight">
           A safer way for Kenyan eFootball players to trade squads
         </h1>
-        <p className="text-sm sm:text-base text-sx-muted leading-relaxed">
+        <p className="text-sm sm:text-base text-sx-muted leading-relaxed max-w-3xl">
           eFootballMarket Kenya replaces unverified WhatsApp, Telegram, and Facebook group-chat deals with structured M-Pesa payment holding (Till 1572931) and a 24-hour buyer login check.
         </p>
       </header>
@@ -59,7 +59,7 @@ export default function AboutPage() {
         </ul>
       </section>
 
-      <section className="space-y-4 text-sm text-sx-ink-soft leading-relaxed">
+      <section className="space-y-4 text-sm text-sx-ink-soft leading-relaxed max-w-4xl">
         <h2 className="text-lg font-bold text-sx-ink font-display">
           Who Controls Your Payment During an Order
         </h2>
@@ -88,7 +88,7 @@ export default function AboutPage() {
         </ul>
       </section>
 
-      <section className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+      <section className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
         {[
           {
             icon: Smartphone,

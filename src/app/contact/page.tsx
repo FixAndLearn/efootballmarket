@@ -64,7 +64,7 @@ export default function ContactPage() {
   ];
 
   return (
-    <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10 sm:py-12 w-full space-y-10">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-10 w-full space-y-10">
       <header className="space-y-3 border-b border-sx-border pb-6">
         <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-sx-green-text">
           <ShieldCheck className="w-4 h-4" />
@@ -133,38 +133,46 @@ export default function ContactPage() {
           Direct Contact Channels
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div className="p-5 rounded-2xl bg-sx-canvas border border-sx-border space-y-3">
-            <div className="flex items-center gap-2.5 text-sx-ink font-bold text-sm">
-              <MessageCircle className="w-4 h-4 text-sx-green-text" />
-              <span>WhatsApp Desk (Fastest Response)</span>
+          <div className="p-5 rounded-2xl bg-sx-canvas border border-sx-border flex flex-col justify-between gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2.5 text-sx-ink font-bold text-sm">
+                <MessageCircle className="w-4 h-4 text-sx-green-text shrink-0" />
+                <span>WhatsApp Desk (Fastest Response)</span>
+              </div>
+              <p className="text-xs text-sx-muted leading-relaxed">
+                For active order questions, M-Pesa STK Push / Till 1572931 checks, Konami ID rebinding guidance, or reporting suspicious numbers.
+              </p>
             </div>
-            <p className="text-xs text-sx-muted leading-relaxed">
-              For active order questions, M-Pesa STK Push / Till 1572931 checks, Konami ID rebinding guidance, or reporting suspicious numbers.
-            </p>
-            <a
-              href="https://wa.me/254794400365"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-sx-green hover:bg-sx-green-hover text-white text-xs font-bold transition-colors"
-            >
-              <span>Chat on WhatsApp: +254 794 400 365</span>
-            </a>
+            <div>
+              <a
+                href="https://wa.me/254794400365"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-full bg-sx-green hover:bg-sx-green-hover text-white text-xs font-bold transition-colors"
+              >
+                <span>Chat on WhatsApp: +254 794 400 365</span>
+              </a>
+            </div>
           </div>
 
-          <div className="p-5 rounded-2xl bg-sx-canvas border border-sx-border space-y-3">
-            <div className="flex items-center gap-2.5 text-sx-ink font-bold text-sm">
-              <Mail className="w-4 h-4 text-sx-green-text" />
-              <span>Official Email Desk</span>
+          <div className="p-5 rounded-2xl bg-sx-canvas border border-sx-border flex flex-col justify-between gap-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2.5 text-sx-ink font-bold text-sm">
+                <Mail className="w-4 h-4 text-sx-green-text shrink-0" />
+                <span>Official Email Desk</span>
+              </div>
+              <p className="text-xs text-sx-muted leading-relaxed">
+                For Seller KYC verification, Scammer Check appeals, Kenya Data Protection Act requests, or formal dispute attachments.
+              </p>
             </div>
-            <p className="text-xs text-sx-muted leading-relaxed">
-              For Seller KYC verification, Scammer Check appeals, Kenya Data Protection Act requests, or formal dispute attachments.
-            </p>
-            <a
-              href="mailto:support@efootballmarket.co.ke"
-              className="inline-flex items-center gap-1.5 px-4 py-2 rounded-full bg-sx-stone hover:bg-sx-elevated border border-sx-border text-sx-ink text-xs font-bold transition-colors"
-            >
-              <span>support@efootballmarket.co.ke</span>
-            </a>
+            <div>
+              <a
+                href="mailto:support@efootballmarket.co.ke"
+                className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-full bg-sx-stone hover:bg-sx-elevated border border-sx-border text-sx-ink text-xs font-bold transition-colors"
+              >
+                <span>support@efootballmarket.co.ke</span>
+              </a>
+            </div>
           </div>
 
           <div className="p-5 rounded-2xl bg-sx-canvas border border-sx-border space-y-1.5">

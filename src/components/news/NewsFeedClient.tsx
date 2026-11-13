@@ -177,13 +177,13 @@ export function NewsFeedClient({
                 key={cat.id}
                 type="button"
                 onClick={() => setActiveCategory(cat.id)}
-                className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer ${
+                className={`inline-flex items-center justify-center gap-1.5 h-9 px-3.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer ${
                   active
                     ? "bg-sx-green text-white border-sx-green shadow-sm"
                     : "bg-sx-subtle border-sx-border text-sx-ink hover:border-sx-border-strong"
                 }`}
               >
-                <Icon className="w-3.5 h-3.5" />
+                <Icon className="w-3.5 h-3.5 shrink-0" />
                 <span>{cat.label}</span>
               </button>
             );
@@ -198,7 +198,7 @@ export function NewsFeedClient({
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             aria-label="Search blog posts and guides"
-            className="w-full pl-9 pr-3.5 py-2 rounded-full bg-sx-subtle border border-sx-border focus:bg-sx-canvas focus:border-sx-green text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none"
+            className="w-full h-9 pl-9 pr-3.5 rounded-full bg-sx-subtle border border-sx-border focus:bg-sx-canvas focus:border-sx-green text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none"
           />
         </div>
       </div>

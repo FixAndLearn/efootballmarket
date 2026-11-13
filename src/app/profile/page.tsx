@@ -212,7 +212,7 @@ function ProfileContent() {
 
   if (loadingUser) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-16 text-center text-sx-muted">
+      <div className="max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-16 text-center text-sx-muted">
         <div className="w-8 h-8 border-2 border-sx-green border-t-transparent rounded-full animate-spin mx-auto mb-3" />
         <p className="text-xs">Loading account settings...</p>
       </div>
@@ -220,7 +220,7 @@ function ProfileContent() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-6">
+    <div className="max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-sx-border pb-5">
         <div>

@@ -394,7 +394,7 @@ export function SmartSearchBar({
             autoComplete="off"
             aria-label="Search marketplace squads"
             placeholder="Search squads, Epic players, OVR..."
-            className="w-full h-10 pl-10 pr-8 rounded-full bg-sx-stone border border-sx-border hover:border-sx-border-strong focus:bg-sx-canvas focus:border-sx-ink text-sm text-sx-ink placeholder:text-sx-muted focus:outline-none transition-colors"
+            className="w-full h-9 pl-9 pr-8 rounded-full bg-sx-stone border border-sx-border hover:border-sx-border-strong focus:bg-sx-canvas focus:border-sx-ink text-xs sm:text-sm text-sx-ink placeholder:text-sx-muted focus:outline-none transition-colors"
           />
           {query && (
             <button

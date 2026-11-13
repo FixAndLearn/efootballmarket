@@ -164,8 +164,8 @@ export default function HostTournamentPage() {
   return (
     <div className="min-h-screen bg-pitch-dark text-sx-ink flex flex-col">
       {/* Top Navigation Bar: Seamless Back to Tournaments & Marketplace */}
-      <div className="border-b border-pitch-border bg-pitch-surface/90 backdrop-blur-md sticky top-16 z-30">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 py-3 flex items-center justify-between gap-3">
+      <div className="border-b border-pitch-border bg-pitch-surface/95 backdrop-blur-md sticky top-14 sm:top-16 md:top-[105px] z-30">
+        <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-3">
           <Link
             href="/tournaments"
             className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-pitch-card hover:bg-sx-stone border border-pitch-border text-xs font-semibold text-sx-ink-soft hover:text-sx-ink transition-all whitespace-nowrap group shadow-sm active:scale-95"
@@ -189,7 +189,7 @@ export default function HostTournamentPage() {
       </div>
 
       {/* Main Content Area - Full-page Scrollable (Zero Modal Obstruction) */}
-      <div className="flex-1 max-w-3xl mx-auto w-full px-4 sm:px-6 py-8 space-y-8 pb-36 sm:pb-24">
+      <div className="flex-1 max-w-4xl mx-auto w-full px-4 sm:px-6 lg:px-8 py-8 space-y-8 pb-36 sm:pb-24">
         {/* Page Header Banner */}
         <div className="rounded-3xl bg-sx-stone border border-sx-amber-border p-6 sm:p-8 shadow-2xl relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-sx-amber-tint rounded-full blur-3xl pointer-events-none" />

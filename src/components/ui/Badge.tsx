@@ -7,7 +7,7 @@ export interface BadgeProps extends React.HTMLAttributes<HTMLSpanElement> {
 }
 
 export function Badge({ className, variant = "default", size = "sm", children, ...props }: BadgeProps) {
-  const baseStyles = "inline-flex items-center font-semibold rounded";
+  const baseStyles = "inline-flex items-center justify-center gap-1 leading-none font-semibold rounded";
 
   const sizeStyles = {
     sm: "px-2 py-0.5 text-[11px]",

@@ -17,7 +17,7 @@ export default function BrowseError({
   }, [error]);
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-16 text-center">
+    <div className="max-w-2xl mx-auto w-full px-4 py-16 text-center">
       <div className="w-16 h-16 rounded-2xl bg-sx-red-tint border border-sx-red-border flex items-center justify-center text-sx-red-text mx-auto mb-6 shadow-inner">
         <AlertCircle className="w-8 h-8" />
       </div>
