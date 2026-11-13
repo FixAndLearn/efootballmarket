@@ -31,6 +31,9 @@ interface AdminBloggerStudioProps {
 }
 
 const PRESET_COVERS = [
+  { label: "Black Friday Hub", url: "/images/articles/ef27-black-friday-campaign-hub.jpg" },
+  { label: "Big Time Henry", url: "/images/articles/ef27-henry-big-time-arsenal.jpg" },
+  { label: "Wenger Manager", url: "/images/articles/ef27-wenger-arsenal-manager.jpg" },
   { label: "Fluid Formation", url: "/images/articles/ef27-fluid-formation-konami.jpg" },
   { label: "Select Tokens", url: "/images/articles/ef27-select-tokens-yamal.jpg" },
   { label: "Link-Up Manager", url: "/images/articles/ef27-klopp-linkup-manager.jpg" },

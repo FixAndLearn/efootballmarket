@@ -144,7 +144,7 @@ export function NewsFeedClient({
             Real eFootball 2027 Updates, Tactics &amp; Trading Guides
           </h1>
           <p className="text-xs sm:text-sm text-sx-ink-soft leading-relaxed">
-            Verified breakdowns of Konami&apos;s latest eFootball 2027 (v6.0 – v6.1.1) mechanics: Fluid Formation, the Overload playstyle, 100-stack Select Skill &amp; Position Tokens, Dual Link-Up 90-proficiency managers, Showdown &amp; Custom Tournaments, $300K Championship 2027 qualifiers, and Clean Konami ID M-Pesa escrow safety.
+            Verified breakdowns of Konami&apos;s latest eFootball 2027 (v6.0 – v6.1.1) drops: the 12 Nov Black Friday Campaign, Big Time Henry, Wenger &amp; Arteta, Fluid Formation, the Overload playstyle, 100-stack Select Skill &amp; Position Tokens, Dual Link-Up 90-proficiency managers, Showdown &amp; Custom Tournaments, $300K Championship 2027 qualifiers, and Clean Konami ID M-Pesa escrow safety.
           </p>
         </div>
 
@@ -194,7 +194,7 @@ export function NewsFeedClient({
           <Search className="w-4 h-4 text-sx-muted absolute left-3.5 top-1/2 -translate-y-1/2 pointer-events-none" />
           <input
             type="text"
-            placeholder="Search Fluid Formation, Select Tokens, Klopp..."
+            placeholder="Search Black Friday, Henry, Wenger, Select Tokens..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
             aria-label="Search blog posts and guides"

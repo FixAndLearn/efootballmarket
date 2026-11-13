@@ -36,6 +36,12 @@ export function getCategoryLabel(category: NewsCategory | string) {
 }
 
 const ARTICLE_REAL_PHOTO_BY_SLUG: Record<string, string> = {
+  "efootball-2027-black-friday-update-nov-12-campaign-hub-henry-arsenal":
+    "/images/articles/ef27-black-friday-campaign-hub.jpg",
+  "big-time-thierry-henry-epic-arsenal-fc-pack-review-builds-kenya":
+    "/images/articles/ef27-henry-big-time-arsenal.jpg",
+  "arsene-wenger-vs-arteta-managers-national-legends-wanyama-guide":
+    "/images/articles/ef27-wenger-arsenal-manager.jpg",
   "efootball-2027-v6-season-update-fluid-formation-overload-guide":
     "/images/articles/ef27-fluid-formation-konami.jpg",
   "efootball-v6-1-select-skill-and-select-position-tokens-guide":
@@ -93,6 +99,211 @@ export function resolveRealArticlePhoto(
 
 export const EDITORIAL_GUIDES: NewsArticle[] = [
   {
+    id: "update-2026-11-12-black-friday-campaign-henry-arsenal",
+    title:
+      "eFootball 2027 Black Friday Update (12 Nov 2026): Campaign Hub, 5,000-Coin Platinum Ticket, Henry Debut, Wenger & Arsenal Packs",
+    slug: "efootball-2027-black-friday-update-nov-12-campaign-hub-henry-arsenal",
+    category: "update",
+    summary:
+      "Everything in Konami's 12 November 2026 maintenance update: the Black Friday Campaign Hub (Silver/Gold/Platinum Tickets, up to 5,000 Coins), free Highlight: Arsenal FC Chance Deals, Big Time Thierry Henry, Arsène Wenger & Mikel Arteta managers, Epic National Legends with Victor Wanyama, and the exact EAT timings Kenyan players need.",
+    content: `## What Dropped in the 12 November 2026 Maintenance
+
+Konami's Thursday maintenance on **12 November 2026** pushed eFootball 2027's **Black Friday Campaign** live across mobile, console and PC. It is the biggest free-coin window of the v6.1 season and it also carries the long-awaited **Big Time Thierry Henry** debut, two new Arsenal managers, and a Kenyan name in the new **Epic: National Legends** list. Here is the full, verified breakdown.
+
+## Campaign Dates (East Africa Time)
+
+- **Start**: 12 Nov 2026, 02:00 UTC = **05:00 EAT**
+- **End**: 3 Dec 2026, 01:59 UTC = **04:59 EAT**
+- **Daily login reset**: 02:00 UTC = **05:00 EAT** every day
+- **Objectives Round 1**: 19 Nov, 05:00 EAT
+- **Objectives Round 2**: 26 Nov, 05:00 EAT
+
+## Campaign Hub: Silver, Gold & Platinum Tickets
+
+The Campaign Hub board advances when you finish **PvP or VS AI matches** (Exhibition, Training and Skill Up matches do **not** count). Rewards along the track:
+
+- **Silver Tickets (x8)** – GP, EXP trainers and consumables.
+- **Gold Tickets (x2)** – draw for up to **3,000 eFootball Coins** each.
+- **Platinum Ticket (x1)** – one draw for up to **5,000 eFootball Coins**. It sits at the final space of the third week, and Konami's wording is "a chance", so treat it as a lottery, not a guarantee.
+- **Thierry Henry Stadium Choreo + Giant Prop** – a golden kneeling-Henry statue and a tifo for your stadium.
+- **4 x Highlight: Arsenal FC Chance Deals** from the Hub, on top of the login present below.
+
+## Free Login Rewards
+
+Log in once during the campaign to receive **1 x "Highlight: Arsenal FC" Chance Deal** (the Highlight pool tops out at 94 OVR for Rice, Saka, Gabriel and Ødegaard-type cards and 93 for Raya). The cumulative Special Login Bonus adds **2 Random Skill Tokens, 2 Random Position Tokens, 110,000 GP and 60,000 EXP**.
+
+## Special Events Schedule
+
+1. **London Clubs** (12 Nov – 3 Dec): VS AI event, collect Event Points for rewards.
+2. **Team Effort** (19 Nov – 3 Dec): win match after match, but any player card used in a previous win is locked for the rest of the event, so squad depth matters.
+3. **English Clubs** (26 Nov – 3 Dec): PvP event with Bonus Targets; Player Bonuses and results decide your points.
+
+## New Packs in the Same Update
+
+- **Big Time & Epic: Arsenal FC** – 250-player box headlined by **Big Time Thierry Henry (CF, 105 max)** with Epic **Sol Campbell, Dennis Bergkamp, David Seaman, Emmanuel Petit and Giovanni van Bronckhorst**. First 10-player draw is discounted to **500 Coins**. Full review: [Henry pack breakdown](/news/big-time-thierry-henry-epic-arsenal-fc-pack-review-builds-kenya).
+- **Manager: Arsène Wenger** – 750 Coins, **90 Possession Game / 89 Quick Counter**, Dual Link-Up **Breakthrough Pass B + Shadow Link C**.
+- **Arsenal FC 26–27 Club Pack** – 1,500 Coins with **Show Time Bukayo Saka (Blitz Curler)** and manager **Mikel Arteta (90 Long Ball Counter / 90 Overload)**.
+- **Epic: National Legends Selection** – pick one Epic for **900 Coins**, including Kenya's **Victor Wanyama**. Manager and Legends guide: [Wenger vs Arteta + Wanyama](/news/arsene-wenger-vs-arteta-managers-national-legends-wanyama-guide).
+
+## What This Means for Buying & Selling Accounts in Kenya
+
+- **Coin stashes are suddenly valuable.** An account sitting on 500–1,500 unspent Coins can hit the discounted Henry 10-draw or the Wenger pack immediately. Remember Coins **do not move across Android <-> iOS** during Data Transfer, so match the platform badge on any [marketplace listing](/browse) before you pay.
+- **Expect a flood of "Henry + Campbell" listings from 13 November.** Ask the seller for an in-game screenshot of the card inside **My Team > Players** with the Konami ID visible, not just a pack-opening clip.
+- **Campaign progress is account-bound.** If you buy mid-campaign, the Hub spaces already cleared by the seller stay cleared, so an account that has reached the Gold Ticket row is worth more than a fresh one.
+- **Pay only through escrow.** Use [eFootballMarket escrow](/escrow-guarantee) with M-Pesa Till **1572931**; funds release only after you confirm the Konami ID password, email and 2-step code were handed over cleanly. Our [Konami ID buyer checklist](/news/how-to-verify-clean-konami-id-before-releasing-escrow) covers the full hand-over.
+
+## Quick FAQ
+
+**Is the 5,000-Coin Platinum Ticket guaranteed?** No. It is a draw with a chance of up to 5,000 Coins.
+
+**Do Exhibition matches move the Campaign Hub?** No. Only PvP (eFootball League, events) and VS AI matches count.
+
+**When should I spend?** The first 10-draw of the Arsenal box at 500 Coins is the best Coin-per-card value in this update; the 750-Coin Wenger pack is the best manager value if you run Possession Game.`,
+    author_name: "eFootballMarket Patch Desk",
+    cover_image_url: "/images/articles/ef27-black-friday-campaign-hub.jpg",
+    is_pinned: true,
+    is_published: true,
+    views_count: 0,
+    created_at: "2026-11-12T10:00:00.000Z",
+    updated_at: "2026-11-13T18:00:00.000Z",
+  },
+  {
+    id: "review-big-time-henry-epic-arsenal-fc-pack-2026-11",
+    title:
+      "Big Time Thierry Henry & Epic Arsenal FC Pack Review: 105 CF, Campbell, Bergkamp Builds & Kenyan Resale Value",
+    slug: "big-time-thierry-henry-epic-arsenal-fc-pack-review-builds-kenya",
+    category: "efootball_news",
+    summary:
+      "Full card-by-card review of the 12 Nov 2026 Big Time & Epic: Arsenal FC box: Henry (Deep-Lying Forward, Momentum Dribbling + Acceleration Burst + Blitz Curler), Campbell, Bergkamp, van Bronckhorst, Seaman and Petit with progression builds, boosters, tier verdict and what each card adds to an account's KES price.",
+    content: `## Henry Finally Lands in eFootball 2027
+
+After weeks of teasers built around his solo goal against Tottenham, **Thierry Henry** debuted on **12 November 2026** as a **Big Time** card dated **16 Nov '02**. He headlines the **Big Time & Epic: Arsenal FC** box (250 players) with five Epic team-mates from the Wenger era. The first 10-player draw costs **500 Coins**, then standard pricing applies. Below is what every card actually does, plus the builds the community has settled on after the first 48 hours.
+
+## Thierry Henry (CF, 88 base -> 105 max)
+
+- **Attacking Playing Style**: Deep-Lying Forward · **Defensive**: Front Line Poacher
+- **Show Time Skills**: Momentum Dribbling, Acceleration Burst, Blitz Curler
+- **Booster**: Finishing · **Extra**: Monumental Celebration animation
+- **Progression (7/4/6/10/10/4/0)**: Shooting 7, Passing 4, Dribbling 6, Dexterity 10, Lower Body Strength 10, Aerial 4.
+- **Suggested skills**: One-touch Pass, Through Passing, Sole Control, Flip Flap, Acrobatic Finishing.
+
+On paper he lacks 99 Speed/Acceleration, but in matches he closes space like Mbappé because **Acceleration Burst** stacks with his long stride. As a Deep-Lying Forward he receives on the edge of the box, where **Blitz Curler** and **Momentum Dribbling** chain naturally. Known weaknesses: ordinary heading for a 188 cm striker and no Goal Poacher option, so pair him with a runner (Yamal, Saka Show Time) if you rely on through balls.
+
+## Sol Campbell (CB, 104 max)
+
+- **Defensive Playing Style**: The Destroyer · **Show Time**: Power Tackle, Shadow Hunt
+- **Booster**: Physical Contact +6 · **Build**: 0/0/0/7/8/8/11 + GK1 1
+- Verdict: top-three CB in the game right now. Enough recovery pace for **Shadow Hunt** to trigger, and the physical profile out-muscles Haaland-type targets.
+
+## Dennis Bergkamp (SS, 103 max)
+
+- **Attacking**: Creative Playmaker · **Defensive**: Front Line Poacher · **Show Time**: Phenomenal Pass, Magnetic Feet
+- **Booster**: Ball Control +6 · **Build**: 8/4/10/9/9/4/0
+- Verdict: a second-striker who creates rather than runs in behind. Keep him in the half-spaces behind Henry; do not expect Gullit-style pace.
+
+## Giovanni van Bronckhorst (LB, 101 max)
+
+- **Attacking**: Attacking Full-back · **Defensive**: High Line Master · **Show Time**: Edged Crossing, Long-reach Tackle
+- **Boosters**: Stealing, Duelling · **Build**: 0/6/4/8/11/4/9
+- Verdict: the best-balanced LB released this season; the Edged Crossing + Long-reach Tackle combo is unique for a full-back.
+
+## David Seaman (GK, 102 max)
+
+- **Defensive**: Defensive Goalkeeper · **Show Time**: GK Directing Defence · **Booster**: Saving
+- **Build**: Aerial 1, GK1 10, GK2 8, GK3 11.
+
+## Emmanuel Petit (CMF, 100 max)
+
+- **Box-to-Box** both phases · **Show Time**: Phenomenal Pass, Attack Trigger · **Boosters**: Ball Protection, Balancer
+- **Build**: 0/7/7/7/11/3/7. Solid but replaceable; Vieira, Yaya Touré and Xabi Alonso do the same job better.
+
+## Tier Verdict
+
+| Tier | Players |
+| --- | --- |
+| SSS (Endgame) | Thierry Henry, Sol Campbell |
+| SS (Excellent) | Bergkamp, van Bronckhorst, Seaman, Petit |
+
+Community pack rating sits around **3.5 / 5**: not the cheapest value box of 2026, but a 250-player pool with zero dead Epics and two genuine endgame cards.
+
+## How These Cards Move Account Prices in Kenya
+
+1. **Henry adds a premium, Campbell adds almost as much.** Buyers on [eFootballMarket](/browse) value a maxed Henry roughly like a Big Time Del Piero tier card; a Campbell + Henry pair justifies a clear step up over a plain 3150-strength squad.
+2. **Do not pay for an un-levelled Henry as if it were 105.** Ask for a screenshot showing current level and remaining progression points.
+3. **Free Highlight Arsenal cards are not Epics.** The 94 Rice/Saka Highlight cards from the campaign login are nice but every active account can get them; they should not raise a listing price.
+4. **Verify ownership before escrow release.** Follow our [Konami ID buyer checklist](/news/how-to-verify-clean-konami-id-before-releasing-escrow) and keep payment inside escrow via M-Pesa Till **1572931** until you have logged in yourself and seen the card in **My Team**.`,
+    author_name: "eFootballMarket Valuation Desk",
+    cover_image_url: "/images/articles/ef27-henry-big-time-arsenal.jpg",
+    is_pinned: false,
+    is_published: true,
+    views_count: 0,
+    created_at: "2026-11-13T09:00:00.000Z",
+    updated_at: "2026-11-13T18:00:00.000Z",
+  },
+  {
+    id: "guide-wenger-arteta-managers-national-legends-wanyama-2026-11",
+    title:
+      "Arsène Wenger vs Mikel Arteta in eFootball 2027: Dual Link-Up Setups, Arsenal 26–27 Pack & Epic National Legends with Kenya's Victor Wanyama",
+    slug: "arsene-wenger-vs-arteta-managers-national-legends-wanyama-guide",
+    category: "efootball_news",
+    summary:
+      "Which new Arsenal manager fits your squad: Wenger (90 Possession Game / 89 Quick Counter, Breakthrough Pass B + Shadow Link C, 750 Coins) or Arteta (90 Long Ball Counter / 90 Overload, Breakthrough Pass C + 1-2 Cut-in C, inside the 1,500-Coin Arsenal 26–27 pack), plus the 900-Coin Epic National Legends Selection featuring Victor Wanyama.",
+    content: `## Two Arsenal Managers, Two Very Different Game Plans
+
+The **12 November 2026** update added two Arsenal managers at once. Both carry the v6.0 **Dual Link-Up Play** system, but they want completely different squads. Here is how to choose, and how each one changes what buyers look for in an account.
+
+## Arsène Wenger (Manager Pack, 750 Coins)
+
+- **Proficiencies**: **90 Possession Game** (Low Pass booster) / **89 Quick Counter** (Kicking Power booster)
+- **Link-Up Play 1 – Breakthrough Pass B**: needs a **Box-to-Box CMF** feeding a **Goal Poacher CF**.
+- **Link-Up Play 2 – Shadow Link C**: needs a **Deep-Lying Forward CF** with a **Hole Player AMF** behind him.
+- Konami's own launch line was "Wengerball has arrived", and the pack art is labelled **02–03**, the season before the Invincibles.
+
+**Who should buy Wenger**: anyone already running a Possession Game spine (Xabi Alonso, Yaya Touré, Bergkamp) who wants a Quick Counter fallback for Showdown. Shadow Link C is tailor-made for **Big Time Henry (DLF)** plus a Hole Player like Gullit or Ødegaard. The pack's Highlight slots reportedly feature current Gunners such as **Zubimendi (DMF)** and **Gyökeres (CF)**.
+
+## Mikel Arteta (inside the Arsenal FC 26–27 Club Pack, 1,500 Coins)
+
+- **Proficiencies**: **90 Long Ball Counter / 90 Overload** – the first manager to pair a 90 in the new Overload playstyle with a 90 counter style.
+- **Link-Up Play 1 – Breakthrough Pass C** · **Link-Up Play 2 – 1-2 Cut-in C**
+- **Pack contents**: **Show Time Bukayo Saka (Blitz Curler)**, Declan Rice, Bruno Guimarães, David Raya, Gabriel Magalhães, Jurriën Timber, Kai Havertz, Martin Ødegaard, Riccardo Calafiori and more. 10 Highlight cards, each able to take a booster.
+
+**Who should buy Arteta**: Overload users who struggled with weak-side exposure. 90 Long Ball Counter lets you flip to a direct plan mid-match without proficiency loss, which is exactly what the no-relegation Division 1–3 format rewards.
+
+## Quick Comparison
+
+| | Wenger | Arteta |
+| --- | --- | --- |
+| Cost | 750 Coins (manager only) | 1,500 Coins (manager + Saka pack) |
+| Styles | 90 Possession / 89 Quick Counter | 90 Long Ball Counter / 90 Overload |
+| Link-Ups | Breakthrough Pass B + Shadow Link C | Breakthrough Pass C + 1-2 Cut-in C |
+| Best with | DLF Henry + Hole Player AMF | Overload shapes, fast wingers (Saka, Traoré) |
+
+## Epic: National Legends Selection (900 Coins, choose one)
+
+The second volume of **National Legends** lets you pick **one Epic for 900 Coins**; every card carries a Show Time skill. Confirmed names include **Sócrates (Brazil), Obafemi Martins (Nigeria), Daisuke Matsui (Japan), Rafael Márquez (Mexico), Victor Wanyama (Kenya), Aliou Cissé (Senegal), Mustapha Hadji (Morocco), Rüştü Reçber (Türkiye), Madjid Bougherra (Algeria), Nashat Akram (Iraq), Piyapong Pue-on (Thailand), Safiq Rahim (Malaysia), Essam El Hadary (Egypt) and Bhaichung Bhutia (India)**, with 17 nations in total.
+
+### Victor Wanyama – the Kenyan pick
+
+- **Position**: DMF · **Base OVR**: 82 · **Defensive Playing Style**: Tough Marker (new in v6.1) · Attacking: Basic
+- **Profile**: 184 cm / 87 kg, right-footed, **Weak Foot Accuracy High**, **Form Unwavering** (Injury Resistance Low)
+- **Base stats that matter**: Aggression 79, Physical Contact 79, Stamina 80, Tackling 77, Kicking Power 77, Defensive Awareness 76, Defensive Engagement 76, Speed 75.
+
+Wanyama is not a meta DMF compared with Rijkaard or Vieira, but **Tough Marker** on a Legend with Unwavering form makes him a reliable Division 1 rotation piece, and he is the first Harambee Stars legend in eFootball. Expect Kenyan sellers to feature him in listings; price him as a sentimental extra, not a premium Epic. (India received a regional 50 INR Bhutia deal; no equivalent Kenyan offer has been announced.)
+
+## Buyer and Seller Notes
+
+- **Managers transfer with the account** and keep their proficiency levels, so a Wenger or Arteta at high level is a genuine asset. Check **Managers > Owned** on a live screen before releasing [escrow](/escrow-guarantee).
+- **Link-Up Plays only fire with the right roles.** When evaluating a squad for Wenger, confirm the CF is actually a Deep-Lying Forward on his Attacking Playing Style sheet.
+- Trade safely on [eFootballMarket](/browse): pay via M-Pesa Till **1572931** into escrow, verify the Konami ID with our [buyer checklist](/news/how-to-verify-clean-konami-id-before-releasing-escrow), then release.`,
+    author_name: "eFootballMarket Tactical Desk",
+    cover_image_url: "/images/articles/ef27-wenger-arsenal-manager.jpg",
+    is_pinned: false,
+    is_published: true,
+    views_count: 0,
+    created_at: "2026-11-13T12:00:00.000Z",
+    updated_at: "2026-11-13T18:00:00.000Z",
+  },
+  {
     id: "update-efootball-2027-v6-fluid-formation-overload",
     title:
       "eFootball 2027 (v6.0 – v6.1.1) Tactical Overhaul: Fluid Formation, Overload Playstyle & Split Playing Styles",
@@ -137,7 +348,7 @@ Player behaviour is now split into **Attacking Playing Style** (active with the 
 Checking both halves of a card's Playing Style sheet is now mandatory before buying or building any squad on the [Live Marketplace](/browse).`,
     author_name: "eFootballMarket Tactical Desk",
     cover_image_url: "/images/articles/ef27-fluid-formation-konami.jpg",
-    is_pinned: true,
+    is_pinned: false,
     is_published: true,
     views_count: 0,
     created_at: "2026-11-10T09:00:00.000Z",
@@ -424,9 +635,9 @@ Between October's **v6.1.0 / v6.1.1** cycle and November's **Black Friday** buil
 4. **World Player of the Year / Ballon d'Or 2026 Pack & Partner Club Packs**: High-ceiling **104+ Big Time / Show Time** attackers (**Kane**, **Mbappé**, **Lamine Yamal**) plus the **Inter 26–27** (Christian Chivu + *Low Screamer* Lautaro Martínez) and **Borussia Dortmund 26–27** (90-Possession Niko Kovač + Show Time Nmecha) 1,500-Coin Club Packs offer tremendous value-per-coin compared to deep 150-box gambles.
 5. **Free Campaign Epics vs Rare Box Epics**: Because **Epic Diego Forlán** (*Low Screamer*) was obtainable via the Halloween Daily Free Draw / 12-attempt guarantee (Oct 22 – Nov 5), experienced Kenyan buyers won't overpay for an account *just* because it shows Forlán or free tutorial Messi—buyers pay premiums for scarce 150-box spines (Vieira, Gullit, Maldini, Araujo, Courtois/Schmeichel/Cech) and **Dual Link-Up 90-Proficiency Managers**.
 
-## Mid-November Black Friday Campaign Watch
+## Black Friday Campaign Is Now Live (12 Nov – 3 Dec 2026)
 
-November's Thursday maintenance cycles traditionally usher in Konami's **Black Friday Campaign**—featuring tiered Campaign Hub tickets (with Coin jackpot draws), Partner Club **Arsenal** legend & manager hype, and **National Legends Selection** drops.
+Konami's 12 November maintenance delivered exactly what the cycle promised: a Campaign Hub with Silver/Gold/Platinum Tickets (up to **5,000 Coins**), **Big Time Thierry Henry** in a 250-player Arsenal box, **Arsène Wenger** and **Mikel Arteta** as Dual Link-Up managers, and a **National Legends Selection** that includes Kenya's **Victor Wanyama**. Read the [full update breakdown](/news/efootball-2027-black-friday-update-nov-12-campaign-hub-henry-arsenal) and the [Henry pack review](/news/big-time-thierry-henry-epic-arsenal-fc-pack-review-builds-kenya).
 
 - **Buyer Tip**: Sellers looking to fund fresh Black Friday spins frequently list clean, well-built 3150–3210+ squads at sharp KES prices on [Friday Drops](/friday-drops) and the [Main Marketplace](/browse).
 - **Coin Carryover Reminder**: eFootball Coins **do not transfer across Android <-> iOS** OS families during Data Transfer (Android coins stay on Android; iOS coins stay on iOS), though all **Epic/Big Time/Show Time players, GP, Select Skill Tokens, and Managers** transfer 100% intact! Always match the listing's platform badge if you are buying an account specifically for its unspent Coin stash.`,
