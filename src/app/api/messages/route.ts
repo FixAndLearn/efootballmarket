@@ -69,13 +69,13 @@ export async function GET(req: NextRequest) {
       linkedOrder && (linkedOrder.buyer_id === user.id || linkedOrder.seller_id === user.id);
 
     if (!isOrderParty) {
-      // Check membership in conversation_members
+      // Check membership in conversation_members (composite PK: conversation_id, user_id)
       const { data: member } = await primaryClient
         .from("conversation_members")
-        .select("id")
+        .select("user_id")
         .eq("conversation_id", conversationId)
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       if (!member) {
         return NextResponse.json({ error: "Access denied" }, { status: 403 });
@@ -148,13 +148,13 @@ export async function POST(req: NextRequest) {
     const isBuyer = order && order.buyer_id === user.id;
     const isSeller = order && order.seller_id === user.id;
 
-    if (order && !isBuyer && !isSeller) {
+    if (!order || (!isBuyer && !isSeller)) {
       const { data: member } = await primaryClient
         .from("conversation_members")
-        .select("id")
+        .select("user_id")
         .eq("conversation_id", conversationId)
         .eq("user_id", user.id)
-        .single();
+        .maybeSingle();
 
       if (!member) {
         return NextResponse.json({ error: "Access denied" }, { status: 403 });

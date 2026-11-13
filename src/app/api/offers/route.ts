@@ -29,7 +29,7 @@ export async function GET(req: NextRequest) {
     }
 
     const { searchParams } = new URL(req.url);
-    const offerId = searchParams.get("offerId");
+    const offerId = searchParams.get("offerId") || searchParams.get("offer_id");
     const listingId = searchParams.get("listingId");
     const sellerId = searchParams.get("sellerId");
     const buyerPhone = searchParams.get("phone");
@@ -237,7 +237,7 @@ export async function POST(req: NextRequest) {
       0,
       Math.round(((originalPrice - offerNum) / originalPrice) * 100)
     );
-    const offerId = `off_${Date.now()}_${Math.floor(Math.random() * 1000)}`;
+    const offerId = crypto.randomUUID();
 
     const normBuyerPhone = normalizePhoneNumber(buyer_phone);
     const internationalBuyerPhone = normBuyerPhone.isValid ? normBuyerPhone.international : buyer_phone.trim();
@@ -252,10 +252,12 @@ export async function POST(req: NextRequest) {
       buyer_id: verifiedBuyerId,
       buyer_name: String(buyer_name).trim().slice(0, 80),
       buyer_phone: internationalBuyerPhone,
+      offer_amount: offerNum,
       offered_price: offerNum,
       original_price: originalPrice,
       discount_percentage: discountPercentage,
       status: "pending",
+      message: note ? String(note).slice(0, 300) : null,
       note: note ? String(note).slice(0, 300) : null,
       created_at: nowIso,
       updated_at: nowIso,

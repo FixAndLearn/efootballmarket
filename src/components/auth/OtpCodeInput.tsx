@@ -52,7 +52,7 @@ export function OtpCodeInput({
       setDigits(newDigits);
       const combined = newDigits.join("");
       onChange(combined);
-      if ((combined.length === length || combined.length === 6) && onComplete) {
+      if (combined.length === length && onComplete) {
         onComplete(combined);
       }
       const targetFocus = Math.min(clean.length, length - 1);
@@ -71,7 +71,7 @@ export function OtpCodeInput({
       inputRefs.current[index + 1]?.focus();
     }
 
-    if (clean && (combined.length === length || combined.length === 6) && onComplete) {
+    if (clean && combined.length === length && onComplete) {
       onComplete(combined);
     }
   };
@@ -102,7 +102,7 @@ export function OtpCodeInput({
     const combined = newDigits.join("");
     onChange(combined);
 
-    if ((combined.length === length || combined.length === 6) && onComplete) {
+    if (combined.length === length && onComplete) {
       onComplete(combined);
     }
     const targetFocus = Math.min(pasted.length, length - 1);

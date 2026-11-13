@@ -79,10 +79,20 @@ export async function POST(req: NextRequest) {
           !offerData?.expires_at ||
           new Date(offerData.expires_at).getTime() > Date.now();
 
-        if (offerData && offerData.status === "accepted" && notExpired) {
-          const agreed = Number(
-            offerData.counter_price || offerData.offered_price || listing.price
-          );
+        if (
+          offerData &&
+          (offerData.status === "accepted" || offerData.status === "countered") &&
+          notExpired
+        ) {
+          const agreed =
+            offerData.status === "countered"
+              ? Number(offerData.counter_price || offerData.counter_amount || listing.price)
+              : Number(
+                  offerData.counter_price ||
+                    offerData.offered_price ||
+                    offerData.offer_amount ||
+                    listing.price
+                );
           if (agreed >= 50) {
             finalPrice = agreed;
           }
@@ -114,80 +124,117 @@ export async function POST(req: NextRequest) {
       });
     }
 
-    let buyerId = user?.id;
+    const buyerId = user?.id;
 
     if (!buyerId) {
-      // Create or ensure guest buyer record
-      const paddedSuffix = cleanDigits.slice(-12).padStart(12, "0");
-      buyerId = `00000000-0000-4000-8000-${paddedSuffix}`;
+      return NextResponse.json(
+        {
+          error:
+            "Please sign in or create a free account first so your encrypted Konami ID credentials can be delivered privately to your Order Room.",
+          requiresAuth: true,
+        },
+        { status: 401 }
+      );
+    }
 
-      const name = buyerName?.trim() || `Buyer_${cleanDigits.slice(-4)}`;
-      const guestProfile = {
-        id: buyerId,
-        username: name.toLowerCase().replace(/\s+/g, "_"),
-        first_name: name,
-        phone_number: internationalPhone,
-        country: "KEN",
-        is_verified_seller: false,
-        available_balance: 0.0,
-        escrow_balance: 0.0,
-      };
+    // Ensure authenticated buyer has a public.profiles row before order FK insert
+    try {
+      const { data: existingProfile } = await adminSupabase
+        .from("profiles")
+        .select("id")
+        .eq("id", buyerId)
+        .maybeSingle();
 
-      try {
-        await adminSupabase
-          .from("profiles")
-          .upsert(guestProfile, { onConflict: "id", ignoreDuplicates: true });
-      } catch (err) {
-        console.warn("Guest profile creation note:", err);
+      if (!existingProfile) {
+        const cleanId = buyerId.replace(/-/g, "").slice(0, 6);
+        const baseName = (
+          buyerName?.trim() ||
+          user.user_metadata?.username ||
+          user.email?.split("@")[0] ||
+          "trader"
+        )
+          .toLowerCase()
+          .replace(/[^a-z0-9_]/g, "")
+          .slice(0, 16);
+
+        await adminSupabase.from("profiles").upsert(
+          {
+            id: buyerId,
+            username: `${baseName || "trader"}_${cleanId}`,
+            first_name: buyerName?.trim() || user.user_metadata?.first_name || "Trader",
+            phone_number: internationalPhone,
+            country: "KEN",
+            email: user.email || null,
+            role: "user",
+          },
+          { onConflict: "id" }
+        );
       }
+    } catch (profErr) {
+      console.warn("Buyer profile sync note:", profErr);
     }
 
     if (listing.seller_id === buyerId) {
       return NextResponse.json({ error: "You cannot purchase your own account listing." }, { status: 400 });
     }
 
-    // 4. Create Order atomically
-    const timestamp = Date.now().toString(36).toUpperCase();
-    const random = Math.floor(Math.random() * 1000).toString().padStart(3, "0");
-    const orderNumber = `EFM-${timestamp}-${random}`;
-
-    const { data: order, error: orderError } = await adminSupabase
+    // 4. Reuse existing recent `payment_pending` order for this buyer + listing + price, or create atomically
+    let order: any = null;
+    const { data: reusableOrder } = await adminSupabase
       .from("orders")
-      .insert({
-        order_number: orderNumber,
-        listing_id: listing.id,
-        buyer_id: buyerId,
-        seller_id: listing.seller_id,
-        total_amount: finalPrice,
-        platform_fee: calculateEscrowCommission(finalPrice),
-        seller_net_amount: Math.max(0, finalPrice - calculateEscrowCommission(finalPrice)),
-        currency: listing.currency || "KES",
-        status: "payment_pending",
-      })
-      .select()
-      .single();
+      .select("*")
+      .eq("buyer_id", buyerId)
+      .eq("listing_id", listing.id)
+      .eq("status", "payment_pending")
+      .eq("total_amount", finalPrice)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .maybeSingle();
 
-    if (orderError || !order) {
-      return NextResponse.json(
-        { error: `Failed to create order: ${orderError?.message || "Unknown error"}` },
-        { status: 500 }
-      );
-    }
+    if (reusableOrder) {
+      order = reusableOrder;
+    } else {
+      const timestamp = Date.now().toString(36).toUpperCase();
+      const random = Math.floor(Math.random() * 1000).toString().padStart(3, "0");
+      const orderNumber = `EFM-${timestamp}-${random}`;
 
-    // 5. Create Escrow Account record
-    try {
-      await adminSupabase.from("escrow_accounts").insert({
-        order_id: order.id,
-        buyer_id: buyerId,
-        seller_id: listing.seller_id,
-        gross_amount: finalPrice,
-        fee_amount: calculateEscrowCommission(finalPrice),
-        net_amount: Math.max(0, finalPrice - calculateEscrowCommission(finalPrice)),
-        currency: listing.currency || "KES",
-        escrow_state: "pending",
-      });
-    } catch (err) {
-      console.warn("Escrow insert note:", err);
+      const { data: createdOrder, error: orderError } = await adminSupabase
+        .from("orders")
+        .insert({
+          order_number: orderNumber,
+          listing_id: listing.id,
+          buyer_id: buyerId,
+          seller_id: listing.seller_id,
+          total_amount: finalPrice,
+          platform_fee: calculateEscrowCommission(finalPrice),
+          seller_net_amount: Math.max(0, finalPrice - calculateEscrowCommission(finalPrice)),
+          currency: listing.currency || "KES",
+          status: "payment_pending",
+        })
+        .select()
+        .single();
+
+      if (orderError || !createdOrder) {
+        return NextResponse.json(
+          { error: `Failed to create order: ${orderError?.message || "Unknown error"}` },
+          { status: 500 }
+        );
+      }
+      order = createdOrder;
+
+      // 5. Create Escrow Account record
+      try {
+        await adminSupabase.from("escrow_accounts").insert({
+          order_id: order.id,
+          seller_id: listing.seller_id,
+          gross_amount: finalPrice,
+          fee_amount: calculateEscrowCommission(finalPrice),
+          net_amount: Math.max(0, finalPrice - calculateEscrowCommission(finalPrice)),
+          escrow_state: "pending",
+        });
+      } catch (err) {
+        console.warn("Escrow insert note:", err);
+      }
     }
 
     // 6. Trigger M-Pesa STK Push

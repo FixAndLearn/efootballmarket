@@ -131,11 +131,13 @@ export class EscrowService {
       })
       .eq("order_id", orderId);
 
-    // Update order status
+    // Update order status and 24-hour inspection deadline
     await this.supabase
       .from("orders")
       .update({
         status: "seller_delivered",
+        inspection_deadline_at: inspectionDeadline,
+        updated_at: new Date().toISOString(),
       })
       .eq("id", orderId);
 
@@ -219,7 +221,11 @@ export class EscrowService {
     }
 
     // Access Control Defect Fix 2: Disallow revealing credentials prior to seller delivery
-    if (order.status === "pending_payment" || order.status === "escrow_locked") {
+    if (
+      order.status === "payment_pending" ||
+      (order.status as string) === "pending_payment" ||
+      order.status === "escrow_locked"
+    ) {
       throw new Error("Credentials have not been delivered for inspection yet.");
     }
 
@@ -322,33 +328,9 @@ export class EscrowService {
       console.warn("RPC call threw error:", e?.message);
     }
 
-    // Deduct escrow_balance from seller profile so it is not double counted
-    if (rpcSucceeded) {
-      const { data: escrow } = await this.supabase
-        .from("escrow_accounts")
-        .select("net_amount, seller_id")
-        .eq("order_id", orderId)
-        .single();
-
-      if (escrow) {
-        const { data: sellerProf } = await this.supabase
-          .from("profiles")
-          .select("escrow_balance")
-          .eq("id", escrow.seller_id)
-          .single();
-
-        if (sellerProf && Number(sellerProf.escrow_balance) > 0) {
-          const netAmount = Number(escrow.net_amount || 0);
-          await this.supabase
-            .from("profiles")
-            .update({
-              escrow_balance: Math.max(0, Number(sellerProf.escrow_balance) - netAmount),
-              updated_at: new Date().toISOString(),
-            })
-            .eq("id", escrow.seller_id);
-        }
-      }
-    } else {
+    // release_escrow_funds RPC already atomically updates available_balance, escrow_balance,
+    // completed_sales_count, escrow_accounts, orders, listings, and inserts seller notification.
+    if (!rpcSucceeded) {
       // Direct update fallback
       const { data: escrow } = await this.supabase
         .from("escrow_accounts")
@@ -423,6 +405,15 @@ export class EscrowService {
             })
             .eq("id", order.listing_id);
         }
+
+        await this.supabase.from("notifications").insert({
+          recipient_id: order.seller_id,
+          type: "funds_released",
+          title: "Order Completed & Funds Released!",
+          message: `Buyer confirmed receipt for order #${order.order_number}. Payout has been transferred to your available balance.`,
+          action_url: "/seller/earnings",
+          is_read: false,
+        });
       }
     }
 
@@ -432,18 +423,8 @@ export class EscrowService {
       .update({ buyer_confirmed_at: new Date().toISOString() })
       .eq("order_id", orderId);
 
-    // Notify seller
+    // Dispatch external SMS & WhatsApp notification to seller
     try {
-      await this.supabase.from("notifications").insert({
-        recipient_id: order.seller_id,
-        type: "funds_released",
-        title: "Order Completed & Funds Released!",
-        message: `Buyer confirmed receipt for order #${order.order_number}. Payout has been transferred to your available balance.`,
-        action_url: "/seller/earnings",
-        is_read: false,
-      });
-
-      // Dispatch WhatsApp notification to seller
       const { data: sellerProf } = await this.supabase
         .from("profiles")
         .select("phone_number")
@@ -464,7 +445,7 @@ export class EscrowService {
         ).catch((e) => console.warn("Seller funds released SMS notice:", e));
       }
     } catch (e) {
-      console.warn("Failed to create seller notification:", e);
+      console.warn("Failed to send seller payout alert:", e);
     }
 
     // Dispatch automated WhatsApp alert to admin support desk
@@ -519,7 +500,7 @@ export class EscrowService {
 
     await this.supabase
       .from("escrow_accounts")
-      .update({ escrow_state: "disputed", disputed_at: new Date().toISOString() })
+      .update({ escrow_state: "disputed", updated_at: new Date().toISOString() })
       .eq("order_id", orderId);
 
     await this.supabase

@@ -72,7 +72,7 @@ export class PaymentService {
   ): Promise<void> {
     const { data: payment } = await this.supabase
       .from("payments")
-      .select("*, order:orders(*)")
+      .select("*, order:orders(*, listing:listings(title))")
       .eq("id", paymentId)
       .maybeSingle();
 
@@ -100,7 +100,8 @@ export class PaymentService {
       return;
     }
 
-    // 1. First attempt to call the RPC handle_mpesa_payment_success
+    // 1. First attempt to call the atomic RPC handle_mpesa_payment_success
+    let handledViaRpc = false;
     try {
       const { error: rpcError } = await this.supabase.rpc("handle_mpesa_payment_success", {
         p_checkout_request_id: payment.checkout_request_id || payment.merchant_request_id || paymentId,
@@ -110,100 +111,100 @@ export class PaymentService {
       });
 
       if (!rpcError) {
-        console.log(`Payment ${paymentId} successfully confirmed via RPC`);
-        return;
+        handledViaRpc = true;
+      } else {
+        console.warn("RPC returned error, applying direct database update:", rpcError);
       }
-      console.warn("RPC returned error, applying direct database update:", rpcError);
     } catch (e) {
       console.warn("RPC invocation error, applying direct database update:", e);
     }
 
-    // 2. Direct transactional updates using administrative client
-    const now = new Date().toISOString();
+    // 2. Fallback direct transactional updates ONLY if RPC did not run
+    if (!handledViaRpc) {
+      const now = new Date().toISOString();
 
-    // Update payment record
-    await this.supabase
-      .from("payments")
-      .update({
-        status: "completed",
-        mpesa_receipt_number: receiptNumber,
-        raw_callback: rawCallback,
-        completed_at: now,
-      })
-      .eq("id", paymentId);
+      await this.supabase
+        .from("payments")
+        .update({
+          status: "completed",
+          mpesa_receipt_number: receiptNumber,
+          raw_callback: rawCallback,
+          completed_at: now,
+        })
+        .eq("id", paymentId);
 
+      if (payment.order_id) {
+        await this.supabase
+          .from("orders")
+          .update({
+            status: "escrow_locked",
+            updated_at: now,
+          })
+          .eq("id", payment.order_id);
+
+        await this.supabase
+          .from("escrow_accounts")
+          .update({
+            escrow_state: "waiting_for_seller",
+            updated_at: now,
+          })
+          .eq("order_id", payment.order_id);
+
+        if (payment.order?.listing_id) {
+          await this.supabase
+            .from("listings")
+            .update({
+              status: "in_escrow",
+              updated_at: now,
+            })
+            .eq("id", payment.order.listing_id);
+        }
+
+        if (payment.order?.seller_id) {
+          const netAmount =
+            Number(payment.order.seller_net_amount) ||
+            Number(payment.order.total_amount || amount);
+
+          const { data: sellerProfile } = await this.supabase
+            .from("profiles")
+            .select("escrow_balance")
+            .eq("id", payment.order.seller_id)
+            .single();
+
+          const currentEscrow = Number(sellerProfile?.escrow_balance || 0);
+          await this.supabase
+            .from("profiles")
+            .update({
+              escrow_balance: currentEscrow + netAmount,
+              updated_at: now,
+            })
+            .eq("id", payment.order.seller_id);
+
+          await this.supabase.from("notifications").insert({
+            recipient_id: payment.order.seller_id,
+            type: "payment_received",
+            title: "Payment Secured in Escrow!",
+            message: `Buyer paid KES ${amount}. Net KES ${netAmount} is locked in your escrow balance. Deliver credentials within 12 hours to complete.`,
+            action_url: `/orders/${payment.order_id}`,
+            is_read: false,
+          });
+        }
+
+        if (payment.order?.buyer_id) {
+          await this.supabase.from("notifications").insert({
+            recipient_id: payment.order.buyer_id,
+            type: "mpesa_payment",
+            title: "M-Pesa Payment Confirmed on Till 1572931!",
+            message: `KES ${amount} is held safely on your order. Seller has up to 12 hours to submit Konami ID credentials.`,
+            action_url: `/orders/${payment.order_id}`,
+            is_read: false,
+          });
+        }
+      }
+    }
+
+    // 3. Always dispatch external SMS, WhatsApp, and Admin support desk alerts
     if (payment.order_id) {
-      // Update order status to escrow_locked
-      await this.supabase
-        .from("orders")
-        .update({
-          status: "escrow_locked",
-          updated_at: now,
-        })
-        .eq("id", payment.order_id);
-
-      // Update escrow account state
-      await this.supabase
-        .from("escrow_accounts")
-        .update({
-          escrow_state: "waiting_for_seller",
-          updated_at: now,
-        })
-        .eq("order_id", payment.order_id);
-
-      // Update listing status to in_escrow
-      if (payment.order?.listing_id) {
-        await this.supabase
-          .from("listings")
-          .update({
-            status: "in_escrow",
-            updated_at: now,
-          })
-          .eq("id", payment.order.listing_id);
-      }
-
-      // Update seller's escrow balance and create notification
-      if (payment.order?.seller_id) {
-        const netAmount =
-          Number(payment.order.seller_net_amount) ||
-          Number(payment.order.total_amount || amount);
-
-        const { data: sellerProfile } = await this.supabase
-          .from("profiles")
-          .select("escrow_balance")
-          .eq("id", payment.order.seller_id)
-          .single();
-
-        const currentEscrow = Number(sellerProfile?.escrow_balance || 0);
-        await this.supabase
-          .from("profiles")
-          .update({
-            escrow_balance: currentEscrow + netAmount,
-            updated_at: now,
-          })
-          .eq("id", payment.order.seller_id);
-
-        await this.supabase.from("notifications").insert({
-          recipient_id: payment.order.seller_id,
-          type: "payment_received",
-          title: "Payment Secured in Escrow!",
-          message: `Buyer paid KES ${amount}. Net KES ${netAmount} is locked in your escrow balance. Deliver credentials within 12 hours to complete.`,
-          action_url: `/orders/${payment.order_id}`,
-          is_read: false,
-        });
-      }
-
-      // Also create instant in-app/pop-up confirmation for Buyer
-      if (payment.order?.buyer_id) {
-        await this.supabase.from("notifications").insert({
-          recipient_id: payment.order.buyer_id,
-          type: "mpesa_payment",
-          title: "M-Pesa Payment Confirmed on Till 1572931!",
-          message: `KES ${amount} is held safely on your order. Seller has up to 12 hours to submit Konami ID credentials.`,
-          action_url: `/orders/${payment.order_id}`,
-          is_read: false,
-        });
-      }
 
       // Dispatch instant alert to admin support desk
       dispatchAdminOrderAlert({
@@ -280,7 +281,14 @@ export class PaymentService {
         .eq("id", orderId)
         .maybeSingle();
 
-      if (orderData && orderData.status !== "payment_pending") {
+      const fundedOrderStates = [
+        "escrow_locked",
+        "seller_delivered",
+        "buyer_reviewing",
+        "completed",
+        "disputed",
+      ];
+      if (orderData && fundedOrderStates.includes(orderData.status)) {
         return {
           id: orderId,
           order_id: orderId,

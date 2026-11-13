@@ -4,6 +4,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { checkRateLimit } from "@/lib/security/rateLimiter";
 import { getClientIp, maskPhoneNumber } from "@/lib/security/guards";
 import { normalizePhoneNumber } from "@/lib/utils/phone";
+import { dispatchAdminWhatsAppAlert } from "@/lib/notifications/adminAlert";
 
 export const dynamic = "force-dynamic";
 
@@ -94,5 +95,96 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({ scammers: sanitizedResults }, { status: 200 });
   } catch {
     return NextResponse.json({ scammers: [] }, { status: 200 });
+  }
+}
+
+/**
+ * POST /api/scammers
+ * Submits a structured fraud incident report into the private moderation queue (`verified_status = 'pending'`).
+ * Never displays publicly until an administrator independently verifies M-Pesa/chat evidence.
+ */
+export async function POST(req: NextRequest) {
+  try {
+    const ip = getClientIp(req);
+    const rate = checkRateLimit(`scammer_report:${ip}`, 5, 600000);
+    if (!rate.success) {
+      return NextResponse.json(
+        { error: "Too many incident reports submitted recently. Please wait 10 minutes." },
+        { status: 429 }
+      );
+    }
+
+    const body = await req.json();
+    const cleanPhone = String(body.phoneNumber || "").replace(/\D/g, "").slice(0, 20);
+    const cleanAlias = String(body.usernameAlias || "").trim().slice(0, 100);
+    const cleanPlatform = String(body.platformSource || "WhatsApp / Off-Platform").trim().slice(0, 80);
+    const cleanSummary = String(body.incidentSummary || "").trim().slice(0, 1200);
+    const cleanReporter = String(body.reporterContact || "").trim().slice(0, 100);
+    const cleanAmount =
+      body.amountScammedKes !== undefined &&
+      body.amountScammedKes !== "" &&
+      Number(body.amountScammedKes) >= 0
+        ? Math.round(Number(body.amountScammedKes))
+        : null;
+
+    if (!cleanPhone && cleanAlias.length < 2) {
+      return NextResponse.json(
+        { error: "Please provide the suspected scammer's phone number or @username." },
+        { status: 400 }
+      );
+    }
+
+    if (cleanSummary.length < 15) {
+      return NextResponse.json(
+        { error: "Please provide a brief factual summary (at least 15 characters)." },
+        { status: 400 }
+      );
+    }
+
+    const normalizedPhone =
+      cleanPhone.length >= 9 ? normalizePhoneNumber(cleanPhone).international : cleanPhone || null;
+
+    const adminSupabase = createAdminClient();
+    const { data: report, error } = await adminSupabase
+      .from("scammer_reports")
+      .insert({
+        phone_number: normalizedPhone,
+        username_alias: cleanAlias || null,
+        platform_source: cleanPlatform,
+        incident_summary: cleanSummary,
+        amount_scammed_kes: cleanAmount,
+        reporter_contact: cleanReporter || null,
+        verified_status: "pending",
+      })
+      .select("id")
+      .single();
+
+    if (error || !report) {
+      console.error("Failed to insert scammer_reports:", error?.message);
+      return NextResponse.json(
+        { error: "Could not submit incident report right now. Please try again." },
+        { status: 500 }
+      );
+    }
+
+    dispatchAdminWhatsAppAlert({
+      eventType: "DISPUTE_OPENED",
+      listingTitle: `Scam Report: ${cleanAlias || normalizedPhone} (${cleanPlatform})`,
+      amount: cleanAmount || 0,
+      buyerPhone: cleanReporter || undefined,
+      details: cleanSummary.slice(0, 240),
+    }).catch(() => {});
+
+    return NextResponse.json({
+      success: true,
+      reportId: report.id,
+      message:
+        "Incident logged in our moderation queue. Send M-Pesa/chat screenshots on WhatsApp so we can verify faster.",
+    });
+  } catch (err: any) {
+    return NextResponse.json(
+      { error: err.message || "Failed to submit incident report." },
+      { status: 500 }
+    );
   }
 }

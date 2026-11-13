@@ -1,176 +1,187 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
-import { verifyAdminOrSecret } from "@/lib/security/guards";
+import { createAdminClient } from "@/lib/supabase/admin";
+import { EscrowService } from "@/services/escrowService";
 
 export const dynamic = "force-dynamic";
 
-async function runHousekeeping(req: NextRequest) {
-  const auth = await verifyAdminOrSecret(req);
-  if (!auth.authorized) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
-  }
-
-  const client = hasServiceRoleKey()
-    ? createAdminClient()
-    : createServerSupabaseClient();
-
-  const now = Date.now();
-  const fourteenDaysAgo = new Date(now - 14 * 24 * 60 * 60 * 1000).toISOString();
-  const twentyFourHoursAgo = new Date(now - 24 * 60 * 60 * 1000).toISOString();
-  const nowIso = new Date(now).toISOString();
-
-  let scrubbedDeliveries = 0;
-  let expiredOffers = 0;
-  let cancelledAbandonedOrders = 0;
-
-  // 1. Scrub Konami credentials on completed orders older than 14 days (KDPA 2019 retention rule)
-  const { data: oldCompletedOrders } = await client
-    .from("orders")
-    .select("id")
-    .eq("status", "completed")
-    .lt("updated_at", fourteenDaysAgo)
-    .limit(200);
-
-  const completedIds = (oldCompletedOrders || []).map((o: any) => o.id);
-  if (completedIds.length > 0) {
-    const { data: activeVaults } = await client
-      .from("account_deliveries")
-      .select("id, order_id, encrypted_konami_email, encrypted_konami_password")
-      .in("order_id", completedIds);
-
-    const vaultsToScrub = (activeVaults || []).filter(
-      (v: any) =>
-        Boolean(v.encrypted_konami_email && v.encrypted_konami_email.length > 0) ||
-        Boolean(v.encrypted_konami_password && v.encrypted_konami_password.length > 0)
-    );
-
-    for (const vault of vaultsToScrub) {
-      const { error } = await client
-        .from("account_deliveries")
-        .update({
-          encrypted_konami_email: "",
-          encrypted_konami_password: "",
-          encrypted_backup_codes: null,
-          transfer_instructions: "[SCRUBBED_AFTER_14D_RETENTION]",
-          updated_at: nowIso,
-        })
-        .eq("id", vault.id);
-
-      if (!error) {
-        scrubbedDeliveries += 1;
-      }
-    }
-  }
-
-  // 2. Expire accepted buyer offers past their 24h checkout window
-  const { data: staleOffers } = await client
-    .from("listing_offers")
-    .select("id")
-    .eq("status", "accepted")
-    .lt("expires_at", nowIso)
-    .limit(200);
-
-  if (staleOffers && staleOffers.length > 0) {
-    const staleIds = staleOffers.map((o: any) => o.id);
-    const { error } = await client
-      .from("listing_offers")
-      .update({ status: "expired", updated_at: nowIso })
-      .in("id", staleIds);
-
-    if (!error) {
-      expiredOffers = staleIds.length;
-    }
-  }
-
-  // 3. Cancel abandoned payment_pending orders (>24h old) that do NOT have a manual receipt claim
-  const { data: stalePendingOrders } = await client
-    .from("orders")
-    .select("id, listing_id")
-    .eq("status", "payment_pending")
-    .lt("created_at", twentyFourHoursAgo)
-    .limit(150);
-
-  if (stalePendingOrders && stalePendingOrders.length > 0) {
-    const candidateOrderIds = stalePendingOrders.map((o: any) => o.id);
-    const { data: activeReceiptClaims } = await client
-      .from("payments")
-      .select("order_id, raw_callback_payload")
-      .in("order_id", candidateOrderIds);
-
-    const protectedOrderIds = new Set(
-      (activeReceiptClaims || [])
-        .filter((p: any) => Boolean((p.raw_callback_payload as any)?.buyer_submitted_receipt))
-        .map((p: any) => p.order_id)
-    );
-
-    for (const staleOrder of stalePendingOrders) {
-      if (protectedOrderIds.has(staleOrder.id)) continue;
-
-      const { error } = await client
-        .from("orders")
-        .update({ status: "cancelled", updated_at: nowIso })
-        .eq("id", staleOrder.id)
-        .eq("status", "payment_pending");
-
-      if (!error) {
-        cancelledAbandonedOrders += 1;
-        if (staleOrder.listing_id) {
-          await client
-            .from("listings")
-            .update({ status: "published", updated_at: nowIso })
-            .eq("id", staleOrder.listing_id)
-            .eq("status", "in_escrow");
-        }
-      }
-    }
-  }
-
-  // Record audit trail
-  try {
-    await client.from("audit_logs").insert({
-      actor_id: auth.userId || null,
-      action: "CRON_HOUSEKEEPING_RUN",
-      resource_type: "system",
-      resource_id: "housekeeping",
-      changes: {
-        scrubbedDeliveries,
-        expiredOffers,
-        cancelledAbandonedOrders,
-        triggeredBy: auth.email || "cron",
-      },
-    });
-  } catch {
-    // non-blocking
-  }
-
-  return NextResponse.json({
-    success: true,
-    timestamp: nowIso,
-    scrubbedDeliveries,
-    expiredOffers,
-    cancelledAbandonedOrders,
-  });
-}
-
+/**
+ * Automated Daily Housekeeping Cron Route (`/api/cron/housekeeping`)
+ * Triggered daily at 02:00 UTC via Vercel Cron (`vercel.json`).
+ * Protected strictly by `Authorization: Bearer <CRON_SECRET>`.
+ *
+ * Responsibilities:
+ * 1. Auto-release escrow funds for `seller_delivered` orders where the 24-hour buyer inspection window has elapsed without dispute.
+ * 2. Expire stale pending `listing_offers` older than 48 hours.
+ * 3. Cancel abandoned `payment_pending` orders (>24 hours without completed payment or buyer receipt) and unlock un-funded `in_escrow` squads.
+ */
 export async function GET(req: NextRequest) {
   try {
-    return await runHousekeeping(req);
-  } catch (err: any) {
-    return NextResponse.json(
-      { error: err.message || "Housekeeping failed" },
-      { status: 500 }
-    );
-  }
-}
+    const authHeader = req.headers.get("authorization");
+    const cronSecret = process.env.CRON_SECRET?.trim();
 
-export async function POST(req: NextRequest) {
-  try {
-    return await runHousekeeping(req);
+    if (!cronSecret || authHeader !== `Bearer ${cronSecret}`) {
+      return NextResponse.json({ error: "Unauthorized cron invocation" }, { status: 401 });
+    }
+
+    const supabase = createAdminClient();
+    const escrowService = new EscrowService(supabase);
+    const now = new Date();
+    const results = {
+      auto_released_orders: 0,
+      expired_offers: 0,
+      stale_orders_cancelled: 0,
+      unlocked_listings: 0,
+      errors: [] as string[],
+    };
+
+    // 1. Auto-release orders in `seller_delivered` where 24h inspection window elapsed without open dispute
+    try {
+      const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
+
+      const { data: deliveredOrders } = await supabase
+        .from("orders")
+        .select(
+          "id, buyer_id, seller_id, order_number, inspection_deadline_at, deliveries:account_deliveries(delivered_at)"
+        )
+        .eq("status", "seller_delivered");
+
+      if (deliveredOrders && deliveredOrders.length > 0) {
+        for (const order of deliveredOrders) {
+          const deliveryRows = Array.isArray((order as any).deliveries)
+            ? (order as any).deliveries
+            : (order as any).deliveries
+            ? [(order as any).deliveries]
+            : [];
+          const deliveredAt = deliveryRows[0]?.delivered_at || null;
+
+          const deadlinePassed = order.inspection_deadline_at
+            ? order.inspection_deadline_at < now.toISOString()
+            : Boolean(deliveredAt && deliveredAt < twentyFourHoursAgo);
+
+          if (!deadlinePassed) continue;
+
+          // Ensure no open/investigating dispute exists
+          const { data: openDispute } = await supabase
+            .from("disputes")
+            .select("id")
+            .eq("order_id", order.id)
+            .in("status", ["open", "under_review", "investigating"])
+            .maybeSingle();
+
+          if (!openDispute) {
+            try {
+              await escrowService.confirmAndRelease(order.id, order.buyer_id);
+              results.auto_released_orders += 1;
+            } catch (relErr: any) {
+              results.errors.push(`Order ${order.id} auto-release error: ${relErr?.message}`);
+            }
+          }
+        }
+      }
+    } catch (step1Err: any) {
+      results.errors.push(`Step 1 error: ${step1Err?.message}`);
+    }
+
+    // 2. Expire stale pending offers (>48 hours or past expires_at)
+    try {
+      const fortyEightHoursAgo = new Date(now.getTime() - 48 * 60 * 60 * 1000).toISOString();
+
+      const { data: expiredByAge } = await supabase
+        .from("listing_offers")
+        .update({ status: "expired", updated_at: now.toISOString() })
+        .eq("status", "pending")
+        .lt("created_at", fortyEightHoursAgo)
+        .select("id");
+
+      results.expired_offers += expiredByAge?.length || 0;
+    } catch (step2Err: any) {
+      results.errors.push(`Step 2 error: ${step2Err?.message}`);
+    }
+
+    // 3. Cancel abandoned `payment_pending` orders (>24h with no completed payment or manual receipt)
+    try {
+      const staleOrderCutoff = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
+      const { data: stalePendingOrders } = await supabase
+        .from("orders")
+        .select("id, listing_id")
+        .eq("status", "payment_pending")
+        .lt("created_at", staleOrderCutoff);
+
+      if (stalePendingOrders && stalePendingOrders.length > 0) {
+        for (const staleOrd of stalePendingOrders) {
+          const { data: payments } = await supabase
+            .from("payments")
+            .select("id, status, raw_callback")
+            .eq("order_id", staleOrd.id);
+
+          const hasProtectedPayment = (payments || []).some((p: any) => {
+            if (p.status === "completed") return true;
+            const cb = p.raw_callback;
+            return cb && typeof cb === "object" && Boolean(cb.buyer_submitted_receipt);
+          });
+
+          if (!hasProtectedPayment) {
+            await supabase
+              .from("orders")
+              .update({ status: "cancelled", updated_at: now.toISOString() })
+              .eq("id", staleOrd.id);
+
+            await supabase
+              .from("escrow_accounts")
+              .update({ escrow_state: "cancelled", updated_at: now.toISOString() })
+              .eq("order_id", staleOrd.id)
+              .eq("escrow_state", "pending");
+
+            results.stale_orders_cancelled += 1;
+          }
+        }
+      }
+
+      // 4. Safety net: unlock any `in_escrow` listing that has zero active funded orders
+      const { data: lockedListings } = await supabase
+        .from("listings")
+        .select("id")
+        .eq("status", "in_escrow")
+        .is("deleted_at", null);
+
+      if (lockedListings && lockedListings.length > 0) {
+        for (const item of lockedListings) {
+          const { data: fundedOrder } = await supabase
+            .from("orders")
+            .select("id")
+            .eq("listing_id", item.id)
+            .in("status", [
+              "escrow_locked",
+              "seller_delivered",
+              "buyer_reviewing",
+              "disputed",
+              "completed",
+            ])
+            .limit(1)
+            .maybeSingle();
+
+          if (!fundedOrder) {
+            await supabase
+              .from("listings")
+              .update({ status: "published", updated_at: now.toISOString() })
+              .eq("id", item.id)
+              .eq("status", "in_escrow");
+
+            results.unlocked_listings += 1;
+          }
+        }
+      }
+    } catch (step3Err: any) {
+      results.errors.push(`Step 3 error: ${step3Err?.message}`);
+    }
+
+    return NextResponse.json({
+      success: true,
+      ran_at: now.toISOString(),
+      ...results,
+    });
   } catch (err: any) {
-    return NextResponse.json(
-      { error: err.message || "Housekeeping failed" },
-      { status: 500 }
-    );
+    console.error("Housekeeping cron error:", err);
+    return NextResponse.json({ error: "Housekeeping job failed" }, { status: 500 });
   }
 }

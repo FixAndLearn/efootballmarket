@@ -22,6 +22,49 @@ export function ScammerLookupTool() {
   const [searched, setSearched] = useState(false);
   const [loading, setLoading] = useState(false);
   const [matches, setMatches] = useState<ScammerReport[]>([]);
+  const [showReportForm, setShowReportForm] = useState(false);
+  const [reportPhone, setReportPhone] = useState("");
+  const [reportAlias, setReportAlias] = useState("");
+  const [reportPlatform, setReportPlatform] = useState("WhatsApp Group / DM");
+  const [reportAmount, setReportAmount] = useState("");
+  const [reportSummary, setReportSummary] = useState("");
+  const [reporterContact, setReporterContact] = useState("");
+  const [submittingReport, setSubmittingReport] = useState(false);
+  const [reportNotice, setReportNotice] = useState<{ ok: boolean; text: string } | null>(null);
+
+  const handleReportSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setReportNotice(null);
+    setSubmittingReport(true);
+    try {
+      const res = await fetch("/api/scammers", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phoneNumber: reportPhone,
+          usernameAlias: reportAlias,
+          platformSource: reportPlatform,
+          amountScammedKes: reportAmount,
+          incidentSummary: reportSummary,
+          reporterContact,
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Could not submit report.");
+      setReportNotice({
+        ok: true,
+        text: data.message || "Submitted for moderator verification.",
+      });
+      setReportPhone("");
+      setReportAlias("");
+      setReportAmount("");
+      setReportSummary("");
+    } catch (err: any) {
+      setReportNotice({ ok: false, text: err.message || "Submission failed." });
+    } finally {
+      setSubmittingReport(false);
+    }
+  };
 
   const handleSearch = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -171,6 +214,105 @@ export function ScammerLookupTool() {
           </div>
         </div>
       )}
+
+      {/* Always-accessible Online Report Bar & Expandable Form */}
+      <div className="pt-2 border-t border-sx-border space-y-4">
+        <div className="flex flex-wrap items-center justify-between gap-2 text-xs">
+          <button
+            type="button"
+            onClick={() => {
+              if (query && !reportPhone) setReportPhone(query);
+              setShowReportForm((v) => !v);
+            }}
+            className="inline-flex items-center gap-1.5 font-bold text-sx-red-text hover:underline"
+          >
+            <Flag className="w-3.5 h-3.5" />
+            <span>{showReportForm ? "Hide Incident Report Form" : "Submit a Scam Report Online"}</span>
+          </button>
+          <a
+            href="mailto:support@efootballmarket.co.ke?subject=Scammer%20Check%20Appeal%20or%20Correction"
+            className="inline-flex items-center gap-1.5 font-semibold text-sx-muted hover:text-sx-ink"
+          >
+            <Mail className="w-3.5 h-3.5" />
+            <span>Appeal or Correct a Listed Entry</span>
+          </a>
+        </div>
+
+        {showReportForm && (
+          <form
+            onSubmit={handleReportSubmit}
+            className="p-4 sm:p-5 rounded-xl bg-sx-canvas border border-sx-border space-y-3"
+          >
+            <p className="text-xs text-sx-muted">
+              Reports stay private in our moderation queue until an administrator verifies M-Pesa/chat evidence.
+            </p>
+            {reportNotice && (
+              <div
+                className={`p-3 rounded-lg text-xs font-semibold ${
+                  reportNotice.ok
+                    ? "bg-sx-green-tint border border-sx-green-border text-sx-green-text"
+                    : "bg-sx-red-tint border border-sx-red-border text-sx-red-text"
+                }`}
+              >
+                {reportNotice.text}
+              </div>
+            )}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+              <Input
+                placeholder="Scammer phone (0712...)"
+                value={reportPhone}
+                onChange={(e) => setReportPhone(e.target.value)}
+              />
+              <Input
+                placeholder="Username / Handle (@...)"
+                value={reportAlias}
+                onChange={(e) => setReportAlias(e.target.value)}
+              />
+              <Input
+                placeholder="Platform (WhatsApp, TikTok, TG)"
+                value={reportPlatform}
+                onChange={(e) => setReportPlatform(e.target.value)}
+              />
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <Input
+                type="number"
+                placeholder="Amount lost in KES (optional)"
+                value={reportAmount}
+                onChange={(e) => setReportAmount(e.target.value)}
+              />
+              <Input
+                placeholder="Your WhatsApp / Email (for moderator follow-up)"
+                value={reporterContact}
+                onChange={(e) => setReporterContact(e.target.value)}
+              />
+            </div>
+            <textarea
+              required
+              rows={3}
+              value={reportSummary}
+              onChange={(e) => setReportSummary(e.target.value)}
+              placeholder="Factual summary: what squad was promised, M-Pesa code/time, and what happened..."
+              className="w-full px-3.5 py-2.5 rounded-xl bg-sx-stone border border-sx-border text-xs sm:text-sm text-sx-ink focus:outline-none focus:border-sx-ink"
+            />
+            <div className="flex flex-wrap items-center justify-between gap-2">
+              <a
+                href={`https://wa.me/254794400365?text=${encodeURIComponent(
+                  "Hello eFootballMarket Moderation, I submitted an online scam report and want to attach screenshot proof:"
+                )}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-xs font-semibold text-sx-green-text underline"
+              >
+                Attach Screenshots via WhatsApp &rarr;
+              </a>
+              <Button type="submit" variant="primary" size="sm" isLoading={submittingReport}>
+                Submit for Moderator Review
+              </Button>
+            </div>
+          </form>
+        )}
+      </div>
     </div>
   );
 }

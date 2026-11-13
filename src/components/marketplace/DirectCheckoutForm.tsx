@@ -66,7 +66,10 @@ export function DirectCheckoutForm({
       .then((res) => res.json())
       .then((data) => {
         if (!isMounted) return;
-        if (data.offer && data.offer.status === "accepted") {
+        if (
+          data.offer &&
+          (data.offer.status === "accepted" || data.offer.status === "countered")
+        ) {
           setActiveOffer(data.offer);
           if (data.offer.buyer_name && !buyerName) setBuyerName(data.offer.buyer_name);
           if (data.offer.buyer_phone && !phoneNumber) setPhoneNumber(data.offer.buyer_phone);
@@ -98,7 +101,9 @@ export function DirectCheckoutForm({
     const pollInterval = setInterval(async () => {
       try {
         const res = await fetch(
-          `/api/payments/status?checkoutRequestId=${encodeURIComponent(checkoutRequestId)}`
+          `/api/payments/status?checkoutRequestId=${encodeURIComponent(checkoutRequestId)}${
+            createdOrderId ? `&orderId=${encodeURIComponent(createdOrderId)}` : ""
+          }`
         );
         const data = await res.json();
 
@@ -132,8 +137,18 @@ export function DirectCheckoutForm({
   const isOwner = Boolean(currentUserId && currentUserId === listing.seller_id);
   const isAvailable = listing.status === "published";
 
-  const payablePrice = (!isFlashDrop && activeOffer?.offered_price) || Number(listing.price);
-  const isDiscounted = Boolean(!isFlashDrop && activeOffer && activeOffer.status === "accepted");
+  const resolvedOfferPrice = activeOffer
+    ? activeOffer.status === "countered"
+      ? Number(activeOffer.counter_price || activeOffer.offered_price)
+      : Number(activeOffer.counter_price || activeOffer.offered_price)
+    : 0;
+  const payablePrice =
+    (!isFlashDrop && resolvedOfferPrice > 0 ? resolvedOfferPrice : 0) || Number(listing.price);
+  const isDiscounted = Boolean(
+    !isFlashDrop &&
+      activeOffer &&
+      (activeOffer.status === "accepted" || activeOffer.status === "countered")
+  );
   const sellerFee = calculateEscrowCommission(payablePrice);
 
   const primaryImage =
@@ -239,9 +254,18 @@ export function DirectCheckoutForm({
     );
   }
 
+  const returnPath = `/pay/${listing.id}${offerId ? `?offerId=${encodeURIComponent(offerId)}` : ""}`;
+  const loginHref = `/login?redirect=${encodeURIComponent(returnPath)}`;
+  const registerHref = `/register?redirect=${encodeURIComponent(returnPath)}`;
+
   const handleTriggerPayment = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
+
+    if (!currentUserId) {
+      router.push(loginHref);
+      return;
+    }
 
     const norm = normalizePhoneNumber(phoneNumber);
     if (!norm.isValid) {
@@ -263,6 +287,10 @@ export function DirectCheckoutForm({
       });
 
       const data = await res.json();
+      if (res.status === 401 || data.requiresAuth) {
+        router.push(loginHref);
+        return;
+      }
       if (!res.ok) {
         throw new Error(data.error || "Could not initiate M-Pesa STK Push.");
       }
@@ -319,6 +347,34 @@ export function DirectCheckoutForm({
           Your payment stays locked in escrow until you inspect the squad in-game and rebind the Konami ID to your own email.
         </p>
       </div>
+
+      {!currentUserId && (
+        <div className="p-4 rounded-xl bg-sx-green-tint border border-sx-green-border space-y-3">
+          <div className="flex items-start gap-2.5 text-xs text-sx-ink">
+            <Lock className="w-4 h-4 text-sx-green-text shrink-0 mt-0.5" />
+            <div>
+              <strong className="block font-bold">
+                Step 1: Sign In to Unlock Your Private Escrow Order Room
+              </strong>
+              <span className="text-sx-ink-soft">
+                Your encrypted Konami ID login, password, and 24-hour inspection release button are delivered privately inside your account right after payment.
+              </span>
+            </div>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Link href={loginHref}>
+              <Button variant="primary" size="sm">
+                Sign In & Continue Here
+              </Button>
+            </Link>
+            <Link href={registerHref}>
+              <Button variant="outline" size="sm">
+                Create Free Account
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
 
       {isFlashDrop && (
         <div className="p-3.5 rounded-xl bg-sx-amber-tint border border-sx-amber-border text-xs text-sx-amber-text flex items-start gap-2.5">
