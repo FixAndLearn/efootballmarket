@@ -129,9 +129,11 @@ export function AppDownloadClient() {
             </div>
 
             <p className="text-sm sm:text-base text-sx-ink-soft leading-relaxed">
-              Get instant phone alerts the second a buyer pings your squad, sends a bargain offer,
-              or locks M-Pesa into Till <strong>1572931</strong>. Ultra-light{" "}
-              <strong>1.6 MB</strong> install—built for fast Safaricom &amp; Airtel mobile data.
+              Built completely different from the website: swipe verified squads in a{" "}
+              <strong>Full-Card Deck</strong>, price your roster with the{" "}
+              <strong>Instant KES Squad Valuator</strong>, track replies in{" "}
+              <strong>Live Deal Radar</strong>, and save bundles with{" "}
+              <strong>Safaricom Lite Mode</strong>.
             </p>
 
             {isInstalled ? (
@@ -141,9 +143,9 @@ export function AppDownloadClient() {
                   <span>eFootball Market App is Installed &amp; Active!</span>
                 </div>
                 <div className="flex flex-wrap items-center gap-2.5">
-                  <Link href="/browse">
+                  <Link href="/mobile">
                     <Button variant="primary" size="md">
-                      <span>Browse Verified Squads</span>
+                      <span>Open Native App Shell</span>
                       <ArrowRight className="w-4 h-4" />
                     </Button>
                   </Link>
@@ -162,7 +164,7 @@ export function AppDownloadClient() {
               </div>
             ) : (
               <div className="space-y-3 pt-1">
-                <div className="flex flex-col sm:flex-row gap-3">
+                <div className="flex flex-col sm:flex-row flex-wrap gap-3">
                   {/* Direct Signed Android APK Download */}
                   <a
                     href="/download/efootball-market.apk"
@@ -174,7 +176,7 @@ export function AppDownloadClient() {
                   </a>
 
                   {/* 1-Tap Native Browser PWA Install (when supported by Chrome/Edge/Samsung) */}
-                  {deferredPrompt && (
+                  {deferredPrompt ? (
                     <button
                       type="button"
                       onClick={handleInstantInstall}
@@ -184,6 +186,14 @@ export function AppDownloadClient() {
                       <Zap className="w-4 h-4 shrink-0" />
                       <span>{installingPwa ? "Installing..." : "1-Tap Instant Install"}</span>
                     </button>
+                  ) : (
+                    <Link
+                      href="/mobile"
+                      className="inline-flex items-center justify-center gap-2 px-5 py-4 rounded-xl bg-sx-contrast hover:opacity-90 text-sx-contrast-fg font-bold text-sm transition-all"
+                    >
+                      <Zap className="w-4 h-4 shrink-0" />
+                      <span>Preview App Experience &rarr;</span>
+                    </Link>
                   )}
                 </div>
 

@@ -10,6 +10,7 @@ export function CookieConsentBanner() {
   const [isVisible, setIsVisible] = useState(false);
 
   const isAuthPage =
+    pathname?.startsWith("/mobile") ||
     pathname === "/login" ||
     pathname === "/register" ||
     pathname?.startsWith("/forgot-password") ||

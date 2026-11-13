@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/Button";
@@ -115,6 +115,27 @@ export default function CreateListingPage() {
   const [allowsSwap, setAllowsSwap] = useState(false);
   const [swapPreferences, setSwapPreferences] = useState("");
   const [cleanIdConfirmed, setCleanIdConfirmed] = useState(true);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const params = new URLSearchParams(window.location.search);
+    const qpPrice = params.get("price");
+    const qpOvr = params.get("ovr");
+    const qpEpics = params.get("epics");
+    const qpCoins = params.get("coins");
+    const qpPlatform = params.get("platform");
+
+    if (qpPrice && /^\d+$/.test(qpPrice)) setPrice(qpPrice);
+    if (qpOvr && /^\d+$/.test(qpOvr)) setOverallStrength(qpOvr);
+    if (qpEpics && /^\d+$/.test(qpEpics)) setEpicCount(qpEpics);
+    if (qpCoins && /^\d+$/.test(qpCoins)) setCoinBalance(qpCoins);
+    if (
+      qpPlatform &&
+      PLATFORMS.some((p) => p.id === qpPlatform)
+    ) {
+      setPlatform(qpPlatform);
+    }
+  }, []);
 
   const [images, setImages] = useState<UploadedImage[]>([]);
   const [uploadingImages, setUploadingImages] = useState(false);

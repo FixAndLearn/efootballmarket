@@ -6,8 +6,8 @@ export default function manifest(): MetadataRoute.Manifest {
     name: "eFootball Market",
     short_name: "eFootball Market",
     description:
-      "Official eFootball Market app — verified squad marketplace, instant phone availability alerts, 1v1 tournaments, and Safaricom M-Pesa Till 1572931 escrow protection.",
-    start_url: "/?source=app",
+      "Official eFootball Market app — Squad Swipe Deck, instant KES Squad Valuator, Live Deal Radar, 1-tap scammer check, and Till 1572931 escrow.",
+    start_url: "/mobile?source=app",
     scope: "/",
     display: "standalone",
     orientation: "portrait",

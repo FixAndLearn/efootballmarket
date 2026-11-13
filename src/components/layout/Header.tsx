@@ -8,6 +8,7 @@ import { isSuperAdminEmail } from "@/lib/security/adminAuth";
 import { Button } from "@/components/ui/Button";
 import { Logo } from "@/components/brand/Logo";
 import { NotificationBell } from "@/components/layout/NotificationBell";
+import { AppDropdownWidget } from "@/components/app/AppDropdownWidget";
 import { isStandaloneDocPath } from "@/components/legal/StandaloneDocLayout";
 import {
   Menu,
@@ -36,7 +37,7 @@ export function Header() {
     setProfileDropdownOpen(false);
   }, [pathname]);
 
-  if (isStandaloneDocPath(pathname)) {
+  if (isStandaloneDocPath(pathname) || pathname?.startsWith("/mobile")) {
     return null;
   }
 
@@ -54,7 +55,6 @@ export function Header() {
     { name: "Middleman", href: "/middleman" },
     { name: "Tournaments", href: "/tournaments" },
     { name: "Scammer Check", href: "/scammer-check" },
-    { name: "Get App", href: "/app" },
   ];
 
   const handleHeaderSearch = (e: React.FormEvent) => {
@@ -108,6 +108,7 @@ export function Header() {
             </nav>
 
             <div className="flex items-center gap-2.5">
+              <AppDropdownWidget viewportMode="desktop" />
               <Link
                 href="/seller/create-listing"
                 className="inline-flex items-center justify-center h-9 px-4 rounded-full bg-sx-green hover:bg-sx-green-hover text-xs font-bold text-white transition-colors"
@@ -251,6 +252,7 @@ export function Header() {
           </div>
 
           <div className="flex items-center gap-1.5 md:hidden shrink-0">
+            <AppDropdownWidget viewportMode="mobile" />
             {user ? (
               <>
                 <NotificationBell />
