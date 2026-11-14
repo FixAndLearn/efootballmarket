@@ -3,7 +3,7 @@
 import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { ArrowUpRight } from "lucide-react";
+import { ArrowUpRight, Facebook, Instagram } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
 import { isStandaloneDocPath } from "@/components/legal/StandaloneDocLayout";
 
@@ -209,6 +209,44 @@ export function Footer() {
               </li>
             </ul>
           </div>
+        </div>
+
+        <div className="pt-6 border-t border-sx-border flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <h3 className="text-xs font-bold uppercase tracking-wider text-sx-ink">
+            Follow eFootballMarket
+          </h3>
+          <nav aria-label="Social media" className="flex flex-wrap items-center gap-x-6 gap-y-3">
+            <a
+              href="https://www.instagram.com/efootballmarket22/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Instagram: @efootballmarket22"
+              className="inline-flex items-center gap-2 hover:text-sx-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sx-ink rounded-sm"
+            >
+              <Instagram aria-hidden="true" className="h-4 w-4" />
+              <span>Instagram <span className="text-sx-ink">@efootballmarket22</span></span>
+            </a>
+            <a
+              href="https://www.facebook.com/share/19TpFCMA3n/"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Visit eFootballMarket on Facebook"
+              className="inline-flex items-center gap-2 hover:text-sx-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sx-ink rounded-sm"
+            >
+              <Facebook aria-hidden="true" className="h-4 w-4" />
+              <span>Facebook Page</span>
+            </a>
+            <a
+              href="https://x.com/efootballmarkt"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="X: @efootballmarkt"
+              className="inline-flex items-center gap-2 hover:text-sx-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sx-ink rounded-sm"
+            >
+              <span aria-hidden="true" className="inline-flex h-4 w-4 items-center justify-center text-sm font-black leading-none">X</span>
+              <span>X <span className="text-sx-ink">@efootballmarkt</span></span>
+            </a>
+          </nav>
         </div>
 
         <div className="pt-6 border-t border-sx-border flex flex-col sm:flex-row items-center justify-between gap-3 text-[11px] text-sx-muted text-center sm:text-left">
