@@ -211,40 +211,39 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="pt-6 border-t border-sx-border flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <h3 className="text-xs font-bold uppercase tracking-wider text-sx-ink">
-            Follow eFootballMarket
-          </h3>
-          <nav aria-label="Social media" className="flex flex-wrap items-center gap-x-6 gap-y-3">
+        <div className="pt-6 border-t border-sx-border flex justify-center sm:justify-end">
+          <nav aria-label="Social media" className="flex items-center gap-3">
             <a
               href="https://www.instagram.com/efootballmarket22/"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Instagram: @efootballmarket22"
-              className="inline-flex items-center gap-2 hover:text-sx-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sx-ink rounded-sm"
+              aria-label="Instagram"
+              title="Instagram"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-sx-border text-sx-ink hover:bg-sx-elevated transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sx-ink"
             >
-              <Instagram aria-hidden="true" className="h-4 w-4" />
-              <span>Instagram <span className="text-sx-ink">@efootballmarket22</span></span>
+              <Instagram aria-hidden="true" className="h-5 w-5" />
             </a>
             <a
               href="https://www.facebook.com/share/19TpFCMA3n/"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="Visit eFootballMarket on Facebook"
-              className="inline-flex items-center gap-2 hover:text-sx-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sx-ink rounded-sm"
+              aria-label="Facebook"
+              title="Facebook"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-sx-border text-sx-ink hover:bg-sx-elevated transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sx-ink"
             >
-              <Facebook aria-hidden="true" className="h-4 w-4" />
-              <span>Facebook Page</span>
+              <Facebook aria-hidden="true" className="h-5 w-5" />
             </a>
             <a
               href="https://x.com/efootballmarkt"
               target="_blank"
               rel="noopener noreferrer"
-              aria-label="X: @efootballmarkt"
-              className="inline-flex items-center gap-2 hover:text-sx-ink transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sx-ink rounded-sm"
+              aria-label="X"
+              title="X"
+              className="inline-flex h-11 w-11 items-center justify-center rounded-full border border-sx-border text-sx-ink hover:bg-sx-elevated transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-sx-ink"
             >
-              <span aria-hidden="true" className="inline-flex h-4 w-4 items-center justify-center text-sm font-black leading-none">X</span>
-              <span>X <span className="text-sx-ink">@efootballmarkt</span></span>
+              <svg aria-hidden="true" viewBox="0 0 24 24" className="h-4 w-4 fill-current">
+                <path d="M18.901 1.153h3.68l-8.04 9.19L24 22.846h-7.406l-5.8-7.584-6.635 7.584H.478l8.6-9.831L.7 1.153h7.593l5.243 6.932zM17.61 20.655h2.039L7.486 3.208H5.298z" />
+              </svg>
             </a>
           </nav>
         </div>
