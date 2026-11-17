@@ -9,6 +9,7 @@ import {
   releaseIdempotencyKey,
 } from "@/lib/security/rateLimiter";
 import { z } from "zod";
+import { mpesaClient } from "@/lib/mpesa/client";
 
 export const dynamic = "force-dynamic";
 
@@ -120,13 +121,31 @@ export async function POST(req: NextRequest) {
     claimedKey = null;
 
     return NextResponse.json(payload);
-  } catch {
+  } catch (error: any) {
     await releaseUnusedClaim();
-    // Provider request errors can contain credential-bearing URLs; never log or echo them.
-    console.error("STK Push initiation failed.");
+    // Keep credential-bearing detail out of the response, but log a sanitized,
+    // actionable reason. The previous version logged only "STK Push initiation
+    // failed." with no cause, which is why a persistent configuration failure
+    // went unnoticed for weeks.
+    const rawMessage = String(error?.message || "unknown error");
+    const safeMessage = mpesaClient.sanitizeProviderError(rawMessage);
+    console.error("[stkpush] initiation failed:", safeMessage);
+
+    // Configuration faults are the operator's problem, not the buyer's, and
+    // returning a generic 500 hid them. Signal 503 so monitoring and the UI can
+    // tell "we are misconfigured" apart from "the customer declined".
+    const isConfigFault = /not configured|not reachable|verification is not configured/i.test(
+      rawMessage
+    );
+
     return NextResponse.json(
-      { error: "Could not initiate the M-Pesa payment. Please try again later." },
-      { status: 500 }
+      {
+        error: isConfigFault
+          ? "M-Pesa payments are temporarily unavailable. Please contact support."
+          : "Could not initiate the M-Pesa payment. Please try again.",
+        code: isConfigFault ? "PROVIDER_NOT_CONFIGURED" : "STK_INITIATION_FAILED",
+      },
+      { status: isConfigFault ? 503 : 502 }
     );
   }
 }

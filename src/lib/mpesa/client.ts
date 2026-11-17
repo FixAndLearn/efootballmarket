@@ -83,6 +83,57 @@ class MpesaService {
     );
   }
 
+  /**
+   * Daraja rejects a CallBackURL whose query string contains characters it
+   * cannot parse, and it fails at initiation time with a generic error that
+   * looks identical to a customer declining the prompt. A secret containing
+   * '+', '=', '/', '&' or spaces therefore silently broke every checkout.
+   *
+   * We never mutate the configured URL's meaning: the `secret` parameter is
+   * re-encoded from its decoded value, and any other parameters are preserved.
+   */
+  private preparedCallbackUrl(): string {
+    try {
+      const parsed = new URL(this.callbackUrl);
+      const params = new URLSearchParams(parsed.search);
+
+      const secret = params.get("secret");
+      if (secret !== null) {
+        params.set("secret", secret);
+      }
+      const token = params.get("token");
+      if (token !== null) {
+        params.set("token", token);
+      }
+
+      // URLSearchParams serialises with '+' for spaces, which Daraja also
+      // mishandles; %20 is the safe form.
+      parsed.search = params.toString().replace(/\+/g, "%20");
+      return parsed.toString();
+    } catch {
+      return this.callbackUrl;
+    }
+  }
+
+  /**
+   * PayBill and Buy Goods are different Daraja transaction types. A till
+   * shortcode charged as `CustomerPayBillOnline` is refused by Safaricom.
+   */
+  private transactionType(): "CustomerBuyGoodsOnline" | "CustomerPayBillOnline" {
+    const configured = (process.env.MPESA_TRANSACTION_TYPE || "").trim();
+    if (configured === "CustomerBuyGoodsOnline" || configured === "CustomerPayBillOnline") {
+      return configured as "CustomerBuyGoodsOnline" | "CustomerPayBillOnline";
+    }
+    // MPESA_PAYMENT_MODE lets the operator declare a till vs a paybill without
+    // needing a new deploy.
+    const mode = (process.env.MPESA_PAYMENT_MODE || "").trim().toLowerCase();
+    if (mode === "buygoods" || mode === "till") return "CustomerBuyGoodsOnline";
+    if (mode === "paybill") return "CustomerPayBillOnline";
+    // Safest default for this business: the platform collects on Buy Goods
+    // Till 1572931, which is a till, not a paybill.
+    return "CustomerBuyGoodsOnline";
+  }
+
   /** Daraja does not sign STK callbacks; a per-callback URL token authenticates its metadata. */
   public hasProtectedDarajaCallbackUrl(): boolean {
     const secret = process.env.MPESA_WEBHOOK_SECRET?.trim();
@@ -241,12 +292,15 @@ class MpesaService {
       BusinessShortCode: this.shortCode,
       Password: password,
       Timestamp: timestamp,
-      TransactionType: "CustomerPayBillOnline",
+      // A Buy Goods (till) shortcode must be charged as CustomerBuyGoodsOnline.
+      // PayBill against a till shortcode is rejected by Daraja, which is a
+      // separate failure mode from the customer simply declining the prompt.
+      TransactionType: this.transactionType(),
       Amount: Math.round(params.amount),
       PartyA: phone,
       PartyB: this.shortCode,
       PhoneNumber: phone,
-      CallBackURL: this.callbackUrl,
+      CallBackURL: this.preparedCallbackUrl(),
       AccountReference: params.orderNumber,
       TransactionDesc: params.description || `Order ${params.orderNumber}`,
     };
@@ -265,10 +319,36 @@ class MpesaService {
     );
 
     if (!response.ok) {
-      throw new Error(`M-Pesa STK Push failed (HTTP ${response.status}).`);
+      // Surface WHICH Daraja field was rejected. Without this, every failure
+      // looked like "HTTP 400" and a misconfigured shortcode was
+      // indistinguishable from a customer declining the prompt.
+      let providerError = "";
+      try {
+        const bodyText = await response.text();
+        providerError = this.sanitizeProviderError(bodyText);
+      } catch {
+        // body already consumed or unreadable; fall through with status only
+      }
+      throw new Error(
+        `M-Pesa STK Push failed (HTTP ${response.status})${providerError ? `: ${providerError}` : ""}.`
+      );
     }
 
     return await response.json();
+  }
+
+  /**
+   * Daraja error bodies can echo request fields. Strip anything that could
+   * contain credentials (Password, SecurityCredential, tokens) before the
+   * message reaches a log or a client response.
+   */
+  public sanitizeProviderError(raw: string): string {
+    return String(raw || "")
+      .replace(/"?(Password|SecurityCredential|Authorization|access_token|Bearer)"?\s*[:=]\s*"?[^",}\s]+/gi, "$1:[redacted]")
+      .replace(/[A-Za-z0-9+/=]{40,}/g, "[redacted]")
+      .replace(/\s+/g, " ")
+      .trim()
+      .slice(0, 300);
   }
 
   /**
