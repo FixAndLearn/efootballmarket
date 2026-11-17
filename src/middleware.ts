@@ -9,11 +9,15 @@ const EXTERNAL_WEBHOOK_PATHS = [
 
 const MUTATING_METHODS = new Set(["POST", "PUT", "PATCH", "DELETE"]);
 
+/** Must stay in sync with PAGE_SIZE in app/(marketplace)/browse/page.tsx. */
+const BROWSE_PAGE_SIZE = 24;
+
 /**
  * Next.js Edge Security Middleware
  * 1. Enforces Cross-Site Request Forgery (CSRF) Same-Origin verification on mutating /api/* calls.
  * 2. Synchronizes Supabase SSR auth cookies.
  * 3. Enforces strict Role-Based Access Control (RBAC) on /admin routes.
+ * 4. Sends stale /browse?page=N deep links to real stock with a true 307.
  */
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -58,6 +62,70 @@ export async function middleware(request: NextRequest) {
           { error: "Forbidden: Malformed Origin header." },
           { status: 403 }
         );
+      }
+    }
+  }
+
+  // ---------------------------------------------------------------------
+  // 1b. Real HTTP redirect for stale /browse?page=N deep links.
+  //
+  // The page component clamps out-of-range pages too, but it cannot emit a
+  // status code: the route's loading.tsx makes Next flush the shell first, so
+  // a redirect() there becomes a client-side navigation streamed inside a 200.
+  // A shopper's browser recovers, but crawlers and link previews see an empty
+  // catalogue. This runs before rendering, so the response is a genuine 307.
+  //
+  // Soundness: filters can only ever shrink the published set, so if the page
+  // number is past the end of the UNFILTERED set it is past the end of every
+  // filtered set too. That lets this check redirect without reimplementing the
+  // page's filter validation, and it can never send a valid URL away.
+  // Skipped for page 1 (the overwhelming majority of traffic) so the common
+  // path pays nothing.
+  // ---------------------------------------------------------------------
+  if (pathname === "/browse") {
+    const rawPage = request.nextUrl.searchParams.get("page");
+    const requestedPage = rawPage && /^\d+$/.test(rawPage) ? Number(rawPage) : 1;
+
+    if (Number.isFinite(requestedPage) && requestedPage > 1) {
+      const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
+      const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+
+      if (supabaseUrl && supabaseKey && !supabaseUrl.includes("placeholder-project")) {
+        try {
+          const countRes = await fetch(
+            `${supabaseUrl}/rest/v1/listings?select=id&status=eq.published`,
+            {
+              method: "HEAD",
+              headers: {
+                apikey: supabaseKey,
+                Authorization: `Bearer ${supabaseKey}`,
+                Prefer: "count=exact",
+                Range: "0-0",
+              },
+              next: { revalidate: 60 },
+            }
+          );
+
+          // e.g. "content-range: 0-0/19"
+          const total = Number(
+            (countRes.headers.get("content-range") || "").split("/")[1]
+          );
+
+          if (Number.isFinite(total) && total >= 0) {
+            const lastPage = Math.max(1, Math.ceil(total / BROWSE_PAGE_SIZE));
+            if (requestedPage > lastPage) {
+              const target = new URL("/browse", request.url);
+              request.nextUrl.searchParams.forEach((v, k) => {
+                if (k !== "page" && v && !(k === "sortBy" && v === "newest")) {
+                  target.searchParams.set(k, v);
+                }
+              });
+              return NextResponse.redirect(target, 307);
+            }
+          }
+        } catch {
+          // Fail open: the page-level clamp is still there as a safety net.
+        }
       }
     }
   }
