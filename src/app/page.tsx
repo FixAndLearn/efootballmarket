@@ -332,6 +332,30 @@ export default async function HomePage() {
     console.error("HomePage listings query error:", err);
   }
 
+  // Real platform metrics — no hardcoded numbers. If the RPC is unavailable we
+  // render nothing rather than invent a statistic.
+  let platformMetrics: {
+    published_listings: number;
+    completed_trades: number;
+    registered_traders: number;
+    active_tournaments: number;
+  } | null = null;
+  try {
+    const metricsClient = hasServiceRoleKey() ? createAdminClient() : supabase;
+    const { data, error } = await metricsClient.rpc("get_public_platform_metrics");
+    if (!error && data && typeof data === "object") {
+      const raw = data as Record<string, unknown>;
+      platformMetrics = {
+        published_listings: Number(raw.published_listings ?? 0),
+        completed_trades: Number(raw.completed_trades ?? 0),
+        registered_traders: Number(raw.registered_traders ?? 0),
+        active_tournaments: Number(raw.active_tournaments ?? 0),
+      };
+    }
+  } catch (metricsErr) {
+    console.error("HomePage platform metrics error:", metricsErr);
+  }
+
   const lowestPrice =
     listings.length > 0
       ? Math.min(...listings.map((l) => Number(l.price || 0)).filter((p) => p > 0))
@@ -685,6 +709,41 @@ export default async function HomePage() {
             </div>
           </div>
 
+          {platformMetrics && (
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              {[
+                {
+                  label: "Published squads",
+                  value: platformMetrics.published_listings,
+                },
+                {
+                  label: "Completed trades",
+                  value: platformMetrics.completed_trades,
+                },
+                {
+                  label: "Registered traders",
+                  value: platformMetrics.registered_traders,
+                },
+                {
+                  label: "Active tournaments",
+                  value: platformMetrics.active_tournaments,
+                },
+              ].map((stat) => (
+                <div
+                  key={stat.label}
+                  className="p-4 rounded-xl bg-sx-canvas border border-sx-border"
+                >
+                  <div className="text-2xl sm:text-3xl font-bold text-sx-ink font-display tabular-nums">
+                    {stat.value.toLocaleString("en-KE")}
+                  </div>
+                  <div className="text-[10px] font-mono uppercase tracking-wider text-sx-muted mt-1">
+                    {stat.label}
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
             {[
               {
@@ -720,6 +779,44 @@ export default async function HomePage() {
               </div>
             ))}
           </div>
+        </div>
+      </section>
+
+      {/* 4B. TWO-SIDED PROTECTION: what the buyer gets vs what the seller gets */}
+      <section className="py-8 sm:py-9 border-t border-sx-border">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-4">
+          <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display">
+            Protected On Both Sides
+          </h2>
+          <div className="grid md:grid-cols-2 gap-3">
+            <div className="p-4 rounded-xl bg-sx-canvas border border-sx-border space-y-2">
+              <h3 className="text-sm font-bold text-sx-ink font-display">
+                If you are buying
+              </h3>
+              <ul className="space-y-1.5 text-xs text-sx-muted leading-relaxed">
+                <li>&bull; Your money is held by eFootballMarket until you confirm the account works.</li>
+                <li>&bull; 24 hours to inspect the squad, check Link Data and rebind the email.</li>
+                <li>&bull; Not as described? Open a dispute before the window closes and funds stay frozen.</li>
+                <li>&bull; KES 0 extra buyer fee on escrow checkout.</li>
+              </ul>
+            </div>
+            <div className="p-4 rounded-xl bg-sx-canvas border border-sx-border space-y-2">
+              <h3 className="text-sm font-bold text-sx-ink font-display">
+                If you are selling
+              </h3>
+              <ul className="space-y-1.5 text-xs text-sx-muted leading-relaxed">
+                <li>&bull; You deliver only after the buyer&apos;s payment is verified on our side.</li>
+                <li>&bull; Logins and OTPs go through the encrypted Order Room, never public pages.</li>
+                <li>&bull; Funds land in your balance once the buyer confirms, and never before.</li>
+                <li>&bull; Payouts go to your verified M-Pesa number; every request has a visible status.</li>
+              </ul>
+            </div>
+          </div>
+          <p className="text-[11px] text-sx-muted">
+            eFootballMarket is an independent marketplace. We are not affiliated with,
+            endorsed by, or sponsored by KONAMI. Squad details are seller-provided and not
+            pre-audited. Funds are held by eFootballMarket until delivery is confirmed.
+          </p>
         </div>
       </section>
 
