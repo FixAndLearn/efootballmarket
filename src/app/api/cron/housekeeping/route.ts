@@ -118,12 +118,15 @@ export async function GET(req: NextRequest) {
 
           if (!deadlinePassed) continue;
 
-          // Ensure no open/investigating dispute exists
+          // Ensure no open dispute exists. `disputes_status_check` only allows
+          // open | under_review | resolved_buyer_refund |
+          // resolved_seller_release | closed_dismissed -- "investigating" is not
+          // a valid dispute status and made this filter fail with 22P02.
           const { data: openDispute } = await supabase
             .from("disputes")
             .select("id")
             .eq("order_id", order.id)
-            .in("status", ["open", "under_review", "investigating"])
+            .in("status", ["open", "under_review"])
             .maybeSingle();
 
           if (!openDispute) {

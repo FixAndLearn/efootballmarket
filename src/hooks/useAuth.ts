@@ -2,7 +2,6 @@
 
 import { createClient } from "@/lib/supabase/client";
 import { Profile } from "@/types/database";
-import { SELF_PROFILE_SELECT } from "@/lib/security/publicSanitizer";
 import { User } from "@supabase/supabase-js";
 import { useEffect, useState, useCallback } from "react";
 
@@ -14,14 +13,15 @@ export function useAuth() {
   const fetchProfile = useCallback(async (userId: string) => {
     try {
       const supabase = createClient();
-      const { data, error } = await supabase
-        .from("profiles")
-        .select(SELF_PROFILE_SELECT)
-        .eq("id", userId)
-        .single();
+      // Sensitive columns (email, phone, balances) are no longer readable off
+      // public.profiles by an ordinary session: `authenticated` holds
+      // column-level SELECT on the safe columns only. The caller's OWN row is
+      // served by get_my_profile() -- SECURITY DEFINER, WHERE id = auth.uid().
+      const { data, error } = await supabase.rpc("get_my_profile");
 
-      if (!error && data) {
-        setProfile(data as Profile);
+      const row = Array.isArray(data) ? data[0] : data;
+      if (!error && row) {
+        setProfile(row as Profile);
       }
     } catch (err) {
       console.warn("Could not load user profile:", err);

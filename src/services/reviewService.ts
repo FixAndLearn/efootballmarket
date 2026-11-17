@@ -36,12 +36,19 @@ export async function getVerifiedSellerReviews(
     const byOrder = new Map<string, VerifiedSellerReview>();
 
     // 1. Primary source: audit_logs (written by POST /api/orders/[id]/rate)
-    const { data: logs } = await client
+    // NOTE: the writer (POST /api/orders/[id]/rate) stores the buyer in
+    // `actor_id`. Selecting `user_id` here failed with 42703 on every call and
+    // the error was discarded, so every seller rendered zero verified reviews.
+    const { data: logs, error: logsError } = await client
       .from("audit_logs")
-      .select("id, user_id, resource_id, changes, created_at")
+      .select("id, actor_id, resource_id, changes, created_at")
       .eq("action", "ORDER_SELLER_RATING")
       .order("created_at", { ascending: false })
       .limit(120);
+
+    if (logsError) {
+      console.error("[reviewService] rating lookup failed:", logsError.message);
+    }
 
     const matchingLogs = (logs || []).filter((row: any) => {
       const ch = row?.changes;
@@ -52,7 +59,7 @@ export async function getVerifiedSellerReviews(
     const buyerIds = Array.from(
       new Set(
         matchingLogs
-          .map((r: any) => r.user_id)
+          .map((r: any) => r.actor_id)
           .filter((id: any): id is string => Boolean(id))
       )
     );
@@ -93,7 +100,7 @@ export async function getVerifiedSellerReviews(
           rating,
           comment,
           buyerLabel:
-            (row.user_id && buyerMap.get(row.user_id)) || "Verified Buyer",
+            (row.actor_id && buyerMap.get(row.actor_id)) || "Verified Buyer",
           createdAt: String(row.created_at || new Date().toISOString()),
         });
       }

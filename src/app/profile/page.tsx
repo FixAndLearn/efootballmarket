@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { createClient } from "@/lib/supabase/client";
 import { normalizePhoneNumber } from "@/lib/utils/phone";
-import { SELF_PROFILE_SELECT, getPublicStorefrontPath } from "@/lib/security/publicSanitizer";
+import { getPublicStorefrontPath } from "@/lib/security/publicSanitizer";
 import {
   User,
   Mail,
@@ -74,11 +74,10 @@ function ProfileContent() {
         setCurrentEmail(user.email || "");
         setCreatedAt(user.created_at || "");
 
-        const { data: profile } = await supabase
-          .from("profiles")
-          .select(SELF_PROFILE_SELECT)
-          .eq("id", user.id)
-          .maybeSingle();
+        // Own row via SECURITY DEFINER RPC; public.profiles no longer exposes
+        // email/phone/balances to an ordinary authenticated session.
+        const { data: rpcRow } = await supabase.rpc("get_my_profile");
+        const profile = Array.isArray(rpcRow) ? rpcRow[0] : rpcRow;
 
         if (profile) {
           setFirstName(profile.first_name || "");
@@ -131,6 +130,10 @@ function ProfileContent() {
     try {
       const supabase = createClient();
 
+      // Deliberately NO `.select()` on this chain: postgrest-js only sends
+      // `Prefer: return=representation` (i.e. RETURNING *) when `.select()` is
+      // chained. Returning the full row would now fail, because an ordinary
+      // session no longer holds SELECT on email/phone_number/balances.
       const { error: upsertErr } = await supabase.from("profiles").upsert({
         id: userId,
         first_name: firstName.trim(),

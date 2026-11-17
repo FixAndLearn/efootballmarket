@@ -5,7 +5,6 @@ import { DirectCheckoutForm } from "@/components/marketplace/DirectCheckoutForm"
 import { formatSmartListingTitle } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import { SELF_PROFILE_SELECT } from "@/lib/security/publicSanitizer";
 
 export const revalidate = 0;
 
@@ -43,8 +42,10 @@ export default async function DirectPayPage({ params }: DirectPayPageProps) {
 
   let profile = null;
   if (user) {
-    const { data } = await supabase.from("profiles").select(SELF_PROFILE_SELECT).eq("id", user.id).single();
-    profile = data;
+    // Own row via SECURITY DEFINER RPC; direct column reads of phone_number /
+    // first_name are no longer granted to an ordinary session.
+    const { data } = await supabase.rpc("get_my_profile");
+    profile = Array.isArray(data) ? data[0] : data;
   }
 
   const listingService = new ListingService(supabase);

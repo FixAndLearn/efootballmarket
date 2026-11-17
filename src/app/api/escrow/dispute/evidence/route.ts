@@ -133,12 +133,18 @@ export async function POST(req: NextRequest) {
         .single();
 
       if (conv) {
-        await client.from("messages").insert({
+        // `messages` has no `message_text` column; the body lives in `content`.
+        // The bare catch below swallowed the 42703, so the order chat never
+        // showed that evidence had been attached.
+        const { error: msgError } = await client.from("messages").insert({
           conversation_id: conv.id,
           sender_id: user.id,
-          message_text: `[Dispute Evidence Uploaded by ${uploaderRole}]: ${title} - ${evidenceUrl}`,
+          content: `[Dispute Evidence Uploaded by ${uploaderRole}]: ${title} - ${evidenceUrl}`,
           message_type: "system",
         });
+        if (msgError) {
+          console.error("[dispute-evidence] chat notice failed:", msgError.message);
+        }
       }
     } catch (e) {
       // quiet fallback

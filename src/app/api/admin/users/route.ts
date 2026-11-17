@@ -198,7 +198,10 @@ export async function PATCH(req: NextRequest) {
         .from("listings")
         .update({ status: "archived" })
         .eq("seller_id", targetUserId)
-        .in("status", ["published", "active"]);
+        // `listings_status_check` has no "active" value; including it made the
+        // whole filter fail with 22P02 so a banned seller's listings were never
+        // actually archived.
+        .in("status", ["published"]);
 
       await primaryClient.from("notifications").insert({
         recipient_id: targetUserId,

@@ -31,11 +31,13 @@ export default async function AdminLayout({ children }: AdminLayoutProps) {
   let hasAdminAccess = isSuperAdmin;
 
   if (!hasAdminAccess) {
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role, is_suspended")
-      .eq("id", user.id)
-      .single();
+    // Own row via SECURITY DEFINER RPC. role/is_suspended are still in the
+    // safe grant set, but routing the gate through the RPC keeps it working
+    // regardless of future column-grant changes.
+    const { data: rpcRow } = await supabase.rpc("get_my_profile");
+    const profile = (Array.isArray(rpcRow) ? rpcRow[0] : rpcRow) as
+      | { role?: string | null; is_suspended?: boolean | null }
+      | null;
 
     const role = profile?.role;
     hasAdminAccess =
