@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { AdminBloggerStudio } from "@/components/admin/AdminBloggerStudio";
 import { AdminPaymentsTab } from "@/components/admin/AdminPaymentsTab";
 import { AdminWithdrawalsTab } from "@/components/admin/AdminWithdrawalsTab";
+import { AdminReportsTab } from "@/components/admin/AdminReportsTab";
 import { AdminAvailabilityPingsPanel } from "@/components/admin/AdminAvailabilityPingsPanel";
 import { useAuth } from "@/hooks/useAuth";
 import { isSuperAdminEmail, isUserAdmin } from "@/lib/security/adminAuth";
@@ -58,7 +59,7 @@ function AdminControlCenterContent() {
   const searchParams = useSearchParams();
   const { user, profile, isAuthenticated, loading: authLoading } = useAuth();
   const tabParam = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState<"listings" | "disputes" | "users" | "news" | "withdrawals" | "payments">(
+  const [activeTab, setActiveTab] = useState<"listings" | "disputes" | "users" | "news" | "withdrawals" | "payments" | "reports">(
     ["listings", "disputes", "users", "withdrawals", "news", "payments"].includes(tabParam || "")
       ? (tabParam as any)
       : "listings"
@@ -1464,6 +1465,9 @@ function AdminControlCenterContent() {
         />
       )}
       {activeTab === "payments" && <AdminPaymentsTab onFeedback={setFeedback} />}
+
+      {/* TAB: BUYER LISTING REPORTS */}
+      {activeTab === "reports" && <AdminReportsTab onFeedback={setFeedback} />}
 
       {/* Modal: Takedown Listing with Reason */}
       {takedownTarget && (

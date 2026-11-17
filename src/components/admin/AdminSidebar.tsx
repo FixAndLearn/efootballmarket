@@ -6,6 +6,7 @@ import { useSearchParams, useRouter } from "next/navigation";
 import {
   Layers,
   AlertTriangle,
+  Flag,
   Banknote,
   Users,
   Newspaper,
@@ -30,6 +31,7 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
   const [counts, setCounts] = useState({
     pendingWithdrawals: 0,
     openDisputes: 0,
+    pendingReports: 0,
     totalListings: 0,
     totalUsers: 0,
   });
@@ -51,8 +53,22 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
           supabase.from("profiles").select("id", { count: "exact", head: true }),
         ]);
 
+        // Reports are RLS-locked to service role, so the count comes from the
+        // admin API instead of the browser client.
+        let pendingReports = 0;
+        try {
+          const res = await fetch("/api/admin/reports?count=true");
+          if (res.ok) {
+            const data = await res.json();
+            pendingReports = data.pendingReports || 0;
+          }
+        } catch {
+          // non-blocking
+        }
+
         setCounts({
           openDisputes: disputesCount || 0,
+          pendingReports,
           pendingWithdrawals: withdrawalsCount || 0,
           totalListings: listingsCount || 0,
           totalUsers: usersCount || 0,
@@ -83,6 +99,14 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
       href: "/admin?tab=disputes",
       badge: counts.openDisputes > 0 ? `${counts.openDisputes} open` : null,
       badgeColor: "bg-sx-red-tint text-sx-red-text border-sx-red-border animate-pulse",
+    },
+    {
+      id: "reports",
+      label: "Listing Reports",
+      icon: Flag,
+      href: "/admin?tab=reports",
+      badge: counts.pendingReports > 0 ? `${counts.pendingReports} to review` : null,
+      badgeColor: "bg-sx-red-tint text-sx-red-text border-sx-red-border",
     },
     {
       id: "payments",
