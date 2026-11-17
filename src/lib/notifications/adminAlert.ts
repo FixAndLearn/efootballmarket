@@ -27,7 +27,8 @@ export type AdminEventType =
   | "WANTED_REQUEST_POSTED"
   | "WITHDRAWAL_REQUESTED"
   | "TOURNAMENT_REGISTRATION"
-  | "TOURNAMENT_WINNER_CROWNED";
+  | "TOURNAMENT_WINNER_CROWNED"
+  | "LISTING_REPORTED";
 
 export interface AdminAlertPayload {
   eventType: AdminEventType;

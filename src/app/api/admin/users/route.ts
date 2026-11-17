@@ -71,7 +71,17 @@ export async function GET(req: NextRequest) {
 
 const actionSchema = z.object({
   targetUserId: z.string().uuid(),
-  action: z.enum(["grant_admin", "dismiss_admin", "ban_user", "unban_user"]),
+  action: z.enum([
+    "grant_admin",
+    "dismiss_admin",
+    "ban_user",
+    "unban_user",
+    // ID verification was previously unreachable: is_verified_seller is read
+    // all over the UI but no route could ever set it, so the "ID-Verified"
+    // tier could not be earned by anyone.
+    "verify_seller",
+    "unverify_seller",
+  ]),
   reason: z.string().optional(),
 });
 
@@ -218,6 +228,53 @@ export async function PATCH(req: NextRequest) {
       });
 
       return NextResponse.json({ success: true, message: "User account reinstated." });
+    }
+
+    if (action === "verify_seller" || action === "unverify_seller") {
+      const verified = action === "verify_seller";
+
+      await primaryClient
+        .from("profiles")
+        .update({ is_verified_seller: verified })
+        .eq("id", targetUserId);
+
+      // Record the decision in the platform audit log. `seller_verifications`
+      // is NOT usable here: it requires id_document_front_url and
+      // selfie_with_id_url, and no seller-facing document upload flow exists
+      // yet, so an INSERT would violate NOT NULL. audit_logs is the audit
+      // mechanism this codebase already relies on.
+      try {
+        await primaryClient.from("audit_logs").insert({
+          actor_id: user.id,
+          action: verified ? "SELLER_ID_VERIFIED" : "SELLER_ID_VERIFICATION_REVOKED",
+          resource_type: "profiles",
+          resource_id: targetUserId,
+          changes: {
+            is_verified_seller: verified,
+            reason: reason || null,
+            actor_email: user.email || null,
+          },
+        });
+      } catch (logErr: any) {
+        // Never block the decision on the audit row, but surface it.
+        console.error("seller verification audit write failed:", logErr?.message);
+      }
+
+      await primaryClient.from("notifications").insert({
+        recipient_id: targetUserId,
+        type: verified ? "seller_verified" : "seller_verification_revoked",
+        title: verified ? "Seller Identity Verified" : "Seller Verification Removed",
+        message: verified
+          ? "Your identity check is complete. The ID-Verified badge now appears on your listings and storefront."
+          : "Your seller identity verification has been removed by administration.",
+        action_url: "/dashboard/seller",
+        is_read: false,
+      });
+
+      return NextResponse.json({
+        success: true,
+        message: verified ? "Seller marked as ID-Verified." : "Seller verification removed.",
+      });
     }
 
     return NextResponse.json({ error: "Unhandled action" }, { status: 400 });

@@ -16,6 +16,7 @@ import { getPublicStorefrontPath } from "@/lib/security/publicSanitizer";
 import { BuyNowButton } from "@/components/marketplace/BuyNowButton";
 import { ListingGallery } from "@/components/marketplace/ListingGallery";
 import { VerifiedSellerBadge } from "@/components/marketplace/VerifiedSellerBadge";
+import { ReportListingButton } from "@/components/marketplace/ReportListingButton";
 import { MakeOfferButton } from "@/components/marketplace/MakeOfferButton";
 import { ProposeSwapModal } from "@/components/marketplace/ProposeSwapModal";
 import { SellerReviewsSection } from "@/components/marketplace/SellerReviewsSection";
@@ -578,6 +579,18 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                 {konamiStatus.description}
               </p>
             </div>
+
+            {/* Trust affordance: until now a suspicious listing could only be
+                flagged by emailing support@. */}
+            {!isOwner && (
+              <div className="flex items-center justify-between gap-2 px-1">
+                <ReportListingButton
+                  listingId={listing.id}
+                  listingTitle={listing.title}
+                  isSignedIn={Boolean(user)}
+                />
+              </div>
+            )}
 
             {/* Primary Actions */}
             {isOwner ? (

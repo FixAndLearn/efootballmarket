@@ -51,6 +51,7 @@ export async function GET(req: NextRequest) {
       const { data: pruneData, error: pruneError } = await supabase.rpc("prune_runtime_state");
       if (pruneError) {
         results.errors.push(`Runtime state pruning skipped: ${pruneError.message}`);
+        console.error("[housekeeping]", `Runtime state pruning skipped: ${pruneError.message}`);
       } else {
         const raw = (pruneData ?? {}) as Record<string, unknown>;
         const buckets = Number(raw.rate_limit_buckets_pruned || 0);
@@ -59,31 +60,60 @@ export async function GET(req: NextRequest) {
       }
     } catch (pruneErr: any) {
       results.errors.push(`Runtime state pruning error: ${pruneErr?.message}`);
+        console.error("[housekeeping]", `Runtime state pruning error: ${pruneErr?.message}`);
     }
 
 
-    // 1. Auto-release orders in `seller_delivered` where 24h inspection window elapsed without open dispute
+    // 1. Auto-release orders in `seller_delivered` where the 24h inspection
+    //    window elapsed without an open dispute.
+    //
+    //    BUG FIXED: this step previously selected `orders.inspection_deadline_at`
+    //    and embedded `account_deliveries(delivered_at)`, but neither exists.
+    //    `orders` has only 12 columns and the deadline lives on
+    //    `escrow_accounts.inspection_deadline`. PostgREST therefore rejected the
+    //    whole query with 42703 "column does not exist" on EVERY run, the error
+    //    was swallowed into results.errors, and escrow was never auto-released.
     try {
       const twentyFourHoursAgo = new Date(now.getTime() - 24 * 60 * 60 * 1000).toISOString();
 
-      const { data: deliveredOrders } = await supabase
+      const { data: deliveredOrders, error: deliveredErr } = await supabase
         .from("orders")
-        .select(
-          "id, buyer_id, seller_id, order_number, inspection_deadline_at, deliveries:account_deliveries(delivered_at)"
-        )
+        .select("id, buyer_id, seller_id, order_number")
         .eq("status", "seller_delivered");
 
-      if (deliveredOrders && deliveredOrders.length > 0) {
-        for (const order of deliveredOrders) {
-          const deliveryRows = Array.isArray((order as any).deliveries)
-            ? (order as any).deliveries
-            : (order as any).deliveries
-            ? [(order as any).deliveries]
-            : [];
-          const deliveredAt = deliveryRows[0]?.delivered_at || null;
+      if (deliveredErr) {
+        results.errors.push(`Step 1 order fetch error: ${deliveredErr.message}`);
+        console.error("[housekeeping]", `Step 1 order fetch error: ${deliveredErr.message}`);
+      }
 
-          const deadlinePassed = order.inspection_deadline_at
-            ? order.inspection_deadline_at < now.toISOString()
+      if (deliveredOrders && deliveredOrders.length > 0) {
+        const orderIds = deliveredOrders.map((o: any) => o.id);
+        const { data: escrowRows, error: escrowErr } = await supabase
+          .from("escrow_accounts")
+          .select("order_id, inspection_deadline, delivered_at, escrow_state")
+          .in("order_id", orderIds);
+
+        if (escrowErr) {
+          results.errors.push(`Step 1 escrow fetch error: ${escrowErr.message}`);
+        console.error("[housekeeping]", `Step 1 escrow fetch error: ${escrowErr.message}`);
+        }
+
+        const escrowByOrder = new Map<string, any>();
+        for (const row of escrowRows || []) {
+          escrowByOrder.set((row as any).order_id, row);
+        }
+
+        for (const order of deliveredOrders) {
+          const escrow = escrowByOrder.get(order.id);
+          if (!escrow) continue;
+
+          // Prefer the explicit deadline; otherwise fall back to 24h after
+          // delivery was recorded.
+          const deadline: string | null = escrow.inspection_deadline || null;
+          const deliveredAt: string | null = escrow.delivered_at || null;
+
+          const deadlinePassed = deadline
+            ? deadline < now.toISOString()
             : Boolean(deliveredAt && deliveredAt < twentyFourHoursAgo);
 
           if (!deadlinePassed) continue;
@@ -102,12 +132,14 @@ export async function GET(req: NextRequest) {
               results.auto_released_orders += 1;
             } catch (relErr: any) {
               results.errors.push(`Order ${order.id} auto-release error: ${relErr?.message}`);
+        console.error("[housekeeping]", `Order ${order.id} auto-release error: ${relErr?.message}`);
             }
           }
         }
       }
     } catch (step1Err: any) {
       results.errors.push(`Step 1 error: ${step1Err?.message}`);
+        console.error("[housekeeping]", `Step 1 error: ${step1Err?.message}`);
     }
 
     // 2. Expire stale pending offers (>48 hours or past expires_at)
@@ -124,6 +156,7 @@ export async function GET(req: NextRequest) {
       results.expired_offers += expiredByAge?.length || 0;
     } catch (step2Err: any) {
       results.errors.push(`Step 2 error: ${step2Err?.message}`);
+        console.error("[housekeeping]", `Step 2 error: ${step2Err?.message}`);
     }
 
     // 3. Cancel abandoned `payment_pending` orders (>24h with no completed payment or manual receipt)
@@ -201,13 +234,20 @@ export async function GET(req: NextRequest) {
       }
     } catch (step3Err: any) {
       results.errors.push(`Step 3 error: ${step3Err?.message}`);
+        console.error("[housekeeping]", `Step 3 error: ${step3Err?.message}`);
     }
 
-    return NextResponse.json({
-      success: true,
-      ran_at: now.toISOString(),
-      ...results,
-    });
+    // Report non-200 when a step failed: the previous version always returned
+    // success:true, so a permanently broken step (like the escrow auto-release
+    // 42703 above) looked healthy forever in the Vercel cron logs.
+    return NextResponse.json(
+      {
+        success: results.errors.length === 0,
+        ran_at: now.toISOString(),
+        ...results,
+      },
+      { status: results.errors.length === 0 ? 200 : 500 }
+    );
   } catch (err: any) {
     console.error("Housekeeping cron error:", err);
     return NextResponse.json({ error: "Housekeeping job failed" }, { status: 500 });

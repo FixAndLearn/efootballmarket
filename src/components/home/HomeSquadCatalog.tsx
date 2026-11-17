@@ -116,6 +116,34 @@ export function HomeSquadCatalog({ listings, totalSquads }: HomeSquadCatalogProp
           </Link>
         </div>
       )}
+
+      {/* Dead-end recovery. With a catalog this small, the buyer who filters to
+          zero results is the most likely one to leave. Give them the two paths
+          that actually work: post what they want, or get alerted on a match. */}
+      {filtered.length === 0 && (
+        <div className="rounded-2xl border border-sx-border bg-sx-subtle p-5 sm:p-6 text-center space-y-3">
+          <p className="text-sm font-bold text-sx-ink font-display">
+            No squads match that filter right now
+          </p>
+          <p className="text-xs text-sx-muted max-w-md mx-auto leading-relaxed">
+            The catalog is small and turns over fast. Post what you are looking
+            for and sellers will come to you, or set an alert and we will tell
+            you the moment a match is listed.
+          </p>
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-center gap-2 pt-1">
+            <Link href="/wanted">
+              <Button variant="primary" size="sm" className="w-full sm:w-auto">
+                <span>Post what you want</span>
+              </Button>
+            </Link>
+            <Link href="/browse">
+              <Button variant="outline" size="sm" className="w-full sm:w-auto">
+                <span>Clear filters &amp; browse all</span>
+              </Button>
+            </Link>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

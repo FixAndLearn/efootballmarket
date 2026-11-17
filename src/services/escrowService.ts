@@ -148,7 +148,7 @@ export class EscrowService {
     const inspectionDeadline = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString();
 
     // Update escrow state
-    await this.supabase
+    const { error: escrowStateError } = await this.supabase
       .from("escrow_accounts")
       .update({
         escrow_state: "seller_delivered",
@@ -157,15 +157,33 @@ export class EscrowService {
       })
       .eq("order_id", orderId);
 
-    // Update order status and 24-hour inspection deadline
-    await this.supabase
+    if (escrowStateError) {
+      console.error("Failed to advance escrow to seller_delivered:", escrowStateError.message);
+      throw new Error("Credentials saved but the escrow ledger could not be advanced.");
+    }
+
+    // Update order status.
+    //
+    // CRITICAL FIX: this update previously also set `inspection_deadline_at`,
+    // which does NOT exist on public.orders (the table has 12 columns; the
+    // deadline lives on escrow_accounts.inspection_deadline). PostgREST
+    // rejected the whole statement with 42703, and because the error was never
+    // checked the order silently stayed in `escrow_locked` while escrow sat in
+    // `seller_delivered`. That split brain meant release_escrow_funds() then
+    // refused every release ("Order and escrow are not in a releasable state"),
+    // so no seller could ever be paid automatically.
+    const { error: orderUpdateError } = await this.supabase
       .from("orders")
       .update({
         status: "seller_delivered",
-        inspection_deadline_at: inspectionDeadline,
         updated_at: new Date().toISOString(),
       })
       .eq("id", orderId);
+
+    if (orderUpdateError) {
+      console.error("Failed to advance order to seller_delivered:", orderUpdateError.message);
+      throw new Error("Credentials saved but the order could not be advanced. Please retry.");
+    }
 
     // Notify buyer that credentials are ready for inspection
     if (order.buyer_id) {

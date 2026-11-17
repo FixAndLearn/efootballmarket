@@ -3,6 +3,7 @@
 import { Button } from "@/components/ui/Button";
 import { AdminBloggerStudio } from "@/components/admin/AdminBloggerStudio";
 import { AdminPaymentsTab } from "@/components/admin/AdminPaymentsTab";
+import { AdminWithdrawalsTab } from "@/components/admin/AdminWithdrawalsTab";
 import { AdminAvailabilityPingsPanel } from "@/components/admin/AdminAvailabilityPingsPanel";
 import { useAuth } from "@/hooks/useAuth";
 import { isSuperAdminEmail, isUserAdmin } from "@/lib/security/adminAuth";
@@ -94,8 +95,6 @@ function AdminControlCenterContent() {
   // Search filters
   const [listingSearch, setListingSearch] = useState("");
   const [userSearch, setUserSearch] = useState("");
-  const [withdrawalSearch, setWithdrawalSearch] = useState("");
-  const [withdrawalFilter, setWithdrawalFilter] = useState<"all" | "pending" | "processing" | "completed" | "rejected">("pending");
   const [copiedPhone, setCopiedPhone] = useState<string | null>(null);
 
   // Post News Form state
@@ -261,7 +260,16 @@ function AdminControlCenterContent() {
   };
 
   // Handle User Privilege / Ban Actions
-  const handleUserAction = async (targetUserId: string, action: "grant_admin" | "dismiss_admin" | "ban_user" | "unban_user") => {
+  const handleUserAction = async (
+    targetUserId: string,
+    action:
+      | "grant_admin"
+      | "dismiss_admin"
+      | "ban_user"
+      | "unban_user"
+      | "verify_seller"
+      | "unverify_seller"
+  ) => {
     setActionLoading(true);
     setFeedback(null);
     try {
@@ -460,20 +468,6 @@ function AdminControlCenterContent() {
     (sum, w) => sum + Number(w.amount || 0),
     0
   );
-
-  const filteredWithdrawals = withdrawals.filter((w) => {
-    if (withdrawalFilter !== "all" && w.status !== withdrawalFilter) {
-      return false;
-    }
-    if (!withdrawalSearch.trim()) return true;
-    const q = withdrawalSearch.toLowerCase();
-    return (
-      w.phone_number?.toLowerCase().includes(q) ||
-      w.seller?.username?.toLowerCase().includes(q) ||
-      w.seller?.email?.toLowerCase().includes(q) ||
-      String(w.amount).includes(q)
-    );
-  });
 
   const openDisputesCount = disputes.filter((d) => d.status === "open").length;
   const filteredDisputes = disputes.filter((d) => {
@@ -1370,6 +1364,39 @@ function AdminControlCenterContent() {
                                     </>
                                   )}
 
+                                  {/* ID Verification toggle — until now no route
+                                      could set is_verified_seller, so the
+                                      "ID-Verified" tier was unreachable. */}
+                                  {!isSuperAdmin && (
+                                    <Button
+                                      type="button"
+                                      variant="secondary"
+                                      size="sm"
+                                      onClick={() =>
+                                        handleUserAction(
+                                          u.id,
+                                          u.is_verified_seller
+                                            ? "unverify_seller"
+                                            : "verify_seller"
+                                        )
+                                      }
+                                      disabled={actionLoading}
+                                      className={`text-[11px] py-1 px-2 ${
+                                        u.is_verified_seller
+                                          ? "text-sx-amber-text"
+                                          : "text-sx-green-text"
+                                      }`}
+                                      title={
+                                        u.is_verified_seller
+                                          ? "Remove the ID-Verified badge"
+                                          : "Mark this seller as ID-Verified (confirm you reviewed their ID)"
+                                      }
+                                    >
+                                      <ShieldCheck className="w-3.5 h-3.5 mr-1" />
+                                      {u.is_verified_seller ? "Unverify" : "Verify ID"}
+                                    </Button>
+                                  )}
+
                                   {/* Ban / Unban User */}
                                   {u.is_suspended ? (
                                     <Button
@@ -1428,250 +1455,14 @@ function AdminControlCenterContent() {
 
       {/* SECTION 4: SELLER WITHDRAWALS (M-PESA PAYOUTS) */}
       {activeTab === "withdrawals" && (
-        <div className="space-y-6 animate-in fade-in">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-pitch-border/80 pb-4">
-            <div>
-              <div className="inline-flex items-center gap-1.5 text-sx-amber-text text-xs font-bold uppercase tracking-wider mb-1">
-                <Banknote className="w-3.5 h-3.5" />
-                <span>Manual M-Pesa disbursements</span>
-              </div>
-              <h2 className="text-2xl font-bold text-sx-ink font-display flex items-center gap-2.5">
-                <span>M-Pesa Payouts</span>
-                {pendingWithdrawalsCount > 0 ? (
-                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-sx-amber-tint text-sx-amber-text border border-sx-amber-border font-mono font-bold animate-pulse">
-                    {pendingWithdrawalsCount} awaiting action
-                  </span>
-                ) : (
-                  <span className="text-xs px-2.5 py-0.5 rounded-full bg-sx-stone text-sx-ink-soft font-mono font-bold">
-                    All processed
-                  </span>
-                )}
-              </h2>
-              <p className="text-xs text-sx-muted mt-0.5">
-                Review requests, arrange any M-Pesa transfer manually outside this system, and record the outcome. The status here does not verify a provider transaction.
-              </p>
-            </div>
-          </div>
-
-          {/* Filters & Search */}
-          <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
-            <div className="flex items-center gap-1.5 p-1 rounded-xl bg-pitch-surface border border-pitch-border text-xs overflow-x-auto">
-              {(["all", "pending", "processing", "completed", "rejected"] as const).map((filter) => {
-                const count =
-                  filter === "all"
-                    ? withdrawals.length
-                    : withdrawals.filter((w) => w.status === filter).length;
-                return (
-                  <button
-                    key={filter}
-                    type="button"
-                    onClick={() => setWithdrawalFilter(filter)}
-                    className={`px-3 py-1.5 rounded-lg font-medium transition capitalize flex items-center gap-1.5 shrink-0 ${
-                      withdrawalFilter === filter
-                        ? "bg-amber-500 text-zinc-950 font-bold shadow"
-                        : "text-sx-muted hover:text-sx-ink"
-                    }`}
-                  >
-                    <span>{filter}</span>
-                    <span
-                      className={`text-[10px] px-1.5 py-0.5 rounded-full ${
-                        withdrawalFilter === filter
-                          ? "bg-black/20 text-zinc-950 font-bold"
-                          : "bg-pitch-card text-sx-muted"
-                      }`}
-                    >
-                      {count}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-
-            <div className="flex items-center gap-2 flex-wrap">
-              <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-sx-green-tint border border-sx-green-border text-[11px] font-medium text-sx-green-text">
-                <span className="relative flex h-2 w-2">
-                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                  <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
-                </span>
-                <span>Live Realtime Sync</span>
-              </div>
-              <button
-                type="button"
-                onClick={reloadWithdrawals}
-                className="p-2 rounded-xl bg-pitch-surface border border-pitch-border text-sx-muted hover:text-sx-ink hover:bg-pitch-card transition-colors"
-                title="Refresh withdrawals"
-              >
-                <RefreshCw className="w-3.5 h-3.5" />
-              </button>
-              <div className="relative min-w-[220px]">
-                <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-sx-muted" />
-                <input
-                  type="text"
-                  placeholder="Search phone, seller, amount..."
-                  value={withdrawalSearch}
-                  onChange={(e) => setWithdrawalSearch(e.target.value)}
-                  className="w-full pl-9 pr-3 py-2 rounded-xl bg-pitch-surface border border-pitch-border text-xs text-sx-ink-soft placeholder:text-sx-muted focus:outline-none focus:border-amber-400"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Table / List */}
-          {filteredWithdrawals.length === 0 ? (
-            <div className="p-12 text-center rounded-2xl bg-pitch-surface border border-pitch-border text-sx-muted space-y-2">
-              <Banknote className="w-8 h-8 mx-auto text-sx-muted" />
-              <p className="text-xs font-semibold text-sx-ink-soft">No withdrawal requests found</p>
-              <p className="text-[11px] text-sx-muted">
-                {withdrawalFilter !== "all"
-                  ? `There are no withdrawals with status "${withdrawalFilter}".`
-                  : "No sellers have requested withdrawals yet."}
-              </p>
-            </div>
-          ) : (
-            <div className="overflow-hidden rounded-2xl bg-pitch-surface border border-pitch-border shadow-xl">
-              <div className="overflow-x-auto">
-                <table className="w-full text-left text-xs text-sx-ink-soft">
-                  <thead className="bg-pitch-card/60 border-b border-pitch-border text-[11px] text-sx-muted uppercase tracking-wider font-semibold">
-                    <tr>
-                      <th className="px-4 py-3">Seller</th>
-                      <th className="px-4 py-3">M-Pesa Phone</th>
-                      <th className="px-4 py-3">Amount</th>
-                      <th className="px-4 py-3">Status</th>
-                      <th className="px-4 py-3">Requested Date</th>
-                      <th className="px-4 py-3 text-right">Actions</th>
-                    </tr>
-                  </thead>
-                  <tbody className="divide-y divide-pitch-border/50">
-                    {filteredWithdrawals.map((w) => {
-                      const isPending = w.status === "pending" || w.status === "processing";
-                      const isProcessing = w.status === "processing";
-                      const isCompleted = w.status === "completed";
-                      const isRejected = w.status === "rejected";
-
-                      return (
-                        <tr key={w.id} className="hover:bg-pitch-card/30 transition-colors">
-                          <td className="px-4 py-3.5">
-                            <div className="font-semibold text-sx-ink">
-                              {w.seller?.username || "Unknown Seller"}
-                            </div>
-                            <div className="text-[10px] text-sx-muted font-mono">
-                              {w.seller?.email || w.seller_id}
-                            </div>
-                          </td>
-
-                          <td className="px-4 py-3.5">
-                            <div className="flex items-center gap-2 font-mono text-sx-ink-soft">
-                              <span>{formatDisplayPhone(w.phone_number)}</span>
-                              <button
-                                type="button"
-                                onClick={() => handleCopyPhone(w.phone_number)}
-                                className="p-1 rounded hover:bg-pitch-card text-sx-muted hover:text-sx-ink transition-colors"
-                                title="Copy phone number"
-                              >
-                                {copiedPhone === w.phone_number ? (
-                                  <Check className="w-3.5 h-3.5 text-sx-green-text" />
-                                ) : (
-                                  <Copy className="w-3.5 h-3.5" />
-                                )}
-                              </button>
-                              <a
-                                href={`https://wa.me/${formatWhatsAppPhone(w.phone_number)}`}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="p-1 rounded hover:bg-sx-green-tint text-sx-green-text hover:text-sx-green-text transition-colors"
-                                title="Chat on WhatsApp"
-                              >
-                                <MessageCircle className="w-3.5 h-3.5" />
-                              </a>
-                            </div>
-                          </td>
-
-                          <td className="px-4 py-3.5 font-mono font-bold text-sx-green-text text-sm">
-                            {formatCurrency(w.amount)}
-                          </td>
-
-                          <td className="px-4 py-3.5">
-                            {isPending && (
-                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-sx-amber-tint border border-sx-amber-border text-sx-amber-text">
-                                <Clock className="w-3 h-3 animate-spin text-sx-amber-text" />
-                                {isProcessing ? "Processing · Manual Review" : "Pending Review"}
-                              </span>
-                            )}
-                            {isCompleted && (
-                              <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-sx-green-tint border border-sx-green-border text-sx-green-text">
-                                <CheckCircle2 className="w-3 h-3 text-sx-green-text" />
-                                Marked Paid · Manual Confirmation
-                              </span>
-                            )}
-                            {isRejected && (
-                              <div className="space-y-0.5">
-                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-sx-red-tint border border-sx-red-border text-sx-red-text">
-                                <XCircle className="w-3 h-3 text-sx-red-text" />
-                                Rejected
-                              </span>
-                                {w.failure_reason && (
-                                  <p className="text-[10px] text-sx-muted italic max-w-xs truncate">
-                                    Reason: {w.failure_reason}
-                                  </p>
-                                )}
-                              </div>
-                            )}
-                          </td>
-
-                          <td className="px-4 py-3.5 text-[11px] text-sx-muted">
-                            {new Date(w.created_at).toLocaleString()}
-                          </td>
-
-                          <td className="px-4 py-3.5 text-right">
-                            {isPending ? (
-                              <div className="flex items-center justify-end gap-2">
-                                <Button
-                                  variant="danger"
-                                  size="sm"
-                                  onClick={() => {
-                                    setRejectModalTarget(w);
-                                    setRejectModalReason("");
-                                  }}
-                                  disabled={actionLoading}
-                                  className="text-xs"
-                                >
-                                  Reject &amp; Restore Balance
-                                </Button>
-                                <Button
-                                  variant="gold"
-                                  size="sm"
-                                  onClick={() => {
-                                    if (
-                                      confirm(
-                                        `Confirm that you have sent ${formatCurrency(w.amount)} to M-Pesa line ${w.phone_number}?`
-                                      )
-                                    ) {
-                                      handleWithdrawalAction(w.id, "completed");
-                                    }
-                                  }}
-                                  disabled={actionLoading}
-                                  className="text-xs font-bold"
-                                >
-                                  <Check className="w-3.5 h-3.5 mr-1" />
-                                  Record Manual Payment
-                                </Button>
-                              </div>
-                            ) : (
-                              <span className="text-[11px] text-sx-muted italic">No action needed</span>
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-          )}
-        </div>
+        <AdminWithdrawalsTab
+          withdrawals={withdrawals}
+          pendingWithdrawalsCount={pendingWithdrawalsCount}
+          actionLoading={actionLoading}
+          onWithdrawalAction={handleWithdrawalAction}
+          onReload={reloadWithdrawals}
+        />
       )}
-
-      {/* TAB: TILL 1572931 RECEIPTS */}
       {activeTab === "payments" && <AdminPaymentsTab onFeedback={setFeedback} />}
 
       {/* Modal: Takedown Listing with Reason */}

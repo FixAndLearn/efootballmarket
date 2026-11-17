@@ -3,6 +3,10 @@
     {
       "path": "/api/cron/housekeeping",
       "schedule": "0 2 * * *"
+    },
+    {
+      "path": "/api/cron/review-prompts",
+      "schedule": "0 */6 * * *"
     }
   ]
 }
