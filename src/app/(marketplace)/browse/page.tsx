@@ -137,11 +137,13 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
   let listings: Listing[] = [];
   let totalCount = 0;
   let loadError: string | null = null;
+  let outOfRange = false;
 
   try {
     const result = await listingService.getListings(filters);
     listings = result.listings;
     totalCount = result.totalCount;
+    outOfRange = result.outOfRange === true;
   } catch (err) {
     // Previously swallowed by a bare `catch {}`, which hid a malformed query
     // behind the "no squads match your filters" empty state.
@@ -156,12 +158,14 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
   // live. Send the shopper to the last real page instead. Only redirect when
   // the query actually succeeded, so a genuine failure is never disguised as a
   // page clamp.
-  if (!loadError && totalCount > 0 && currentPage > totalPages) {
+  if (!loadError && (outOfRange || (totalCount > 0 && currentPage > totalPages))) {
+    // Keep every filter, drop the page number. Landing on page 1 of current
+    // stock is the honest destination for a stale link -- and it is guaranteed
+    // to exist, unlike guessing the last page when the total is unknown.
     const params = new URLSearchParams();
     Object.entries(searchParams || {}).forEach(([k, v]) => {
-      if (v && k !== "page") params.set(k, v);
+      if (v && k !== "page" && !(k === "sortBy" && v === "newest")) params.set(k, v);
     });
-    if (totalPages > 1) params.set("page", String(totalPages));
     const qs = params.toString();
     redirect(qs ? `/browse?${qs}` : "/browse");
   }

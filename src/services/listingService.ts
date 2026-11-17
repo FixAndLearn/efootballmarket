@@ -26,6 +26,13 @@ export interface ListingFilterParams {
 export interface ListingQueryResult {
   listings: Listing[];
   totalCount: number;
+  /**
+   * True when PostgREST rejected the request because the offset is past the
+   * end of the result set (code PGRST103, "requested range not satisfiable").
+   * This is not a failure -- it means the caller asked for a page that no
+   * longer exists, so the page can redirect instead of reporting an outage.
+   */
+  outOfRange?: boolean;
 }
 
 export class ListingService {
@@ -158,6 +165,15 @@ export class ListingService {
     const { data, count, error } = await query;
 
     if (error) {
+      // A deep offset past the last row is a stale page number, not an
+      // outage. PostgREST answers 416 with PGRST103 for this.
+      const isRangeError =
+        error.code === "PGRST103" ||
+        /requested range not satisfiable|range/i.test(error.message || "");
+      if (isRangeError) {
+        return { listings: [], totalCount: 0, outOfRange: true };
+      }
+
       if (!filters._skipPlayerSearchCol && error.message.includes("player_search_text")) {
         return this.getListings({
           ...filters,
