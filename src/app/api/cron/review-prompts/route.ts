@@ -17,7 +17,7 @@ export const dynamic = "force-dynamic";
  * the prompt in audit_logs.
  */
 
-const MAX_PER_RUN = 25;
+const MAX_PER_RUN = 100;
 
 function reviewLink(orderId: string) {
   const base = process.env.NEXT_PUBLIC_APP_URL || "https://www.efootballmarket.co.ke";
@@ -43,9 +43,9 @@ export async function GET(req: NextRequest) {
     const admin = createAdminClient();
     const now = new Date();
 
-    // Give the buyer a few hours with the account before asking.
+    // Vercel Hobby permits only daily crons, so this runs once a day: prompt
+    // orders that completed more than a few hours ago, and stop after two weeks.
     const minAge = new Date(now.getTime() - 3 * 60 * 60 * 1000).toISOString();
-    // Stop nagging after two weeks.
     const maxAge = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString();
 
     const { data: orders, error: ordersErr } = await admin
