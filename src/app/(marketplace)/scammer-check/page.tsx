@@ -1,7 +1,7 @@
 import React, { Suspense } from "react";
 import { Metadata } from "next";
 import { ScammerLookupTool } from "@/components/scammer/ScammerLookupTool";
-import { ShieldCheck, MessageCircle, Handshake } from "lucide-react";
+import { ShieldCheck, MessageCircle } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
 import { DetailTabLink } from "@/components/ui/DetailTabLink";
@@ -63,13 +63,13 @@ export default function ScammerCheckPage() {
               num: "01",
               title: "Direct M-Pesa Prepayment",
               desc: "Seller asks for full or 50% deposit directly to their personal M-Pesa number, then blocks you on WhatsApp.",
-              fix: "Pay only via Till 1572931",
+              fix: "Use marketplace checkout for covered orders",
             },
             {
               num: "02",
               title: "Cloned Group Admin Profiles",
               desc: "Impersonators copy a group admin's display photo and create a fake 3-way escrow group chat to steal logins.",
-              fix: "Start contract at /middleman",
+              fix: "Only marketplace checkout orders are covered",
             },
             {
               num: "03",
@@ -95,22 +95,21 @@ export default function ScammerCheckPage() {
         </div>
       </div>
 
-      {/* Report / Middleman Split */}
+      {/* Buyer protection reminder and scam reporting */}
       <div className="store-panel rounded-2xl p-6 sm:p-7 flex flex-col sm:flex-row sm:items-center justify-between gap-5">
         <div className="space-y-1">
           <h3 className="text-base font-bold text-sx-ink font-display">
-            Report a Scammer or Open a Safe Middleman Contract
+            Report a Scammer or Browse Protected Listings
           </h3>
           <p className="text-xs text-sx-muted max-w-xl leading-relaxed">
-            Note: Even if a number has 0 prior reports, scammers switch SIM cards regularly. Always lock off-platform deals through Till 1572931 Middleman.
+            A clean phone lookup is not a safety guarantee. Buyer protection applies only to orders created and paid through checkout on a published marketplace listing; social-media deals outside the marketplace are not covered.
           </p>
         </div>
 
         <div className="flex flex-wrap items-center gap-2.5 shrink-0">
-          <Link href="/middleman">
+          <Link href="/browse">
             <Button variant="primary" size="sm">
-              <Handshake className="w-3.5 h-3.5" />
-              <span>Open Middleman</span>
+              <span>Browse Squads</span>
             </Button>
           </Link>
           <a

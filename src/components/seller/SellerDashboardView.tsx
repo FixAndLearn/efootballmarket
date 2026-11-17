@@ -180,14 +180,14 @@ export function SellerDashboardView({
           <div className="mt-4 text-xs">
             {sellerProfile.is_verified_seller ? (
               <span className="text-sx-green-text inline-flex items-center gap-1 font-bold text-[11px]">
-                <ShieldCheck className="w-3.5 h-3.5" /> KYC Verified Seller
+                <ShieldCheck className="w-3.5 h-3.5" /> Seller ID &amp; M-Pesa Checked
               </span>
             ) : (
               <Link
                 href="/seller/verification"
                 className="text-sx-amber-text font-semibold hover:underline text-[11px]"
               >
-                Submit KYC Verification &rarr;
+                Learn About Seller Identity Checks &rarr;
               </Link>
             )}
           </div>
@@ -320,12 +320,12 @@ export function SellerDashboardView({
               const netPayout = Math.max(0, item.price - fee);
               const payLink = `https://www.efootballmarket.co.ke/pay/${item.id}`;
               const waShareUrl = `https://wa.me/?text=${encodeURIComponent(
-                `Buy my verified eFootball squad "${item.title}" (${
+                `View my seller-listed eFootball squad "${item.title}" (${
                   item.overall_team_strength
                 } OVR) for ${formatCurrency(
                   item.price,
                   item.currency
-                )} via Safaricom M-Pesa Escrow (Till 1572931): ${payLink}`
+                )} through eFootballMarket marketplace checkout (M-Pesa Till 1572931): ${payLink}`
               )}`;
 
               return (

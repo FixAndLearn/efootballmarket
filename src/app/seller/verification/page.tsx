@@ -32,7 +32,7 @@ function SellerVerificationContent() {
           Seller Identity Verification (KYC)
         </h1>
         <p className="text-sm text-sx-muted max-w-lg mx-auto leading-relaxed">
-          Official Government ID verification is coming soon as we finalize formal accreditation and compliance certifications.
+          New government ID checks are not currently available. Seller badges describe seller-level checks and history; they do not mean an eFootball account or its contents have been pre-audited.
         </p>
       </div>
 
@@ -56,6 +56,9 @@ function SellerVerificationContent() {
           <p>
             To protect user privacy and minimize collection of sensitive personal data in line with the Kenya Data Protection Act, 2019, government identity card uploads are not active. Sellers can create listings and conduct trades without submitting identity documents.
           </p>
+          <p>
+            Where an existing <strong>ID-Verified Seller</strong> badge is shown, it refers to the seller&apos;s identity and registered M-Pesa phone—not to a pre-audit of the seller&apos;s game account, squad stats, or player names. Buyers should confirm those details in-game during eligible marketplace checkout inspection.
+          </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-2">
             <div className="p-4 rounded-2xl bg-pitch-surface/90 border border-pitch-border space-y-2">
@@ -71,10 +74,10 @@ function SellerVerificationContent() {
             <div className="p-4 rounded-2xl bg-pitch-surface/90 border border-pitch-border space-y-2">
               <div className="flex items-center gap-2 text-sx-info-text font-bold text-xs">
                 <Lock className="w-4 h-4 shrink-0" />
-                <span>M-Pesa Escrow Protected</span>
+                <span>Checkout Payment Hold</span>
               </div>
               <p className="text-[11px] text-sx-muted leading-relaxed">
-                All transactions are enforced by automated Safaricom M-Pesa escrow. Payouts are locked until the buyer inspects credentials.
+                For orders placed from published listings and paid through marketplace checkout, Safaricom M-Pesa funds are held until the buyer inspects credentials.
               </p>
             </div>
           </div>

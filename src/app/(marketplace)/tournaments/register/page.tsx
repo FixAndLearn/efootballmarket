@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { normalizePhoneNumber } from "@/lib/utils/phone";
 import { formatCurrency } from "@/lib/utils";
+import { consumeTournamentRegistrationDraft } from "@/lib/tournaments/registrationDraft";
 import { Tournament } from "@/types/database";
 import {
   Trophy,
@@ -75,6 +76,17 @@ export default function RegisterTournamentPage() {
     }
   }, [profile, gamerTag, phone]);
 
+  // Restore the modal-entered details after its STK redirect without putting
+  // personal contact fields into the URL.
+  useEffect(() => {
+    if (!tourneyId) return;
+    const draft = consumeTournamentRegistrationDraft(tourneyId);
+    if (!draft) return;
+    setGamerTag(draft.gamer_tag);
+    setFriendId(draft.friend_id);
+    setPhone(draft.phone_number);
+  }, [tourneyId]);
+
   // Fetch tournaments
   useEffect(() => {
     async function loadTournaments() {
@@ -115,17 +127,30 @@ export default function RegisterTournamentPage() {
         (cleanPhone && p.phone_number && p.phone_number.includes(cleanPhone))
     );
 
-    if (existing) {
+    const isFreeEntry = Number(selectedTourney.entry_fee_kes || 0) <= 0;
+    const existingEntryIsConfirmed = Boolean(
+      existing &&
+      (existing.payment_status === "paid" ||
+        (isFreeEntry && existing.payment_status === "exempt"))
+    );
+
+    if (existingEntryIsConfirmed && existing) {
+      setError("");
       setRegResult({
-        paid_via_mpesa: existing.payment_method === "mpesa_stk",
+        paid_via_mpesa: Boolean(existing.payment_method?.startsWith("mpesa")),
         paid_via_wallet: existing.payment_method === "wallet",
-        receipt_number: existing.payment_status === "paid" ? "CONFIRMED" : undefined,
       });
       setRegSuccess(true);
       return;
     }
 
-    // Actively query backend to recover any recently settled payment (e.g. UJL9JAS7T5)
+    setRegSuccess(false);
+    if (existing) {
+      setError("An entry record exists, but payment is not confirmed. If you already started an M-Pesa payment, check its status and contact support before trying another payment.");
+    }
+
+    // Check the provider-backed record as well as the participant list. This can
+    // recover a settled payment even when the local tournament snapshot is stale.
     const targetTourneyId = selectedTourney.id;
     const targetUserId = user.id;
 
@@ -135,18 +160,22 @@ export default function RegisterTournamentPage() {
         const res = await fetch(
           `/api/tournaments/payment-status?tournamentId=${encodeURIComponent(targetTourneyId)}&userId=${encodeURIComponent(targetUserId)}&phone=${encodeURIComponent(queryPhone)}`
         );
-        if (res.ok) {
-          const data = await res.json();
-          if (data.status === "completed") {
-            setRegResult({
-              paid_via_mpesa: true,
-              receipt_number: data.receiptNumber || "CONFIRMED",
-            });
-            setRegSuccess(true);
-          }
+        if (!res.ok) return;
+        const data = await res.json();
+        if (data.status === "completed") {
+          setError("");
+          setRegResult({
+            paid_via_mpesa: true,
+            receipt_number: typeof data.receiptNumber === "string" ? data.receiptNumber : undefined,
+          });
+          setRegSuccess(true);
+        } else if (existing) {
+          setError("An entry record exists, but payment is not confirmed. If you already started an M-Pesa payment, wait for a provider status update and contact support before trying another payment.");
         }
-      } catch (e) {
-        // silent recovery fail
+      } catch {
+        if (existing) {
+          setError("An entry record exists, but its payment status could not be checked. Contact support before trying another payment.");
+        }
       }
     }
 
@@ -188,7 +217,7 @@ export default function RegisterTournamentPage() {
           setIsStkWaiting(false);
           setRegResult({
             paid_via_mpesa: true,
-            receipt_number: data.receiptNumber || "CONFIRMED",
+            receipt_number: typeof data.receiptNumber === "string" ? data.receiptNumber : undefined,
           });
           setRegSuccess(true);
         } else if (data.status === "pending") {
@@ -228,11 +257,11 @@ export default function RegisterTournamentPage() {
         setIsStkWaiting(false);
         setRegResult({
           paid_via_mpesa: true,
-          receipt_number: data.receiptNumber || "CONFIRMED",
+          receipt_number: typeof data.receiptNumber === "string" ? data.receiptNumber : undefined,
         });
         setRegSuccess(true);
       } else if (data.status === "pending") {
-        setStkMessage("Payment is processing on Safaricom Till 1572931. Waiting for Safaricom confirmation...");
+          setStkMessage("Payment is still being checked against M-Pesa provider confirmation...");
       } else if (data.status === "failed") {
         setIsStkWaiting(false);
         setError(data.resultDesc || "Transaction was not completed. Please try again.");
@@ -266,7 +295,7 @@ export default function RegisterTournamentPage() {
     }
 
     if (!phone.trim()) {
-      setError("Please enter your Safaricom phone number for M-Pesa payments and payouts.");
+      setError("Please enter a phone number for payment confirmation and tournament contact.");
       return;
     }
 
@@ -423,7 +452,7 @@ export default function RegisterTournamentPage() {
                 Lock In Your Match Slot
               </h1>
               <p className="text-xs text-sx-ink-soft max-w-xl">
-                Pay your entry fee securely via M-Pesa STK Push or Account Balance. Upfront confirmation guarantees verified brackets.
+                Paid entries must be confirmed before a slot is registered. Brackets are formed by the moderator once every slot is filled.
               </p>
             </div>
             <div className="shrink-0">
@@ -546,13 +575,13 @@ export default function RegisterTournamentPage() {
             <div className="space-y-2 max-w-lg mx-auto">
               <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-sx-green-tint border border-sx-green-border text-sx-green-text text-[11px] font-bold uppercase tracking-wider">
                 <Check className="w-3.5 h-3.5" />
-                <span>Payment Confirmed & Slot Locked In</span>
+                <span>{selectedTourney.entry_fee_kes > 0 ? "Payment Confirmed & Entry Recorded" : "Free Entry Recorded"}</span>
               </div>
               <h2 className="text-2xl sm:text-3xl font-black text-sx-ink font-display">
-                Registration Confirmed!
+                Registration Confirmed
               </h2>
               <p className="text-xs text-sx-ink-soft">
-                You are officially registered for <strong>{selectedTourney.title}</strong>. Your match room slot is guaranteed!
+                Your entry is recorded for <strong>{selectedTourney.title}</strong>. Brackets are formed by the tournament moderator after all required entries are confirmed.
               </p>
             </div>
 
@@ -580,10 +609,12 @@ export default function RegisterTournamentPage() {
                 </div>
               )}
 
-              {regResult?.paid_via_wallet && (
+              {(regResult?.paid_via_wallet || regResult?.paid_via_mpesa) && (
                 <div className="flex items-center justify-between border-b border-pitch-border/80 pb-2">
                   <span className="text-sx-muted">Paid Via:</span>
-                  <strong className="text-sx-green-text font-semibold">Account Wallet Balance</strong>
+                  <strong className="text-sx-green-text font-semibold">
+                    {regResult.paid_via_wallet ? "Account Wallet Balance" : "M-Pesa STK Push"}
+                  </strong>
                 </div>
               )}
 
@@ -601,13 +632,15 @@ export default function RegisterTournamentPage() {
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 max-w-md mx-auto">
               <a
                 href={`https://wa.me/254794400365?text=${encodeURIComponent(
-                  `Hello Brian Okibo, I registered and confirmed payment for "${selectedTourney.title}"!\nGamer Tag: ${gamerTag || profile?.username}\nFriend ID: ${friendId}\nPhone: ${phone}\nPayment: ${
+                  `Hello Brian Okibo, ${selectedTourney.entry_fee_kes > 0 ? "my entry payment was confirmed" : "I registered for free"} for "${selectedTourney.title}"!\nGamer Tag: ${gamerTag || profile?.username}\nFriend ID: ${friendId}\nPhone: ${phone}\nPayment: ${
                     regResult?.receipt_number
                       ? `M-Pesa Receipt: ${regResult.receipt_number}`
                       : regResult?.paid_via_wallet
                       ? `Paid via Account Balance (KES ${selectedTourney.entry_fee_kes})`
+                      : regResult?.paid_via_mpesa
+                      ? `Paid via M-Pesa STK Push (KES ${selectedTourney.entry_fee_kes})`
                       : "Free Entry"
-                  }\nReady for match bracket room!`
+                  }\nPlease confirm my tournament entry record.`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
@@ -659,7 +692,7 @@ export default function RegisterTournamentPage() {
 
                 <div className="p-3.5 rounded-2xl bg-pitch-card border border-pitch-border space-y-2 text-xs">
                   <div className="flex items-center justify-between text-sx-ink-soft">
-                    <span>Prize Pool:</span>
+                    <span>{selectedTourney?.status === "registration_open" ? "Projected Prize Pool (if full):" : "Prize Pool:"}</span>
                     <strong className="text-sx-green-text font-mono font-bold">
                       {formatCurrency(selectedTourney?.prize_pool_kes || 0, "KES")}
                     </strong>
@@ -739,7 +772,7 @@ export default function RegisterTournamentPage() {
                 />
 
                 <Input
-                  label="Safaricom Phone Number (For M-Pesa STK Push & Payouts)"
+                  label="Safaricom Phone Number (for M-Pesa STK Push and tournament contact)"
                   placeholder="e.g. 0712345678 or 254712345678"
                   value={phone}
                   onChange={(e) => setPhone(e.target.value)}

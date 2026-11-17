@@ -6,7 +6,7 @@ import { DetailTabLink } from "@/components/ui/DetailTabLink";
 export const metadata: Metadata = {
   title: "Terms of Service",
   description:
-    "Standalone Terms of Service for eFootballMarket Kenya: M-Pesa Till 1572931 payment hold, 12-hour delivery, 24-hour buyer inspection, Middleman contracts, tournaments, and Kenyan governing law.",
+    "Standalone Terms of Service for eFootballMarket Kenya: marketplace checkout payments, M-Pesa Till 1572931 payment hold, 12-hour delivery, 24-hour buyer inspection, tournaments, and Kenyan governing law.",
   alternates: { canonical: "https://www.efootballmarket.co.ke/terms" },
 };
 
@@ -15,7 +15,7 @@ export default function TermsPage() {
     <StandaloneDocLayout
       badge="Terms of Service"
       title="Terms of Service"
-      subtitle="Plain-language agreement governing account trading, M-Pesa Till 1572931 payment holding, 24-hour buyer inspections, Middleman contracts, and tournaments on eFootballMarket.co.ke."
+      subtitle="Plain-language agreement governing marketplace listings and checkout, M-Pesa Till 1572931 payment holding, 24-hour buyer inspections, and tournaments on eFootballMarket.co.ke."
       keyFacts={[
         { value: "Till 1572931", label: "Official M-Pesa Hold" },
         { value: "KES 0", label: "Added Buyer Fee" },
@@ -28,11 +28,11 @@ export default function TermsPage() {
           1. Who We Are &amp; Independent Marketplace Role
         </h2>
         <p>
-          <strong>eFootballMarket Kenya</strong> (&ldquo;eFootballMarket,&rdquo; &ldquo;we,&rdquo; or &ldquo;us&rdquo;) is a sole proprietorship operated in Nairobi, Republic of Kenya by <strong>Brian Okibo</strong> at <strong>efootballmarket.co.ke</strong>. We provide a listing board, payment-hold (escrow) Order Room, Middleman deal desk, and community tournament organizer.
+          <strong>eFootballMarket Kenya</strong> (&ldquo;eFootballMarket,&rdquo; &ldquo;we,&rdquo; or &ldquo;us&rdquo;) is a sole proprietorship operated in Nairobi, Republic of Kenya by <strong>Brian Okibo</strong> at <strong>efootballmarket.co.ke</strong>. We provide a squad-listing marketplace, payment-hold Order Room for eligible marketplace purchases, and community tournament services.
         </p>
         <p>
-          <strong>Who Controls Payment Funds:</strong> Buyers pay via Safaricom Lipa Na M-Pesa into eFootballMarket Kenya&apos;s business Buy Goods Till <strong>1572931</strong>. Safaricom PLC acts solely as the mobile-money payment processor and does not manage orders or decide disputes. eFootballMarket Kenya holds received funds in its platform settlement account while an order is open and administers payouts or refunds under our{" "}
-          <DetailTabLink href="/dispute-policy">Refund &amp; Dispute Policy</DetailTabLink>.
+          <strong>Who Controls Payment Funds:</strong> Buyers pay via Safaricom Lipa Na M-Pesa into eFootballMarket Kenya&apos;s business Buy Goods Till <strong>1572931</strong>. Safaricom PLC acts solely as the mobile-money payment processor and does not manage orders or decide disputes. eFootballMarket Kenya holds received funds in its platform settlement account while an order is open, credits seller balances on release, and reviews refund requests under our{" "}
+          <DetailTabLink href="/dispute-policy">Refund &amp; Dispute Policy</DetailTabLink>. Approved M-Pesa refunds are arranged manually; this system does not confirm that funds were sent.
         </p>
         <p>
           <strong>Independent Service:</strong> We are not affiliated with, endorsed by, or connected to <strong>Konami Digital Entertainment Co., Ltd.</strong>, <strong>Safaricom PLC</strong>, <strong>Sony</strong>, <strong>Microsoft</strong>, <strong>Valve</strong>, <strong>Google</strong>, or <strong>Apple</strong>.
@@ -48,7 +48,7 @@ export default function TermsPage() {
             <strong>Age &amp; Account:</strong> You must be at least <strong>18 years old</strong> and able to enter a contract under Kenyan law, with an active Kenyan M-Pesa number for payments or payouts.
           </li>
           <li>
-            <strong>Seller Badges:</strong> A <em>New Seller</em> has verified an email and Kenyan phone number (0 completed sales). A <em>Proven Seller</em> has completed one or more buyer-confirmed escrow sales. An <em>ID-Verified Seller</em> has additionally verified Kenyan identification and a matching M-Pesa number with our desk. We do not log into seller game accounts before purchase; every order relies on your 24-hour buyer inspection hold.
+            <strong>Seller Badges:</strong> A <em>New Seller</em> has a registered account email and Kenyan phone number (0 completed sales). A <em>Proven Seller</em> has one or more completed checkout sales confirmed by buyers. An <em>ID-Verified Seller</em> badge indicates that Kenyan identification and a matching M-Pesa number were checked by our desk. No seller badge certifies the game account or its listing contents; eligible marketplace checkout orders rely on the buyer inspection period.
           </li>
         </ul>
       </section>
@@ -76,26 +76,26 @@ export default function TermsPage() {
         </h2>
         <ul className="list-disc pl-5 space-y-2">
           <li>
-            <strong>Step 1 — Payment Hold (Till 1572931):</strong> Buyers pay through Safaricom Buy Goods Till <strong>1572931</strong> (KES 0 added buyer fee). Payments sent directly to personal phone numbers are outside our control and are not covered.
+            <strong>Step 1 — Marketplace Checkout Payment Hold (Till 1572931):</strong> For an order created from a published listing, buyers pay through the marketplace checkout using the official Safaricom Till or STK prompt (KES 0 added buyer fee). Payments sent directly to personal phone numbers or for external deals are outside our control and are not covered.
           </li>
           <li>
-            <strong>Step 2 — Seller Delivery (12 Hours):</strong> Sellers have up to <strong>12 hours</strong> after payment confirmation to submit logins inside the Order Room and share the email-change OTP, or the buyer may cancel for a 100% refund.
+            <strong>Step 2 — Seller Delivery (12 Hours):</strong> Sellers have up to <strong>12 hours</strong> after payment confirmation to submit logins inside the Order Room and share the email-change OTP. If delivery is missed, the buyer may open a dispute or contact support for review. A full refund may be approved; any approved M-Pesa refund is arranged manually, and this system does not confirm that funds were sent.
           </li>
           <li>
             <strong>Step 3 — Buyer Inspection (24 Hours):</strong> Buyers have <strong>24 hours</strong> from credential delivery to check permanent cards and <em>Link Data = Not Linked</em>, and rebind the Konami ID email, password, and 2FA at <code>my.konami.net</code>.
           </li>
           <li>
-            <strong>Step 4 — Payout or Dispute:</strong> Seller net payout (agreed price minus our <strong>5% seller fee, min KES 50, max KES 500</strong>) is released when the buyer taps <strong>Confirm &amp; Release</strong> or after 24 uncontested hours. Tapping <strong>Open Dispute</strong> within 24 hours pauses payout for moderator review (24–48 hours).
+            <strong>Step 4 — Balance Credit, Withdrawal or Dispute:</strong> When the buyer taps <strong>Confirm &amp; Release</strong> or 24 hours pass without a dispute, the seller’s available balance is credited with the agreed price minus our <strong>5% seller fee, min KES 50, max KES 500</strong>. The seller must submit a separate M-Pesa withdrawal request. Requests are reviewed and processed manually; processing times vary, so follow the request status or contact support. Tapping <strong>Open Dispute</strong> within 24 hours pauses release for moderator review; review time varies.
           </li>
         </ul>
       </section>
 
       <section className="space-y-3 pt-6 border-t border-sx-border">
         <h2 className="text-lg sm:text-xl font-bold text-sx-ink font-display">
-          5. Off-Platform Deals, Prohibited Conduct &amp; Governing Law
+          5. External Transactions, Prohibited Conduct &amp; Governing Law
         </h2>
         <p>
-          <strong>Off-Platform Deals Settled Here:</strong> Finding a buyer or seller on WhatsApp, Facebook, TikTok, or Discord is permitted when settled on eFootballMarket via a Listing or Middleman Deal Code on Till <strong>1572931</strong>. Asking a user in listings or Order Chat to bypass Till 1572931, submitting fake SMS receipts, altering a squad before requesting a refund, or attempting post-sale account recovery results in account suspension, wallet freeze to cover affected orders, and verified Scammer Check listing.
+          <strong>External Deals Are Not Covered:</strong> Transactions arranged or settled on WhatsApp, Facebook, TikTok, Discord, or another external service are not escrowed or protected by eFootballMarket. We no longer provide an off-platform contract or deal-code service. Buyer protection applies only when a buyer places an order from a published marketplace listing and pays through eFootballMarket checkout. Never send money or credentials outside an active order; fake receipts, listing fraud, or post-sale account recovery may result in account suspension and other action under our policies.
         </p>
         <p>
           <strong>Publisher Rules, Liability Cap &amp; Kenyan Law:</strong> Game publishers such as Konami maintain their own terms restricting account transfers and may modify features or restrict accounts under their own rules. Once you verify a Clean Konami ID and release escrow, ongoing care of the account rests with you. To the extent permitted by Kenyan law, eFootballMarket&apos;s maximum liability on any order is capped at the <strong>total KES escrow amount actually received by Till 1572931 for that order</strong>. Governed by the laws of the <strong>Republic of Kenya</strong>.

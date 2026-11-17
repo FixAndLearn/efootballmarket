@@ -104,7 +104,7 @@ export async function POST(
       );
     }
 
-    const rate = checkRateLimit(`rate_order:${user.id}:${ip}`, 6, 60000);
+    const rate = await checkRateLimit(`rate_order:${user.id}:${ip}`, 6, 60000);
     if (!rate.success) {
       return NextResponse.json(
         { error: "Too many rating requests. Please wait a moment." },

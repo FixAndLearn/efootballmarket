@@ -8,12 +8,11 @@ import { AdBanner } from "@/components/common/AdBanner";
 import { QuietAlertOptIn } from "@/components/common/QuietAlertOptIn";
 import { useAuth } from "@/hooks/useAuth";
 import { formatCurrency, getPlatformLabel, getPlaystyleLabel } from "@/lib/utils";
-import { formatWhatsAppPhone, normalizePhoneNumber } from "@/lib/utils/phone";
+import { normalizePhoneNumber } from "@/lib/utils/phone";
 import { Platform, Playstyle, WantedRequest } from "@/types/database";
 import {
   Target,
   PlusCircle,
-  MessageCircle,
   ShieldCheck,
   Zap,
   Filter,
@@ -343,17 +342,12 @@ export default function WantedBoardPage() {
                   </div>
                 </div>
 
-                <a
-                  href={`https://wa.me/254794400365?text=${encodeURIComponent(
-                    `Hello eFootballMarket Escrow Desk, I have a matching squad for Buyer Request "${req.title}" (Budget: KES ${req.budget_kes.toLocaleString()}, Request #${String(req.id).slice(0, 8)}). Please connect us via Till 1572931 Middleman.`
-                  )}`}
-                  target="_blank"
-                  rel="noopener noreferrer"
+                <Link
+                  href="/seller/create-listing"
                   className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sx-green hover:bg-sx-green-hover text-white font-bold text-xs transition-colors"
                 >
-                  <MessageCircle className="w-4 h-4" />
-                  <span>Pitch Matching Squad via Escrow Desk</span>
-                </a>
+                  <span>List a Matching Squad</span>
+                </Link>
               </div>
             </div>
           ))}
@@ -369,7 +363,7 @@ export default function WantedBoardPage() {
           <div>
             <h4 className="text-sm font-bold text-sx-ink">Safe Trading Protocol for Wanted Deals</h4>
             <p className="text-xs text-sx-ink-soft">
-              Never send credentials or money directly on WhatsApp. Always create a listing and process payment through Lipa Na M-Pesa Till <strong>1572931</strong>.
+              Never send credentials or money directly on WhatsApp. Buyer protection applies only when a buyer places and pays for an order through checkout on a published listing.
             </p>
           </div>
         </div>

@@ -196,17 +196,17 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
               <ShieldCheck className="w-3.5 h-3.5 text-sx-green-text shrink-0" />
               <span>Handover Guide &amp; Rules</span>
             </button>
-            {currentStatus !== "payment_pending" && currentStatus !== "cancelled" && (
+            {currentStatus !== "payment_pending" && currentStatus !== "cancelled" && currentStatus !== "refunded" && (
               <button
                 type="button"
                 onClick={() => setIsReceiptModalOpen(true)}
                 className="text-xs text-sx-amber-text hover:text-sx-amber-text flex items-center gap-1.5 font-bold transition-colors cursor-pointer bg-pitch-card border border-pitch-border px-2.5 py-1.5 rounded-xl"
               >
                 <FileText className="w-3.5 h-3.5 text-sx-amber-text shrink-0" />
-                <span>Official Receipt</span>
+                <span>Order Record</span>
               </button>
             )}
-            {currentStatus !== "payment_pending" && currentStatus !== "cancelled" && currentStatus !== "disputed" && (
+            {currentStatus !== "payment_pending" && currentStatus !== "cancelled" && currentStatus !== "refunded" && currentStatus !== "disputed" && (
               <button
                 type="button"
                 onClick={() => setIsDisputeModalOpen(true)}
@@ -263,7 +263,7 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
                 </div>
                 <div className="p-2.5 rounded-xl bg-pitch-card border border-pitch-border flex items-start gap-2">
                   <span className="w-5 h-5 rounded-full bg-sx-green-tint text-sx-green-text font-bold text-[10px] flex items-center justify-center shrink-0 mt-0.5">3</span>
-                  <span className="text-sx-ink-soft text-[11px] leading-tight">Locked in Till 1572931 custody instantly</span>
+                  <span className="text-sx-ink-soft text-[11px] leading-tight">Payment is recorded after provider confirmation</span>
                 </div>
               </div>
 
@@ -279,7 +279,7 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
                 </Button>
                 <span className="text-[11px] text-sx-muted flex items-center gap-1.5">
                   <ShieldCheck className="w-4 h-4 text-sx-green-text shrink-0" />
-                  <span>100% money-back escrow guarantee if seller fails to deliver</span>
+                  <span>Refunds depend on evidence review; approved M-Pesa transfers are arranged manually.</span>
                 </span>
               </div>
             </div>
@@ -659,14 +659,14 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
               <CheckCircle2 className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="text-base font-bold text-sx-ink">Order Completed & Funds Released</h3>
-              <p className="text-xs text-sx-muted">Escrow ledger settled successfully.</p>
+              <h3 className="text-base font-bold text-sx-ink">Order Completed</h3>
+              <p className="text-xs text-sx-muted">Seller proceeds are recorded in the available platform balance; any M-Pesa withdrawal is separate.</p>
             </div>
           </div>
           <p className="text-xs text-sx-ink-soft">
             {isBuyer
-              ? "Account access confirmed. Enjoy your new eFootball squad!"
-              : `Net payout of ${formatCurrency(order.seller_net_amount, order.currency)} has been credited to your available balance.`}
+              ? "Account access confirmed. The seller's proceeds were credited to their available platform balance; this is not proof of an M-Pesa withdrawal. Enjoy your new eFootball squad!"
+              : `Net proceeds of ${formatCurrency(order.seller_net_amount, order.currency)} were credited to your available platform balance. Any M-Pesa withdrawal requires a separate request and manual review.`}
           </p>
 
           <SellerRatingBox
@@ -675,16 +675,16 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
             isBuyer={isBuyer}
           />
 
-          {/* Post-Release Dispute Guarantee Box */}
+          {/* Post-Release Dispute Review Box */}
           <div className="p-4 rounded-xl bg-pitch-card/80 border border-sx-amber-border space-y-3">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h4 className="text-xs font-bold text-sx-amber-text flex items-center gap-1.5">
                   <ShieldAlert className="w-4 h-4 text-sx-amber-text" />
-                  <span>Konami Post-Release Security Guarantee</span>
+                  <span>Konami Post-Release Dispute Review</span>
                 </h4>
                 <p className="text-[11px] text-sx-muted mt-1 leading-relaxed">
-                  Did the seller attempt to recover the Konami ID? Was an unmentioned Google Play link found, or did the account get banned? You can raise an official post-release dispute at any time.
+                  Report suspected Konami ID recovery, an undisclosed Google Play link, or account damage with evidence. Moderators review the claim; opening a post-release dispute does not automatically hold seller funds or reverse an M-Pesa transfer already sent. Any reimbursement is a separate manual decision.
                 </p>
               </div>
               <Button
@@ -707,7 +707,7 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
               className="font-bold shadow-md cursor-pointer"
             >
               <FileText className="w-4 h-4 mr-1.5" />
-              View Official Escrow Receipt (Print / PDF)
+              Print / Save Order Record
             </Button>
           </div>
         </div>
@@ -765,7 +765,11 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
 
       <EscrowReceiptModal
         order={order}
-        isOpen={isReceiptModalOpen}
+        status={currentStatus}
+        isOpen={
+          isReceiptModalOpen &&
+          !["payment_pending", "cancelled", "refunded"].includes(currentStatus)
+        }
         onClose={() => setIsReceiptModalOpen(false)}
       />
     </div>

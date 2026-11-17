@@ -194,7 +194,7 @@ export function MpesaPaymentModal({
 
   const handleManualCheck = async () => {
     setIsCheckingManual(true);
-    setManualNote("Contacting Safaricom Till 1572931 & verifying database...");
+    setManualNote("Checking for a provider-confirmed M-Pesa settlement...");
 
     const checkStatus = async () => {
       try {
@@ -237,7 +237,7 @@ export function MpesaPaymentModal({
     setTimeout(async () => {
       const secondDone = await checkStatus();
       if (!secondDone) {
-        setManualNote("Safaricom Till 1572931 received request. If PIN was entered, enter your SMS receipt code below for instant confirmation.");
+        setManualNote("No provider-confirmed settlement is available yet. An SMS receipt code alone cannot unlock escrow; keep the order pending while confirmation is checked.");
       }
       setIsCheckingManual(false);
     }, 1200);
@@ -280,7 +280,7 @@ export function MpesaPaymentModal({
       } else if (data.status === "pending_verification") {
         setManualNote(
           data.message ||
-            "Receipt submitted for Till 1572931 statement verification. Escrow unlocks once confirmed."
+            "Receipt claim recorded. The receipt text alone cannot unlock escrow; settlement stays pending until the provider confirms the matching transaction and amount."
         );
       } else {
         setReceiptError("Verification pending. Please wait a moment.");
@@ -394,14 +394,14 @@ export function MpesaPaymentModal({
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-sx-ink-soft flex items-center gap-1.5">
                     <Zap className="w-3.5 h-3.5 text-sx-amber-text fill-amber-400" />
-                    <span>Have Your M-Pesa SMS Receipt?</span>
+                    <span>Submit an M-Pesa Receipt Claim</span>
                   </span>
                   <span className="text-[10px] text-sx-green-text font-semibold bg-sx-green-tint px-2 py-0.5 rounded border border-sx-green-border">
-                    Instant Unlock
+                    Claim only
                   </span>
                 </div>
                 <p className="text-[11px] text-sx-muted">
-                  Received the SMS from Safaricom? Enter the receipt code (e.g. <strong className="text-sx-ink-soft">UJD9J9UHFD</strong>) to immediately lock funds in escrow without waiting.
+                  A receipt code can be submitted as a claim (e.g. <strong className="text-sx-ink-soft">UJD9J9UHFD</strong>), but it does not prove settlement. Escrow unlocks only after the provider confirms the transaction and amount.
                 </p>
                 <form onSubmit={handleVerifyReceipt} className="flex items-center gap-2 pt-1">
                   <input
@@ -420,7 +420,7 @@ export function MpesaPaymentModal({
                     isLoading={isVerifyingReceipt}
                     disabled={!receiptCode.trim()}
                   >
-                    Verify Receipt
+                    Submit claim
                   </Button>
                 </form>
                 {receiptError && (

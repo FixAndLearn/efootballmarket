@@ -21,13 +21,16 @@ export function TrustBadgeGuide() {
         </span>
         <span className="hidden md:inline-flex items-center gap-1 text-sx-muted pl-1">
           <Lock className="w-3 h-3 text-sx-green-text" />
-          <span>Every order held 24h on Till 1572931</span>
+          <span>Eligible checkout orders held 24h on Till 1572931</span>
         </span>
       </div>
 
       <DetailTabLink href="/escrow-guarantee">
         Badge &amp; Escrow Details
       </DetailTabLink>
+      <p className="w-full border-t border-sx-border pt-2 text-[11px] leading-relaxed text-sx-muted">
+        Seller badges describe registration, identity checks, or completed-sale history—not an audit of a particular game account or its listed players. Confirm squad details in-game during eligible checkout inspection.
+      </p>
     </div>
   );
 }

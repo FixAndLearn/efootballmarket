@@ -2,6 +2,7 @@
 
 import { createClient } from "@/lib/supabase/client";
 import { Profile } from "@/types/database";
+import { SELF_PROFILE_SELECT } from "@/lib/security/publicSanitizer";
 import { User } from "@supabase/supabase-js";
 import { useEffect, useState, useCallback } from "react";
 
@@ -15,7 +16,7 @@ export function useAuth() {
       const supabase = createClient();
       const { data, error } = await supabase
         .from("profiles")
-        .select("*")
+        .select(SELF_PROFILE_SELECT)
         .eq("id", userId)
         .single();
 

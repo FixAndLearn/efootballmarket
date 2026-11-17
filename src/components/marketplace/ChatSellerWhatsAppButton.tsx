@@ -202,7 +202,7 @@ export function ChatSellerWhatsAppButton({
           href={`/pay/${listingId}`}
           className="w-full py-2 px-3 rounded-lg bg-sx-green text-white font-bold text-xs inline-flex items-center justify-center"
         >
-          Lock via M-Pesa Till 1572931 Escrow &rarr;
+          Continue to Marketplace Checkout &rarr;
         </Link>
       </div>
     );

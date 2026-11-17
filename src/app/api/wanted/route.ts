@@ -74,7 +74,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const ip = getClientIp(req);
-    const rate = checkRateLimit(`wanted_post:${ip}`, 5, 60000);
+    const rate = await checkRateLimit(`wanted_post:${ip}`, 5, 60000);
     if (!rate.success) {
       return NextResponse.json(
         { error: "Too many squad requests submitted. Please wait 1 minute." },
@@ -117,7 +117,7 @@ export async function POST(req: NextRequest) {
       buyer_name: buyer_name?.trim() || "Verified Buyer",
       buyer_phone: internationalPhone,
       title: title.trim(),
-      description: description?.trim() || "Ready to purchase through eFootballMarket escrow immediately.",
+      description: description?.trim() || "Ready to purchase through a published eFootballMarket listing and marketplace checkout.",
       min_overall_rating: Number(min_overall_rating) || 3000,
       target_playstyle: target_playstyle || "quick_counter",
       preferred_platform: preferred_platform || "android",

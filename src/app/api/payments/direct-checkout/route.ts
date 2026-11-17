@@ -4,8 +4,12 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { PaymentService } from "@/services/paymentService";
 import { normalizePhoneNumber } from "@/lib/utils/phone";
 import { dispatchAdminWhatsAppAlert } from "@/lib/notifications/adminAlert";
-import { checkRateLimit, getIdempotencyResult, setIdempotencyResult } from "@/lib/security/rateLimiter";
-import { isListingOnFlashSale } from "@/lib/utils/flashSale";
+import {
+  checkRateLimit,
+  claimIdempotencyKey,
+  completeIdempotencyKey,
+  releaseIdempotencyKey,
+} from "@/lib/security/rateLimiter";
 import { calculateEscrowCommission } from "@/lib/utils/commission";
 import { z } from "zod";
 
@@ -19,10 +23,24 @@ const directCheckoutSchema = z.object({
 });
 
 export async function POST(req: NextRequest) {
+  let claimedKey: { key: string; ownerToken: string } | null = null;
+  let providerRequestStarted = false;
+
+  const releaseUnusedClaim = async () => {
+    if (!claimedKey || providerRequestStarted) return;
+    const claim = claimedKey;
+    claimedKey = null;
+    try {
+      await releaseIdempotencyKey(claim.key, claim.ownerToken);
+    } catch {
+      console.warn("Could not release an unused direct-checkout idempotency claim.");
+    }
+  };
+
   try {
     const forwarded = req.headers.get("x-forwarded-for");
     const ip = forwarded ? forwarded.split(",")[0].trim() : "127.0.0.1";
-    const rateCheck = checkRateLimit(`checkout:${ip}`, 12, 60000);
+    const rateCheck = await checkRateLimit(`checkout:${ip}`, 12, 60000);
 
     if (!rateCheck.success) {
       return NextResponse.json(
@@ -58,15 +76,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "This listing is no longer available for purchase." }, { status: 400 });
     }
 
-    // 2. Determine price: backend is aware of Friday Flash Drop promotional pricing & bargaining rules
-    const isFlashSale = isListingOnFlashSale(listing);
+    // 2. Determine price from a valid accepted offer, otherwise use the listing price
     let finalPrice = Number(listing.price);
 
-    if (isFlashSale) {
-      // On Fridays, squads are locked at promotional flash drop price and bargaining is withdrawn
-      finalPrice = Number(listing.price);
-    } else if (offerId) {
-      // Strictly verify offer belongs to THIS listing, is accepted, and has not expired
+    if (offerId) {
+      // Strictly verify the offer belongs to THIS listing, is accepted, and has not expired
       try {
         const { data: offerData } = await adminSupabase
           .from("listing_offers")
@@ -111,18 +125,6 @@ export async function POST(req: NextRequest) {
     const normPhone = normalizePhoneNumber(phoneNumber);
     const internationalPhone = normPhone.isValid ? normPhone.international : phoneNumber;
     const cleanDigits = normPhone.digits || phoneNumber.replace(/\D/g, "");
-
-    // Financial Idempotency Check (prevents duplicate orders & double STK pushes within 45s)
-    const idempotencyKey =
-      req.headers.get("x-idempotency-key") ||
-      `direct-checkout:${listingId}:${cleanDigits}:${finalPrice}`;
-    const cachedResult = getIdempotencyResult(idempotencyKey, 45000);
-    if (cachedResult) {
-      return NextResponse.json({
-        ...cachedResult,
-        idempotent: true,
-      });
-    }
 
     const buyerId = user?.id;
 
@@ -178,9 +180,28 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "You cannot purchase your own account listing." }, { status: 400 });
     }
 
+    const suppliedIdempotencyKey = req.headers.get("x-idempotency-key")?.trim() || "";
+    if (suppliedIdempotencyKey.length > 255) {
+      return NextResponse.json({ error: "Idempotency key is too long." }, { status: 400 });
+    }
+    const idempotencyInput = suppliedIdempotencyKey || `${listingId}:${cleanDigits}:${finalPrice}`;
+    const idempotencyKey = `direct-checkout:${buyerId}:${idempotencyInput}`;
+    const idempotencyClaim = await claimIdempotencyKey<any>(idempotencyKey, 300000, 300000);
+    if (idempotencyClaim.status === "cached") {
+      return NextResponse.json({ ...idempotencyClaim.response, idempotent: true });
+    }
+    if (idempotencyClaim.status === "in_progress") {
+      return NextResponse.json(
+        { error: "A checkout with this idempotency key is already processing. Retry shortly." },
+        { status: 409, headers: { "Retry-After": "2" } }
+      );
+    }
+
+    claimedKey = { key: idempotencyKey, ownerToken: idempotencyClaim.ownerToken };
+
     // 4. Reuse existing recent `payment_pending` order for this buyer + listing + price, or create atomically
     let order: any = null;
-    const { data: reusableOrder } = await adminSupabase
+    const { data: reusableOrder, error: reusableOrderError } = await adminSupabase
       .from("orders")
       .select("*")
       .eq("buyer_id", buyerId)
@@ -190,6 +211,14 @@ export async function POST(req: NextRequest) {
       .order("created_at", { ascending: false })
       .limit(1)
       .maybeSingle();
+
+    if (reusableOrderError) {
+      await releaseUnusedClaim();
+      return NextResponse.json(
+        { error: "Could not prepare checkout. Please try again." },
+        { status: 500 }
+      );
+    }
 
     if (reusableOrder) {
       order = reusableOrder;
@@ -215,8 +244,9 @@ export async function POST(req: NextRequest) {
         .single();
 
       if (orderError || !createdOrder) {
+        await releaseUnusedClaim();
         return NextResponse.json(
-          { error: `Failed to create order: ${orderError?.message || "Unknown error"}` },
+          { error: "Could not create the checkout order. Please try again." },
           { status: 500 }
         );
       }
@@ -239,7 +269,13 @@ export async function POST(req: NextRequest) {
 
     // 6. Trigger M-Pesa STK Push
     const paymentService = new PaymentService(adminSupabase);
-    const paymentResult = await paymentService.initiateOrderPayment(order.id, cleanDigits);
+    const paymentResult = await paymentService.initiateOrderPayment(
+      order.id,
+      cleanDigits,
+      () => {
+        providerRequestStarted = true;
+      }
+    );
 
     // Automated WhatsApp alert to Brian Okibo (+254794400365)
     dispatchAdminWhatsAppAlert({
@@ -262,11 +298,17 @@ export async function POST(req: NextRequest) {
       redirectUrl: `/orders/${order.id}`,
     };
 
-    setIdempotencyResult(idempotencyKey, responsePayload);
+    await completeIdempotencyKey(idempotencyKey, idempotencyClaim.ownerToken, responsePayload, 300000);
+    claimedKey = null;
 
     return NextResponse.json(responsePayload);
-  } catch (error: any) {
-    console.error("Direct Checkout Error:", error);
-    return NextResponse.json({ error: error.message || "Failed to process checkout" }, { status: 500 });
+  } catch {
+    await releaseUnusedClaim();
+    // Do not expose or log provider errors that may contain credential-bearing URLs.
+    console.error("Direct checkout failed.");
+    return NextResponse.json(
+      { error: "Could not process checkout. Please try again later." },
+      { status: 500 }
+    );
   }
 }

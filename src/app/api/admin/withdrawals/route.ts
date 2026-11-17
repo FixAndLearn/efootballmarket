@@ -108,7 +108,7 @@ export async function GET(req: NextRequest) {
 const updateWithdrawalSchema = z.object({
   withdrawalId: z.string().uuid(),
   status: z.enum(["pending", "processing", "completed", "rejected"]),
-  failureReason: z.string().optional(),
+  failureReason: z.string().trim().max(1000).optional(),
 });
 
 export async function PATCH(req: NextRequest) {
@@ -127,153 +127,185 @@ export async function PATCH(req: NextRequest) {
       return NextResponse.json({ error: "Forbidden: Admin access required." }, { status: 403 });
     }
 
-    const adminSupabase = createAdminClient();
-    const serviceRoleConfigured = hasServiceRoleKey();
-    const primaryClient = serviceRoleConfigured ? adminSupabase : supabase;
-
     const json = await req.json();
     const parsed = updateWithdrawalSchema.safeParse(json);
     if (!parsed.success) {
       return NextResponse.json({ error: "Invalid parameters", details: parsed.error.format() }, { status: 400 });
     }
 
+    if (!hasServiceRoleKey()) {
+      return NextResponse.json(
+        { error: "Secure withdrawal status updates are unavailable without the server-only service role key." },
+        { status: 503 }
+      );
+    }
+
     const { withdrawalId, status, failureReason } = parsed.data;
-
-    // Fetch withdrawal
-    let withdrawal = null;
-    const { data: w1 } = await primaryClient
-      .from("seller_withdrawals")
-      .select("*")
-      .eq("id", withdrawalId)
-      .single();
-
-    if (w1) {
-      withdrawal = w1;
-    } else {
-      const { data: w2 } = await adminSupabase
-        .from("seller_withdrawals")
-        .select("*")
-        .eq("id", withdrawalId)
-        .single();
-      withdrawal = w2;
-    }
-
-    if (!withdrawal) {
-      return NextResponse.json({ error: "Withdrawal not found." }, { status: 404 });
-    }
-
-    // If rejected, refund the seller's available_balance
-    if (status === "rejected" && withdrawal.status !== "rejected") {
-      let currentBal = 0;
-      const { data: prof1 } = await primaryClient
-        .from("profiles")
-        .select("available_balance")
-        .eq("id", withdrawal.seller_id)
-        .single();
-
-      if (prof1) {
-        currentBal = Number(prof1.available_balance || 0);
-      } else {
-        const { data: prof2 } = await adminSupabase
-          .from("profiles")
-          .select("available_balance")
-          .eq("id", withdrawal.seller_id)
-          .single();
-        currentBal = Number(prof2?.available_balance || 0);
+    const adminSupabase = createAdminClient();
+    const { data: review, error: reviewError } = await adminSupabase.rpc(
+      "review_seller_withdrawal",
+      {
+        p_withdrawal_id: withdrawalId,
+        p_status: status,
+        p_reviewed_by: user.id,
+        p_failure_reason: failureReason || null,
       }
+    );
 
-      const refundedBal = currentBal + Number(withdrawal.amount);
+    if (reviewError) {
+      console.error("Atomic seller withdrawal review failed.");
+      return NextResponse.json(
+        { error: "Withdrawal status and balance could not be safely updated. No manual balance fallback was attempted." },
+        { status: 503 }
+      );
+    }
 
-      // Update balance using primaryClient and fallback to adminSupabase
-      const { error: refundErr1 } = await primaryClient
-        .from("profiles")
-        .update({
-          available_balance: refundedBal,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", withdrawal.seller_id);
+    const result = review as {
+      id?: string;
+      seller_id?: string;
+      amount?: number | string;
+      phone_number?: string;
+      status?: string;
+      changed?: boolean;
+      balance_restored?: boolean;
+    } | null;
 
-      if (refundErr1) {
-        await adminSupabase
-          .from("profiles")
-          .update({
-            available_balance: refundedBal,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", withdrawal.seller_id);
+    if (!result?.id || result.status !== status || !result.seller_id) {
+      console.error("Atomic seller withdrawal review returned an invalid result.");
+      return NextResponse.json(
+        { error: "Withdrawal status could not be verified. Contact support before retrying." },
+        { status: 503 }
+      );
+    }
+
+    const payoutAmount = Number(result.amount || 0);
+
+    // ---- B2C payout initiation -----------------------------------------
+    // When an admin moves a withdrawal to 'processing', fire the real M-Pesa
+    // B2C transfer and record the Daraja conversation ids so the result
+    // callback can correlate and settle it automatically.
+    // If initiation fails the withdrawal is reverted to 'pending' so the
+    // reserved balance is never left stranded in 'processing'.
+    if (status === "processing" && result.changed && result.phone_number) {
+      try {
+        const { mpesaClient } = await import("@/lib/mpesa/client");
+
+        if (!mpesaClient.hasProtectedDarajaCallbackUrl() && process.env.MPESA_ENV === "production") {
+          throw new Error(
+            "M-Pesa callback URL is not protected by MPESA_WEBHOOK_SECRET; refusing to start a payout that could not be reconciled."
+          );
+        }
+
+        const payout = await mpesaClient.initiateB2CPayout({
+          phoneNumber: result.phone_number,
+          amount: payoutAmount,
+          remarks: `Payout ${result.id}`,
+          occasion: "SellerWithdrawal",
+        });
+
+        const conversationId = payout?.ConversationID ?? null;
+        const originatorId = payout?.OriginatorConversationID ?? null;
+
+        if (!conversationId) {
+          throw new Error("Daraja accepted no ConversationID for this payout.");
+        }
+
+        const { error: attachError } = await adminSupabase.rpc("attach_b2c_conversation_id", {
+          p_withdrawal_id: result.id,
+          p_b2c_conversation_id: conversationId,
+          p_b2c_originator_conversation_id: originatorId,
+        });
+
+        if (attachError) {
+          // The transfer is already in flight and irreversible; log loudly.
+          console.error(
+            "B2C transfer initiated but conversation id could not be stored:",
+            conversationId,
+            attachError.message
+          );
+        }
+      } catch (payoutError) {
+        const reason =
+          payoutError instanceof Error ? payoutError.message : "M-Pesa payout initiation failed";
+        console.error("B2C payout initiation failed; reverting withdrawal to pending.", reason);
+
+        // revert: pending restores nothing (funds still reserved) and allows retry
+        await adminSupabase.rpc("review_seller_withdrawal", {
+          p_withdrawal_id: result.id,
+          p_status: "pending",
+          p_reviewed_by: user.id,
+          p_failure_reason: null,
+        }).then(({ error }: { error: { message: string } | null }) => {
+          if (error) console.error("Could not revert withdrawal to pending:", error.message);
+        });
+
+        return NextResponse.json(
+          {
+            error: `Payout could not be started: ${reason} The withdrawal was returned to pending and no balance was changed.`,
+          },
+          { status: 502 }
+        );
       }
     }
 
-    // Update withdrawal record
-    const updatePayload = {
-      status,
-      reviewed_by: user.id,
-      failure_reason: failureReason || null,
-      updated_at: new Date().toISOString(),
-    };
-
-    let updateSuccess = false;
-    const { error: updateError1 } = await primaryClient
-      .from("seller_withdrawals")
-      .update(updatePayload)
-      .eq("id", withdrawalId);
-
-    if (!updateError1) {
-      updateSuccess = true;
-    } else {
-      const { error: updateError2 } = await adminSupabase
-        .from("seller_withdrawals")
-        .update(updatePayload)
-        .eq("id", withdrawalId);
-
-      if (!updateError2) {
-        updateSuccess = true;
-      } else {
-        throw updateError2;
-      }
-    }
-
-    // Notify seller
-    try {
-      const notifData = {
-        recipient_id: withdrawal.seller_id,
-        type: "order_update",
-        title: status === "completed" ? "M-Pesa Withdrawal Completed" : `Withdrawal ${status.toUpperCase()}`,
-        message:
-          status === "completed"
-            ? `Your M-Pesa withdrawal of KES ${withdrawal.amount} has been processed and disbursed.`
-            : `Your withdrawal request of KES ${withdrawal.amount} was ${status}.${failureReason ? ` Reason: ${failureReason}` : ""}`,
-        action_url: "/seller/earnings",
-        is_read: false,
-      };
+    const amount = Number(result.amount || 0);
+    if (result.changed) {
+      const message =
+        status === "completed"
+          ? `An administrator marked your withdrawal of KES ${amount.toLocaleString()} as paid after manual handling. This system does not independently verify the M-Pesa transfer; check your M-Pesa SMS or receipt and contact support if it has not arrived.`
+          : status === "rejected"
+          ? `Your withdrawal request of KES ${amount.toLocaleString()} was rejected.${result.balance_restored ? " The reserved amount was restored to your available balance." : " Check your available balance or contact support."}${failureReason ? ` Reason: ${failureReason}` : ""}`
+          : `Your withdrawal request of KES ${amount.toLocaleString()} is being reviewed. This system has not initiated an M-Pesa transfer.`;
 
       try {
-        await primaryClient.from("notifications").insert(notifData);
+        const { error: notificationError } = await adminSupabase.from("notifications").insert({
+          recipient_id: result.seller_id,
+          type: "order_update",
+          title:
+            status === "completed"
+              ? "Withdrawal Marked Paid"
+              : status === "rejected"
+              ? "Withdrawal Rejected"
+              : "Withdrawal Processing",
+          message,
+          action_url: "/seller/earnings",
+          is_read: false,
+        });
+        if (notificationError) console.warn("Seller withdrawal notification was not recorded.");
       } catch {
-        // non-blocking
+        console.warn("Seller withdrawal notification dispatch failed.");
       }
 
-      // Dispatch WhatsApp & SMS messages to seller
-      if (withdrawal.phone_number && (status === "completed" || status === "rejected")) {
+      if (result.phone_number && (status === "completed" || status === "rejected")) {
         sendSellerWithdrawalStatusWhatsApp(
-          withdrawal.phone_number,
-          Number(withdrawal.amount),
+          result.phone_number,
+          amount,
           status,
           failureReason
-        ).catch((err) => console.warn("Seller withdrawal WhatsApp notice:", err));
+        ).catch(() => console.warn("Seller withdrawal WhatsApp notification failed."));
 
         sendSellerWithdrawalStatusSms(
-          withdrawal.phone_number,
-          Number(withdrawal.amount),
+          result.phone_number,
+          amount,
           status,
           failureReason
-        ).catch((err) => console.warn("Seller withdrawal SMS notice:", err));
+        ).catch(() => console.warn("Seller withdrawal SMS notification failed."));
       }
-    } catch (e) {
-      console.warn("Failed to notify seller:", e);
     }
 
-    return NextResponse.json({ success: true, message: `Withdrawal marked as ${status}.` });
+    const responseMessage = !result.changed
+      ? `Withdrawal is already ${status}; no further balance update was made.`
+      : status === "completed"
+      ? "Withdrawal marked paid based on administrator confirmation. This system does not independently verify the M-Pesa transfer."
+      : status === "rejected"
+      ? result.balance_restored
+        ? "Withdrawal rejected and the reserved balance was restored atomically."
+        : "Withdrawal rejected. Check the available balance or contact support."
+      : status === "processing"
+      ? "Withdrawal marked as processing. This system has not initiated an M-Pesa transfer."
+      : "Withdrawal status updated.";
+
+    return NextResponse.json({ success: true, message: responseMessage, changed: Boolean(result.changed) });
   } catch (error: any) {
     return NextResponse.json({ error: error.message }, { status: 500 });
   }

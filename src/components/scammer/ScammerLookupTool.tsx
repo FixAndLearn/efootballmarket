@@ -1,7 +1,6 @@
 "use client";
 
 import React, { useState } from "react";
-import Link from "next/link";
 import { Input } from "@/components/ui/Input";
 import { Button } from "@/components/ui/Button";
 import { Search, ShieldAlert, AlertTriangle, Flag, Mail } from "lucide-react";
@@ -179,11 +178,7 @@ export function ScammerLookupTool() {
                     No Reports on File for &ldquo;{query}&rdquo; — Not a Safety Guarantee
                   </h3>
                   <p className="text-xs text-sx-ink-soft leading-relaxed">
-                    Scammers change SIM cards and handles frequently. Even with zero prior reports, <strong>never pay a personal M-Pesa number</strong>—settle the trade via{" "}
-                    <Link href="/middleman" className="text-sx-green-text underline font-semibold">
-                      Middleman Escrow (Till 1572931)
-                    </Link>{" "}
-                    so funds stay held during your 24-hour login check.
+                    Scammers change SIM cards and handles frequently. Even with zero prior reports, <strong>never pay a personal M-Pesa number</strong>. Buyer protection applies only to orders created and paid through checkout on a published marketplace listing; direct social-media deals are not covered.
                   </p>
                 </div>
               </div>

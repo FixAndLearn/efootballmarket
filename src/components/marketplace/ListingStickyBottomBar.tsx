@@ -11,7 +11,6 @@ import { Button } from "@/components/ui/Button";
 interface ListingStickyBottomBarProps {
   listing: Listing;
   isOwner: boolean;
-  isFlashSale: boolean;
   targetElementId?: string;
 }
 
@@ -23,7 +22,6 @@ interface ListingStickyBottomBarProps {
 export function ListingStickyBottomBar({
   listing,
   isOwner,
-  isFlashSale,
   targetElementId = "listing-inline-cta",
 }: ListingStickyBottomBarProps) {
   const [inlineVisible, setInlineVisible] = useState(false);
@@ -84,12 +82,6 @@ export function ListingStickyBottomBar({
           <span className="px-3 py-1.5 rounded-lg bg-sx-stone border border-sx-border text-xs font-mono text-sx-muted">
             {listing.status === "sold" ? "Sold" : "In Escrow"}
           </span>
-        ) : isFlashSale ? (
-          <BuyNowButton
-            listingId={listing.id}
-            priceFormatted={formatCurrency(listing.price, listing.currency)}
-            compact={true}
-          />
         ) : (
           <>
             <MakeOfferButton listing={listing} size="sm" />

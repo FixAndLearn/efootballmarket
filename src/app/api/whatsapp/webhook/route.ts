@@ -34,7 +34,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const ip = getClientIp(req);
-    const rate = checkRateLimit(`wa_webhook:${ip}`, 120, 60000);
+    const rate = await checkRateLimit(`wa_webhook:${ip}`, 120, 60000);
     if (!rate.success) {
       return NextResponse.json({ status: "rate_limited" }, { status: 429 });
     }
@@ -90,14 +90,13 @@ export async function POST(req: NextRequest) {
     if (trimmedText === "HI" || trimmedText === "HELLO" || trimmedText === "MENU" || trimmedText === "HELP" || trimmedText === "START") {
       const menu =
         `*Welcome to eFootballMarket Kenya!*\n\n` +
-        `Escrow-Protected trading for Konami IDs, Coins & Squads.\n\n` +
+        `Marketplace listings for Konami IDs, Coins & Squads. Buyer protection applies only to orders from published listings paid through checkout.\n\n` +
         `*Quick Commands (Reply with a number):*\n` +
         `*1* Verify M-Pesa Till 1572931\n` +
-        `*2* How Escrow Protection Works\n` +
+        `*2* Marketplace Buyer Protection\n` +
         `*3* Check Order Status\n` +
-        `*4* Bring-Your-Own-Deal Middleman\n` +
-        `*5* Speak with Support Desk\n\n` +
-        `*Browse Squads:* https://www.efootballmarket.co.ke`;
+        `*4* Speak with Support Desk\n\n` +
+        `*Browse Squads:* https://www.efootballmarket.co.ke/browse`;
 
       await sendWhatsAppMessage({ toPhone: cleanSender, message: menu });
       return NextResponse.json({ status: "replied_menu" });
@@ -108,8 +107,8 @@ export async function POST(req: NextRequest) {
         `*OFFICIAL SAFARICOM M-PESA PAYMENT DETAILS*\n\n` +
         `*Store Name:* EFootballMarket\n` +
         `*Buy Goods Till Number:* *1572931*\n` +
-        `*Escrow Officer:* Brian Okibo (+254 794 400 365)\n\n` +
-        `*Safety Warning:* Never send funds directly to an individual's phone number. All protected trades must go to Till *1572931* so escrow can lock the funds safely.`;
+        `*Support:* +254 794 400 365\n\n` +
+        `*Safety Warning:* Pay only through checkout for an active eFootballMarket listing. The checkout page will show the official Till or STK prompt. Payments for external Facebook / WhatsApp deals or to personal numbers are not covered.`;
 
       await sendWhatsAppMessage({ toPhone: cleanSender, message: tillInfo });
       return NextResponse.json({ status: "replied_till" });
@@ -117,13 +116,14 @@ export async function POST(req: NextRequest) {
 
     if (trimmedText === "2" || trimmedText.includes("ESCROW")) {
       const escrowInfo =
-        `*HOW EFOOTBALLMARKET ESCROW WORKS*\n\n` +
-        `1⃣ Buyer pays via Till *1572931*.\n` +
-        `2⃣ Funds are locked in our escrow vault — the seller is NOT paid yet.\n` +
-        `3⃣ Seller delivers the Konami ID & password into our encrypted portal.\n` +
-        `4⃣ Buyer verifies players, coins, and changes the email/password.\n` +
-        `5⃣ Only when the buyer confirms satisfaction are funds released to the seller.\n\n` +
-        `_Verified trades. 24-hour buyer inspection protection._`;
+        `*MARKETPLACE BUYER PROTECTION*\n\n` +
+        `Protection applies only to an order created from a published listing and paid through eFootballMarket checkout.\n\n` +
+        `1⃣ Pay using the Till or STK prompt shown in checkout.\n` +
+        `2⃣ The order locks while the seller delivers login details in your private Order Room.\n` +
+        `3⃣ Inspect the squad in-game and verify its account links during the 24-hour check.\n` +
+        `4⃣ Confirm release or open a dispute from the order page.\n\n` +
+        `Deals arranged and paid directly on WhatsApp, Facebook, or another external service are not covered.\n` +
+        `Browse listings: https://www.efootballmarket.co.ke/browse`;
 
       await sendWhatsAppMessage({ toPhone: cleanSender, message: escrowInfo });
       return NextResponse.json({ status: "replied_escrow" });
@@ -165,21 +165,17 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ status: "replied_order" });
     }
 
-    if (trimmedText === "4" || trimmedText.includes("MIDDLEMAN")) {
-      const middlemanInfo =
-        `*BRING-YOUR-OWN-DEAL (BYOD) MIDDLEMAN*\n\n` +
-        `Found a trader on Facebook or WhatsApp? Stop arguing about who sends first!\n\n` +
-        `1. Create a safe escrow contract in 30 seconds at:\n` +
-        `https://www.efootballmarket.co.ke/middleman\n` +
-        `2. Buyer locks M-Pesa to Till 1572931.\n` +
-        `3. Seller delivers Konami ID.\n` +
-        `4. Both parties are protected under our escrow protocol. Escrow fee is only 5%.`;
+    if (trimmedText.includes("MIDDLEMAN")) {
+      const retiredServiceInfo =
+        `The off-platform contract service for deals arranged on Facebook / WhatsApp is no longer offered.\n\n` +
+        `For buyer protection, choose a published listing and complete checkout on eFootballMarket: https://www.efootballmarket.co.ke/browse\n\n` +
+        `External deals or payments made outside a marketplace order are not covered.`;
 
-      await sendWhatsAppMessage({ toPhone: cleanSender, message: middlemanInfo });
-      return NextResponse.json({ status: "replied_middleman" });
+      await sendWhatsAppMessage({ toPhone: cleanSender, message: retiredServiceInfo });
+      return NextResponse.json({ status: "replied_marketplace_policy" });
     }
 
-    if (trimmedText === "5" || trimmedText.includes("AGENT") || trimmedText.includes("BRIAN")) {
+    if (trimmedText === "4" || trimmedText === "5" || trimmedText.includes("AGENT") || trimmedText.includes("BRIAN")) {
       const agentReply =
         `*CONNECTING TO SUPPORT DESK*\n\n` +
         `Your message has been escalated to Brian Okibo (+254 794 400 365).\n` +
@@ -203,7 +199,7 @@ export async function POST(req: NextRequest) {
     const fallback =
       `Thank you for contacting *eFootballMarket*!\n\n` +
       `We received your message: _"${text}"_\n\n` +
-      `Reply with *MENU* to see options or *5* to message Support (+254 794 400 365).\n\n` +
+      `Reply with *MENU* to see options or *4* to message Support (+254 794 400 365).\n\n` +
       `Official Website: https://www.efootballmarket.co.ke`;
 
     await sendWhatsAppMessage({ toPhone: cleanSender, message: fallback });

@@ -255,7 +255,7 @@ export default function EditListingPage() {
 
       const coins = coinBalance ? Number(coinBalance) : 0;
       const coach = managerName.trim();
-      const finalDescription = `${title.trim()} - Verified ${platform.replace(/_/g, " ")} eFootball account with ${overallStrength} OVR collective strength, ${coins.toLocaleString()} eFootball coins${coach ? `, managed by ${coach}` : ""}. Full Safaricom Till 1572931 escrow protection with 24-hour buyer inspection window.`;
+      const finalDescription = `${title.trim()} - Verified ${platform.replace(/_/g, " ")} eFootball account with ${overallStrength} OVR collective strength, ${coins.toLocaleString()} eFootball coins${coach ? `, managed by ${coach}` : ""}. Buyer protection and the 24-hour inspection apply only to orders placed from a published listing and paid through eFootballMarket checkout.`;
 
       const payload = {
         title: title.trim(),

@@ -12,6 +12,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ListingService } from "@/services/listingService";
 import { getVerifiedSellerReviews } from "@/services/reviewService";
 import { Listing } from "@/types/database";
+import { getPublicStorefrontPath } from "@/lib/security/publicSanitizer";
 import { BuyNowButton } from "@/components/marketplace/BuyNowButton";
 import { ListingGallery } from "@/components/marketplace/ListingGallery";
 import { VerifiedSellerBadge } from "@/components/marketplace/VerifiedSellerBadge";
@@ -45,7 +46,6 @@ import {
   Star,
   Users,
 } from "lucide-react";
-import { isListingOnFlashSale } from "@/lib/utils/flashSale";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
@@ -80,7 +80,7 @@ export async function generateMetadata({ params }: ListingDetailPageProps): Prom
     const title = `${displayTitle} (${listing.overall_team_strength} OVR)`;
     const description = `${listing.overall_team_strength} OVR Clean Konami ID eFootball squad listed at ${formatCurrency(
       listing.price
-    )}. Protected via Safaricom M-Pesa Till 1572931 with 24-hour buyer inspection.`;
+    )}. Buyer protection applies to orders from this published listing paid through marketplace checkout, with a 24-hour inspection.`;
 
     return {
       title,
@@ -184,9 +184,9 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
     name: displayTitle,
     description:
       listing.description ||
-      `${listing.overall_team_strength} OVR verified eFootball squad on ${getPlatformLabel(
+      `${listing.overall_team_strength} OVR seller-listed eFootball squad on ${getPlatformLabel(
         listing.platform
-      )} with M-Pesa Till 1572931 escrow protection.`,
+      )}. Squad details are seller-provided, not pre-audited. Eligible marketplace checkout orders include buyer inspection protection.`,
     sku: listing.id,
     image: [primaryImage],
     brand: {
@@ -206,7 +206,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
         "@type": "Person",
         name: listing.seller?.username
           ? `@${listing.seller.username}`
-          : "Verified Seller",
+          : "Seller",
       },
     },
   };
@@ -316,7 +316,13 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                 <div className="pt-1 flex flex-wrap items-center gap-2.5 text-xs text-sx-muted">
                   {listing.seller.username ? (
                     <Link
-                      href={`/u/${encodeURIComponent(listing.seller.username)}`}
+                      href={
+                        listing.seller.public_storefront_path ||
+                        getPublicStorefrontPath(
+                          listing.seller.id,
+                          listing.seller.username
+                        )
+                      }
                       className="font-semibold text-sx-ink hover:text-sx-green-text hover:underline"
                     >
                       @{listing.seller.username}
@@ -335,7 +341,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                         </>
                       ) : null}
                       <span>
-                        {listing.seller.completed_sales_count} verified{" "}
+                        {listing.seller.completed_sales_count} buyer-confirmed{" "}
                         {listing.seller.completed_sales_count === 1 ? "sale" : "sales"}
                       </span>
                     </span>
@@ -401,12 +407,12 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
               <span className="inline-flex items-center gap-2">
                 <ShieldCheck className="w-4 h-4 text-sx-green-text shrink-0" />
                 <span>
-                  <strong className="text-sx-ink">24h Inspection Hold on Till 1572931:</strong>{" "}
-                  Seller stats are verified in-game by you before payout.
+                  <strong className="text-sx-ink">Checkout Buyer Protection:</strong>{" "}
+                  For this listing, payment is held after checkout while you verify seller stats in-game.
                 </span>
               </span>
               <DetailTabLink href="/escrow-guarantee">
-                What We Check
+                Checkout Protection Details
               </DetailTabLink>
             </div>
 
@@ -421,6 +427,9 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                 <h2 className="text-xs font-mono uppercase font-bold text-sx-muted tracking-wider">
                   Card Breakdown
                 </h2>
+                <p className="text-[11px] leading-relaxed text-sx-muted">
+                  Squad stats, card counts, and player names are provided by the seller and are not pre-audited by eFootballMarket. Confirm them in-game before releasing eligible checkout funds.
+                </p>
                 <div className="grid grid-cols-2 sm:grid-cols-5 gap-2.5 text-center">
                   {[
                     { label: "Epics", value: listing.epic_players_count || 0, accent: "text-sx-amber-text" },
@@ -446,7 +455,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                 {listing.key_players_list && listing.key_players_list.length > 0 && (
                   <div className="pt-3 border-t border-sx-border">
                     <span className="block text-[11px] font-mono uppercase text-sx-muted mb-2">
-                      Notable Squad Players ({listing.key_players_list.length})
+                      Seller-Reported Players ({listing.key_players_list.length})
                     </span>
                     <div className="flex flex-wrap gap-1.5">
                       {listing.key_players_list.map((player, idx) => (
@@ -613,27 +622,6 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                   </Button>
                 </Link>
               </div>
-            ) : isListingOnFlashSale(listing) ? (
-              <div className="space-y-2.5">
-                <div className="p-3 rounded-xl bg-sx-amber-tint border border-amber-500/35 text-xs text-sx-amber-text">
-                  <strong className="text-sx-ink block">Friday Drop Fixed Price</strong>
-                  <span className="text-[11px] text-sx-amber-text">
-                    Custom offers are paused during the 8-hour Friday Drop window.
-                  </span>
-                </div>
-                <BuyNowButton
-                  listingId={listing.id}
-                  priceFormatted={formatCurrency(listing.price, listing.currency)}
-                />
-                <ChatSellerWhatsAppButton
-                  sellerUsername={listing.seller?.username}
-                  listingId={listing.id}
-                  listingTitle={displayTitle}
-                  listingPrice={listing.price}
-                  listingCurrency={listing.currency}
-                  overallTeamStrength={listing.overall_team_strength}
-                />
-              </div>
             ) : (
               <div className="space-y-2.5">
                 <BuyNowButton
@@ -652,8 +640,8 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
               </div>
             )}
 
-            {/* On-Platform Escrow Swap Proposal + WhatsApp Option */}
-            {listing.allows_swap && !isOwner && !isListingOnFlashSale(listing) && listing.status === "published" && (
+            {/* Marketplace swap proposal for listings that accept swaps */}
+            {listing.allows_swap && !isOwner && listing.status === "published" && (
               <div className="p-3.5 rounded-xl bg-sx-subtle border border-sx-green-border space-y-2.5">
                 <div className="flex items-center gap-1.5 text-xs font-semibold text-sx-green-text">
                   <ArrowRightLeft className="w-3.5 h-3.5" />
@@ -695,7 +683,13 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                   <div className="flex items-center gap-1.5 flex-wrap">
                     {listing.seller?.username ? (
                       <Link
-                        href={`/u/${encodeURIComponent(listing.seller.username)}`}
+                        href={
+                          listing.seller.public_storefront_path ||
+                          getPublicStorefrontPath(
+                            listing.seller.id,
+                            listing.seller.username
+                          )
+                        }
                         className="text-sm font-semibold text-sx-ink hover:text-sx-green-text hover:underline transition-colors"
                       >
                         @{listing.seller.username}
@@ -723,7 +717,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                     ) : listing.seller?.is_verified_seller ? (
                       <span>National ID &amp; M-Pesa phone checked · 0 sales yet</span>
                     ) : (
-                      <span>0 sales yet · Payment held in 24h escrow</span>
+                      <span>0 sales yet · Checkout protection for eligible orders</span>
                     )}
                   </div>
                 </div>
@@ -767,11 +761,7 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
       <RecentlyViewedRow excludeId={listing.id} minItems={1} />
 
       {/* Smart Mobile Sticky Action Bar (auto-hides whenever inline Purchase Card is visible on screen) */}
-      <ListingStickyBottomBar
-        listing={listing}
-        isOwner={isOwner}
-        isFlashSale={isListingOnFlashSale(listing)}
-      />
+      <ListingStickyBottomBar listing={listing} isOwner={isOwner} />
     </div>
   );
 }

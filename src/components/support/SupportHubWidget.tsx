@@ -10,7 +10,6 @@ import {
   ShieldCheck,
   Search,
   Scale,
-  Handshake,
   Target,
   ExternalLink,
 } from "lucide-react";
@@ -56,7 +55,7 @@ export function SupportHubWidget() {
   }
 
   const whatsappHref = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
-    "Hello Brian / eFootballMarket Support, I need help with a squad listing, Middleman deal, or escrow order."
+    "Hello eFootballMarket Support, I need help with a marketplace listing or an active escrow order."
   )}`;
 
   const isListingDetail = pathname?.startsWith("/listings/");
@@ -97,20 +96,6 @@ export function SupportHubWidget() {
           </div>
 
           <div className="p-3 space-y-1">
-            <Link
-              href="/middleman"
-              onClick={() => setOpen(false)}
-              className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-sx-stone transition-colors group"
-            >
-              <span className="flex items-center gap-2.5 text-xs font-semibold text-sx-ink">
-                <Handshake className="w-4 h-4 text-sx-green-text shrink-0" />
-                WhatsApp / Social Middleman
-              </span>
-              <span className="text-[11px] text-sx-muted group-hover:text-sx-ink">
-                Open &rarr;
-              </span>
-            </Link>
-
             <Link
               href="/wanted"
               onClick={() => setOpen(false)}

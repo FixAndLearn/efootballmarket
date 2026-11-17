@@ -304,8 +304,8 @@ export default function CreateListingPage() {
       return;
     }
 
-    if (images.length === 0) {
-      setError("Upload at least 1 squad screenshot so buyers can verify your team.");
+    if (images.length < 3) {
+      setError("Upload all 3 requested in-game screenshots so buyers can review the squad and account-link status.");
       return;
     }
 
@@ -317,13 +317,20 @@ export default function CreateListingPage() {
         .map((p) => p.trim())
         .filter((p) => p.length > 0);
 
-      const autoDescription =
-        sellerNotes.trim() ||
-        `Verified ${ovr} OVR eFootball squad on ${
-          PLATFORMS.find((p) => p.id === platform)?.label || platform
-        }${Number(epicCount) > 0 ? ` featuring ${epicCount} Epic/Booster cards` : ""}${
-          keyPlayersArray.length > 0 ? ` (${keyPlayersArray.slice(0, 5).join(", ")})` : ""
-        }. Ready for instant Konami ID transfer via M-Pesa escrow.`;
+      const listingSummary = `Seller-listed ${ovr} OVR eFootball squad on ${
+        PLATFORMS.find((p) => p.id === platform)?.label || platform
+      }${Number(epicCount) > 0 ? ` featuring ${epicCount} Epic/Booster cards` : ""}${
+        Number(coinBalance) > 0 ? ` with ${Number(coinBalance).toLocaleString()} Coins` : ""
+      }${keyPlayersArray.length > 0 ? ` (${keyPlayersArray.slice(0, 5).join(", ")})` : ""}.`;
+      const listingDisclaimer =
+        "Squad stats, card counts, and player names are seller-provided and not independently pre-audited by eFootballMarket. Confirm them in-game before releasing funds. Buyer protection applies only to eligible orders from this published listing paid through eFootballMarket checkout.";
+      const autoDescription = [
+        listingSummary,
+        sellerNotes.trim() ? `Seller notes: ${sellerNotes.trim()}` : "",
+        listingDisclaimer,
+      ]
+        .filter(Boolean)
+        .join("\n\n");
 
       const res = await fetch("/api/listings", {
         method: "POST",
@@ -386,7 +393,7 @@ export default function CreateListingPage() {
           Sign in to List Your Squad
         </h1>
         <p className="text-sm text-sx-muted leading-relaxed">
-          Create a free account in 20 seconds so we can send instant M-Pesa payouts when your squad sells.
+          Create a free account in 20 seconds. After the buyer confirms release or an uncontested inspection ends, net sale proceeds are credited to your available balance. You can submit a separate M-Pesa withdrawal request; it is reviewed manually and processing time varies. Track its status in Seller Earnings or contact support.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
           <Link
@@ -443,10 +450,10 @@ export default function CreateListingPage() {
             <div>
               <h2 className="text-base font-bold text-sx-ink font-display flex items-center gap-2">
                 <Camera className="w-4 h-4 text-sx-green-text" />
-                <span>1. Squad Verification Screenshots</span>
+                <span>1. Squad Detail Screenshots</span>
               </h2>
               <p className="text-xs text-sx-muted mt-0.5">
-                Listings with all 3 recommended proof shots sell up to 3× faster. Auto-watermarked on upload.
+                Upload clear in-game screenshots for buyers to review. Screenshots are seller-provided and do not mean the account has been pre-audited. Images are auto-watermarked on upload.
               </p>
             </div>
             <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-full bg-sx-canvas border border-sx-border text-sx-ink shrink-0">
@@ -709,12 +716,17 @@ export default function CreateListingPage() {
             />
           </div>
 
-          <Input
-            label="Notable Players (comma-separated)"
-            placeholder="e.g. Double Booster Gullit, Vieira, Blitz Curler Salah, Maldini"
-            value={keyPlayersInput}
-            onChange={(e) => setKeyPlayersInput(e.target.value)}
-          />
+          <div>
+            <Input
+              label="Notable Players (seller-reported; comma-separated)"
+              placeholder="e.g. Double Booster Gullit, Vieira, Blitz Curler Salah, Maldini"
+              value={keyPlayersInput}
+              onChange={(e) => setKeyPlayersInput(e.target.value)}
+            />
+            <p className="mt-1.5 text-[11px] leading-relaxed text-sx-muted">
+              Check each spelling and card name against your in-game roster or screenshots before publishing. These player claims are not independently pre-audited; buyers should confirm them in-game.
+            </p>
+          </div>
 
           {/* Smart Headline with 1-Tap Generator */}
           <div className="pt-2 border-t border-sx-border space-y-2">
@@ -850,7 +862,7 @@ export default function CreateListingPage() {
                   <Repeat2 className="w-3.5 h-3.5 text-sx-green-text" />
                   <span>Open to Squad Swap + Cash Top-Up</span>
                 </strong>{" "}
-                — Allow verified buyers to propose trading their squad plus an M-Pesa Till 1572931 cash top-up.
+                — Allow signed-in buyers to propose trading their squad plus an M-Pesa Till 1572931 cash top-up.
               </span>
             </label>
 

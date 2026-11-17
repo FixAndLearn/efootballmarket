@@ -34,13 +34,14 @@ export function getSellerTier(
         "Kenyan National ID / Passport checked by eFootballMarket",
         "Registered M-Pesa payout phone number matched",
         `${count} escrow transfers confirmed by buyers`,
+        "The current game account and its listed player claims are not pre-audited",
       ],
       description:
-        "Identity-checked seller with 10+ completed M-Pesa escrow squad transfers.",
+        "Seller identity was checked and 10+ M-Pesa escrow transfers were confirmed by buyers. This badge does not certify any current game account or listing content.",
       perks: [
         "ID-Verified Top Seller badge",
         "Priority placement in Browse results",
-        "Fast M-Pesa payout processing",
+        "Seller identity and sale history shown to buyers",
       ],
     };
   }
@@ -60,12 +61,13 @@ export function getSellerTier(
         count > 0
           ? `${count} completed escrow ${count === 1 ? "transfer" : "transfers"}`
           : "All orders still go through 24-hour buyer login check",
+        "The current game account and its listed player claims are not pre-audited",
       ],
       description:
-        "Seller submitted identity documents and matched their M-Pesa payout line with our team.",
+        "Seller identity documents and a matching M-Pesa payout line were checked by our team. The listed game account and player claims are not pre-audited.",
       perks: [
         "ID-Verified Seller badge on listings",
-        "Higher buyer confidence on high-OVR squads",
+        "Seller identity check displayed to buyers",
       ],
     };
   }
@@ -79,18 +81,19 @@ export function getSellerTier(
       badgeClass: "bg-sx-info-tint border-sx-info-border text-sx-info-text",
       iconType: "shield-check",
       salesRequiredForNext: remaining,
-      nextTierLabel: "ID-Verified Seller (submit ID in Seller Hub)",
+      nextTierLabel: "ID-Verified Seller (when identity review is available)",
       whatWasChecked: [
         "Registered email and Kenyan M-Pesa phone number",
         `${count} previous ${count === 1 ? "buyer" : "buyers"} logged in and confirmed squad delivery`,
-        "National ID not yet submitted (optional in Seller Hub)",
+        "No ID verification is on file",
+        "The current game account and its listed player claims are not pre-audited",
       ],
-      description: `Seller has completed ${count} escrow ${
+      description: `Seller completed ${count} escrow ${
         count === 1 ? "transfer" : "transfers"
-      } where the buyer confirmed login.`,
+      } that buyers confirmed after login. This history does not verify this specific listing or game account.`,
       perks: [
         "Completed-sales count displayed on cards",
-        "Eligible to apply for ID-Verified badge",
+        "Seller history displayed to buyers",
       ],
     };
   }
@@ -105,13 +108,14 @@ export function getSellerTier(
     nextTierLabel: "Proven Seller (after 1st completed sale)",
     whatWasChecked: [
       "Account email and Kenyan phone number registered",
-      "No completed sales yet — ID not yet verified",
-      "Protected by escrow: seller is NOT paid until you log in and confirm the squad within 24 hours",
+      "No completed sales yet — no seller ID check on file",
+      "The listed game account and its player claims are not pre-audited",
+      "Eligible checkout orders remain held during buyer inspection",
     ],
     description:
-      "First-time or new seller with 0 completed sales so far. Your payment is still held in M-Pesa Till 1572931 until you log in and confirm the squad.",
+      "New seller with 0 completed sales. Registration is checked, but the game account and listing claims are not pre-audited. For eligible marketplace checkout orders, payment is held during buyer inspection.",
     perks: [
-      "Full M-Pesa Till 1572931 escrow hold applies",
+      "Buyer protection applies to eligible marketplace checkout orders",
       "Automatic Proven Seller badge after first confirmed sale",
     ],
   };

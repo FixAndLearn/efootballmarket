@@ -4,9 +4,9 @@ import { useState } from "react";
 import { Button } from "@/components/ui/Button";
 import { MakeOfferModal } from "@/components/marketplace/MakeOfferModal";
 import { Listing } from "@/types/database";
-import { Handshake, Flame, Lock } from "lucide-react";
+import { Handshake, Lock } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
-import { canListingBeBargained } from "@/lib/utils/flashSale";
+import { canListingBeBargained } from "@/lib/utils/listingRules";
 
 interface MakeOfferButtonProps {
   listing: Listing;
@@ -31,20 +31,7 @@ export function MakeOfferButton({
     return null;
   }
 
-  // 2. If listing is on Flash Sale / Friday Drop, bargaining is strictly withdrawn
-  if (bargainCheck.reason === "flash_sale") {
-    return (
-      <div
-        className={`inline-flex items-center justify-center gap-1.5 px-3.5 py-2 rounded-xl bg-sx-amber-tint border border-sx-amber-border text-sx-amber-text text-xs font-bold cursor-not-allowed select-none shadow-sm ${className}`}
-        title="Bargaining is withdrawn for active Flash Drops. Price is locked at maximum discount."
-      >
-        <Flame className="w-3.5 h-3.5 text-sx-amber-text fill-amber-400 animate-pulse shrink-0" />
-        <span className="truncate">Flash Drop Locked (No Bargaining)</span>
-      </div>
-    );
-  }
-
-  // 3. If listing is not published (sold or in escrow), bargaining is disabled
+  // 2. If listing is not published (sold or in escrow), bargaining is disabled
   if (!bargainCheck.allowed) {
     return (
       <div

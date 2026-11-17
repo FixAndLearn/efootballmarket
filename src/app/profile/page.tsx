@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/Button";
 import { Input } from "@/components/ui/Input";
 import { createClient } from "@/lib/supabase/client";
 import { normalizePhoneNumber } from "@/lib/utils/phone";
+import { SELF_PROFILE_SELECT, getPublicStorefrontPath } from "@/lib/security/publicSanitizer";
 import {
   User,
   Mail,
@@ -75,7 +76,7 @@ function ProfileContent() {
 
         const { data: profile } = await supabase
           .from("profiles")
-          .select("*")
+          .select(SELF_PROFILE_SELECT)
           .eq("id", user.id)
           .maybeSingle();
 
@@ -237,7 +238,7 @@ function ProfileContent() {
 
         <div className="flex flex-wrap items-center gap-2">
           {username && (
-            <Link href={`/u/${encodeURIComponent(username)}`}>
+            <Link href={getPublicStorefrontPath(userId, username)}>
               <Button variant="secondary" size="sm" className="text-xs">
                 <ExternalLink className="w-3.5 h-3.5" />
                 <span>Storefront</span>
@@ -270,7 +271,7 @@ function ProfileContent() {
               </span>
               {isVerifiedSeller ? (
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sx-green-tint text-sx-green-text border border-sx-green-border">
-                  Verified Seller
+                  Seller ID &amp; M-Pesa Checked
                 </span>
               ) : (
                 <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-sx-canvas text-sx-ink border border-sx-border">
@@ -356,7 +357,7 @@ function ProfileContent() {
           <div className="border-b border-sx-border pb-3">
             <h2 className="text-base font-bold text-sx-ink font-display">Personal &amp; Payout Details</h2>
             <p className="text-xs text-sx-muted mt-0.5">
-              Your username powers your public catalog link (`/u/{username || "username"}`) and your phone receives M-Pesa payouts.
+              Your username helps identify your public catalog. Email-like usernames use an email-free storefront link; your phone receives M-Pesa payouts.
             </p>
           </div>
 
@@ -568,7 +569,7 @@ function ProfileContent() {
             <button
               type="button"
               onClick={() => {
-                const text = `Join me on eFootballMarket.co.ke to buy and sell verified Konami eFootball squads safely with Safaricom M-Pesa Escrow (Till 1572931): https://www.efootballmarket.co.ke/register?ref=${encodeURIComponent(username || "you")}`;
+                const text = `Join me on eFootballMarket.co.ke to browse seller-listed Konami eFootball squads. Account contents are not pre-audited; buyer protection applies only to eligible orders from published listings paid through marketplace checkout: https://www.efootballmarket.co.ke/register?ref=${encodeURIComponent(username || "you")}`;
                 window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, "_blank");
               }}
               className="w-full py-2.5 px-4 rounded-lg bg-[#25D366] hover:bg-[#20bd5a] text-slate-950 font-extrabold flex items-center justify-center gap-2 text-xs transition-colors"

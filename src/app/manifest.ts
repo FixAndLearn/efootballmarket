@@ -2,10 +2,10 @@ import { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "eFootballMarket — Verified eFootball Marketplace Kenya",
+    name: "eFootballMarket — eFootball Squad Marketplace Kenya",
     short_name: "eFootballMarket",
     description:
-      "Verified eFootball account marketplace, Konami ID transfer guides, and M-Pesa Till 1572931 escrow protection in Kenya.",
+      "Seller-listed eFootball accounts and Konami ID transfer guides in Kenya. Account contents are not pre-audited; checkout protection applies to eligible published-listing orders.",
     start_url: "/",
     display: "browser",
     background_color: "#FFFFFF",

@@ -22,7 +22,7 @@ export default function AboutPage() {
           A safer way for Kenyan eFootball players to trade squads
         </h1>
         <p className="text-sm sm:text-base text-sx-muted leading-relaxed max-w-3xl">
-          eFootballMarket Kenya replaces unverified WhatsApp, Telegram, and Facebook group-chat deals with structured M-Pesa payment holding (Till 1572931) and a 24-hour buyer login check.
+          eFootballMarket Kenya provides a structured marketplace for eFootball squad listings, with M-Pesa payment holding (Till 1572931) and a 24-hour buyer login check for orders placed and paid through marketplace checkout. Deals arranged and settled outside the platform are not covered.
         </p>
       </header>
 
@@ -43,7 +43,7 @@ export default function AboutPage() {
             </a>
           </li>
           <li>
-            <span className="text-sx-muted">Support &amp; Escrow WhatsApp:</span>{" "}
+            <span className="text-sx-muted">Support WhatsApp:</span>{" "}
             <a href="https://wa.me/254794400365" className="font-semibold text-sx-ink underline">
               +254 794 400 365
             </a>
@@ -64,7 +64,7 @@ export default function AboutPage() {
           Who Controls Your Payment During an Order
         </h2>
         <p>
-          When you buy a squad or open a Middleman deal, you pay via Safaricom Lipa Na M-Pesa into <strong>eFootballMarket Kenya&apos;s business Buy Goods Till 1572931</strong>:
+          When you buy through a published marketplace listing and complete checkout, your payment is processed through Safaricom Lipa Na M-Pesa into <strong>eFootballMarket Kenya&apos;s business Buy Goods Till 1572931</strong>:
         </p>
         <ul className="list-disc pl-5 space-y-2">
           <li>
@@ -83,7 +83,7 @@ export default function AboutPage() {
             .
           </li>
           <li>
-            <strong>Automated vs Administrator Steps:</strong> STK Push matching, locking the squad, starting the <strong>12-hour seller delivery timer</strong>, and starting the <strong>24-hour buyer inspection timer</strong> (the moment credentials are submitted in the Order Room) run automatically. Manual Till receipt checks, dispute evidence reviews, and outgoing M-Pesa payouts/refunds (sent within 1–12 hours during 8:00 AM – 10:00 PM EAT) are reviewed by our Nairobi desk.
+            <strong>Automated vs Administrator Steps:</strong> STK Push matching, locking the squad, starting the <strong>12-hour seller delivery timer</strong>, and starting the <strong>24-hour buyer inspection timer</strong> (the moment credentials are submitted in the Order Room) run automatically. On release, seller proceeds are credited to the available balance. Sellers request M-Pesa withdrawals separately; withdrawal requests and approved refunds are reviewed and handled manually by the desk. Processing times vary. An order status records a refund decision, not proof that an M-Pesa transfer was sent; check the request status or contact support. Dispute evidence is reviewed by the desk.
           </li>
         </ul>
       </section>
@@ -107,8 +107,8 @@ export default function AboutPage() {
           },
           {
             icon: Scale,
-            title: "24–48h Dispute Review",
-            desc: "Tapping Open Dispute within the 24-hour window pauses seller payout while an administrator checks Order Room logs and screen-recording proof.",
+            title: "Evidence-Based Dispute Review",
+            desc: "Opening a dispute during the pre-release inspection window pauses seller-balance release while evidence is reviewed. Review timing varies; post-release reports do not automatically hold funds or reverse M-Pesa transfers already sent.",
           },
         ].map((item) => {
           const Icon = item.icon;

@@ -64,13 +64,13 @@ export function ProposeSwapModal({ listing }: ProposeSwapModalProps) {
 
     const topUpNum = Number(cashTopUp);
     if (!topUpNum || topUpNum < 100) {
-      setError("Enter a cash top-up / escrow deposit of at least KES 100.");
+      setError("Enter a cash top-up offer of at least KES 100.");
       return;
     }
 
     if (!cleanIdReady) {
       setError(
-        "Your trade-in squad must also have Google Play / Apple Game Center unlinked for safe escrow swap."
+        "Confirm that Google Play / Apple Game Center are unlinked before you submit a swap proposal."
       );
       return;
     }
@@ -87,7 +87,7 @@ export function ProposeSwapModal({ listing }: ProposeSwapModalProps) {
         " "
       )}) squad${
         yourEpicsAndPlayers.trim() ? ` [${yourEpicsAndPlayers.trim()}]` : ""
-      } + KES ${topUpNum.toLocaleString()} M-Pesa Till 1572931 top-up. Clean Konami ID confirmed.`;
+      } + KES ${topUpNum.toLocaleString()} cash top-up proposal. Google Play / Apple Game Center unlinked.`;
 
       const res = await fetch("/api/offers", {
         method: "POST",
@@ -134,7 +134,7 @@ export function ProposeSwapModal({ listing }: ProposeSwapModalProps) {
         <div
           role="dialog"
           aria-modal="true"
-          aria-label="Propose Escrow Squad Swap"
+          aria-label="Propose Marketplace Squad Swap"
           onClick={() => setOpen(false)}
           className="fixed inset-0 z-[110] flex items-end sm:items-center justify-center bg-black/65 backdrop-blur-sm p-0 sm:p-4"
         >
@@ -149,7 +149,7 @@ export function ProposeSwapModal({ listing }: ProposeSwapModalProps) {
                 </div>
                 <div className="min-w-0">
                   <h3 className="text-sm sm:text-base font-bold text-sx-ink font-display truncate">
-                    Propose Escrow Squad Swap
+                    Propose a Marketplace Swap
                   </h3>
                   <p className="text-[11px] text-sx-muted truncate">
                     Target: {displayTitle}
@@ -176,9 +176,7 @@ export function ProposeSwapModal({ listing }: ProposeSwapModalProps) {
                     Swap Proposal Sent to Seller!
                   </h4>
                   <p className="text-xs sm:text-sm text-sx-muted leading-relaxed max-w-sm mx-auto">
-                    The seller has been notified via SMS &amp; Seller Hub. Once accepted, your{" "}
-                    <strong>KES {Number(cashTopUp).toLocaleString()}</strong> top-up locks into{" "}
-                    <strong>M-Pesa Till 1572931</strong> while our Escrow Middleman verifies both Konami IDs before swapping.
+                    The seller has been notified via SMS &amp; Seller Hub. This proposal does not create an order or hold funds. Buyer protection applies only if you proceed through the listing&apos;s marketplace checkout; direct account swaps and payments in DMs are not covered.
                   </p>
                   <div className="pt-2">
                     <Button variant="primary" size="md" onClick={() => setOpen(false)}>
@@ -213,7 +211,7 @@ export function ProposeSwapModal({ listing }: ProposeSwapModalProps) {
                       required
                     />
                     <Input
-                      label="M-Pesa / WhatsApp Phone"
+                      label="Phone for Seller Reply"
                       placeholder="0712 345 678"
                       value={buyerPhone}
                       onChange={(e) => setBuyerPhone(e.target.value)}
@@ -258,7 +256,7 @@ export function ProposeSwapModal({ listing }: ProposeSwapModalProps) {
                   />
 
                   <Input
-                    label="Cash Top-Up You Will Add via Till 1572931 (KES)"
+                    label="Proposed Cash Top-Up (KES)"
                     type="number"
                     placeholder="e.g. 1500"
                     value={cashTopUp}
@@ -274,7 +272,7 @@ export function ProposeSwapModal({ listing }: ProposeSwapModalProps) {
                       className="mt-0.5 w-4 h-4 accent-emerald-600 cursor-pointer"
                     />
                     <span className="text-[11px] text-sx-ink leading-relaxed">
-                      My trade-in squad uses a <strong>Clean Konami ID</strong> (Google Play &amp; Apple Game Center unlinked) and I understand both accounts are verified by Escrow before swap release.
+                      I confirm my trade-in squad uses a <strong>Clean Konami ID</strong> (Google Play &amp; Apple Game Center unlinked). I understand this proposal does not create a protected order or hold funds.
                     </span>
                   </label>
 

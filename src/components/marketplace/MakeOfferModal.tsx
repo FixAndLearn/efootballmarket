@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/Button";
 import { Listing } from "@/types/database";
 import { formatCurrency, formatSmartListingTitle } from "@/lib/utils";
 import { normalizePhoneNumber } from "@/lib/utils/phone";
-import { isListingOnFlashSale } from "@/lib/utils/flashSale";
 import {
   BrowserNotifPermission,
   getBrowserNotificationPermission,
@@ -103,11 +102,6 @@ export function MakeOfferModal({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError("");
-
-    if (isListingOnFlashSale(listing)) {
-      setError("This account is currently featured in the Friday Drop vault. Direct checkout via Till 1572931 escrow is required during the 8-hour window.");
-      return;
-    }
 
     if (!numericOffer || numericOffer < minAllowed) {
       setError(`Minimum allowed offer is KES ${minAllowed.toLocaleString()} (50% of asking price).`);
@@ -422,7 +416,7 @@ export function MakeOfferModal({
 
               <div className="flex items-center justify-center gap-1.5 text-[11px] text-sx-muted">
                 <ShieldCheck className="w-3.5 h-3.5 text-sx-green-text" />
-                <span>Protected by Till 1572931 Escrow Guarantee</span>
+                <span>Buyer protection applies after checkout payment</span>
               </div>
             </div>
           </form>

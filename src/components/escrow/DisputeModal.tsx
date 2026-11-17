@@ -116,8 +116,8 @@ export function DisputeModal({
             </h3>
             <p className="text-xs text-sx-muted">
               {isCompleted
-                ? "Seller Payout Frozen Pending Investigation"
-                : "Order Funds Frozen Until Resolution"}
+                ? "Post-release review; no automatic seller-balance hold or reversal of transfers already sent"
+                : "Seller-balance release is paused while the dispute is reviewed"}
             </p>
           </div>
         </div>
@@ -126,10 +126,10 @@ export function DisputeModal({
           <div className="p-3 mb-4 rounded-xl bg-sx-amber-tint border border-sx-amber-border text-sx-amber-text text-xs space-y-1">
             <div className="flex items-center gap-1.5 font-bold text-sx-amber-text">
               <ShieldCheck className="w-4 h-4 shrink-0 text-sx-amber-text" />
-              <span>Post-Release Protection Guarantee</span>
+              <span>Post-Release Dispute Review</span>
             </div>
             <p className="text-[11px] text-sx-amber-text/90 leading-relaxed">
-              If the seller attempted Konami ID recovery, linked an unmentioned Google Play Games ID, or caused coin deductions, submit your claim below. The seller wallet balance is frozen and administrators will arbitrate directly.
+              If the seller attempted Konami ID recovery, linked an unmentioned Google Play Games ID, or caused coin deductions, submit evidence below. Moderators review post-release reports, but opening one does not automatically hold seller funds or reverse an M-Pesa transfer already sent. Any reimbursement is a separate manual decision.
             </p>
           </div>
         )}
@@ -204,7 +204,7 @@ export function DisputeModal({
           </div>
 
           <Button type="submit" variant="danger" size="md" className="w-full" isLoading={loading}>
-            {isCompleted ? "Submit Post-Release Dispute (Freeze Payout)" : "Submit Dispute with Evidence"}
+            {isCompleted ? "Submit Post-Release Dispute" : "Submit Dispute with Evidence"}
           </Button>
         </form>
       </div>

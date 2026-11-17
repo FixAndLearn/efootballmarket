@@ -53,6 +53,29 @@ export interface ParsedMpesaCallback {
   isSuccess: boolean;
 }
 
+export type MpesaProvider = "unifiedpay" | "safaricom";
+export type MpesaSettlementVerificationMethod =
+  | "provider_status_query"
+  | "authenticated_callback_and_status_query";
+
+/**
+ * Settlement details are created only after a provider query confirms success.
+ * Safaricom's STK Query does not return the receipt or amount, so those fields
+ * are taken from the authenticated callback and cross-checked against that
+ * query; UnifiedPay supplies all fields from its provider status response.
+ */
+export interface VerifiedMpesaSettlement {
+  provider: MpesaProvider;
+  verificationMethod: MpesaSettlementVerificationMethod;
+  providerStatus: "completed";
+  transactionId: string;
+  checkoutRequestId?: string;
+  merchantRequestId?: string;
+  receiptNumber: string;
+  amount: number;
+  verifiedAt: string;
+}
+
 export interface B2CPayoutParams {
   phoneNumber: string;
   amount: number;

@@ -14,12 +14,12 @@ export default function SellerGuidelinesPage() {
     <StandaloneDocLayout
       badge="Seller Handbook"
       title="Seller Standards & M-Pesa Payout Rules"
-      subtitle="Follow these four rules so your squad listing approves fast, passes buyer inspection with zero disputes, and pays out smoothly to your M-Pesa number."
+      subtitle="Follow these rules for marketplace orders placed from your published listing and paid through checkout, so your squad passes buyer inspection and eligible payouts reach your M-Pesa number smoothly."
       keyFacts={[
         { value: "KES 0", label: "Free Squad Listing" },
         { value: "5% (50–500)", label: "Seller Fee Cap (KES)" },
         { value: "12 Hours", label: "Login & OTP Delivery" },
-        { value: "1–12 Hours", label: "M-Pesa Withdrawal" },
+        { value: "Manual", label: "M-Pesa Withdrawal" },
       ]}
     >
       <section className="space-y-3">
@@ -50,13 +50,13 @@ export default function SellerGuidelinesPage() {
         </h2>
         <ul className="list-disc pl-5 space-y-2">
           <li>
-            <strong>Always Check Your Dashboard First:</strong> Never hand over logins from a WhatsApp screenshot—confirm your Seller Dashboard badge reads <strong>Escrow Funded</strong>.
+            <strong>Always Check Your Dashboard First:</strong> Never hand over logins from a WhatsApp screenshot—before delivering for a marketplace checkout order, confirm your Seller Dashboard badge reads <strong>Escrow Funded</strong>.
           </li>
           <li>
             <strong>Deliver in Encrypted Vault Within 12h:</strong> Submit credentials inside the Order Room and forward the <code>my.konami.net</code> email-change OTP in Order Chat.
           </li>
           <li>
-            <strong>Net M-Pesa Payout:</strong> Once the buyer clicks <em>Confirm &amp; Release</em> (or 24h passes uncontested), your net payout (sale price minus <strong>5% fee, min KES 50 / max KES 500</strong>) is sent to your M-Pesa number within <strong>1–12 hours</strong> (8 AM – 10 PM EAT).
+            <strong>Sale Balance &amp; M-Pesa Withdrawal:</strong> Once the buyer clicks <em>Confirm &amp; Release</em> (or 24h passes uncontested), your available balance is credited with the sale price minus the <strong>5% fee, min KES 50 / max KES 500</strong>. Submit a separate withdrawal request to receive M-Pesa. Requests are reviewed and processed manually; timing varies, so track the request in Seller Earnings or contact support.
           </li>
         </ul>
       </section>

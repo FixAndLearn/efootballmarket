@@ -129,7 +129,7 @@ export const BuyerDashboardView: React.FC<BuyerDashboardViewProps> = ({
         return {
           label: "Completed",
           cls: "bg-sx-green-tint text-sx-green-text border-sx-green-border",
-          cta: "View Receipt",
+          cta: "View Order Record",
           urgent: false,
           icon: CheckCircle2,
         };
@@ -140,6 +140,22 @@ export const BuyerDashboardView: React.FC<BuyerDashboardViewProps> = ({
           cta: "Open Dispute Room",
           urgent: true,
           icon: ShieldAlert,
+        };
+      case "refunded":
+        return {
+          label: "Refund Approved · Manual Transfer Unconfirmed",
+          cls: "bg-sx-amber-tint text-sx-amber-text border-sx-amber-border",
+          cta: "View Order Status",
+          urgent: false,
+          icon: Clock,
+        };
+      case "cancelled":
+        return {
+          label: "Cancelled",
+          cls: "bg-sx-stone text-sx-muted border-sx-border",
+          cta: "View Order",
+          urgent: false,
+          icon: Clock,
         };
       default:
         return {
@@ -168,7 +184,7 @@ export const BuyerDashboardView: React.FC<BuyerDashboardViewProps> = ({
                 },
                 { id: "active", label: "Active Escrow" },
                 { id: "completed", label: "Completed" },
-                { id: "cancelled", label: "Cancelled" },
+                { id: "cancelled", label: "Closed (Cancelled / Refund)" },
               ] as const
             ).map((tab) => (
               <button
@@ -207,12 +223,12 @@ export const BuyerDashboardView: React.FC<BuyerDashboardViewProps> = ({
             <div>
               <h3 className="text-base font-bold text-sx-ink font-display">No Orders Yet</h3>
               <p className="text-xs text-sx-muted max-w-sm mx-auto mt-1">
-                Every squad purchase is protected by M-Pesa escrow custody (Till 1572931) with KES 0 extra buyer fees.
+                Buyer protection applies to orders from published listings paid through marketplace checkout, with KES 0 extra buyer fees.
               </p>
             </div>
             <Link href="/browse" className="inline-block">
               <Button variant="primary" size="md">
-                Explore Verified Squads
+                Explore Squad Listings
               </Button>
             </Link>
           </div>
@@ -287,7 +303,7 @@ export const BuyerDashboardView: React.FC<BuyerDashboardViewProps> = ({
                       <p className="text-xs text-sx-muted">
                         Seller:{" "}
                         <span className="font-medium text-sx-ink-soft">
-                          {order.seller?.username || "Verified Seller"}
+                          {order.seller?.username || "Seller"}
                         </span>{" "}
                         ·{" "}
                         {new Date(order.created_at).toLocaleDateString("en-KE", {
@@ -435,7 +451,7 @@ export const BuyerDashboardView: React.FC<BuyerDashboardViewProps> = ({
 
         {savedListings.length === 0 ? (
           <div className="p-8 text-center text-xs text-sx-muted">
-            Tap the heart icon on any squad in the marketplace to bookmark it here for payday or Friday Drops.
+            Tap the heart icon on any squad in the marketplace to save it to your watchlist.
           </div>
         ) : (
           <div className="p-5 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">

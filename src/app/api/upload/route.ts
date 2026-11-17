@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const rate = checkRateLimit(`upload:${user.id}:${ip}`, 15, 60000);
+    const rate = await checkRateLimit(`upload:${user.id}:${ip}`, 15, 60000);
     if (!rate.success) {
       return NextResponse.json(
         { error: "Upload rate limit reached. Please wait 1 minute." },

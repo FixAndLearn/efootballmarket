@@ -3,21 +3,21 @@
  * 
  * Rules based on eFootballMarket Kenya policy:
  * - Free tournaments (pot = 0): KES 0
- * - Pot <= KES 100: KES 15 (e.g. 100 bob pot -> KES 15, within user's 10-20 bob target)
- * - Pot <= KES 250: KES 20
- * - Pot <= KES 500: KES 35
- * - Pot <= KES 1,000: KES 60 (exactly in user's 50 to 70 bob target)
- * - Pot <= KES 2,500: KES 100 (5% of 2,000 bob pot)
- * - Pot > KES 2,500: 5% flat of total pot
+ * - Pot <= KES 100: 15% rounded to whole shillings, with a KES 10 minimum and KES 15 maximum, capped at the pot
+ * - Pot >100–250: KES 20
+ * - Pot >250–500: KES 35
+ * - Pot >500–1,000: KES 60
+ * - Pot > KES 1,000: 5% rounded to whole shillings, with a KES 60 minimum
  */
 export function calculateTournamentFee(totalPot: number): number {
-  if (totalPot <= 0) return 0;
-  if (totalPot <= 100) return Math.min(15, Math.max(10, Math.round(totalPot * 0.15)));
-  if (totalPot <= 250) return 20;
-  if (totalPot <= 500) return 35;
-  if (totalPot <= 1000) return 60; // Fair fee for 1,000 KES pot (50-70 range)
-  if (totalPot <= 2500) return Math.max(60, Math.round(totalPot * 0.05)); // 2,000 KES pot -> 100 KES
-  return Math.round(totalPot * 0.05); // 5% for larger pools
+  if (!Number.isFinite(totalPot) || totalPot <= 0) return 0;
+  const pot = Math.floor(totalPot);
+  if (pot <= 0) return 0;
+  if (pot <= 100) return Math.min(pot, Math.min(15, Math.max(10, Math.round(pot * 0.15))));
+  if (pot <= 250) return 20;
+  if (pot <= 500) return 35;
+  if (pot <= 1000) return 60;
+  return Math.max(60, Math.round(pot * 0.05));
 }
 
 export function calculateNetPrizePool(
@@ -31,7 +31,8 @@ export function calculateNetPrizePool(
   secondPlace: number;
   isWinnerTakesAll: boolean;
 } {
-  if (totalPot <= 0) {
+  const safePot = Number.isFinite(totalPot) ? Math.max(0, Math.floor(totalPot)) : 0;
+  if (safePot <= 0) {
     return {
       adminFee: 0,
       netPrizePool: 0,
@@ -41,8 +42,8 @@ export function calculateNetPrizePool(
     };
   }
 
-  const adminFee = calculateTournamentFee(totalPot);
-  const netPrizePool = Math.max(0, totalPot - adminFee);
+  const adminFee = calculateTournamentFee(safePot);
+  const netPrizePool = Math.max(0, safePot - adminFee);
 
   // If 1v1 (2 players) or explicitly winner takes all:
   if (playerCount <= 2 || payoutSplit === "winner_takes_all") {

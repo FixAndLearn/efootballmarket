@@ -1,3 +1,4 @@
+import { randomUUID } from "crypto";
 import { mpesaClient } from "@/lib/mpesa/client";
 import { checkRateLimit } from "@/lib/security/rateLimiter";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
@@ -7,6 +8,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 export async function POST(req: NextRequest) {
+  let providerRequestAttempted = false;
   try {
     const supabase = createServerSupabaseClient();
     const {
@@ -51,7 +53,7 @@ export async function POST(req: NextRequest) {
     // Rate limit checks (e.g. max 5 STK pushes per minute)
     const forwarded = req.headers.get("x-forwarded-for");
     const ip = forwarded ? forwarded.split(",")[0].trim() : "127.0.0.1";
-    const rateCheck = checkRateLimit(`tourney_stk:${verifiedUserId}:${ip}`, 5, 60000);
+    const rateCheck = await checkRateLimit(`tourney_stk:${verifiedUserId}:${ip}`, 5, 60000);
     if (!rateCheck.success) {
       return NextResponse.json(
         { error: "Too many payment attempts. Please wait a minute before requesting another STK Push." },
@@ -109,9 +111,30 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const orderRef = `TRN-${tourney.id.slice(0, 6)}-${Date.now().toString().slice(-4)}`;
+    const existingPayment = await TournamentService.getLatestPaymentForUser(tourney.id, verifiedUserId);
+    if (existingPayment?.status === "pending") {
+      return NextResponse.json(
+        { error: "A payment attempt is already pending for this tournament. Do not request another prompt; check its status or contact support." },
+        { status: 409 }
+      );
+    }
 
-    // Trigger Daraja / UnifiedPay STK Push
+    const orderRef = `TRN-${tourney.id.slice(0, 6)}-${Date.now().toString().slice(-4)}`;
+    const reservationId = randomUUID();
+
+    // Persist a pending payment reservation before contacting M-Pesa. This
+    // prevents deletion or another payment attempt while the provider request is in flight.
+    const paymentReservation = await TournamentService.createTournamentPayment({
+      tournament_id: tourney.id,
+      user_id: verifiedUserId,
+      gamer_tag: gamer_tag.trim(),
+      friend_id: friend_id.trim(),
+      phone_number: normalizedPhone,
+      amount: tourney.entry_fee_kes,
+      checkout_request_id: reservationId,
+    });
+
+    providerRequestAttempted = true;
     const stkResponse = await mpesaClient.initiateStkPush({
       phoneNumber: normalizedPhone,
       amount: tourney.entry_fee_kes,
@@ -122,22 +145,16 @@ export async function POST(req: NextRequest) {
     const checkoutRequestId = stkResponse.CheckoutRequestID;
     if (!checkoutRequestId) {
       return NextResponse.json(
-        { error: "Failed to initiate M-Pesa STK push prompt. Please check your phone number and try again." },
-        { status: 500 }
+        { error: "The payment prompt could not be confirmed. A pending request was recorded; contact support before retrying." },
+        { status: 503 }
       );
     }
 
-    // Record pending payment in tournament_payments table & memory
-    await TournamentService.createTournamentPayment({
-      tournament_id,
-      user_id: verifiedUserId,
-      gamer_tag: gamer_tag.trim(),
-      friend_id: friend_id.trim(),
-      phone_number: normalizedPhone,
-      amount: tourney.entry_fee_kes,
-      checkout_request_id: checkoutRequestId,
-      merchant_request_id: stkResponse.MerchantRequestID,
-    });
+    await TournamentService.attachTournamentPaymentRequestIds(
+      paymentReservation,
+      checkoutRequestId,
+      stkResponse.MerchantRequestID
+    );
 
     return NextResponse.json({
       success: true,
@@ -146,11 +163,16 @@ export async function POST(req: NextRequest) {
         stkResponse.CustomerMessage ||
         `M-Pesa STK Push sent to ${normalizedPhone}. Please check your phone and enter your PIN.`,
     });
-  } catch (err: any) {
-    console.error("Tournament STK Push error:", err);
+  } catch {
+    // Provider errors can contain credential-bearing URLs; never log or echo them.
+    console.error("Tournament STK Push initiation or reservation update failed.");
     return NextResponse.json(
-      { error: err.message || "Failed to initiate tournament STK Push." },
-      { status: 500 }
+      {
+        error: providerRequestAttempted
+          ? "The M-Pesa prompt may have been sent, but its status could not be confirmed. Do not retry yet; contact support to check the pending request."
+          : "Could not safely record the tournament payment request. No M-Pesa prompt was sent; please try again later.",
+      },
+      { status: providerRequestAttempted ? 503 : 500 }
     );
   }
 }

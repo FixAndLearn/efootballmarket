@@ -15,11 +15,11 @@ import {
   ArrowRight,
   BookOpen,
   Clock,
-  Handshake,
   Loader2,
   Repeat2,
   Search,
   ShieldAlert,
+  ShieldCheck,
   Target,
   Trophy,
   X,
@@ -64,12 +64,12 @@ function getIntentMatches(rawQuery: string): ServiceIntentMatch[] {
     });
   }
 
-  if (q.includes("middleman") || q.includes("whatsapp") || q.includes("escrow") || q.includes("till") || q.includes("1572931")) {
+  if (q.includes("escrow") || q.includes("till") || q.includes("1572931")) {
     matches.push({
-      title: "Open WhatsApp / Facebook Middleman Contract",
-      subtitle: "Lock an off-platform squad deal safely on M-Pesa Till 1572931",
-      href: "/middleman",
-      icon: Handshake,
+      title: "Marketplace Checkout & Buyer Protection",
+      subtitle: "Learn how payment holding and the 24-hour inspection work",
+      href: "/escrow-guarantee",
+      icon: ShieldCheck,
     });
   }
 
@@ -509,7 +509,7 @@ export function SmartSearchBar({
               {/* Live Squad Matches */}
               <div className="p-2">
                 <div className="px-2 py-1 flex items-center justify-between text-[10px] font-mono uppercase tracking-wider text-sx-muted">
-                  <span>Matching Verified Squads</span>
+                  <span>Matching Squad Listings</span>
                   {loading && <Loader2 className="w-3 h-3 animate-spin text-sx-green-text" />}
                 </div>
 

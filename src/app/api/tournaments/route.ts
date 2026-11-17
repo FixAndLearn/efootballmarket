@@ -56,7 +56,7 @@ export async function GET() {
 export async function POST(req: NextRequest) {
   try {
     const ip = getClientIp(req);
-    const rate = checkRateLimit(`tourney_post:${ip}`, 12, 60000);
+    const rate = await checkRateLimit(`tourney_post:${ip}`, 12, 60000);
     if (!rate.success) {
       return NextResponse.json(
         { error: "Too many tournament requests. Please wait 1 minute." },
@@ -103,39 +103,58 @@ export async function POST(req: NextRequest) {
         subtitle,
         description,
         platform = "all",
-        tournament_type = "tournament",
-        admin_fee_kes = 0,
+        tournament_type,
         payout_split = "winner_takes_all",
-        prize_pool_kes = 0,
-        first_place_kes = 0,
-        second_place_kes = 0,
         entry_fee_kes = 0,
         format = "Single Knockout 1v1",
         max_players = 8,
         start_date,
       } = body;
 
-      if (!title || !start_date) {
+      if (typeof title !== "string" || !title.trim() || typeof start_date !== "string" || !start_date.trim()) {
         return NextResponse.json(
           { error: "Tournament title and match start date/time are required." },
           { status: 400 }
         );
       }
 
-      const safeMaxPlayers = Math.min(32, Math.max(2, Number(max_players) || 8));
-      const safeEntryFee = Math.max(0, Number(entry_fee_kes) || 0);
+      const requestedType = tournament_type ?? (Number(max_players) === 2 ? "1v1" : "tournament");
+      if (requestedType !== "1v1" && requestedType !== "tournament") {
+        return NextResponse.json({ error: "Unsupported tournament type." }, { status: 400 });
+      }
+      const safeMaxPlayers = Number(max_players ?? (requestedType === "1v1" ? 2 : 8));
+      const allowedMaxPlayers = requestedType === "1v1" ? [2] : [4, 8, 16];
+      if (!Number.isInteger(safeMaxPlayers) || !allowedMaxPlayers.includes(safeMaxPlayers)) {
+        return NextResponse.json({ error: "Choose a supported tournament size." }, { status: 400 });
+      }
+
+      const safeEntryFee = Number(entry_fee_kes);
+      if (
+        !Number.isSafeInteger(safeEntryFee) ||
+        safeEntryFee < 0 ||
+        !Number.isSafeInteger(safeEntryFee * safeMaxPlayers)
+      ) {
+        return NextResponse.json({ error: "Entry fee must be a non-negative whole KES amount." }, { status: 400 });
+      }
+
+      const allowedPlatforms = new Set(["all", "android", "ios", "crossplay", "console_pc"]);
+      if (typeof platform !== "string" || !allowedPlatforms.has(platform)) {
+        return NextResponse.json({ error: "Choose a supported platform." }, { status: 400 });
+      }
+      const safePlatform = platform as "all" | "android" | "ios" | "crossplay" | "console_pc";
+
+      if (!["winner_takes_all", "80_20", "70_30"].includes(payout_split)) {
+        return NextResponse.json({ error: "Choose a supported prize split." }, { status: 400 });
+      }
+      const safePayoutSplit = requestedType === "1v1" ? "winner_takes_all" : payout_split;
 
       const createdTournament = await TournamentService.createTournament({
         title: String(title).slice(0, 140),
         subtitle: subtitle ? String(subtitle).slice(0, 180) : undefined,
         description: description ? String(description).slice(0, 1200) : undefined,
-        platform,
-        tournament_type,
-        admin_fee_kes: Math.max(0, Number(admin_fee_kes) || 0),
-        payout_split,
-        prize_pool_kes: Math.max(0, Number(prize_pool_kes) || 0),
-        first_place_kes: Math.max(0, Number(first_place_kes) || 0),
-        second_place_kes: Math.max(0, Number(second_place_kes) || 0),
+        platform: safePlatform,
+        tournament_type: requestedType,
+        payout_split: safePayoutSplit,
         entry_fee_kes: safeEntryFee,
         format: String(format).slice(0, 120),
         max_players: safeMaxPlayers,
@@ -178,7 +197,12 @@ export async function POST(req: NextRequest) {
     });
 
     if (!result.success) {
-      return NextResponse.json({ error: result.error }, { status: 400 });
+      const status = result.error?.includes("temporarily unavailable") ||
+        result.error?.includes("could not be confirmed") ||
+        result.error?.includes("status could not be verified")
+        ? 503
+        : 400;
+      return NextResponse.json({ error: result.error }, { status });
     }
 
     const tourney = await TournamentService.getTournamentById(String(tournament_id));
@@ -250,8 +274,20 @@ export async function DELETE(req: NextRequest) {
       );
     }
 
-    await TournamentService.deleteTournament(id);
-    return NextResponse.json({ success: true, message: "Tournament removed." });
+    const deletion = await TournamentService.deleteTournament(id);
+    if (deletion === "blocked") {
+      return NextResponse.json(
+        { error: "This tournament has payment or registration activity, or changed during removal. It was not deleted; contact support about cancellation and any refund request." },
+        { status: 409 }
+      );
+    }
+    if (deletion === "unavailable") {
+      return NextResponse.json(
+        { error: "Tournament removal could not be safely verified. Nothing was removed; please try again later or contact support." },
+        { status: 503 }
+      );
+    }
+    return NextResponse.json({ success: true, message: "Tournament removed. No refund was issued." });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }

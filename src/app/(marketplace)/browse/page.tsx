@@ -14,9 +14,9 @@ import { Metadata } from "next";
 export const revalidate = 0;
 
 export const metadata: Metadata = {
-  title: "Browse Verified eFootball Squads in Kenya",
+  title: "Browse eFootball Squad Listings in Kenya",
   description:
-    "Compare Android, iOS, PlayStation, and PC eFootball squads in Kenya by price in KES, OVR, eFootball Coins, and notable Epic players. Protected by 24-hour M-Pesa Till 1572931 escrow.",
+    "Compare seller-listed Android, iOS, PlayStation, and PC squads by KES price, OVR, Coins, and notable players. Listings are not pre-audited; checkout protection applies to eligible orders.",
   alternates: {
     canonical: "https://www.efootballmarket.co.ke/browse",
   },

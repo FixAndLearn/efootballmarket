@@ -60,7 +60,7 @@ export default async function SellerEarningsPage() {
               Seller Earnings &amp; M-Pesa Withdrawals
             </h1>
             <p className="text-xs sm:text-sm text-sx-muted mt-1">
-              Direct disbursements to your registered Safaricom M-Pesa line.
+              Withdrawal requests are reviewed and arranged manually; processing time varies.
             </p>
           </div>
           <Link href="/dashboard/seller">
@@ -87,7 +87,7 @@ export default async function SellerEarningsPage() {
             {formatCurrency(availableBalance)}
           </span>
           <p className="text-[11px] text-sx-muted mt-2">
-            Cleared funds ready for instant M-Pesa withdrawal.
+            Cleared funds available to request for M-Pesa payout. Requests are processed manually; timing varies.
           </p>
         </div>
 
@@ -105,13 +105,13 @@ export default async function SellerEarningsPage() {
 
         <div className="p-6 rounded-2xl bg-pitch-surface border border-pitch-border shadow-xl">
           <span className="block text-xs uppercase font-bold text-sx-info-text tracking-wider">
-            Completed Transfers
+            Completed Sales
           </span>
           <span className="text-3xl font-extrabold text-sx-ink font-display mt-2 block">
             {completedSales}
           </span>
           <p className="text-[11px] text-sx-muted mt-2">
-            Total successful account settlements.
+            Count of completed marketplace orders on your seller profile.
           </p>
         </div>
       </div>
@@ -123,7 +123,7 @@ export default async function SellerEarningsPage() {
           <span>Understanding Withdrawal Status &amp; Processing</span>
         </div>
         <p className="text-xs text-sx-ink-soft leading-relaxed">
-          When you submit a withdrawal, it is marked <strong className="text-sx-amber-text">PENDING</strong> while our financial administration team prepares the payout from the platform Till to your Safaricom M-Pesa line.
+          When you submit a withdrawal, it is marked <strong className="text-sx-amber-text">PENDING</strong> and placed in a manual review queue. Submitting a request does not itself send an M-Pesa transfer; the status changes after an administrator records the outcome.
         </p>
 
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 text-xs">
@@ -136,13 +136,13 @@ export default async function SellerEarningsPage() {
           <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border space-y-1">
             <span className="font-bold text-sx-amber-text block text-[11px]">2. Payout Queued (Pending)</span>
             <p className="text-[11px] text-sx-muted leading-normal">
-              Disbursed to your Safaricom M-Pesa phone number (processed within 15–30 minutes).
+              An administrator reviews the request and arranges any M-Pesa disbursement manually. Timing varies; follow the status shown in this list.
             </p>
           </div>
           <div className="p-3 rounded-xl bg-pitch-card border border-pitch-border space-y-1">
             <span className="font-bold text-sx-green-text block text-[11px]">3. Status Completed</span>
             <p className="text-[11px] text-sx-muted leading-normal">
-              Once money reaches your phone, status marks as Paid. If wrong phone number, funds are refunded.
+              An administrator marks a request paid after arranging the transfer manually. This platform does not independently verify M-Pesa completion; check your provider receipt or SMS. A rejection restores the reserved amount to your available balance.
             </p>
           </div>
         </div>
@@ -157,7 +157,8 @@ export default async function SellerEarningsPage() {
         {withdrawals && withdrawals.length > 0 ? (
           <div className="divide-y divide-pitch-border/60">
             {withdrawals.map((w: any) => {
-              const isPending = w.status === "pending";
+              const isPending = w.status === "pending" || w.status === "processing";
+              const isProcessing = w.status === "processing";
               const isCompleted = w.status === "completed";
               const isRejected = w.status === "rejected";
 
@@ -170,17 +171,17 @@ export default async function SellerEarningsPage() {
                       </span>
                       {isPending && (
                         <Badge variant="warning" size="sm" className="font-bold">
-                          PENDING DISBURSEMENT
+                          {isProcessing ? "PROCESSING · MANUAL REVIEW" : "PENDING REVIEW"}
                         </Badge>
                       )}
                       {isCompleted && (
                         <Badge variant="success" size="sm" className="font-bold">
-                          COMPLETED &amp; PAID
+                          MARKED PAID · MANUAL CONFIRMATION
                         </Badge>
                       )}
                       {isRejected && (
                         <Badge variant="danger" size="sm" className="font-bold">
-                          REJECTED (REFUNDED)
+                          REJECTED
                         </Badge>
                       )}
                     </div>
@@ -190,17 +191,17 @@ export default async function SellerEarningsPage() {
                       <span>/</span>
                       {isPending && (
                         <span className="text-sx-amber-text/90 font-medium">
-                          Queued for platform Till payout (15–30 mins)
+                          {isProcessing ? "Being reviewed or arranged manually; timing varies" : "Awaiting manual review; timing varies"}
                         </span>
                       )}
                       {isCompleted && (
                         <span className="text-sx-green-text/90 font-medium">
-                          Disbursed to Safaricom line
+                          Admin marked it paid; this system does not verify provider transfer
                         </span>
                       )}
                       {isRejected && (
                         <span className="text-sx-red-text/90 font-medium">
-                          {w.failure_reason ? `Reason: ${w.failure_reason}` : "Balance restored"}
+                          {w.failure_reason ? `Reason: ${w.failure_reason}` : "Check available balance; contact support if it is not restored"}
                         </span>
                       )}
                     </div>

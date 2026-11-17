@@ -1,19 +1,125 @@
+import { randomUUID } from "crypto";
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { Tournament, TournamentMatch, TournamentParticipant, TournamentPayment } from "@/types/database";
-
-/**
- * In-memory fallback cache to guarantee immediate persistence and zero loss
- * even before SQL migration has been applied to Supabase database.
- * ZERO MOCK DATA - Initialized completely empty!
- */
-let MEMORY_TOURNAMENTS: Tournament[] = [];
-let MEMORY_TOURNAMENT_PAYMENTS: TournamentPayment[] = [];
+import { VerifiedMpesaSettlement } from "@/lib/mpesa/types";
+import { calculateNetPrizePool } from "@/lib/utils/tournamentFee";
+import {
+  amountsMatch,
+  isValidSettlementEvidence,
+  normalizeMpesaReceiptNumber,
+  normalizePositiveAmount,
+} from "@/lib/mpesa/settlement";
+import { PUBLIC_TOURNAMENT_PARTICIPANT_SELECT } from "@/lib/security/publicSanitizer";
+import {
+  deleteTournamentIfNoPaymentActivity,
+  getLatestSharedTournamentPayment,
+  getSharedTournamentPayment,
+  getSharedTournamentState,
+  insertSharedTournamentPayment,
+  insertSharedTournamentState,
+  listSharedTournamentStates,
+  updateSharedTournamentPayment,
+  updateSharedTournamentState,
+} from "@/lib/tournaments/runtimeState";
 
 function getSupabase() {
   const adminSupabase = createAdminClient();
   const userSupabase = createServerSupabaseClient();
   return hasServiceRoleKey() ? adminSupabase : userSupabase;
+}
+
+function formatTournament(data: any): Tournament {
+  return {
+    ...data,
+    prize_pool_kes: Number(data.prize_pool_kes || 0),
+    first_place_kes: Number(data.first_place_kes || 0),
+    second_place_kes: Number(data.second_place_kes || 0),
+    entry_fee_kes: Number(data.entry_fee_kes || 0),
+    matches: (data.matches || []).sort((a: TournamentMatch, b: TournamentMatch) => a.match_number - b.match_number),
+    participants: data.participants || [],
+  };
+}
+
+function preferNewerTournament(primary: Tournament | null, shared: Tournament | null): Tournament | null {
+  if (!primary) return shared;
+  if (!shared) return primary;
+  const primaryTime = Date.parse(primary.updated_at || primary.created_at || "");
+  const sharedTime = Date.parse(shared.updated_at || shared.created_at || "");
+  return Number.isFinite(sharedTime) && sharedTime > primaryTime ? shared : primary;
+}
+
+class BracketStateConflictError extends Error {}
+
+function buildTournamentBracket(
+  tournamentId: string,
+  maxPlayers: number,
+  players: TournamentParticipant[]
+): TournamentMatch[] {
+  const createdAt = new Date().toISOString();
+  if (maxPlayers === 2) {
+    return [
+      {
+        id: randomUUID(),
+        tournament_id: tournamentId,
+        round: "1v1 Duel Championship",
+        match_number: 1,
+        player1_name: players[0].gamer_tag,
+        player2_name: players[1].gamer_tag,
+        player1_friend_id: players[0].friend_id,
+        player2_friend_id: players[1].friend_id,
+        player1_user_id: players[0].user_id,
+        player2_user_id: players[1].user_id,
+        is_completed: false,
+        created_at: createdAt,
+      },
+    ];
+  }
+
+  const roundNames =
+    maxPlayers === 4
+      ? ["Semi-Finals", "Grand Final"]
+      : maxPlayers === 8
+        ? ["Quarter-Finals", "Semi-Finals", "Grand Final"]
+        : ["Round of 16", "Quarter-Finals", "Semi-Finals", "Grand Final"];
+  const matchIdsByRound: string[][] = [];
+  for (let matchCount = maxPlayers / 2; matchCount >= 1; matchCount /= 2) {
+    matchIdsByRound.push(Array.from({ length: matchCount }, () => randomUUID()));
+  }
+
+  const matches: TournamentMatch[] = [];
+  let matchNumber = 1;
+  for (let roundIndex = 0; roundIndex < roundNames.length; roundIndex += 1) {
+    const isFirstRound = roundIndex === 0;
+    const isFinalRound = roundIndex === roundNames.length - 1;
+    const ids = matchIdsByRound[roundIndex];
+    const nextRoundIds = matchIdsByRound[roundIndex + 1];
+
+    for (let matchIndex = 0; matchIndex < ids.length; matchIndex += 1) {
+      const playerOne = isFirstRound ? players[matchIndex * 2] : null;
+      const playerTwo = isFirstRound ? players[matchIndex * 2 + 1] : null;
+      const previousRoundName = roundNames[roundIndex - 1];
+      matches.push({
+        id: ids[matchIndex],
+        tournament_id: tournamentId,
+        round: roundNames[roundIndex],
+        match_number: matchNumber++,
+        player1_name: playerOne?.gamer_tag ||
+          (isFinalRound ? "Finalist 1" : `Winner ${previousRoundName} ${matchIndex * 2 + 1}`),
+        player2_name: playerTwo?.gamer_tag ||
+          (isFinalRound ? "Finalist 2" : `Winner ${previousRoundName} ${matchIndex * 2 + 2}`),
+        player1_friend_id: playerOne?.friend_id,
+        player2_friend_id: playerTwo?.friend_id,
+        player1_user_id: playerOne?.user_id,
+        player2_user_id: playerTwo?.user_id,
+        is_completed: false,
+        next_match_id: nextRoundIds?.[Math.floor(matchIndex / 2)],
+        next_match_slot: nextRoundIds ? (matchIndex % 2) + 1 : undefined,
+        created_at: createdAt,
+      });
+    }
+  }
+  return matches;
 }
 
 export class TournamentService {
@@ -22,75 +128,73 @@ export class TournamentService {
    * Returns empty array if none exist. Never returns fake/mock demo data.
    */
   static async getAllTournaments(): Promise<Tournament[]> {
-    const sbUrl = process.env.NEXT_PUBLIC_SUPABASE_URL || "";
-    if (!sbUrl || sbUrl.includes("placeholder-project")) {
-      return [...MEMORY_TOURNAMENTS];
-    }
-    try {
-      const supabase = getSupabase();
-      const { data: dbTourneys, error } = await supabase
-        .from("tournaments")
-        .select(`
-          *,
-          matches:tournament_matches(*),
-          participants:tournament_participants(*)
-        `)
-        .order("created_at", { ascending: false });
-
-      if (!error && dbTourneys && Array.isArray(dbTourneys)) {
-        // Sort matches by round and match_number
-        const formatted = dbTourneys.map((t: any) => ({
-          ...t,
-          prize_pool_kes: Number(t.prize_pool_kes || 0),
-          first_place_kes: Number(t.first_place_kes || 0),
-          second_place_kes: Number(t.second_place_kes || 0),
-          entry_fee_kes: Number(t.entry_fee_kes || 0),
-          matches: (t.matches || []).sort((a: any, b: any) => a.match_number - b.match_number),
-          participants: t.participants || [],
-        }));
-        return formatted;
-      }
-    } catch (err) {
-      console.warn("Supabase tournaments query notice:", err);
-    }
-
-    // In-memory fallback
-    return MEMORY_TOURNAMENTS;
-  }
-
-  /**
-   * Get tournament by ID
-   */
-  static async getTournamentById(id: string): Promise<Tournament | null> {
+    let databaseTournaments: Tournament[] = [];
     try {
       const supabase = getSupabase();
       const { data, error } = await supabase
         .from("tournaments")
-        .select(`
-          *,
+        .select(`*,
           matches:tournament_matches(*),
-          participants:tournament_participants(*)
-        `)
-        .eq("id", id)
-        .single();
+          participants:tournament_participants(${PUBLIC_TOURNAMENT_PARTICIPANT_SELECT})`)
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      databaseTournaments = (data || []).map(formatTournament);
+    } catch (err) {
+      console.warn("Supabase tournaments query notice:", err);
+    }
 
-      if (!error && data) {
-        return {
-          ...data,
-          prize_pool_kes: Number(data.prize_pool_kes || 0),
-          first_place_kes: Number(data.first_place_kes || 0),
-          second_place_kes: Number(data.second_place_kes || 0),
-          entry_fee_kes: Number(data.entry_fee_kes || 0),
-          matches: (data.matches || []).sort((a: any, b: any) => a.match_number - b.match_number),
-          participants: data.participants || [],
-        };
-      }
+    let sharedTournaments: Tournament[] = [];
+    try {
+      sharedTournaments = (await listSharedTournamentStates()).map(formatTournament);
+    } catch (err) {
+      console.warn("Shared tournament fallback query notice:", err);
+    }
+
+    // Prefer the newest shared snapshot for a record when a prior fallback write
+    // could not reach the normalized tables; include fallback-only records too.
+    const byId = new Map<string, Tournament>();
+    for (const tournament of databaseTournaments) byId.set(tournament.id, tournament);
+    for (const tournament of sharedTournaments) {
+      byId.set(
+        tournament.id,
+        preferNewerTournament(byId.get(tournament.id) || null, tournament) || tournament
+      );
+    }
+
+    return Array.from(byId.values()).sort(
+      (a, b) => Date.parse(b.created_at) - Date.parse(a.created_at)
+    );
+  }
+
+  /**
+   * Get tournament by ID from the normalized database, falling back to the
+   * service-role-only shared runtime store rather than a process-local array.
+   */
+  static async getTournamentById(id: string): Promise<Tournament | null> {
+    let databaseTournament: Tournament | null = null;
+    try {
+      const supabase = getSupabase();
+      const { data, error } = await supabase
+        .from("tournaments")
+        .select(`*,
+          matches:tournament_matches(*),
+          participants:tournament_participants(${PUBLIC_TOURNAMENT_PARTICIPANT_SELECT})`)
+        .eq("id", id)
+        .maybeSingle();
+
+      if (error) throw error;
+      if (data) databaseTournament = formatTournament(data);
     } catch (err) {
       console.warn("Supabase getTournamentById notice:", err);
     }
 
-    const found = MEMORY_TOURNAMENTS.find((t) => t.id === id);
-    return found || null;
+    try {
+      const sharedTournament = await getSharedTournamentState(id);
+      return preferNewerTournament(databaseTournament, sharedTournament ? formatTournament(sharedTournament) : null);
+    } catch (err) {
+      console.warn("Shared getTournamentById fallback notice:", err);
+      return databaseTournament;
+    }
   }
 
   /**
@@ -102,35 +206,56 @@ export class TournamentService {
     description?: string;
     platform: "all" | "android" | "ios" | "crossplay" | "console_pc";
     tournament_type?: "1v1" | "tournament";
-    admin_fee_kes?: number;
     payout_split?: "winner_takes_all" | "80_20" | "70_30";
-    prize_pool_kes: number;
-    first_place_kes: number;
-    second_place_kes: number;
     entry_fee_kes: number;
     format: string;
     max_players: number;
     start_date: string;
     created_by?: string;
   }): Promise<Tournament> {
-    const newId = `tourney-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`;
+    const tournamentType = params.tournament_type || (params.max_players === 2 ? "1v1" : "tournament");
+    const maxPlayers = Number(params.max_players);
+    const allowedMaxPlayers = tournamentType === "1v1" ? [2] : [4, 8, 16];
+    if (!allowedMaxPlayers.includes(maxPlayers)) {
+      throw new Error("Tournament size is not supported.");
+    }
+    if (
+      !Number.isSafeInteger(params.entry_fee_kes) ||
+      params.entry_fee_kes < 0 ||
+      !Number.isSafeInteger(params.entry_fee_kes * maxPlayers)
+    ) {
+      throw new Error("Entry fee must be a non-negative whole KES amount.");
+    }
+
+    const payoutSplit: "winner_takes_all" | "80_20" | "70_30" =
+      tournamentType === "1v1" ? "winner_takes_all" : params.payout_split || "winner_takes_all";
+    if (!["winner_takes_all", "80_20", "70_30"].includes(payoutSplit)) {
+      throw new Error("Tournament payout split is not supported.");
+    }
+    const prizeBreakdown = calculateNetPrizePool(
+      params.entry_fee_kes * maxPlayers,
+      maxPlayers,
+      payoutSplit
+    );
+
+    const newId = randomUUID();
     const now = new Date().toISOString();
 
     const tourneyPayload: Tournament = {
       id: newId,
       title: params.title.trim(),
-      subtitle: params.subtitle?.trim() || `${params.max_players}-Player 1v1 Single Knockout | M-Pesa Escrow Payout`,
+      subtitle: params.subtitle?.trim() || `${maxPlayers}-Player Knockout Tournament | Published prizes are arranged manually by the tournament desk`,
       description: params.description?.trim() || "",
       platform: params.platform,
-      tournament_type: params.tournament_type || (params.max_players === 2 ? "1v1" : "tournament"),
-      admin_fee_kes: params.admin_fee_kes || 0,
-      payout_split: params.payout_split || "winner_takes_all",
-      prize_pool_kes: params.prize_pool_kes,
-      first_place_kes: params.first_place_kes,
-      second_place_kes: params.second_place_kes,
+      tournament_type: tournamentType,
+      admin_fee_kes: prizeBreakdown.adminFee,
+      payout_split: payoutSplit,
+      prize_pool_kes: prizeBreakdown.netPrizePool,
+      first_place_kes: prizeBreakdown.firstPlace,
+      second_place_kes: prizeBreakdown.secondPlace,
       entry_fee_kes: params.entry_fee_kes,
       format: params.format.trim() || "Single Knockout 1v1 (12-Minute Game + Extra Time & PKs)",
-      max_players: params.max_players || 8,
+      max_players: maxPlayers,
       registered_count: 0,
       start_date: params.start_date.trim(),
       status: "registration_open",
@@ -141,11 +266,13 @@ export class TournamentService {
       participants: [],
     };
 
+    let databaseInsertSucceeded = false;
     try {
       const supabase = getSupabase();
       const { data, error } = await supabase
         .from("tournaments")
         .insert({
+          id: tourneyPayload.id,
           title: tourneyPayload.title,
           subtitle: tourneyPayload.subtitle,
           description: tourneyPayload.description,
@@ -167,20 +294,31 @@ export class TournamentService {
         .select()
         .single();
 
-      if (!error && data) {
-        tourneyPayload.id = data.id;
-      }
+      if (error || !data) throw error || new Error("Tournament insert returned no row.");
+      databaseInsertSucceeded = true;
+      tourneyPayload.id = data.id;
     } catch (err) {
       console.warn("Supabase insert tournament notice:", err);
     }
 
-    // Always record in memory cache
-    MEMORY_TOURNAMENTS.unshift(tourneyPayload);
+    try {
+      // Keep a durable shared snapshot so a later Vercel instance can recover
+      // if the normalized tournament tables become unavailable.
+      await insertSharedTournamentState(tourneyPayload);
+    } catch (err) {
+      if (!databaseInsertSucceeded) {
+        console.error("Could not persist tournament in shared fallback state.");
+        throw new Error("Tournament could not be persisted. Please try again later.");
+      }
+      console.warn("Shared tournament snapshot notice:", err);
+    }
+
     return tourneyPayload;
   }
 
   /**
-   * Register participant for a tournament
+   * Register a free or wallet-paid participant through one locked database
+   * transaction. A wallet debit is never attempted with a direct profile update.
    */
   static async registerParticipant(params: {
     tournament_id: string;
@@ -192,21 +330,6 @@ export class TournamentService {
   }): Promise<{ success: boolean; participant?: TournamentParticipant; error?: string; remainingBalance?: number }> {
     const { tournament_id, gamer_tag, friend_id, phone_number, user_id, payment_method = "mpesa_till" } = params;
 
-    const tourney = await this.getTournamentById(tournament_id);
-    if (!tourney) {
-      return { success: false, error: "Tournament not found." };
-    }
-
-    if (tourney.status !== "registration_open") {
-      return { success: false, error: "Registration is closed for this tournament." };
-    }
-
-    const participants = tourney.participants || [];
-    if (participants.length >= tourney.max_players) {
-      return { success: false, error: "This tournament is already full." };
-    }
-
-    // Require valid community user_id
     if (!user_id || !user_id.trim()) {
       return {
         success: false,
@@ -214,130 +337,111 @@ export class TournamentService {
       };
     }
 
-    const cleanFriendId = friend_id.trim();
-    if (participants.some((p) => p.friend_id.toLowerCase() === cleanFriendId.toLowerCase())) {
-      return { success: false, error: "A gamer with this eFootball Friend ID has already registered." };
+    const cleanGamerTag = String(gamer_tag || "").trim().slice(0, 60);
+    const cleanFriendId = String(friend_id || "").trim().slice(0, 40);
+    const cleanPhoneNumber = String(phone_number || "").trim();
+    if (!cleanGamerTag || !cleanFriendId || !cleanPhoneNumber) {
+      return { success: false, error: "Gamer tag, eFootball Friend ID, and phone number are required." };
     }
 
-    if (participants.some((p) => p.user_id === user_id)) {
+    const tourney = await this.getTournamentById(tournament_id);
+    if (!tourney) {
+      return { success: false, error: "Tournament not found." };
+    }
+
+    const isFree = Number(tourney.entry_fee_kes) === 0;
+    const registrationMethod = isFree ? "free" : payment_method;
+    if (!isFree && registrationMethod !== "wallet") {
       return {
         success: false,
-        error: "You are already registered for this tournament with your community account.",
+        error: "Payment required: For M-Pesa entry, initiate an STK Push. Wallet registrations require an available balance.",
       };
     }
 
-    const isFree = tourney.entry_fee_kes === 0;
-    let initialPaymentStatus: "pending" | "paid" | "exempt" = isFree ? "exempt" : "pending";
-    let chosenPaymentMethod: "wallet" | "mpesa_till" | "free" = isFree ? "free" : payment_method;
-    let updatedAvailBalance: number | undefined;
+    if (!hasServiceRoleKey()) {
+      return {
+        success: false,
+        error: "Secure tournament registration is temporarily unavailable. No wallet debit or participant entry was attempted.",
+      };
+    }
 
-    // Handle paid tournament entry: Enforce upfront payment
-    if (!isFree) {
-      if (chosenPaymentMethod === "wallet") {
-        const supabase = getSupabase();
-        const { data: userProf, error: profErr } = await supabase
-          .from("profiles")
-          .select("available_balance")
-          .eq("id", user_id)
-          .single();
+    let registration: {
+      participant?: TournamentParticipant;
+      available_balance_after?: number | string;
+      idempotent?: boolean;
+    } | null;
+    try {
+      const adminSupabase = createAdminClient();
+      const { data, error } = await adminSupabase.rpc("register_tournament_participant_atomic", {
+        p_tournament_id: tournament_id,
+        p_user_id: user_id,
+        p_gamer_tag: cleanGamerTag,
+        p_friend_id: cleanFriendId,
+        p_phone_number: cleanPhoneNumber,
+        p_payment_method: registrationMethod,
+      });
 
-        if (profErr || !userProf) {
-          return { success: false, error: "Unable to verify account balance." };
+      if (error) {
+        if (error.code === "P0001") {
+          return { success: false, error: error.message };
         }
-
-        const currentBal = Number(userProf.available_balance || 0);
-        if (currentBal < tourney.entry_fee_kes) {
-          return {
-            success: false,
-            error: `Insufficient account balance. You have KES ${currentBal.toLocaleString()}, but entry fee is KES ${tourney.entry_fee_kes.toLocaleString()}. Please pay via M-Pesa STK Push.`,
-          };
+        if (error.code === "23505") {
+          return { success: false, error: "This member or eFootball Friend ID is already registered for the tournament." };
         }
-
-        // Atomic Compare-And-Swap (CAS) wallet deduction: blocks parallel double-spend race conditions
-        updatedAvailBalance = Math.round((currentBal - tourney.entry_fee_kes) * 100) / 100;
-        const { data: casUpdated, error: deductErr } = await supabase
-          .from("profiles")
-          .update({
-            available_balance: updatedAvailBalance,
-            updated_at: new Date().toISOString(),
-          })
-          .eq("id", user_id)
-          .eq("available_balance", currentBal)
-          .gte("available_balance", tourney.entry_fee_kes)
-          .select("id");
-
-        if (deductErr || !casUpdated || casUpdated.length === 0) {
-          return {
-            success: false,
-            error: "Concurrent balance update detected or insufficient wallet balance. Please try again.",
-          };
-        }
-
-        initialPaymentStatus = "paid";
-      } else {
-        // Unconfirmed M-Pesa registration is strictly rejected
+        console.error("Atomic tournament registration RPC failed; no direct balance fallback was attempted.");
         return {
           success: false,
-          error: "Payment required: For M-Pesa entry, please initiate an STK Push to pay the entry fee. Slots are reserved only after backend confirmation.",
+          error: "Secure tournament registration could not be confirmed. Check the tournament entry before retrying.",
         };
       }
+      registration = data as typeof registration;
+    } catch {
+      console.error("Atomic tournament registration RPC could not be reached; no direct balance fallback was attempted.");
+      return {
+        success: false,
+        error: "Secure tournament registration could not be confirmed. Check the tournament entry before retrying.",
+      };
     }
 
-    const participantId = `part-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
-    const newParticipant: TournamentParticipant = {
-      id: participantId,
-      tournament_id,
-      user_id,
-      gamer_tag: gamer_tag.trim(),
-      friend_id: cleanFriendId,
-      phone_number: phone_number.trim(),
-      payment_status: initialPaymentStatus,
-      payment_method: chosenPaymentMethod,
-      amount_paid: initialPaymentStatus === "paid" ? tourney.entry_fee_kes : 0,
-      seed: participants.length + 1,
-      created_at: new Date().toISOString(),
-    };
+    const participant = registration?.participant;
+    if (!participant?.id) {
+      console.error("Atomic tournament registration returned no verifiable participant record.");
+      return {
+        success: false,
+        error: "Tournament registration status could not be verified. Check the tournament entry before retrying.",
+      };
+    }
 
     try {
-      const supabase = getSupabase();
-      const { data, error } = await supabase
-        .from("tournament_participants")
-        .insert({
-          tournament_id,
-          user_id,
-          gamer_tag: newParticipant.gamer_tag,
-          friend_id: newParticipant.friend_id,
-          phone_number: newParticipant.phone_number,
-          payment_status: newParticipant.payment_status,
-          seed: newParticipant.seed,
-        })
-        .select()
-        .single();
-
-      if (!error && data) {
-        newParticipant.id = data.id;
-        // Increment registered count in DB
-        await supabase
-          .from("tournaments")
-          .update({ registered_count: participants.length + 1 })
-          .eq("id", tournament_id);
-      }
+      await updateSharedTournamentState(tournament_id, tourney, (current) => {
+        const currentParticipants = current.participants || [];
+        const alreadyPresent = currentParticipants.some(
+          (entry) =>
+            entry.id === participant.id ||
+            entry.user_id === participant.user_id ||
+            entry.friend_id.trim().toLowerCase() === participant.friend_id.trim().toLowerCase()
+        );
+        if (alreadyPresent) return current;
+        const nextParticipants = [...currentParticipants, participant];
+        return {
+          ...current,
+          participants: nextParticipants,
+          registered_count: nextParticipants.length,
+          updated_at: new Date().toISOString(),
+        };
+      });
     } catch (err) {
-      console.warn("Supabase register participant notice:", err);
+      // The normalized registration and wallet transaction have committed;
+      // shared runtime state is only a best-effort read fallback.
+      console.warn("Shared participant snapshot notice:", err);
     }
 
-    // Update memory
-    const memIndex = MEMORY_TOURNAMENTS.findIndex((t) => t.id === tournament_id);
-    if (memIndex !== -1) {
-      MEMORY_TOURNAMENTS[memIndex].participants = [
-        ...(MEMORY_TOURNAMENTS[memIndex].participants || []),
-        newParticipant,
-      ];
-      MEMORY_TOURNAMENTS[memIndex].registered_count =
-        (MEMORY_TOURNAMENTS[memIndex].participants || []).length;
-    }
-
-    return { success: true, participant: newParticipant, remainingBalance: updatedAvailBalance };
+    const balanceAfter = Number(registration?.available_balance_after);
+    return {
+      success: true,
+      participant,
+      remainingBalance: Number.isFinite(balanceAfter) ? balanceAfter : undefined,
+    };
   }
 
   /**
@@ -353,8 +457,8 @@ export class TournamentService {
     checkout_request_id: string;
     merchant_request_id?: string;
   }): Promise<TournamentPayment> {
-    const newPayment: TournamentPayment = {
-      id: `trn-pay-${Date.now()}-${Math.random().toString(36).substring(2, 7)}`,
+    let newPayment: TournamentPayment = {
+      id: randomUUID(),
       tournament_id: params.tournament_id,
       user_id: params.user_id,
       gamer_tag: params.gamer_tag.trim(),
@@ -368,6 +472,7 @@ export class TournamentService {
       updated_at: new Date().toISOString(),
     };
 
+    let databaseInsertSucceeded = false;
     try {
       const supabase = getSupabase();
       const { data, error } = await supabase
@@ -386,15 +491,83 @@ export class TournamentService {
         .select()
         .single();
 
-      if (!error && data) {
-        newPayment.id = data.id;
-      }
+      if (error || !data) throw error || new Error("Tournament payment insert returned no row.");
+      databaseInsertSucceeded = true;
+      newPayment = data as TournamentPayment;
     } catch (err) {
       console.warn("Supabase insert tournament_payments notice:", err);
     }
 
-    MEMORY_TOURNAMENT_PAYMENTS.unshift(newPayment);
+    try {
+      await insertSharedTournamentPayment(newPayment);
+    } catch (err) {
+      if (!databaseInsertSucceeded) {
+        console.error("Could not persist tournament payment reservation in shared fallback state.");
+        throw new Error("The payment request was not sent because it could not be safely recorded. Contact support before retrying.");
+      }
+      console.warn("Shared tournament payment snapshot notice:", err);
+    }
+
     return newPayment;
+  }
+
+  /**
+   * Attach provider-issued request IDs after a durable payment reservation exists.
+   */
+  static async attachTournamentPaymentRequestIds(
+    payment: TournamentPayment,
+    checkoutRequestId: string,
+    merchantRequestId?: string
+  ): Promise<TournamentPayment> {
+    const safeCheckoutId = String(checkoutRequestId || "").trim().slice(0, 80);
+    if (!payment.id || !safeCheckoutId) {
+      throw new TypeError("A payment reservation and provider checkout ID are required.");
+    }
+
+    const now = new Date().toISOString();
+    let updatedPayment: TournamentPayment = {
+      ...payment,
+      checkout_request_id: safeCheckoutId,
+      merchant_request_id: merchantRequestId || null,
+      updated_at: now,
+    };
+    let databaseUpdated = false;
+
+    try {
+      const supabase = getSupabase();
+      const { data, error } = await supabase
+        .from("tournament_payments")
+        .update({
+          checkout_request_id: safeCheckoutId,
+          merchant_request_id: merchantRequestId || null,
+          updated_at: now,
+        })
+        .eq("id", payment.id)
+        .eq("status", "pending")
+        .select("*")
+        .maybeSingle();
+      if (error || !data) throw error || new Error("Tournament payment reservation was not updated.");
+      updatedPayment = data as TournamentPayment;
+      databaseUpdated = true;
+    } catch (err) {
+      console.warn("Supabase tournament payment ID update notice:", err);
+    }
+
+    try {
+      updatedPayment = await updateSharedTournamentPayment(payment, (current) => ({
+        ...current,
+        checkout_request_id: safeCheckoutId,
+        merchant_request_id: merchantRequestId || null,
+        updated_at: now,
+      }));
+      return updatedPayment;
+    } catch (err) {
+      if (databaseUpdated) {
+        console.warn("Shared tournament payment ID update notice:", err);
+        return updatedPayment;
+      }
+      throw new Error("The payment prompt may have been sent, but its provider reference could not be saved. Contact support before retrying.");
+    }
   }
 
   /**
@@ -411,7 +584,7 @@ export class TournamentService {
       const { data, error } = await supabase
         .from("tournament_payments")
         .select("*")
-        .or(`checkout_request_id.eq.${safeCheckoutId},merchant_request_id.eq.${safeCheckoutId},id.eq.${safeCheckoutId}`)
+        .or(`checkout_request_id.eq.${safeCheckoutId},merchant_request_id.eq.${safeCheckoutId}`)
         .order("created_at", { ascending: false })
         .maybeSingle();
 
@@ -422,13 +595,12 @@ export class TournamentService {
       console.warn("Supabase getTournamentPayment notice:", err);
     }
 
-    const found = MEMORY_TOURNAMENT_PAYMENTS.find(
-      (p) =>
-        p.checkout_request_id === checkoutRequestId ||
-        p.merchant_request_id === checkoutRequestId ||
-        p.id === checkoutRequestId
-    );
-    return found || null;
+    try {
+      return await getSharedTournamentPayment(checkoutRequestId);
+    } catch (err) {
+      console.warn("Shared tournament payment fallback lookup notice:", err);
+      return null;
+    }
   }
 
   /**
@@ -466,133 +638,146 @@ export class TournamentService {
       console.warn("Supabase getLatestPaymentForUser notice:", err);
     }
 
-    const found = MEMORY_TOURNAMENT_PAYMENTS.find(
-      (p) =>
-        p.tournament_id === tournamentId &&
-        ((userId && p.user_id === userId) || (phoneNumber && p.phone_number === phoneNumber))
-    );
-    return found || null;
+    try {
+      return await getLatestSharedTournamentPayment(tournamentId, userId, phoneNumber);
+    } catch (err) {
+      console.warn("Shared latest tournament payment fallback lookup notice:", err);
+      return null;
+    }
   }
 
   /**
-   * Confirm tournament payment upon live M-Pesa verification and atomically register participant.
+   * Confirms a provider-verified tournament settlement through a single
+   * database transaction that claims the receipt and registers the participant.
    */
   static async confirmTournamentPayment(
-    checkoutRequestId: string,
-    receiptNumber: string,
-    amount?: number
-  ): Promise<{ success: boolean; participant?: TournamentParticipant; payment?: TournamentPayment; error?: string }> {
-    const payment = await this.getTournamentPayment(checkoutRequestId);
+    transactionId: string,
+    settlement: VerifiedMpesaSettlement
+  ): Promise<{
+    success: boolean;
+    alreadySettled?: boolean;
+    participant?: TournamentParticipant;
+    payment?: TournamentPayment;
+    error?: string;
+  }> {
+    const payment = await this.getTournamentPayment(transactionId);
     if (!payment) {
-      return { success: false, error: "Payment record not found." };
+      return { success: false, error: 'Payment record not found.' };
     }
 
-    const tourney = await this.getTournamentById(payment.tournament_id);
-    if (!tourney) {
-      return { success: false, error: "Tournament not found." };
-    }
-
-    // Idempotency: if already completed, return existing registered participant
-    if (payment.status === "completed") {
-      const existingPart = (tourney.participants || []).find(
-        (p) => p.friend_id.toLowerCase() === payment.friend_id.toLowerCase()
-      );
-      return { success: true, participant: existingPart, payment };
-    }
-
-    const now = new Date().toISOString();
-    payment.status = "completed";
-    payment.mpesa_receipt_number = receiptNumber;
-    payment.updated_at = now;
-
-    try {
-      const supabase = getSupabase();
-      await supabase
-        .from("tournament_payments")
-        .update({
-          status: "completed",
-          mpesa_receipt_number: receiptNumber,
-          result_code: 0,
-          result_desc: "Payment completed successfully",
-          updated_at: now,
-        })
-        .eq("id", payment.id);
-    } catch (err) {
-      console.warn("Supabase update tournament_payments notice:", err);
-    }
-
-    // Check if participant already recorded
-    const participants = tourney.participants || [];
-    const existingPart = participants.find(
-      (p) => p.friend_id.toLowerCase() === payment.friend_id.toLowerCase()
-    );
-
-    if (existingPart) {
-      return { success: true, participant: existingPart, payment };
-    }
-
-    const participantId = `part-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`;
-    const newParticipant: TournamentParticipant = {
-      id: participantId,
-      tournament_id: payment.tournament_id,
-      user_id: payment.user_id,
-      gamer_tag: payment.gamer_tag,
-      friend_id: payment.friend_id,
-      phone_number: payment.phone_number,
-      payment_status: "paid",
-      payment_method: "mpesa_stk",
-      amount_paid: amount || payment.amount,
-      seed: participants.length + 1,
-      created_at: now,
+    const strictId = (value?: string | null) => {
+      const raw = String(value || '').trim();
+      const safe = raw.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 80);
+      return raw && raw === safe ? safe : '';
     };
+    const safeTransaction = strictId(settlement?.transactionId);
+    const safeCheckout = strictId(settlement?.checkoutRequestId);
+    const safeMerchant = strictId(settlement?.merchantRequestId);
+    const requestedTransaction = strictId(transactionId);
+    const normalizedReceipt = normalizeMpesaReceiptNumber(settlement?.receiptNumber);
+    const confirmedAmount = normalizePositiveAmount(settlement?.amount);
+    const storedCheckout = String(payment.checkout_request_id || '');
+    const storedMerchant = String(payment.merchant_request_id || '');
+    const storedIds = [storedCheckout, storedMerchant].filter(Boolean);
+
+    if (
+      !safeTransaction ||
+      safeTransaction !== requestedTransaction ||
+      (!safeCheckout && !safeMerchant) ||
+      !storedIds.includes(safeTransaction) ||
+      (safeCheckout && storedCheckout !== safeCheckout) ||
+      (safeMerchant && storedMerchant !== safeMerchant) ||
+      !normalizedReceipt ||
+      confirmedAmount === null ||
+      !amountsMatch(confirmedAmount, payment.amount) ||
+      !isValidSettlementEvidence(
+        settlement?.provider,
+        settlement?.verificationMethod
+      ) ||
+      settlement?.providerStatus !== 'completed' ||
+      !Number.isFinite(Date.parse(settlement?.verifiedAt || ''))
+    ) {
+      return { success: false, error: 'Provider-confirmed settlement does not match the tournament payment.' };
+    }
+
+    // The shared fallback can help locate a pending record, but it is never
+    // allowed to settle money. Settlement must go through the atomic database RPC.
+    if (!hasServiceRoleKey()) {
+      return { success: false, error: 'Secure tournament settlement is not configured.' };
+    }
+
+    let settlementResult: any;
+    try {
+      const supabase = createAdminClient();
+      const { data, error } = await supabase.rpc('settle_mpesa_tournament_payment', {
+        p_tournament_payment_id: payment.id,
+        p_receipt_number: normalizedReceipt,
+        p_amount: confirmedAmount,
+        p_provider: settlement.provider,
+        p_verification_method: settlement.verificationMethod,
+        p_transaction_id: safeTransaction,
+        p_verified_at: settlement.verifiedAt,
+      });
+      if (error || data?.success !== true) {
+        return { success: false, error: 'Could not atomically apply tournament payment.' };
+      }
+      settlementResult = data;
+    } catch {
+      return { success: false, error: 'Secure tournament settlement could not be completed.' };
+    }
+
+    const updatedPayment: TournamentPayment = {
+      ...payment,
+      status: 'completed',
+      mpesa_receipt_number: normalizedReceipt,
+      result_code: 0,
+      result_desc: 'Provider-confirmed payment completed successfully',
+      updated_at: new Date().toISOString(),
+    };
+    const participant = settlementResult.participant as TournamentParticipant | undefined;
 
     try {
-      const supabase = getSupabase();
-      const { data, error } = await supabase
-        .from("tournament_participants")
-        .insert({
-          tournament_id: newParticipant.tournament_id,
-          user_id: newParticipant.user_id,
-          gamer_tag: newParticipant.gamer_tag,
-          friend_id: newParticipant.friend_id,
-          phone_number: newParticipant.phone_number,
-          payment_status: "paid",
-          payment_method: "mpesa_stk",
-          amount_paid: newParticipant.amount_paid,
-          seed: newParticipant.seed,
-        })
-        .select()
-        .single();
-
-      if (!error && data) {
-        newParticipant.id = data.id;
-        // Increment registered count in DB
-        await supabase
-          .from("tournaments")
-          .update({ registered_count: participants.length + 1 })
-          .eq("id", payment.tournament_id);
-      }
+      await updateSharedTournamentPayment(updatedPayment, (current) => ({
+        ...current,
+        ...updatedPayment,
+      }));
     } catch (err) {
-      console.warn("Supabase insert participant on payment notice:", err);
+      console.warn("Shared tournament payment settlement snapshot notice:", err);
     }
 
-    // Update memory cache
-    const memIndex = MEMORY_TOURNAMENTS.findIndex((t) => t.id === payment.tournament_id);
-    if (memIndex !== -1) {
-      MEMORY_TOURNAMENTS[memIndex].participants = [
-        ...(MEMORY_TOURNAMENTS[memIndex].participants || []),
-        newParticipant,
-      ];
-      MEMORY_TOURNAMENTS[memIndex].registered_count =
-        (MEMORY_TOURNAMENTS[memIndex].participants || []).length;
+    if (participant) {
+      try {
+        const currentTournament = await this.getTournamentById(payment.tournament_id);
+        if (currentTournament) {
+          await updateSharedTournamentState(payment.tournament_id, currentTournament, (current) => {
+            const currentParticipants = current.participants || [];
+            const existingIndex = currentParticipants.findIndex(
+              (entry) =>
+                entry.id === participant.id ||
+                entry.friend_id.trim().toLowerCase() === participant.friend_id.trim().toLowerCase()
+            );
+            const nextParticipants = [...currentParticipants];
+            if (existingIndex === -1) nextParticipants.push(participant);
+            else nextParticipants[existingIndex] = participant;
+            return {
+              ...current,
+              participants: nextParticipants,
+              registered_count: nextParticipants.length,
+              updated_at: new Date().toISOString(),
+            };
+          });
+        }
+      } catch (err) {
+        console.warn("Shared tournament settlement snapshot notice:", err);
+      }
     }
 
-    const payIndex = MEMORY_TOURNAMENT_PAYMENTS.findIndex((p) => p.id === payment.id);
-    if (payIndex !== -1) {
-      MEMORY_TOURNAMENT_PAYMENTS[payIndex] = { ...payment };
-    }
-
-    return { success: true, participant: newParticipant, payment };
+    return {
+      success: true,
+      alreadySettled: settlementResult.already_settled === true,
+      participant,
+      payment: updatedPayment,
+    };
   }
 
   /**
@@ -605,25 +790,54 @@ export class TournamentService {
     const payment = await this.getTournamentPayment(checkoutRequestId);
     if (!payment) return { success: false };
 
-    payment.status = "failed";
-    payment.result_desc = reason || "Payment cancelled or timed out";
-    payment.updated_at = new Date().toISOString();
+    if (payment.status !== "pending") return { success: false };
 
+    const now = new Date().toISOString();
+    const safeReason = String(reason || "Payment cancelled or timed out").slice(0, 300);
+    let databaseUpdated = false;
     try {
       const supabase = getSupabase();
-      await supabase
+      const { data: updatedPayment, error } = await supabase
         .from("tournament_payments")
         .update({
           status: "failed",
-          result_desc: payment.result_desc,
-          updated_at: payment.updated_at,
+          result_desc: safeReason,
+          updated_at: now,
         })
-        .eq("id", payment.id);
+        .eq("id", payment.id)
+        .eq("status", "pending")
+        .select("id")
+        .maybeSingle();
+      if (error || !updatedPayment) throw error || new Error("Payment row was not updated.");
+      databaseUpdated = true;
     } catch (err) {
       console.warn("Supabase fail tournament_payments notice:", err);
     }
 
-    return { success: true };
+    try {
+      const updated = await updateSharedTournamentPayment(payment, (current) => {
+        if (current.status !== "pending") return current;
+        return {
+          ...current,
+          status: "failed",
+          result_desc: safeReason,
+          updated_at: now,
+        };
+      });
+      payment.status = updated.status;
+      payment.result_desc = updated.result_desc;
+      payment.updated_at = updated.updated_at;
+      return { success: updated.status === "failed" };
+    } catch (err) {
+      if (databaseUpdated) {
+        payment.status = "failed";
+        payment.result_desc = safeReason;
+        payment.updated_at = now;
+        console.warn("Shared failed-payment snapshot notice:", err);
+        return { success: true };
+      }
+      return { success: false };
+    }
   }
 
   /**
@@ -639,241 +853,180 @@ export class TournamentService {
     if (!tourney) {
       return { success: false, matches: [], error: "Tournament not found." };
     }
-
-    let players = [...(tourney.participants || [])];
-    if (players.length < 2) {
-      return {
-        success: false,
-        matches: [],
-        error: "At least 2 players must be registered to form tournament brackets.",
-      };
+    if (tourney.status !== "registration_open") {
+      return { success: false, matches: [], error: "Brackets can only be formed while registration is open." };
+    }
+    if ((tourney.matches || []).length > 0) {
+      return { success: false, matches: [], error: "Brackets have already been formed for this tournament." };
     }
 
-    if (options.shuffle) {
-      players = players.sort(() => Math.random() - 0.5);
+    const maxPlayers = Number(tourney.max_players);
+    if (![2, 4, 8, 16].includes(maxPlayers)) {
+      return { success: false, matches: [], error: "This tournament has an unsupported bracket size." };
     }
 
-    const matchesToCreate: TournamentMatch[] = [];
-    const maxPlayers = tourney.max_players;
-
-    if (maxPlayers <= 2) {
-      // 1v1 Head-to-Head Duel Championship
-      const duelMatchId = `match-1v1-${Date.now()}`;
-      matchesToCreate.push({
-        id: duelMatchId,
-        tournament_id,
-        round: "1v1 Duel Championship",
-        match_number: 1,
-        player1_name: players[0]?.gamer_tag || "TBD",
-        player2_name: players[1]?.gamer_tag || "TBD",
-        player1_friend_id: players[0]?.friend_id,
-        player2_friend_id: players[1]?.friend_id,
-        player1_user_id: players[0]?.user_id,
-        player2_user_id: players[1]?.user_id,
-        is_completed: false,
-        created_at: new Date().toISOString(),
-      });
-    } else if (maxPlayers <= 4) {
-      // 4-Player Format: Semi-Finals (2 matches) -> Grand Final (1 match)
-      const finalMatchId = `match-f-${Date.now()}`;
-      const semi1Id = `match-s1-${Date.now()}`;
-      const semi2Id = `match-s2-${Date.now()}`;
-
-      // Semi-Final 1
-      matchesToCreate.push({
-        id: semi1Id,
-        tournament_id,
-        round: "Semi-Finals",
-        match_number: 1,
-        player1_name: players[0]?.gamer_tag || "TBD",
-        player2_name: players[1]?.gamer_tag || "TBD",
-        player1_friend_id: players[0]?.friend_id,
-        player2_friend_id: players[1]?.friend_id,
-        is_completed: false,
-        next_match_id: finalMatchId,
-        next_match_slot: 1,
-        created_at: new Date().toISOString(),
+    const sortParticipants = (participants: TournamentParticipant[]) =>
+      [...participants].sort((a, b) => {
+        const seedA = Number.isInteger(a.seed) ? Number(a.seed) : Number.MAX_SAFE_INTEGER;
+        const seedB = Number.isInteger(b.seed) ? Number(b.seed) : Number.MAX_SAFE_INTEGER;
+        if (seedA !== seedB) return seedA - seedB;
+        return Date.parse(a.created_at || "") - Date.parse(b.created_at || "");
       });
 
-      // Semi-Final 2
-      matchesToCreate.push({
-        id: semi2Id,
-        tournament_id,
-        round: "Semi-Finals",
-        match_number: 2,
-        player1_name: players[2]?.gamer_tag || "TBD",
-        player2_name: players[3]?.gamer_tag || "TBD",
-        player1_friend_id: players[2]?.friend_id,
-        player2_friend_id: players[3]?.friend_id,
-        is_completed: false,
-        next_match_id: finalMatchId,
-        next_match_slot: 2,
-        created_at: new Date().toISOString(),
-      });
+    const validateParticipants = (participants: TournamentParticipant[]): string | null => {
+      if (participants.length !== maxPlayers) {
+        return `All ${maxPlayers} slots must be filled before brackets can be formed.`;
+      }
+      const friendIds = participants.map((participant) => participant.friend_id.trim().toLowerCase());
+      if (friendIds.some((friendId) => !friendId) || new Set(friendIds).size !== maxPlayers) {
+        return "Every slot must have a unique eFootball Friend ID.";
+      }
+      const userIds = participants.map((participant) => participant.user_id).filter(Boolean);
+      if (new Set(userIds).size !== maxPlayers) {
+        return "Every slot must belong to a different registered community account.";
+      }
 
-      // Grand Final
-      matchesToCreate.push({
-        id: finalMatchId,
-        tournament_id,
-        round: "Grand Final",
-        match_number: 3,
-        player1_name: "Winner Semi-Final 1",
-        player2_name: "Winner Semi-Final 2",
-        is_completed: false,
-        created_at: new Date().toISOString(),
-      });
-    } else {
-      // 8-Player (or 16-Player) Format: Quarter-Finals (4 matches) -> Semi-Finals (2 matches) -> Grand Final (1 match)
-      const finalMatchId = `match-f-${Date.now()}`;
-      const semi1Id = `match-s1-${Date.now()}`;
-      const semi2Id = `match-s2-${Date.now()}`;
-      const q1Id = `match-q1-${Date.now()}`;
-      const q2Id = `match-q2-${Date.now()}`;
-      const q3Id = `match-q3-${Date.now()}`;
-      const q4Id = `match-q4-${Date.now()}`;
+      if (tourney.entry_fee_kes === 0) {
+        if (participants.some((participant) => participant.payment_status !== "exempt")) {
+          return "Free-entry registrations must be confirmed before brackets can be formed.";
+        }
+      } else if (participants.some(
+        (participant) =>
+          participant.payment_status !== "paid" ||
+          !amountsMatch(participant.amount_paid, tourney.entry_fee_kes)
+      )) {
+        return "Every paid entry must be confirmed before brackets can be formed.";
+      }
+      return null;
+    };
 
-      // Quarter-Final 1
-      matchesToCreate.push({
-        id: q1Id,
-        tournament_id,
-        round: "Quarter-Finals",
-        match_number: 1,
-        player1_name: players[0]?.gamer_tag || "Slot 1 (TBD)",
-        player2_name: players[1]?.gamer_tag || "Slot 2 (TBD)",
-        player1_friend_id: players[0]?.friend_id,
-        player2_friend_id: players[1]?.friend_id,
-        is_completed: false,
-        next_match_id: semi1Id,
-        next_match_slot: 1,
-        created_at: new Date().toISOString(),
-      });
+    const shuffleParticipants = (participants: TournamentParticipant[]) => {
+      for (let index = participants.length - 1; index > 0; index -= 1) {
+        const swapIndex = Math.floor(Math.random() * (index + 1));
+        [participants[index], participants[swapIndex]] = [participants[swapIndex], participants[index]];
+      }
+      return participants;
+    };
 
-      // Quarter-Final 2
-      matchesToCreate.push({
-        id: q2Id,
-        tournament_id,
-        round: "Quarter-Finals",
-        match_number: 2,
-        player1_name: players[2]?.gamer_tag || "Slot 3 (TBD)",
-        player2_name: players[3]?.gamer_tag || "Slot 4 (TBD)",
-        player1_friend_id: players[2]?.friend_id,
-        player2_friend_id: players[3]?.friend_id,
-        is_completed: false,
-        next_match_id: semi1Id,
-        next_match_slot: 2,
-        created_at: new Date().toISOString(),
-      });
+    let players = sortParticipants(tourney.participants || []);
+    const initialValidationError = validateParticipants(players);
+    if (initialValidationError) {
+      return { success: false, matches: [], error: initialValidationError };
+    }
+    if (options.shuffle) players = shuffleParticipants(players);
 
-      // Quarter-Final 3
-      matchesToCreate.push({
-        id: q3Id,
-        tournament_id,
-        round: "Quarter-Finals",
-        match_number: 3,
-        player1_name: players[4]?.gamer_tag || "Slot 5 (TBD)",
-        player2_name: players[5]?.gamer_tag || "Slot 6 (TBD)",
-        player1_friend_id: players[4]?.friend_id,
-        player2_friend_id: players[5]?.friend_id,
-        is_completed: false,
-        next_match_id: semi2Id,
-        next_match_slot: 1,
-        created_at: new Date().toISOString(),
-      });
+    let matchesToCreate = buildTournamentBracket(tournament_id, maxPlayers, players);
+    let sharedTournament: Tournament | null = null;
+    let sharedStateSaved = false;
 
-      // Quarter-Final 4
-      matchesToCreate.push({
-        id: q4Id,
-        tournament_id,
-        round: "Quarter-Finals",
-        match_number: 4,
-        player1_name: players[6]?.gamer_tag || "Slot 7 (TBD)",
-        player2_name: players[7]?.gamer_tag || "Slot 8 (TBD)",
-        player1_friend_id: players[6]?.friend_id,
-        player2_friend_id: players[7]?.friend_id,
-        is_completed: false,
-        next_match_id: semi2Id,
-        next_match_slot: 2,
-        created_at: new Date().toISOString(),
+    // Claim the registration_open -> in_progress transition in the shared store
+    // first. Its version check serializes bracket creation across Vercel instances.
+    try {
+      sharedTournament = await updateSharedTournamentState(tournament_id, tourney, (current) => {
+        if (current.status !== "registration_open" || (current.matches || []).length > 0) {
+          throw new BracketStateConflictError("Brackets have already been formed or registration is closed.");
+        }
+        const currentPlayers = sortParticipants(current.participants || []);
+        const validationError = validateParticipants(currentPlayers);
+        if (validationError) throw new BracketStateConflictError(validationError);
+        const bracketPlayers = options.shuffle ? shuffleParticipants(currentPlayers) : currentPlayers;
+        matchesToCreate = buildTournamentBracket(tournament_id, maxPlayers, bracketPlayers);
+        return {
+          ...current,
+          matches: matchesToCreate,
+          status: "in_progress",
+          updated_at: new Date().toISOString(),
+        };
       });
-
-      // Semi-Final 1
-      matchesToCreate.push({
-        id: semi1Id,
-        tournament_id,
-        round: "Semi-Finals",
-        match_number: 5,
-        player1_name: "Winner QF 1",
-        player2_name: "Winner QF 2",
-        is_completed: false,
-        next_match_id: finalMatchId,
-        next_match_slot: 1,
-        created_at: new Date().toISOString(),
-      });
-
-      // Semi-Final 2
-      matchesToCreate.push({
-        id: semi2Id,
-        tournament_id,
-        round: "Semi-Finals",
-        match_number: 6,
-        player1_name: "Winner QF 3",
-        player2_name: "Winner QF 4",
-        is_completed: false,
-        next_match_id: finalMatchId,
-        next_match_slot: 2,
-        created_at: new Date().toISOString(),
-      });
-
-      // Grand Final
-      matchesToCreate.push({
-        id: finalMatchId,
-        tournament_id,
-        round: "Grand Final",
-        match_number: 7,
-        player1_name: "Finalist 1",
-        player2_name: "Finalist 2",
-        is_completed: false,
-        created_at: new Date().toISOString(),
-      });
+      sharedStateSaved = true;
+      matchesToCreate = sharedTournament.matches || matchesToCreate;
+    } catch (err) {
+      if (err instanceof BracketStateConflictError) {
+        return { success: false, matches: [], error: err.message };
+      }
+      // If the shared runtime table is not available yet, use a conditional
+      // status transition in the normalized table as the single-writer fallback.
+      console.warn("Shared bracket-state claim notice:", err);
     }
 
+    if (sharedStateSaved) {
+      // The durable shared snapshot is authoritative if normalized-table writes
+      // are unavailable. Mirror the bracket when possible without deleting rows.
+      try {
+        const supabase = getSupabase();
+        const { error: insertError } = await supabase.from("tournament_matches").insert(
+          matchesToCreate.map((match) => ({
+            id: match.id,
+            tournament_id: match.tournament_id,
+            round: match.round,
+            match_number: match.match_number,
+            player1_name: match.player1_name,
+            player2_name: match.player2_name,
+            player1_friend_id: match.player1_friend_id,
+            player2_friend_id: match.player2_friend_id,
+            is_completed: false,
+            next_match_id: match.next_match_id,
+            next_match_slot: match.next_match_slot,
+          }))
+        );
+        if (insertError) throw insertError;
+
+        const { error: statusError } = await supabase
+          .from("tournaments")
+          .update({ status: "in_progress", updated_at: new Date().toISOString() })
+          .eq("id", tournament_id)
+          .eq("status", "registration_open");
+        if (statusError) throw statusError;
+      } catch (err) {
+        console.warn("Supabase bracket mirror notice:", err);
+      }
+      return { success: true, matches: matchesToCreate };
+    }
+
+    // Database-only fallback: claim the status transition before inserting rows,
+    // so concurrent requests cannot both replace or duplicate a bracket.
     try {
       const supabase = getSupabase();
-      // Remove previous matches if regenerating
-      await supabase.from("tournament_matches").delete().eq("tournament_id", tournament_id);
-      await supabase.from("tournament_matches").insert(
-        matchesToCreate.map((m) => ({
-          id: m.id,
-          tournament_id: m.tournament_id,
-          round: m.round,
-          match_number: m.match_number,
-          player1_name: m.player1_name,
-          player2_name: m.player2_name,
-          player1_friend_id: m.player1_friend_id,
-          player2_friend_id: m.player2_friend_id,
+      const { data: started, error: statusError } = await supabase
+        .from("tournaments")
+        .update({ status: "in_progress", updated_at: new Date().toISOString() })
+        .eq("id", tournament_id)
+        .eq("status", "registration_open")
+        .select("id")
+        .maybeSingle();
+      if (statusError) throw statusError;
+      if (!started) {
+        return { success: false, matches: [], error: "Registration has closed or brackets were already formed. Refresh and try again." };
+      }
+
+      const { error: insertError } = await supabase.from("tournament_matches").insert(
+        matchesToCreate.map((match) => ({
+          id: match.id,
+          tournament_id: match.tournament_id,
+          round: match.round,
+          match_number: match.match_number,
+          player1_name: match.player1_name,
+          player2_name: match.player2_name,
+          player1_friend_id: match.player1_friend_id,
+          player2_friend_id: match.player2_friend_id,
           is_completed: false,
-          next_match_id: m.next_match_id,
-          next_match_slot: m.next_match_slot,
+          next_match_id: match.next_match_id,
+          next_match_slot: match.next_match_slot,
         }))
       );
-
-      // Update tournament status to in_progress
-      await supabase
-        .from("tournaments")
-        .update({ status: "in_progress" })
-        .eq("id", tournament_id);
+      if (insertError) {
+        await supabase
+          .from("tournaments")
+          .update({ status: "registration_open", updated_at: new Date().toISOString() })
+          .eq("id", tournament_id)
+          .eq("status", "in_progress");
+        throw insertError;
+      }
+      return { success: true, matches: matchesToCreate };
     } catch (err) {
-      console.warn("Supabase generate brackets notice:", err);
+      console.warn("Tournament bracket persistence failed:", err);
+      return { success: false, matches: [], error: "Could not save tournament brackets. Please try again later." };
     }
-
-    // Update memory
-    const memIndex = MEMORY_TOURNAMENTS.findIndex((t) => t.id === tournament_id);
-    if (memIndex !== -1) {
-      MEMORY_TOURNAMENTS[memIndex].matches = matchesToCreate;
-      MEMORY_TOURNAMENTS[memIndex].status = "in_progress";
-    }
-
-    return { success: true, matches: matchesToCreate };
   }
 
   /**
@@ -890,130 +1043,226 @@ export class TournamentService {
   }): Promise<{
     success: boolean;
     isChampionCrowned?: boolean;
+    winnerName?: string;
     championName?: string;
+    championFriendId?: string | null;
+    runnerUpName?: string;
+    runnerUpFriendId?: string | null;
     tournament?: Tournament;
     error?: string;
   }> {
     const { tournament_id, match_id, score1, score2, winner_name, match_code } = params;
 
+    if (
+      !Number.isSafeInteger(score1) ||
+      score1 < 0 ||
+      !Number.isSafeInteger(score2) ||
+      score2 < 0 ||
+      score1 === score2
+    ) {
+      return { success: false, error: "Enter non-negative whole-number scores with a winner." };
+    }
+
     const tourney = await this.getTournamentById(tournament_id);
     if (!tourney) {
       return { success: false, error: "Tournament not found." };
     }
+    if (tourney.status !== "in_progress") {
+      return { success: false, error: "Match results can only be recorded for an in-progress tournament." };
+    }
 
     const matches = tourney.matches || [];
-    const currentMatch = matches.find((m) => m.id === match_id);
-    if (!currentMatch) {
+    const originalMatch = matches.find((match) => match.id === match_id);
+    if (!originalMatch) {
       return { success: false, error: "Match not found in tournament bracket." };
     }
-
-    // Determine clean winner name
-    const finalWinner = winner_name.trim();
-    currentMatch.score1 = score1;
-    currentMatch.score2 = score2;
-    currentMatch.winner_name = finalWinner;
-    currentMatch.is_completed = true;
-    if (match_code) currentMatch.match_code = match_code;
-
-    let isChampionCrowned = false;
-    let championName: string | undefined;
-
-    // Advance winner to next match if one exists
-    if (currentMatch.next_match_id) {
-      const nextMatch = matches.find((m) => m.id === currentMatch.next_match_id);
-      if (nextMatch) {
-        if (currentMatch.next_match_slot === 1) {
-          nextMatch.player1_name = finalWinner;
-        } else if (currentMatch.next_match_slot === 2) {
-          nextMatch.player2_name = finalWinner;
-        }
-      }
+    if (originalMatch.is_completed) {
+      return { success: false, error: "A result has already been recorded for this match." };
     }
 
-    // If Grand Final, announce the Champion and complete tournament
-    if (currentMatch.round === "Grand Final") {
-      isChampionCrowned = true;
-      championName = finalWinner;
-      tourney.status = "completed";
-      tourney.winner_name = finalWinner;
+    const unresolvedName = (name: string) => /^(?:TBD|Slot\s+\d+|Winner\b|Finalist\b)/i.test(name.trim());
+    if (
+      !originalMatch.player1_name?.trim() ||
+      !originalMatch.player2_name?.trim() ||
+      unresolvedName(originalMatch.player1_name) ||
+      unresolvedName(originalMatch.player2_name)
+    ) {
+      return { success: false, error: "Both players must be confirmed in the bracket before recording a result." };
     }
 
+    const playerOneWon = score1 > score2;
+    const finalWinner = (playerOneWon ? originalMatch.player1_name : originalMatch.player2_name).trim();
+    const runnerUpName = (playerOneWon ? originalMatch.player2_name : originalMatch.player1_name).trim();
+    if (winner_name.trim() !== finalWinner) {
+      return { success: false, error: "The recorded winner must match the higher score." };
+    }
+
+    const winnerParticipant = (tourney.participants || []).find(
+      (participant) =>
+        participant.friend_id === (playerOneWon ? originalMatch.player1_friend_id : originalMatch.player2_friend_id) ||
+        participant.gamer_tag.trim().toLowerCase() === finalWinner.toLowerCase()
+    );
+    const runnerUpParticipant = (tourney.participants || []).find(
+      (participant) =>
+        participant.friend_id === (playerOneWon ? originalMatch.player2_friend_id : originalMatch.player1_friend_id) ||
+        participant.gamer_tag.trim().toLowerCase() === runnerUpName.toLowerCase()
+    );
+    const winnerFriendId = (playerOneWon ? originalMatch.player1_friend_id : originalMatch.player2_friend_id) ||
+      winnerParticipant?.friend_id || null;
+    const runnerUpFriendId = (playerOneWon ? originalMatch.player2_friend_id : originalMatch.player1_friend_id) ||
+      runnerUpParticipant?.friend_id || null;
+    const winnerUserId = (playerOneWon ? originalMatch.player1_user_id : originalMatch.player2_user_id) ||
+      winnerParticipant?.user_id || null;
+    const isFinalMatch =
+      (originalMatch.round === "Grand Final" || originalMatch.round === "1v1 Duel Championship") &&
+      !originalMatch.next_match_id;
+    if (!isFinalMatch && !originalMatch.next_match_id) {
+      return { success: false, error: "This bracket match is missing its next-round link." };
+    }
+    if (isFinalMatch && originalMatch.next_match_id) {
+      return { success: false, error: "The final match cannot advance to another round." };
+    }
+
+    let databaseSaved = false;
     try {
       const supabase = getSupabase();
-      // 1. Update current match
-      await supabase
+      const now = new Date().toISOString();
+      const { data: savedMatch, error: matchError } = await supabase
         .from("tournament_matches")
         .update({
           score1,
           score2,
           winner_name: finalWinner,
           is_completed: true,
-          match_code: match_code || null,
-          updated_at: new Date().toISOString(),
+          match_code: match_code || originalMatch.match_code || null,
+          updated_at: now,
         })
-        .eq("id", match_id);
+        .eq("id", match_id)
+        .eq("tournament_id", tournament_id)
+        .eq("is_completed", false)
+        .select("id")
+        .maybeSingle();
+      if (matchError || !savedMatch) throw matchError || new Error("Match row was not updated.");
 
-      // 2. Update next match if applicable
-      if (currentMatch.next_match_id) {
-        const nextMatch = matches.find((m) => m.id === currentMatch.next_match_id);
-        if (nextMatch) {
-          const updatePayload: any = {};
-          if (currentMatch.next_match_slot === 1) updatePayload.player1_name = finalWinner;
-          if (currentMatch.next_match_slot === 2) updatePayload.player2_name = finalWinner;
-          await supabase
+      if (originalMatch.next_match_id) {
+        const nextMatch = matches.find((match) => match.id === originalMatch.next_match_id);
+        const updatePayload: Record<string, string | null> = {};
+        if (nextMatch && originalMatch.next_match_slot === 1) {
+          updatePayload.player1_name = finalWinner;
+          updatePayload.player1_friend_id = winnerFriendId;
+        }
+        if (nextMatch && originalMatch.next_match_slot === 2) {
+          updatePayload.player2_name = finalWinner;
+          updatePayload.player2_friend_id = winnerFriendId;
+        }
+        if (Object.keys(updatePayload).length > 0) {
+          const { error: nextMatchError } = await supabase
             .from("tournament_matches")
-            .update(updatePayload)
-            .eq("id", currentMatch.next_match_id);
+            .update({ ...updatePayload, updated_at: now })
+            .eq("id", originalMatch.next_match_id)
+            .eq("tournament_id", tournament_id);
+          if (nextMatchError) throw nextMatchError;
         }
       }
 
-      // 3. If Grand Final, mark tournament completed
-      if (isChampionCrowned) {
-        await supabase
+      if (isFinalMatch) {
+        const { error: tournamentError } = await supabase
           .from("tournaments")
-          .update({
-            status: "completed",
-            winner_name: finalWinner,
-            updated_at: new Date().toISOString(),
-          })
+          .update({ status: "completed", winner_name: finalWinner, updated_at: now })
           .eq("id", tournament_id);
+        if (tournamentError) throw tournamentError;
       }
+      databaseSaved = true;
     } catch (err) {
       console.warn("Supabase update match result notice:", err);
     }
 
-    // Update memory
-    const memIndex = MEMORY_TOURNAMENTS.findIndex((t) => t.id === tournament_id);
-    if (memIndex !== -1) {
-      MEMORY_TOURNAMENTS[memIndex].matches = matches;
-      if (isChampionCrowned) {
-        MEMORY_TOURNAMENTS[memIndex].status = "completed";
-        MEMORY_TOURNAMENTS[memIndex].winner_name = finalWinner;
+    let sharedTournament: Tournament | null = null;
+    try {
+      sharedTournament = await updateSharedTournamentState(tournament_id, tourney, (current) => {
+        if (current.status !== "in_progress") {
+          throw new Error("Match results can only be recorded for an in-progress tournament.");
+        }
+        const nextMatches = [...(current.matches || [])];
+        const currentMatch = nextMatches.find((match) => match.id === match_id);
+        if (!currentMatch) throw new Error("Match not found in tournament bracket.");
+        if (currentMatch.is_completed) {
+          throw new Error("A result has already been recorded for this match.");
+        }
+
+        currentMatch.score1 = score1;
+        currentMatch.score2 = score2;
+        currentMatch.winner_name = finalWinner;
+        currentMatch.winner_user_id = winnerUserId;
+        currentMatch.is_completed = true;
+        if (match_code) currentMatch.match_code = match_code;
+
+        if (currentMatch.next_match_id) {
+          const nextMatch = nextMatches.find((match) => match.id === currentMatch.next_match_id);
+          if (nextMatch && currentMatch.next_match_slot === 1) {
+            nextMatch.player1_name = finalWinner;
+            nextMatch.player1_friend_id = winnerFriendId;
+            nextMatch.player1_user_id = winnerUserId;
+          }
+          if (nextMatch && currentMatch.next_match_slot === 2) {
+            nextMatch.player2_name = finalWinner;
+            nextMatch.player2_friend_id = winnerFriendId;
+            nextMatch.player2_user_id = winnerUserId;
+          }
+        }
+
+        return {
+          ...current,
+          matches: nextMatches,
+          status: isFinalMatch ? "completed" : current.status,
+          winner_name: isFinalMatch ? finalWinner : current.winner_name,
+          winner_user_id: isFinalMatch ? winnerUserId : current.winner_user_id,
+          updated_at: new Date().toISOString(),
+        };
+      });
+    } catch (err) {
+      if (databaseSaved) {
+        console.warn("Shared match-result snapshot notice:", err);
+      } else {
+        const message = err instanceof Error && err.message === "Match not found in tournament bracket."
+          ? err.message
+          : err instanceof Error && err.message === "A result has already been recorded for this match."
+            ? err.message
+            : "Could not save the match result. Please try again later.";
+        return { success: false, error: message };
       }
     }
 
-    const updatedTourney = await this.getTournamentById(tournament_id);
+    const updatedTourney = sharedTournament || await this.getTournamentById(tournament_id) || tourney;
+    const isChampionCrowned = isFinalMatch && updatedTourney.status === "completed";
 
     return {
       success: true,
       isChampionCrowned,
-      championName,
-      tournament: updatedTourney || tourney,
+      winnerName: finalWinner,
+      championName: isChampionCrowned ? finalWinner : undefined,
+      championFriendId: isChampionCrowned ? winnerFriendId : undefined,
+      runnerUpName: isChampionCrowned && updatedTourney.second_place_kes > 0 ? runnerUpName : undefined,
+      runnerUpFriendId: isChampionCrowned && updatedTourney.second_place_kes > 0 ? runnerUpFriendId : undefined,
+      tournament: updatedTourney,
     };
   }
 
   /**
    * Delete a tournament
    */
-  static async deleteTournament(id: string): Promise<boolean> {
-    try {
-      const supabase = getSupabase();
-      await supabase.from("tournaments").delete().eq("id", id);
-    } catch (err) {
-      console.warn("Supabase delete tournament notice:", err);
-    }
+  static async deleteTournament(
+    id: string
+  ): Promise<"deleted" | "blocked" | "unavailable"> {
+    if (!id) return "blocked";
+    if (!hasServiceRoleKey()) return "unavailable";
 
-    MEMORY_TOURNAMENTS = MEMORY_TOURNAMENTS.filter((t) => t.id !== id);
-    return true;
+    try {
+      const deleted = await deleteTournamentIfNoPaymentActivity(id);
+      return deleted ? "deleted" : "blocked";
+    } catch (err) {
+      console.warn("Atomic tournament deletion could not be completed:", err);
+      return "unavailable";
+    }
   }
 }

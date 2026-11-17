@@ -1,7 +1,7 @@
 import React from "react";
 import { Metadata } from "next";
 import Link from "next/link";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import {
   ArrowLeft,
   Calendar,
@@ -16,6 +16,7 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import {
   PUBLIC_SELLER_PROFILE_SELECT,
+  getPublicStorefrontPath,
   sanitizeListingForPublic,
   sanitizePublicSellerProfile,
 } from "@/lib/security/publicSanitizer";
@@ -36,8 +37,16 @@ interface SellerStorefrontProps {
   };
 }
 
+function safelyDecodeRouteSegment(rawSegment: string): string {
+  try {
+    return decodeURIComponent(rawSegment);
+  } catch {
+    return rawSegment;
+  }
+}
+
 async function fetchSellerByUsername(rawUsername: string) {
-  const decoded = decodeURIComponent(rawUsername || "")
+  const decoded = safelyDecodeRouteSegment(rawUsername || "")
     .replace(/^@/, "")
     .trim();
   if (!decoded) return null;
@@ -49,13 +58,28 @@ async function fetchSellerByUsername(rawUsername: string) {
 
   const client = hasServiceRoleKey() ? createAdminClient() : userSupabase;
 
+  // UUID route keys are used for email-like usernames so addresses never appear in URLs.
+  let seller: any = null;
+  if (/^[0-9a-f]{8}-(?:[0-9a-f]{4}-){3}[0-9a-f]{12}$/i.test(decoded)) {
+    const { data: sellerById } = await client
+      .from("profiles")
+      .select(PUBLIC_SELLER_PROFILE_SELECT)
+      .eq("id", decoded)
+      .limit(1)
+      .maybeSingle();
+    seller = sellerById;
+  }
+
   // 1. Exact username match first, then case-insensitive fallback
-  let { data: seller } = await client
-    .from("profiles")
-    .select(PUBLIC_SELLER_PROFILE_SELECT)
-    .eq("username", decoded)
-    .limit(1)
-    .maybeSingle();
+  if (!seller) {
+    const { data: exactSeller } = await client
+      .from("profiles")
+      .select(PUBLIC_SELLER_PROFILE_SELECT)
+      .eq("username", decoded)
+      .limit(1)
+      .maybeSingle();
+    seller = exactSeller;
+  }
 
   if (!seller) {
     const { data: ilikeSeller } = await client
@@ -159,11 +183,12 @@ export async function generateMetadata({
   }
 
   const { seller, listings } = result;
-  const canonicalUrl = `https://www.efootballmarket.co.ke/u/${encodeURIComponent(
-    seller.username || resolved.username
-  )}`;
+  const storefrontPath =
+    seller.public_storefront_path ||
+    getPublicStorefrontPath(seller.id, seller.username);
+  const canonicalUrl = `https://www.efootballmarket.co.ke${storefrontPath}`;
   const title = `@${seller.username} — eFootball Squads (${listings.length} Listed)`;
-  const description = `Browse ${listings.length} eFootball squads listed by @${seller.username} on eFootballMarket Kenya. Payment held on M-Pesa Till 1572931 during 24-hour buyer inspection.`;
+  const description = `Browse ${listings.length} eFootball squads listed by @${seller.username} on eFootballMarket Kenya. Buyer protection applies only to orders from published listings paid through marketplace checkout.`;
 
   return {
     title,
@@ -191,6 +216,22 @@ export default async function SellerStorefrontPage({
   }
 
   const { seller, listings, isOwner } = result;
+  const storefrontPath =
+    seller.public_storefront_path ||
+    getPublicStorefrontPath(seller.id, seller.username);
+  const requestedSegment = safelyDecodeRouteSegment(resolved.username)
+    .replace(/^@/, "")
+    .trim();
+  const canonicalSegment = safelyDecodeRouteSegment(
+    storefrontPath.split("/").pop() || ""
+  );
+  const emailLikeRequest = requestedSegment.includes("@");
+  const nonCanonicalHandleCase =
+    !emailLikeRequest && requestedSegment.toLowerCase() !== canonicalSegment.toLowerCase();
+  if (emailLikeRequest || nonCanonicalHandleCase) {
+    permanentRedirect(storefrontPath);
+  }
+
   const reviews = await getVerifiedSellerReviews(seller.id, 8);
   const sales = Number(seller.completed_sales_count || 0);
   const rating = Number(seller.seller_rating || 0);
@@ -278,6 +319,7 @@ export default async function SellerStorefrontPage({
           <ShareStorefrontBar
             username={seller.username}
             activeCount={listings.length}
+            storefrontPath={storefrontPath}
           />
 
           {isOwner && (

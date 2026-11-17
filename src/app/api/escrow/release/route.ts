@@ -1,6 +1,6 @@
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { EscrowService } from "@/services/escrowService";
+import { EscrowService, SecureEscrowReleaseUnavailableError } from "@/services/escrowService";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -28,14 +28,21 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid order ID" }, { status: 400 });
     }
 
-    const adminSupabase = createAdminClient();
-    const serviceRoleConfigured = hasServiceRoleKey();
-    const primaryClient = serviceRoleConfigured ? adminSupabase : supabase;
-    const escrowService = new EscrowService(primaryClient);
+    if (!hasServiceRoleKey()) {
+      return NextResponse.json(
+        { error: "Secure escrow release is temporarily unavailable. No funds were released; contact support." },
+        { status: 503 }
+      );
+    }
+
+    const escrowService = new EscrowService(createAdminClient());
     await escrowService.confirmAndRelease(parsed.data.orderId, user.id);
 
-    return NextResponse.json({ success: true, message: "Escrow funds released to seller successfully." });
+    return NextResponse.json({ success: true, message: "Seller proceeds were credited to the available platform balance." });
   } catch (error: any) {
+    if (error instanceof SecureEscrowReleaseUnavailableError) {
+      return NextResponse.json({ error: error.message }, { status: 503 });
+    }
     return NextResponse.json({ error: error.message }, { status: 400 });
   }
 }

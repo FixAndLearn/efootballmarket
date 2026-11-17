@@ -114,6 +114,11 @@ export default function HostTournamentPage() {
       return;
     }
 
+    if (hostType === "paid" && (!Number.isSafeInteger(Number(entryFee)) || Number(entryFee) <= 0)) {
+      setError("Enter a positive whole-KES entry fee, or choose the free-entry option.");
+      return;
+    }
+
     setSubmitting(true);
     try {
       const payload = {
@@ -126,11 +131,7 @@ export default function HostTournamentPage() {
             : `${numPlayers}-Player Knockout Tournament | KES ${netPrizePool.toLocaleString()} Prize Pool`),
         platform,
         tournament_type: arenaType,
-        admin_fee_kes: adminFee,
         payout_split: arenaType === "1v1" ? "winner_takes_all" : payoutSplit,
-        prize_pool_kes: netPrizePool,
-        first_place_kes: firstPlace,
-        second_place_kes: secondPlace,
         entry_fee_kes: rawFee,
         format,
         max_players: numPlayers,
@@ -176,7 +177,7 @@ export default function HostTournamentPage() {
 
           <div className="flex items-center gap-2">
             <span className="hidden sm:inline-block text-[11px] text-sx-muted font-mono">
-              Till 1572931 Escrow
+              Tournament Entry &amp; Prize Handling
             </span>
             <Link
               href="/browse"
@@ -203,7 +204,7 @@ export default function HostTournamentPage() {
               Host a Community Tournament or 1v1 Match
             </h1>
             <p className="text-xs sm:text-sm text-sx-ink-soft max-w-xl leading-relaxed">
-              Create your match, invite friends via WhatsApp, and manage brackets. All entry funds are protected by Safaricom Till <strong>1572931</strong> escrow with instant M-Pesa winner payout!
+              Create your match, invite friends via WhatsApp, and manage brackets. Paid entries are confirmed through M-Pesa STK Push or account balance. Brackets can start after every slot is paid; recording the final result alerts the tournament desk to arrange any published prize manually. Timing varies, and this page does not confirm a payout.
             </p>
           </div>
         </div>
@@ -321,7 +322,7 @@ export default function HostTournamentPage() {
               >
                 <span className="text-xs font-bold block text-sx-ink">Paid Prize Pool</span>
                 <span className="text-[11px] text-sx-muted mt-0.5 block leading-tight">
-                  Till 1572931 or Wallet | Fair platform fee
+                  M-Pesa STK Push or Wallet | Tiered platform fee
                 </span>
               </button>
 
@@ -413,7 +414,7 @@ export default function HostTournamentPage() {
                     Entry Fee per Player (KES)
                   </label>
                   <span className="text-[11px] text-sx-amber-text font-mono font-semibold">
-                    Pay via Till 1572931 or Wallet
+                    Pay via M-Pesa STK Push or Wallet
                   </span>
                 </div>
 
@@ -437,6 +438,8 @@ export default function HostTournamentPage() {
 
                 <Input
                   type="number"
+                  min={1}
+                  step={1}
                   placeholder="Enter custom entry fee"
                   value={entryFee}
                   onChange={(e) => setEntryFee(e.target.value)}
@@ -494,14 +497,14 @@ export default function HostTournamentPage() {
               {/* Real-Time Fair Fee & Net Prize Card */}
               <div className="p-4 rounded-2xl bg-pitch-card border border-sx-amber-border space-y-2.5 text-xs">
                 <div className="flex items-center justify-between text-sx-ink-soft">
-                  <span>Total Collected Pot ({numPlayers} players × KES {rawFee}):</span>
+                  <span>Projected Pot if all {numPlayers} slots are paid (KES {rawFee} each):</span>
                   <strong className="text-sx-ink font-mono text-sm">KES {totalPot.toLocaleString()}</strong>
                 </div>
 
                 <div className="flex items-center justify-between text-sx-ink-soft">
                   <span className="flex items-center gap-1.5">
                     <ShieldCheck className="w-4 h-4 text-sx-green-text" />
-                    <span>Fair Platform Admin Deal:</span>
+                    <span>Platform Fee:</span>
                   </span>
                   <div className="text-right">
                     <strong className="text-sx-amber-text font-mono font-bold">
@@ -515,8 +518,8 @@ export default function HostTournamentPage() {
 
                 <div className="pt-2 border-t border-pitch-border flex items-center justify-between">
                   <div>
-                    <span className="font-bold text-sx-ink block">Net Prize Pool in Escrow:</span>
-                    <span className="text-[10px] text-sx-muted">Guaranteed in Safaricom Till 1572931</span>
+                    <span className="font-bold text-sx-ink block">Projected Net Prize Pool:</span>
+                    <span className="text-[10px] text-sx-muted">Based on all entry fees being paid</span>
                   </div>
                   <span className="text-lg font-black text-sx-green-text font-mono font-display">
                     KES {netPrizePool.toLocaleString()}
@@ -533,13 +536,16 @@ export default function HostTournamentPage() {
                   <div>
                     2nd Place:{" "}
                     <strong className="text-sx-ink-soft font-mono">
-                      {secondPlace > 0 ? `KES ${secondPlace.toLocaleString()}` : "Honor / Trophy"}
+                      {secondPlace > 0 ? `KES ${secondPlace.toLocaleString()}` : "No second-place cash prize"}
                     </strong>
                   </div>
                 </div>
 
                 <p className="text-[10px] text-sx-muted pt-1 leading-relaxed border-t border-pitch-border/60">
-                  Players can pay their entry via <strong>Safaricom Till 1572931</strong> or directly from their <strong>eFootballMarket Account Balance</strong>. Prize funds remain safely locked until you approve the match result!
+                  Players pay by <strong>M-Pesa STK Push</strong> or <strong>eFootballMarket Account Balance</strong>. Brackets can start only after every slot is paid. A final result alerts the tournament desk to arrange any published prize manually; timing varies, and payment is not automatic.
+                </p>
+                <p className="text-[10px] text-sx-muted leading-relaxed">
+                  Fee guide: for a total pot up to KES 100, the fee is 15% rounded to whole shillings (min KES 10, max KES 15, capped at the pot). See the full <Link href="/escrow-guarantee#fees" className="underline text-sx-green-text">fee schedule</Link>.
                 </p>
               </div>
             </div>

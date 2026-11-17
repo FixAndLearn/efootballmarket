@@ -28,7 +28,7 @@ function getClient() {
 export async function GET(req: NextRequest) {
   try {
     const ip = getClientIp(req);
-    const rate = checkRateLimit(`avail_get:${ip}`, 60, 60000);
+    const rate = await checkRateLimit(`avail_get:${ip}`, 60, 60000);
     if (!rate.success) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
@@ -136,7 +136,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const ip = getClientIp(req);
-    const rate = checkRateLimit(`avail_ping:${ip}`, 8, 60000);
+    const rate = await checkRateLimit(`avail_ping:${ip}`, 8, 60000);
     if (!rate.success) {
       return NextResponse.json(
         { error: "Please wait a moment before sending another availability check." },
@@ -284,7 +284,7 @@ export async function POST(req: NextRequest) {
         recipient_id: listing.seller_id,
         type: "availability_check",
         title: `Buyer Asking: Is "${listing.title}" Available?`,
-        message: `${resolvedBuyerName} is ready to buy (${priceLabel} via Escrow) and tapped to check if this squad is still available. Tap to confirm Yes or Sold!`,
+        message: `${resolvedBuyerName} is ready to buy this squad for ${priceLabel} through marketplace checkout and tapped to check availability. Tap to confirm Yes or Sold!`,
         action_url: "/dashboard/seller",
         is_read: false,
       });
@@ -296,7 +296,7 @@ export async function POST(req: NextRequest) {
     if (sellerObj?.phone_number) {
       sendSmsAlert({
         toPhone: sellerObj.phone_number,
-        message: `[eFootballMarket] A buyer is ready to pay ${priceLabel} via Escrow for "${listing.title.slice(
+        message: `[eFootballMarket] A buyer is ready to pay ${priceLabel} through marketplace checkout for "${listing.title.slice(
           0,
           45
         )}". Is it still available? Tap YES or Sold: ${sellerHubUrl}`,
@@ -312,7 +312,7 @@ export async function POST(req: NextRequest) {
           <div style="font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; max-width: 520px; margin: 0 auto; padding: 24px; background: #0b1120; color: #f8fafc; border-radius: 16px;">
             <h2 style="margin: 0 0 12px; color: #10b981; font-size: 18px;">Buyer Checking Squad Availability</h2>
             <p style="font-size: 14px; line-height: 1.6; color: #cbd5e1; margin: 0 0 16px;">
-              <strong>${resolvedBuyerName}</strong> wants to purchase <strong>${listing.title}</strong> for <strong>${priceLabel}</strong> via Safaricom M-Pesa Escrow (Till 1572931) and tapped to check if the account is ready for handover.
+              <strong>${resolvedBuyerName}</strong> wants to purchase <strong>${listing.title}</strong> for <strong>${priceLabel}</strong> through eFootballMarket marketplace checkout (M-Pesa Till 1572931) and tapped to check if the account is ready for handover.
             </p>
             <a href="${sellerHubUrl}" style="display: inline-block; background: #059669; color: #ffffff; text-decoration: none; font-weight: 700; font-size: 14px; padding: 12px 22px; border-radius: 10px;">
               Tap to Confirm Available or Mark Sold &rarr;
@@ -474,7 +474,7 @@ export async function PATCH(req: NextRequest) {
             message:
               status === "available"
                 ? `Seller confirmed this squad (${priceLabel}) is ready now! Tap to complete M-Pesa Till 1572931 Escrow checkout.`
-                : `Seller marked this squad as no longer available. Tap to browse other active verified squads.`,
+                : `Seller marked this squad as no longer available. Tap to browse other active squad listings.`,
             action_url:
               status === "available" ? `/pay/${existingPing.listing_id}` : "/browse",
             is_read: false,
@@ -493,7 +493,7 @@ export async function PATCH(req: NextRequest) {
               ? `[eFootballMarket] Good news! Seller confirmed "${listingTitle.slice(
                   0,
                   40
-                )}" (${priceLabel}) IS AVAILABLE now! Pay safely via Till 1572931 Escrow: ${payUrl}`
+                )}" (${priceLabel}) IS AVAILABLE now! Complete marketplace checkout for buyer protection (M-Pesa Till 1572931): ${payUrl}`
               : `[eFootballMarket] Seller confirmed "${listingTitle.slice(
                   0,
                   40

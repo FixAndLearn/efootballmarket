@@ -71,7 +71,7 @@ export function ListingGrid({ listings: initialListings, filters, isLoading = fa
         <div className="p-4 rounded-lg bg-sx-green-tint border border-sx-green-border flex items-center justify-between gap-4">
           <div className="min-w-0">
             <span className="text-[11px] font-bold uppercase tracking-wider text-sx-green-text">
-              New Verified Squad Listed
+              New Squad Listing Published
             </span>
             <p className="text-sm font-semibold text-sx-ink truncate">
               {formatSmartListingTitle(newListingAlert)} &middot; {formatCurrency(newListingAlert.price)} ({newListingAlert.overall_team_strength} OVR)

@@ -244,14 +244,14 @@ export function LiveNotificationManager() {
           triggerPopup({
             id: `ping-avail-${entry.id}`,
             title: "Seller Confirmed: Squad is Available!",
-            message: `${entry.listingTitle} is ready for handover. Tap to pay securely via M-Pesa Till 1572931 Escrow.`,
+            message: `${entry.listingTitle} is ready for handover. Tap to complete marketplace checkout and pay via M-Pesa Till 1572931.`,
             actionUrl: `/pay/${entry.listingId}`,
           });
         } else if (ping.status === "unavailable") {
           triggerPopup({
             id: `ping-unavail-${entry.id}`,
             title: "Squad No Longer Available",
-            message: `${entry.listingTitle} was marked unavailable by the seller. Tap to browse other verified squads.`,
+            message: `${entry.listingTitle} was marked unavailable by the seller. Tap to browse other published listings.`,
             actionUrl: `/browse`,
           });
         }

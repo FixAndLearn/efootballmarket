@@ -76,7 +76,7 @@ export async function sendBuyerCredentialsDeliveredWhatsApp(
 }
 
 /**
- * 4. Alert seller that buyer confirmed receipt and funds are available for withdrawal.
+ * 4. Alert seller that buyer confirmed receipt and proceeds were credited to the platform balance.
  */
 export async function sendSellerFundsReleasedWhatsApp(
   sellerPhone: string,
@@ -84,19 +84,18 @@ export async function sendSellerFundsReleasedWhatsApp(
   netAmountKes: number
 ): Promise<WhatsAppSendResult> {
   const message =
-    `*DEAL COMPLETED - FUNDS RELEASED!*\n\n` +
-    `The buyer has confirmed receipt and finalized Order *#${orderNumber}*!\n\n` +
-    `*Net Credited to Wallet:* KES ${netAmountKes.toLocaleString()}\n` +
-    `*Current Status:* In your Available Balance.\n\n` +
-    `You can withdraw directly to your Safaricom M-Pesa line at any time:\n` +
-    `*Withdraw Earnings:* ${APP_URL}/seller/earnings\n\n` +
+    `*ORDER COMPLETED - BALANCE CREDITED!*\n\n` +
+    `The buyer has confirmed receipt and finalized Order *#${orderNumber}*.\n\n` +
+    `*Net Credited to Available Balance:* KES ${netAmountKes.toLocaleString()}\n\n` +
+    `To withdraw to M-Pesa, submit a separate request from Seller Earnings. Withdrawal requests are reviewed and arranged manually; processing time varies.\n` +
+    `*Seller Earnings:* ${APP_URL}/seller/earnings\n\n` +
     `_Thank you for trading safely on eFootballMarket!_`;
 
   return sendWhatsAppMessage({ toPhone: sellerPhone, message });
 }
 
 /**
- * 5. Alert seller about M-Pesa withdrawal status (Paid or Rejected).
+ * 5. Alert seller when an administrator records a withdrawal outcome.
  */
 export async function sendSellerWithdrawalStatusWhatsApp(
   sellerPhone: string,
@@ -106,19 +105,15 @@ export async function sendSellerWithdrawalStatusWhatsApp(
 ): Promise<WhatsAppSendResult> {
   if (status === "completed") {
     const message =
-      `*M-PESA WITHDRAWAL DISBURSED!*\n\n` +
-      `Your withdrawal of *KES ${amountKes.toLocaleString()}* has been successfully processed and sent to your registered Safaricom line (${formatDisplayPhone(
-        sellerPhone
-      )}).\n\n` +
-      `Check your M-Pesa SMS for the incoming transaction reference.\n` +
+      `*WITHDRAWAL MARKED PAID*\n\n` +
+      `An administrator marked your withdrawal of *KES ${amountKes.toLocaleString()}* as paid after manual handling. This system does not independently verify the M-Pesa transfer. Check your M-Pesa SMS or transaction receipt, and contact support if the funds have not arrived.\n\n` +
       `*View Earnings:* ${APP_URL}/seller/earnings`;
     return sendWhatsAppMessage({ toPhone: sellerPhone, message });
   } else {
     const message =
-      `*WITHDRAWAL REQUEST NOT PROCESSED*\n\n` +
-      `Your withdrawal request of *KES ${amountKes.toLocaleString()}* could not be processed.\n` +
+      `*WITHDRAWAL REQUEST REJECTED*\n\n` +
+      `Your withdrawal request of *KES ${amountKes.toLocaleString()}* was rejected. The reserved amount is returned to your Available Balance when the rejection is recorded.\n\n` +
       (reason ? `*Reason:* ${reason}\n\n` : "\n") +
-      `*The funds have been automatically refunded to your Available Balance.*\n` +
       `*Check Balance:* ${APP_URL}/seller/earnings`;
     return sendWhatsAppMessage({ toPhone: sellerPhone, message });
   }

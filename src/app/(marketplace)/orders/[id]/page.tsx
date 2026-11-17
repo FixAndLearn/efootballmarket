@@ -79,7 +79,7 @@ const getStatusConfig = (status: OrderStatus | string) => {
     case "cancelled":
     case "refunded":
       return {
-        label: status === "refunded" ? "Escrow Refunded" : "Order Cancelled",
+        label: status === "refunded" ? "Refund Approved · Manual Transfer Unconfirmed" : "Order Cancelled",
         colorClass: "bg-sx-stone text-sx-muted border-sx-border-strong",
         icon: Shield,
       };
@@ -157,7 +157,7 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
   )}`;
 
   const counterpartyName = isBuyer
-    ? order.seller?.username || "Verified Seller"
+    ? order.seller?.username || "Seller"
     : order.buyer?.username || "Verified Buyer";
 
   const currentStageMeta = (() => {
@@ -178,7 +178,7 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
           actor: "Seller",
           deadline: "Within 12 hours of payment confirmation",
           evidence: "Keep all OTP and handover messages inside Order Chat below.",
-          nextStep: "Your 24-hour buyer inspection clock starts only after the seller submits login credentials. If the seller misses 12 hours, you can cancel for a 100% refund.",
+          nextStep: "Your 24-hour buyer inspection clock starts only after the seller submits login credentials. If the seller misses 12 hours, open a dispute or contact support for review. A full refund may be approved; approved M-Pesa refunds are arranged manually, and this page does not confirm that funds were sent.",
         };
       case "seller_delivered":
       case "buyer_reviewing":
@@ -193,31 +193,31 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
       case "disputed":
         return {
           stepIndex: 4,
-          label: "Dispute Opened · Payout Paused",
+          label: "Dispute Opened · Review Pending",
           actor: "Moderator & Both Parties",
-          deadline: "Evidence upload within 12h · Moderator decision in 24–48h",
+          deadline: "Evidence upload window: 12 hours · Review timing varies",
           evidence: "Upload your uncut first-login screen recording and Link Data screenshots in Order Chat.",
-          nextStep: "Funds remain held by eFootballMarket until our Nairobi desk issues a refund or payout decision.",
+          nextStep: "For an order not yet completed, seller-balance release is paused during review. A post-release dispute does not automatically hold funds or reverse an M-Pesa transfer already sent. Any approved refund is arranged manually; this page does not confirm a transfer.",
         };
       case "completed":
         return {
           stepIndex: 5,
-          label: "Completed & Paid Out",
+          label: "Order Completed · Seller Balance Credited",
           actor: "Completed",
-          deadline: "Seller M-Pesa withdrawal sent within 1–12h (8 AM – 10 PM EAT)",
+          deadline: "Seller can request M-Pesa withdrawal; requests are processed manually and timing varies.",
           evidence: "Keep your my.konami.net 2-Step Verification active on your own email.",
-          nextStep: "Order closed. Leave a verified buyer review below to help the community.",
+          nextStep: "Order closed. Leave a verified buyer review below to help the community."
         };
       case "refunded":
       case "cancelled":
       default:
         return {
           stepIndex: 5,
-          label: order.status === "refunded" ? "Refunded to Buyer" : "Cancelled",
+          label: order.status === "refunded" ? "Refund Decision Recorded · Manual Transfer Unconfirmed" : "Cancelled",
           actor: "Closed",
-          deadline: "Approved M-Pesa refunds dispatch within 1–12h (8 AM – 10 PM EAT)",
-          evidence: "Retain your M-Pesa reversal/refund SMS reference.",
-          nextStep: "This order is closed and no seller payout was released.",
+          deadline: "An approved M-Pesa refund is arranged manually; timing varies. Contact support to check transfer status.",
+          evidence: "Keep any M-Pesa refund confirmation or reversal reference; this order status is not proof of payment.",
+          nextStep: "This order is closed. The order room records the refund decision but does not confirm that M-Pesa funds were sent."
         };
     }
   })();
@@ -227,7 +227,7 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
     { idx: 2, name: "2. Credentials Due (12h)" },
     { idx: 3, name: "3. Inspection (24h)" },
     { idx: 4, name: order.status === "disputed" ? "4. Dispute Review" : "4. Confirm / Dispute" },
-    { idx: 5, name: order.status === "refunded" ? "5. Refunded" : "5. Completed" },
+    { idx: 5, name: order.status === "refunded" ? "5. Refund Decision" : order.status === "cancelled" ? "5. Cancelled" : "5. Completed" },
   ];
 
   return (

@@ -1,105 +1,222 @@
-/**
- * Lightweight, high-throughput in-memory sliding window rate limiter
- * and transactional idempotency store for Next.js App Router API handlers.
- */
-
-interface RateLimitRecord {
-  count: number;
-  resetAt: number;
-}
-
-const rateLimitMap = new Map<string, RateLimitRecord>();
-
-// Clean up expired keys every 60 seconds to avoid memory leak
-if (typeof setInterval !== "undefined") {
-  const cleanupTimer = setInterval(() => {
-    const now = Date.now();
-    rateLimitMap.forEach((record, key) => {
-      if (record.resetAt <= now) {
-        rateLimitMap.delete(key);
-      }
-    });
-  }, 60000);
-
-  if (cleanupTimer.unref) {
-    cleanupTimer.unref();
-  }
-}
+import { createHmac, randomUUID } from "crypto";
+import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 
 /**
- * Check and record a rate limit hit.
- * @param identifier e.g. IP address or userId
- * @param limit max allowed hits per window
- * @param windowMs window duration in milliseconds (default: 60,000ms = 1 min)
+ * Shared, database-backed rate limits and idempotency claims.
+ *
+ * Vercel functions are isolated and may run concurrently, so process-local
+ * Maps cannot enforce a global limit or protect financial operations. These
+ * helpers require the service-role client and the matching Supabase migration;
+ * they deliberately fail closed if that shared store is unavailable.
  */
-export function checkRateLimit(
-  identifier: string,
-  limit: number = 60,
-  windowMs: number = 60000
-): {
+
+export interface RateLimitResult {
   success: boolean;
   limit: number;
   remaining: number;
   reset: number;
-} {
-  const now = Date.now();
-  const existing = rateLimitMap.get(identifier);
+}
 
-  if (!existing || existing.resetAt <= now) {
-    rateLimitMap.set(identifier, {
-      count: 1,
-      resetAt: now + windowMs,
-    });
-    return {
-      success: true,
-      limit,
-      remaining: limit - 1,
-      reset: Math.ceil((now + windowMs) / 1000),
-    };
+export type IdempotencyClaim<T> =
+  | { status: "acquired"; ownerToken: string }
+  | { status: "cached"; response: T }
+  | { status: "in_progress" };
+
+export class SharedSecurityStateUnavailableError extends Error {
+  constructor() {
+    super("Shared security state is unavailable.");
+    this.name = "SharedSecurityStateUnavailableError";
+  }
+}
+
+function requireSharedStore() {
+  if (!hasServiceRoleKey()) {
+    throw new SharedSecurityStateUnavailableError();
   }
 
-  if (existing.count >= limit) {
-    return {
-      success: false,
-      limit,
-      remaining: 0,
-      reset: Math.ceil(existing.resetAt / 1000),
-    };
+  const secret = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!secret) {
+    throw new SharedSecurityStateUnavailableError();
   }
 
-  existing.count += 1;
   return {
-    success: true,
-    limit,
-    remaining: limit - existing.count,
-    reset: Math.ceil(existing.resetAt / 1000),
+    client: createAdminClient(),
+    secret,
   };
 }
 
-/**
- * In-memory idempotency cache for sensitive financial operations
- * (e.g. M-Pesa STK push & order generation)
- */
-interface IdempotencyRecord<T = any> {
-  response: T;
-  timestamp: number;
+function hashKey(secret: string, namespace: string, key: string): string {
+  return createHmac("sha256", secret)
+    .update(`${namespace}\0${key}`)
+    .digest("hex");
 }
 
-const idempotencyCache = new Map<string, IdempotencyRecord>();
-
-export function getIdempotencyResult<T>(key: string, maxAgeMs: number = 60000): T | null {
-  const record = idempotencyCache.get(key);
-  if (!record) return null;
-  if (Date.now() - record.timestamp > maxAgeMs) {
-    idempotencyCache.delete(key);
-    return null;
+/** Return the same pseudonymous fingerprint used by shared idempotency claims. */
+export function hashSharedIdempotencyKey(key: string): string {
+  validateKey(key);
+  const secret = process.env.SUPABASE_SERVICE_ROLE_KEY;
+  if (!hasServiceRoleKey() || !secret) {
+    throw new SharedSecurityStateUnavailableError();
   }
-  return record.response as T;
+  return hashKey(secret, "idempotency", key);
 }
 
-export function setIdempotencyResult<T>(key: string, response: T): void {
-  idempotencyCache.set(key, {
-    response,
-    timestamp: Date.now(),
-  });
+function validateKey(key: string): void {
+  if (typeof key !== "string" || key.length === 0 || key.length > 2048) {
+    throw new TypeError("A shared-state key must contain between 1 and 2048 characters.");
+  }
+}
+
+function validateDuration(value: number, name: string, max = 86_400_000): void {
+  if (!Number.isInteger(value) || value < 1 || value > max) {
+    throw new RangeError(`${name} must be a positive integer no greater than ${max} milliseconds.`);
+  }
+}
+
+function rpcFailure(): never {
+  // Do not include the identifier, hashed key, or service credential in logs.
+  console.error("Shared API security-state RPC failed.");
+  throw new SharedSecurityStateUnavailableError();
+}
+
+/**
+ * Atomically consume one hit from a fixed-window limit shared by all instances.
+ * `identifier` should include the intended dimensions (for example user + IP).
+ */
+export async function checkRateLimit(
+  identifier: string,
+  limit = 60,
+  windowMs = 60_000
+): Promise<RateLimitResult> {
+  validateKey(identifier);
+  if (!Number.isInteger(limit) || limit < 1 || limit > 100_000) {
+    throw new RangeError("limit must be an integer between 1 and 100000.");
+  }
+  validateDuration(windowMs, "windowMs");
+
+  const { client, secret } = requireSharedStore();
+  const keyHash = hashKey(secret, "rate-limit", identifier);
+
+  try {
+    const { data, error } = await client.rpc("consume_shared_rate_limit", {
+      p_key_hash: keyHash,
+      p_limit: limit,
+      p_window_ms: windowMs,
+    });
+    if (error) rpcFailure();
+
+    const row = Array.isArray(data) ? data[0] : data;
+    const resetAt = Date.parse(String(row?.reset_at || ""));
+    if (
+      !row ||
+      typeof row.allowed !== "boolean" ||
+      !Number.isFinite(resetAt)
+    ) {
+      rpcFailure();
+    }
+
+    return {
+      success: row.allowed,
+      limit,
+      remaining: Math.max(0, Number(row.remaining) || 0),
+      reset: Math.ceil(resetAt / 1000),
+    };
+  } catch (error) {
+    if (error instanceof SharedSecurityStateUnavailableError) throw error;
+    rpcFailure();
+  }
+}
+
+/**
+ * Atomically reserve an idempotency key before a side effect begins. A cached
+ * result is returned to later callers; concurrent callers get `in_progress`.
+ */
+export async function claimIdempotencyKey<T = unknown>(
+  key: string,
+  maxAgeMs = 60_000,
+  leaseMs = Math.max(maxAgeMs, 120_000)
+): Promise<IdempotencyClaim<T>> {
+  validateKey(key);
+  validateDuration(maxAgeMs, "maxAgeMs");
+  validateDuration(leaseMs, "leaseMs");
+
+  const { client, secret } = requireSharedStore();
+  const keyHash = hashKey(secret, "idempotency", key);
+  const ownerToken = randomUUID();
+
+  try {
+    const { data, error } = await client.rpc("claim_shared_idempotency_key", {
+      p_key_hash: keyHash,
+      p_owner_token: ownerToken,
+      p_cache_ttl_ms: maxAgeMs,
+      p_lease_ttl_ms: leaseMs,
+    });
+    if (error) rpcFailure();
+
+    const result = Array.isArray(data) ? data[0] : data;
+    if (result?.status === "acquired") {
+      return { status: "acquired", ownerToken };
+    }
+    if (result?.status === "cached") {
+      return { status: "cached", response: result.response as T };
+    }
+    if (result?.status === "in_progress") {
+      return { status: "in_progress" };
+    }
+    rpcFailure();
+  } catch (error) {
+    if (error instanceof SharedSecurityStateUnavailableError) throw error;
+    rpcFailure();
+  }
+}
+
+/** Store a completed response only if this request still owns the claim. */
+export async function completeIdempotencyKey<T>(
+  key: string,
+  ownerToken: string,
+  response: T,
+  maxAgeMs = 60_000
+): Promise<void> {
+  validateKey(key);
+  validateDuration(maxAgeMs, "maxAgeMs");
+  if (!ownerToken) throw new TypeError("An idempotency owner token is required.");
+
+  const { client, secret } = requireSharedStore();
+  const keyHash = hashKey(secret, "idempotency", key);
+
+  try {
+    const { data, error } = await client.rpc("complete_shared_idempotency_key", {
+      p_key_hash: keyHash,
+      p_owner_token: ownerToken,
+      p_response: response,
+      p_cache_ttl_ms: maxAgeMs,
+    });
+    if (error || data !== true) rpcFailure();
+  } catch (error) {
+    if (error instanceof SharedSecurityStateUnavailableError) throw error;
+    rpcFailure();
+  }
+}
+
+/** Release a claim when the request is known to have made no side effect. */
+export async function releaseIdempotencyKey(
+  key: string,
+  ownerToken: string
+): Promise<void> {
+  validateKey(key);
+  if (!ownerToken) throw new TypeError("An idempotency owner token is required.");
+
+  const { client, secret } = requireSharedStore();
+  const keyHash = hashKey(secret, "idempotency", key);
+
+  try {
+    const { error } = await client.rpc("release_shared_idempotency_key", {
+      p_key_hash: keyHash,
+      p_owner_token: ownerToken,
+    });
+    if (error) rpcFailure();
+  } catch (error) {
+    if (error instanceof SharedSecurityStateUnavailableError) throw error;
+    rpcFailure();
+  }
 }

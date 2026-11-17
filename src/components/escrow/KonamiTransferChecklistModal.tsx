@@ -308,7 +308,7 @@ export function EscrowHandoverGuideCard({ onOpenGuide }: { onOpenGuide: () => vo
             STRICT SECURITY RULE: Never accept an account linked to Google Play (&quot;Googling&quot;)
           </span>
           <p className="text-[11px] text-sx-red-text/90 leading-relaxed">
-            Google Play links can never be transferred and allow the seller to reclaim the account at any time via Google login. When you log in, check <em>Support &rarr; Link Data</em>. If Google Play is linked, <strong>STOP IMMEDIATELY</strong> and dispute the order for a full refund.
+            Google Play links can never be transferred and allow the seller to reclaim the account at any time via Google login. When you log in, check <em>Support &rarr; Link Data</em>. If Google Play is linked, <strong>STOP IMMEDIATELY</strong> and open a dispute for evidence review; a full refund may be approved under the policy and approved M-Pesa refunds are arranged manually.
           </p>
         </div>
       </div>

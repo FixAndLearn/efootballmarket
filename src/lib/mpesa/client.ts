@@ -3,11 +3,16 @@ import {
   AnyCallbackBody,
   B2CPayoutParams,
   B2CPayoutResponse,
+  MpesaProvider,
   ParsedMpesaCallback,
   StkCallbackBody,
   StkPushParams,
   StkPushResponse,
 } from "./types";
+import {
+  normalizeMpesaReceiptNumber,
+  normalizePositiveAmount,
+} from "./settlement";
 
 class MpesaService {
   private consumerKey: string;
@@ -53,6 +58,46 @@ class MpesaService {
     return Boolean(this.unifiedPayKey && this.unifiedPaySecret);
   }
 
+  public getCallbackProvider(body: any): MpesaProvider | null {
+    if (body?.Body?.stkCallback) return "safaricom";
+    if (
+      body &&
+      typeof body === "object" &&
+      (body.event ||
+        body.TransactionStatus ||
+        body.TransactionCode !== undefined ||
+        body.transaction_request_id)
+    ) {
+      return "unifiedpay";
+    }
+    return null;
+  }
+
+  private hasDarajaCredentials(): boolean {
+    return Boolean(
+      this.consumerKey &&
+        this.consumerKey !== "dummy_consumer_key" &&
+        this.consumerSecret &&
+        this.passkey &&
+        this.shortCode
+    );
+  }
+
+  /** Daraja does not sign STK callbacks; a per-callback URL token authenticates its metadata. */
+  public hasProtectedDarajaCallbackUrl(): boolean {
+    const secret = process.env.MPESA_WEBHOOK_SECRET?.trim();
+    if (!secret || !this.callbackUrl) return false;
+
+    try {
+      const callbackUrl = new URL(this.callbackUrl);
+      const callbackSecret =
+        callbackUrl.searchParams.get("secret") || callbackUrl.searchParams.get("token");
+      return Boolean(callbackSecret && callbackSecret === secret);
+    } catch {
+      return false;
+    }
+  }
+
   /**
    * Normalizes Kenyan phone numbers to the 254XXXXXXXXX format required by Safaricom.
    */
@@ -77,6 +122,10 @@ class MpesaService {
    * Obtains an OAuth Access Token from Safaricom with caching.
    */
   public async getAccessToken(): Promise<string> {
+    if (!this.consumerKey || !this.consumerSecret) {
+      throw new Error("M-Pesa API credentials are not configured.");
+    }
+
     const now = Date.now();
     if (this.cachedToken && this.tokenExpiresAt > now + 60000) {
       return this.cachedToken;
@@ -97,8 +146,7 @@ class MpesaService {
     );
 
     if (!response.ok) {
-      const errText = await response.text();
-      throw new Error(`Failed to fetch M-Pesa access token: ${errText}`);
+      throw new Error(`Failed to fetch M-Pesa access token (HTTP ${response.status}).`);
     }
 
     const data = await response.json();
@@ -129,7 +177,10 @@ class MpesaService {
   /**
    * Initiates STK Push (via UnifiedPay or Safaricom Daraja) to customer's handset.
    */
-  public async initiateStkPush(params: StkPushParams): Promise<StkPushResponse> {
+  public async initiateStkPush(
+    params: StkPushParams,
+    onRequestStart?: () => void
+  ): Promise<StkPushResponse> {
     const phone = this.normalizePhoneNumber(params.phoneNumber);
 
     // 1. If configured with UnifiedPay (Till 1572931)
@@ -138,6 +189,7 @@ class MpesaService {
         this.unifiedPayKey
       )}/${encodeURIComponent(this.unifiedPaySecret)}/sendstk`;
 
+      onRequestStart?.();
       const response = await fetch(url, {
         method: "POST",
         headers: {
@@ -153,11 +205,7 @@ class MpesaService {
       const data = await response.json();
 
       if (!response.ok || (data.ResponseCode && data.ResponseCode !== "0")) {
-        const errorMsg =
-          data.errorMessage ||
-          data.message ||
-          `UnifiedPay STK Push failed (HTTP ${response.status})`;
-        throw new Error(errorMsg);
+        throw new Error(`UnifiedPay STK Push failed (HTTP ${response.status}).`);
       }
 
       const unifiedTransId = data.transaction_request_id || "";
@@ -175,10 +223,14 @@ class MpesaService {
       };
     }
 
-    // 2. Fallback to Safaricom Daraja API
-    if (!this.consumerKey || this.consumerKey === "dummy_consumer_key" || !this.passkey) {
+    // 2. Fallback to Safaricom Daraja API. Do not initiate a payment unless
+    // callbacks can be authenticated and provider status can be queried.
+    if (!this.hasDarajaCredentials()) {
+      throw new Error("Safaricom Daraja payment credentials are not configured.");
+    }
+    if (!this.hasProtectedDarajaCallbackUrl()) {
       throw new Error(
-        "M-Pesa payment credentials are not configured on this server. Please add UNIFIEDPAY_CONSUMER_KEY and UNIFIEDPAY_CONSUMER_SECRET to your hosting environment variables (e.g., Vercel)."
+        "Safaricom callback verification is not configured. Set MPESA_WEBHOOK_SECRET and include the same value as the callback URL's secret query parameter."
       );
     }
 
@@ -199,6 +251,7 @@ class MpesaService {
       TransactionDesc: params.description || `Order ${params.orderNumber}`,
     };
 
+    onRequestStart?.();
     const response = await fetch(
       `${this.baseUrl}/mpesa/stkpush/v1/processrequest`,
       {
@@ -212,15 +265,16 @@ class MpesaService {
     );
 
     if (!response.ok) {
-      const err = await response.text();
-      throw new Error(`M-Pesa STK Push error: ${err}`);
+      throw new Error(`M-Pesa STK Push failed (HTTP ${response.status}).`);
     }
 
     return await response.json();
   }
 
   /**
-   * Queries UnifiedPay for real-time transaction status.
+   * Queries UnifiedPay for real-time transaction status. A successful result is
+   * returned only when the provider echoes this transaction ID and supplies a
+   * real receipt and positive amount; an HTTP/API acknowledgement is not proof.
    */
   public async checkUnifiedPayStatus(
     transactionId: string
@@ -240,34 +294,66 @@ class MpesaService {
         body: JSON.stringify({
           transaction_request_id: transactionId,
         }),
-        signal: AbortSignal.timeout(3500),
+        signal: AbortSignal.timeout(5000),
       });
 
       if (!response.ok) return null;
 
       const data = await response.json();
-      if (data.ResultCode === 404 || data.errorMessage === "Transaction not found") {
-        return null;
-      }
+      if (!data || typeof data !== "object") return null;
 
-      const statusStr = String(data.TransactionStatus || data.status || "").toLowerCase();
-      const receipt =
+      const reportedTransactionId = String(data.transaction_request_id || "").trim();
+      const reportedCheckoutId = String(data.CheckoutRequestID || "").trim();
+      const reportedMerchantId = String(data.MerchantRequestID || "").trim();
+      const returnedIds = [
+        reportedTransactionId,
+        reportedCheckoutId,
+        reportedMerchantId,
+      ].filter(Boolean);
+
+      // Never accept a status response that cannot be tied to the requested transaction.
+      if (!returnedIds.includes(transactionId)) return null;
+
+      const statusStr = String(data.TransactionStatus || data.status || "")
+        .trim()
+        .toLowerCase();
+      const transactionCode = String(data.TransactionCode ?? "").trim();
+      const resultCodeValue = data.ResultCode ?? data.resultCode;
+      const hasResultCode =
+        resultCodeValue !== undefined &&
+        resultCodeValue !== null &&
+        String(resultCodeValue).trim() !== "";
+      const resultCode = hasResultCode ? String(resultCodeValue).trim() : "";
+      const receipt = normalizeMpesaReceiptNumber(
         data.TransactionReceipt ||
-        data.mpesa_receipt_number ||
-        data.receiptNumber ||
-        data.ReceiptNumber ||
-        undefined;
-
-      const isSuccess =
+          data.mpesa_receipt_number ||
+          data.receiptNumber ||
+          data.ReceiptNumber
+      );
+      const amount = normalizePositiveAmount(
+        data.TransactionAmount ?? data.amount ?? data.Amount
+      );
+      const statusIndicatesSuccess =
         statusStr === "completed" ||
         statusStr === "success" ||
         statusStr === "successful" ||
-        statusStr === "paid" ||
-        data.TransactionCode === "0" ||
-        data.TransactionCode === 0 ||
-        data.ResponseCode === "0" ||
-        data.ResponseCode === 0 ||
-        Boolean(receipt && String(receipt).trim().length >= 8);
+        statusStr === "paid";
+      const statusIndicatesFailure =
+        statusStr === "failed" ||
+        statusStr === "cancelled" ||
+        statusStr === "rejected" ||
+        statusStr.includes("cancel") ||
+        statusStr.includes("fail");
+      const hasSuccessEvidence =
+        statusIndicatesSuccess || (!statusStr && transactionCode === "0");
+      const isSuccess = Boolean(
+        hasSuccessEvidence &&
+          !statusIndicatesFailure &&
+          (!transactionCode || transactionCode === "0") &&
+          (!hasResultCode || resultCode === "0") &&
+          receipt &&
+          amount !== null
+      );
 
       const isFailed =
         !isSuccess &&
@@ -277,35 +363,87 @@ class MpesaService {
           statusStr === "rejected" ||
           statusStr.includes("cancel") ||
           statusStr.includes("fail") ||
-          data.TransactionCode === "1032" ||
-          data.TransactionCode === 1032 ||
-          data.TransactionCode === "1037" ||
-          data.TransactionCode === 1037);
+          transactionCode === "1032" ||
+          transactionCode === "1037" ||
+          String(data.ResultCode ?? "") === "1032" ||
+          String(data.ResultCode ?? "") === "1037");
 
       const isPending = !isSuccess && !isFailed;
-
       return {
-        merchantRequestId:
-          data.MerchantRequestID || data.transaction_request_id || transactionId,
-        checkoutRequestId:
-          data.CheckoutRequestID || data.transaction_request_id || transactionId,
+        merchantRequestId: reportedMerchantId,
+        checkoutRequestId: reportedCheckoutId || reportedTransactionId,
         resultCode: isSuccess ? 0 : isFailed ? 1037 : 100,
         resultDesc:
-          data.ResultDesc ||
-          data.message ||
+          String(data.ResultDesc || data.message || "") ||
           (isSuccess
             ? "Transaction completed successfully"
             : isPending
             ? "Transaction pending"
-            : data.TransactionStatus || "Transaction failed"),
-        receiptNumber: receipt,
-        amount: data.TransactionAmount ? Number(data.TransactionAmount) : undefined,
+            : String(data.TransactionStatus || "Transaction failed")),
+        receiptNumber: receipt || undefined,
+        amount: amount === null ? undefined : amount,
         phoneNumber: data.Msisdn || data.phoneNumber,
         transactionDate: data.TransactionDate,
         isSuccess,
       };
-    } catch (err) {
-      console.error("UnifiedPay status check error:", err);
+    } catch {
+      // Do not log request URLs or provider credentials on status-query failures.
+      return null;
+    }
+  }
+
+  /**
+   * Queries Safaricom's STK Push Query endpoint. Daraja's query response confirms
+   * settlement status and checkout identity; amount/receipt must still be
+   * present in the authenticated callback and match our ledger.
+   */
+  public async checkSafaricomStkStatus(
+    checkoutRequestId: string
+  ): Promise<ParsedMpesaCallback | null> {
+    if (!this.hasDarajaCredentials() || !checkoutRequestId) return null;
+
+    try {
+      const token = await this.getAccessToken();
+      const { password, timestamp } = this.generatePasswordAndTimestamp();
+      const response = await fetch(
+        `${this.baseUrl}/mpesa/stkpushquery/v1/query`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            BusinessShortCode: this.shortCode,
+            Password: password,
+            Timestamp: timestamp,
+            CheckoutRequestID: checkoutRequestId,
+          }),
+          signal: AbortSignal.timeout(5000),
+        }
+      );
+
+      if (!response.ok) return null;
+      const data = await response.json();
+      if (!data || typeof data !== "object") return null;
+
+      const returnedCheckoutId = String(data.CheckoutRequestID || "").trim();
+      if (returnedCheckoutId !== checkoutRequestId) return null;
+
+      const resultCode = Number(data.ResultCode);
+      const isSuccess =
+        String(data.ResponseCode ?? "") === "0" &&
+        String(data.ResultCode ?? "") === "0";
+
+      return {
+        merchantRequestId: String(data.MerchantRequestID || ""),
+        checkoutRequestId: returnedCheckoutId,
+        resultCode: Number.isFinite(resultCode) ? resultCode : 1,
+        resultDesc: String(data.ResultDesc || data.ResponseDescription || ""),
+        isSuccess,
+      };
+    } catch {
+      // Do not log request URLs, response bodies, or provider credentials.
       return null;
     }
   }
@@ -314,15 +452,19 @@ class MpesaService {
    * Verifies HMAC SHA-256 signature from UnifiedPay webhooks.
    */
   public verifyUnifiedPaySignature(rawBody: string, signature?: string | null): boolean {
-    if (!this.unifiedPaySecret || !signature) return true;
+    const signingSecret = process.env.UNIFIEDPAY_WEBHOOK_SECRET?.trim();
+    if (!signingSecret || !signature || !rawBody) return false;
+
     try {
-      const expected =
-        "sha256=" +
-        crypto
-          .createHmac("sha256", this.unifiedPaySecret)
-          .update(rawBody)
-          .digest("hex");
-      return crypto.timingSafeEqual(Buffer.from(signature), Buffer.from(expected));
+      const suppliedHex = signature.trim().replace(/^sha256=/i, "");
+      if (!/^[a-f0-9]{64}$/i.test(suppliedHex)) return false;
+
+      const expected = crypto
+        .createHmac("sha256", signingSecret)
+        .update(rawBody, "utf8")
+        .digest();
+      const supplied = Buffer.from(suppliedHex, "hex");
+      return supplied.length === expected.length && crypto.timingSafeEqual(supplied, expected);
     } catch {
       return false;
     }
@@ -332,34 +474,59 @@ class MpesaService {
    * Parses and validates raw webhook callbacks received from UnifiedPay or Safaricom STK Push.
    */
   public parseCallback(body: AnyCallbackBody | any): ParsedMpesaCallback {
-    // Check if UnifiedPay webhook format
-    if (body.event || body.TransactionStatus || (body.transaction_request_id && !body.Body)) {
-      const statusStr = String(body.TransactionStatus || "").toLowerCase();
+    const payload = body && typeof body === "object" ? body : {};
+
+    if (this.getCallbackProvider(payload) === "unifiedpay") {
+      const statusStr = String(payload.TransactionStatus || "").trim().toLowerCase();
+      const transactionCode = String(payload.TransactionCode ?? "").trim();
+      const callbackResultCode = payload.ResultCode ?? payload.resultCode;
+      const hasCallbackResultCode =
+        callbackResultCode !== undefined &&
+        callbackResultCode !== null &&
+        String(callbackResultCode).trim() !== "";
+      const isExplicitFailure =
+        ["failed", "cancelled", "rejected"].includes(statusStr) ||
+        statusStr.includes("cancel") ||
+        statusStr.includes("fail") ||
+        (transactionCode !== "" && transactionCode !== "0") ||
+        (hasCallbackResultCode && String(callbackResultCode).trim() !== "0");
       const isSuccess =
-        body.event === "transaction.completed" ||
-        statusStr === "completed" ||
-        body.TransactionCode === "0" ||
-        body.TransactionCode === 0;
+        !isExplicitFailure &&
+        (payload.event === "transaction.completed" ||
+          statusStr === "completed" ||
+          statusStr === "success" ||
+          statusStr === "successful" ||
+          statusStr === "paid" ||
+          transactionCode === "0");
+      const amount = normalizePositiveAmount(
+        payload.TransactionAmount ?? payload.amount ?? payload.Amount
+      );
 
       return {
-        merchantRequestId:
-          body.MerchantRequestID || body.transaction_request_id || "",
-        checkoutRequestId:
-          body.CheckoutRequestID || body.transaction_request_id || "",
-        resultCode: isSuccess ? 0 : 1,
-        resultDesc:
-          body.ResultDesc || (isSuccess ? "Completed" : "Transaction failed"),
-        receiptNumber: body.TransactionReceipt,
-        amount: body.TransactionAmount ? Number(body.TransactionAmount) : undefined,
-        phoneNumber: body.Msisdn,
-        transactionDate: body.TransactionDate,
+        merchantRequestId: String(
+          payload.MerchantRequestID || payload.transaction_request_id || ""
+        ),
+        checkoutRequestId: String(
+          payload.CheckoutRequestID || payload.transaction_request_id || ""
+        ),
+        resultCode: isSuccess ? 0 : Number(payload.TransactionCode ?? 1),
+        resultDesc: String(
+          payload.ResultDesc || (isSuccess ? "Completed" : "Transaction failed")
+        ),
+        receiptNumber:
+          payload.TransactionReceipt ||
+          payload.mpesa_receipt_number ||
+          payload.receiptNumber ||
+          undefined,
+        amount: amount === null ? undefined : amount,
+        phoneNumber: payload.Msisdn || payload.phoneNumber,
+        transactionDate: payload.TransactionDate,
         isSuccess,
       };
     }
 
-    // Safaricom Daraja format
-    const callback = body?.Body?.stkCallback;
-    if (!callback) {
+    const callback = payload?.Body?.stkCallback;
+    if (!callback || typeof callback !== "object") {
       return {
         merchantRequestId: "",
         checkoutRequestId: "",
@@ -369,31 +536,37 @@ class MpesaService {
       };
     }
 
-    const isSuccess = callback.ResultCode === 0;
+    const hasResultCode =
+      callback.ResultCode !== undefined &&
+      callback.ResultCode !== null &&
+      String(callback.ResultCode).trim() !== "";
+    const resultCode = hasResultCode ? Number(callback.ResultCode) : NaN;
+    const isSuccess = hasResultCode && Number.isFinite(resultCode) && resultCode === 0;
     let receiptNumber: string | undefined;
     let amount: number | undefined;
     let phoneNumber: string | undefined;
     let transactionDate: string | undefined;
 
-    if (isSuccess && callback.CallbackMetadata?.Item) {
+    if (isSuccess && Array.isArray(callback.CallbackMetadata?.Item)) {
       for (const item of callback.CallbackMetadata.Item) {
-        if (item.Name === "MpesaReceiptNumber") {
+        if (item?.Name === "MpesaReceiptNumber" && item.Value !== undefined) {
           receiptNumber = String(item.Value);
-        } else if (item.Name === "Amount") {
-          amount = Number(item.Value);
-        } else if (item.Name === "PhoneNumber") {
+        } else if (item?.Name === "Amount" && item.Value !== undefined) {
+          const parsedAmount = normalizePositiveAmount(item.Value);
+          amount = parsedAmount === null ? undefined : parsedAmount;
+        } else if (item?.Name === "PhoneNumber" && item.Value !== undefined) {
           phoneNumber = String(item.Value);
-        } else if (item.Name === "TransactionDate") {
+        } else if (item?.Name === "TransactionDate" && item.Value !== undefined) {
           transactionDate = String(item.Value);
         }
       }
     }
 
     return {
-      merchantRequestId: callback.MerchantRequestID,
-      checkoutRequestId: callback.CheckoutRequestID,
-      resultCode: callback.ResultCode,
-      resultDesc: callback.ResultDesc,
+      merchantRequestId: String(callback.MerchantRequestID || ""),
+      checkoutRequestId: String(callback.CheckoutRequestID || ""),
+      resultCode: Number.isFinite(resultCode) ? resultCode : 1,
+      resultDesc: String(callback.ResultDesc || ""),
       receiptNumber,
       amount,
       phoneNumber,
@@ -438,8 +611,7 @@ class MpesaService {
     );
 
     if (!response.ok) {
-      const err = await response.text();
-      throw new Error(`M-Pesa B2C Payout error: ${err}`);
+      throw new Error(`M-Pesa B2C payout failed (HTTP ${response.status}).`);
     }
 
     return await response.json();

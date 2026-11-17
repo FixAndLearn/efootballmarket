@@ -23,7 +23,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const rate = checkRateLimit(`tourney_brackets:${user.id}:${ip}`, 12, 60000);
+    const rate = await checkRateLimit(`tourney_brackets:${user.id}:${ip}`, 12, 60000);
     if (!rate.success) {
       return NextResponse.json(
         { error: "Too many bracket requests. Please wait 1 minute." },

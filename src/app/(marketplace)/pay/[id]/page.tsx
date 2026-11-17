@@ -5,6 +5,7 @@ import { DirectCheckoutForm } from "@/components/marketplace/DirectCheckoutForm"
 import { formatSmartListingTitle } from "@/lib/utils";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
+import { SELF_PROFILE_SELECT } from "@/lib/security/publicSanitizer";
 
 export const revalidate = 0;
 
@@ -42,7 +43,7 @@ export default async function DirectPayPage({ params }: DirectPayPageProps) {
 
   let profile = null;
   if (user) {
-    const { data } = await supabase.from("profiles").select("*").eq("id", user.id).single();
+    const { data } = await supabase.from("profiles").select(SELF_PROFILE_SELECT).eq("id", user.id).single();
     profile = data;
   }
 

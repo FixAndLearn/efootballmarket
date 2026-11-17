@@ -437,7 +437,7 @@ function RegisterForm() {
           Create Your Account
         </h1>
         <p className="text-xs text-sx-muted">
-          Trade verified Konami eFootball squads with Safaricom M-Pesa Escrow (Till 1572931).
+          Browse and list seller-provided Konami eFootball squads. Account contents are not pre-audited; buyer protection applies only to eligible published-listing orders paid through marketplace checkout.
         </p>
       </div>
 
@@ -450,7 +450,7 @@ function RegisterForm() {
 
       {refParam && (
         <div className="p-3 rounded-xl bg-sx-green-tint border border-sx-green-border text-xs text-sx-green-text">
-          Invited by verified trader <strong className="font-bold">@{refParam}</strong>
+          Invited by <strong className="font-bold">@{refParam}</strong>
         </div>
       )}
 

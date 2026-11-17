@@ -5,6 +5,7 @@ import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import { useAuth } from "@/hooks/useAuth";
 import { isSuperAdminEmail } from "@/lib/security/adminAuth";
+import { getPublicStorefrontPath } from "@/lib/security/publicSanitizer";
 import { Logo } from "@/components/brand/Logo";
 import { NotificationBell } from "@/components/layout/NotificationBell";
 import { ThemeToggle } from "@/components/layout/ThemeToggle";
@@ -32,8 +33,6 @@ const CATEGORY_STRIP = [
   { name: "iOS", href: "/browse?platform=ios", matchParam: ["platform", "ios"] },
   { name: "PS5 & PC", href: "/browse?platform=playstation_5", matchParam: ["platform", "playstation_5"] },
   { name: "Blog & Guides", href: "/news", matchParam: null },
-  { name: "Friday Drops", href: "/friday-drops", matchParam: null },
-  { name: "Middleman", href: "/middleman", matchParam: null },
   { name: "Tournaments", href: "/tournaments", matchParam: null },
   { name: "Scammer Check", href: "/scammer-check", matchParam: null },
 ] as const;
@@ -258,11 +257,12 @@ export function Header() {
                             </Link>
 
                             <Link
-                              href={`/u/${encodeURIComponent(
+                              href={getPublicStorefrontPath(
+                                profile?.id || user.id,
                                 profile?.username ||
                                   user.user_metadata?.username ||
                                   user.id
-                              )}`}
+                              )}
                               onClick={() => setProfileDropdownOpen(false)}
                               className="flex items-center gap-2.5 px-4 py-2 text-xs font-medium text-sx-ink hover:bg-sx-stone"
                             >
@@ -441,11 +441,9 @@ export function Header() {
               { name: "Browse Market", href: "/browse", newTab: false },
               { name: "Sell Your Squad", href: "/seller/create-listing", newTab: false },
               { name: "Blog & Guides", href: "/news", newTab: false },
-              { name: "Middleman Escrow", href: "/middleman", newTab: false },
               { name: "Scammer Check", href: "/scammer-check", newTab: false },
               { name: "1v1 Tournaments", href: "/tournaments", newTab: false },
               { name: "Buyer Wanted Board", href: "/wanted", newTab: false },
-              { name: "Friday Drops", href: "/friday-drops", newTab: false },
               { name: "Compare Squads", href: "/compare", newTab: false },
               { name: "How Escrow Works ↗", href: "/escrow-guarantee", newTab: true },
             ].map((link) => (

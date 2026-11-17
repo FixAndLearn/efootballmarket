@@ -100,7 +100,7 @@ export function BuyNowButton({ listingId, priceFormatted, compact = false }: Buy
             <span>Guest Buyer Tip</span>
           </div>
           <p className="text-[11px] text-sx-ink-soft leading-relaxed">
-            Sign in or create a free account to lock your M-Pesa payment via Till&nbsp;1572931 and receive encrypted login credentials in your Order Room.
+            Sign in or create a free account to pay through marketplace checkout for this published listing. Buyer protection applies after checkout payment is confirmed; credentials are delivered in your Order Room.
           </p>
           <div className="flex items-center gap-2 pt-0.5">
             <Link
@@ -121,7 +121,7 @@ export function BuyNowButton({ listingId, priceFormatted, compact = false }: Buy
 
       <p className="text-[11px] text-sx-muted text-center flex items-center justify-center gap-1.5 pt-0.5">
         <ShieldCheck className="w-3.5 h-3.5 text-sx-green-text" />
-        Protected by eFootballMarket Escrow Guarantee
+        Buyer protection applies through marketplace checkout
       </p>
     </div>
   );

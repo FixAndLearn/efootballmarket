@@ -7,7 +7,7 @@ import { DetailTabLink } from "@/components/ui/DetailTabLink";
 export const metadata: Metadata = {
   title: "How Payment Protection & Fees Work",
   description:
-    "Standalone Payment Protection & Fee Schedule for eFootballMarket Kenya: M-Pesa Buy Goods Till 1572931 custody, 12h delivery, 24h buyer inspection, and complete fee table.",
+    "Payment protection and fee rules for orders created from published listings and paid through eFootballMarket checkout, including M-Pesa custody, delivery, and inspection timelines.",
   alternates: { canonical: "https://www.efootballmarket.co.ke/escrow-guarantee" },
 };
 
@@ -16,7 +16,7 @@ export default function EscrowGuaranteePage() {
     <StandaloneDocLayout
       badge="Payment Protection & Fees"
       title="How Payment Protection & Fees Work"
-      subtitle="Clear breakdown of who holds your M-Pesa payment on Buy Goods Till 1572931, what runs automatically vs what our Nairobi desk reviews, and every fee across Marketplace, Middleman, Swaps, and Tournaments."
+      subtitle="Clear breakdown of how marketplace checkout payments are held on Buy Goods Till 1572931, what runs automatically vs what our Nairobi desk reviews, and the published marketplace and tournament fees."
       keyFacts={[
         { value: "Till 1572931", label: "Official M-Pesa Hold" },
         { value: "KES 0", label: "Extra Buyer Fee" },
@@ -37,8 +37,8 @@ export default function EscrowGuaranteePage() {
             <strong>Payment Account (Till 1572931):</strong> Buyers pay via Safaricom Lipa Na M-Pesa into <strong>Buy Goods Till 1572931</strong>, the business till of <strong>eFootballMarket Kenya</strong> (operated in Nairobi by Brian Okibo).
           </li>
           <li>
-            <strong>Safaricom PLC vs eFootballMarket Kenya:</strong> Safaricom is the licensed payment processor transferring your KES payment to Till 1572931; Safaricom does not manage orders or arbitrate disputes. eFootballMarket holds received funds in its platform settlement account while your order is open and sends seller payout or buyer refund under our{" "}
-            <DetailTabLink href="/dispute-policy">Refund &amp; Dispute Policy</DetailTabLink>.
+            <strong>Safaricom PLC vs eFootballMarket Kenya:</strong> Safaricom is the licensed payment processor transferring your KES payment to Till 1572931; Safaricom does not manage orders or arbitrate disputes. eFootballMarket holds received funds in its platform settlement account while your order is open. Seller proceeds are credited to an account balance on release; refund requests are reviewed under our{" "}
+            <DetailTabLink href="/dispute-policy">Refund &amp; Dispute Policy</DetailTabLink>. Approved M-Pesa refunds are arranged manually, and this page does not confirm that funds have been sent.
           </li>
         </ul>
       </section>
@@ -63,7 +63,7 @@ export default function EscrowGuaranteePage() {
             },
             {
               stage: "Stage 4 · Release or Dispute",
-              detail: "Tap Confirm & Release to pay the seller (within 1–12h, 8 AM – 10 PM EAT), or tap Open Dispute within 24h to freeze funds for review.",
+              detail: "Tap Confirm & Release to credit the seller’s available balance, or tap Open Dispute within 24h to pause release for review. The seller must request an M-Pesa withdrawal; requests are reviewed and processed manually, and timing varies.",
             },
           ].map((s) => (
             <div key={s.stage} className="p-4 rounded-xl bg-sx-subtle border border-sx-border space-y-1">
@@ -93,26 +93,26 @@ export default function EscrowGuaranteePage() {
                 <td className="p-3.5 font-semibold text-sx-ink">Marketplace Squads</td>
                 <td className="p-3.5">Listed price (<strong>KES 0</strong> extra fee)</td>
                 <td className="p-3.5"><strong>5%</strong> from seller payout (min <strong>KES 50</strong>, max <strong>KES 500</strong>)</td>
-                <td className="p-3.5">100% refund if undelivered in 12h or dispute upheld</td>
-              </tr>
-              <tr>
-                <td className="p-3.5 font-semibold text-sx-ink">Middleman &amp; Swaps</td>
-                <td className="p-3.5">Agreed amount (<strong>KES 0</strong> extra fee)</td>
-                <td className="p-3.5"><strong>5%</strong> from seller payout (min <strong>KES 50</strong>, max <strong>KES 500</strong>)</td>
-                <td className="p-3.5">100% refund if cancelled pre-delivery or dispute upheld</td>
+                <td className="p-3.5">A full refund may be approved after review for non-delivery or an upheld dispute; approved M-Pesa refunds are arranged manually</td>
               </tr>
               <tr>
                 <td className="p-3.5 font-semibold text-sx-ink">Tournaments &amp; 1v1s</td>
                 <td className="p-3.5">Posted entry (Free: <strong>KES 0</strong>)</td>
                 <td className="p-3.5">
-                  Pot fee: Free = <strong>KES 0</strong>; &le;100 = <strong>15%</strong>; &le;250 = <strong>KES 20</strong>; &le;500 = <strong>KES 35</strong>; &le;1,000 = <strong>KES 60</strong>; &gt;1,000 = <strong>5%</strong>
+                  On the total pot: Free = <strong>KES 0</strong>; &le;100 = <strong>15% rounded to whole shillings (min KES 10, max KES 15; capped at the pot)</strong>; &gt;100–250 = <strong>KES 20</strong>; &gt;250–500 = <strong>KES 35</strong>; &gt;500–1,000 = <strong>KES 60</strong>; &gt;1,000 = <strong>5%, rounded to whole shillings (min KES 60)</strong>
                 </td>
-                <td className="p-3.5">100% entry refund if cancelled before bracket start</td>
+                <td className="p-3.5">No automatic cancellation refund; contact support for manual review</td>
               </tr>
             </tbody>
           </table>
         </div>
         <p className="text-xs text-sx-muted pt-1">
+          Tournament fees are calculated on the total entry pot (entry fee multiplied by the tournament&apos;s slot count). The displayed prize is projected until all slots are filled and entries are confirmed; brackets cannot be formed sooner. Tournament prizes are arranged manually after the final result, and the result page is not a payout receipt. Cancelling a tournament does not issue an automatic refund; contact support for review.
+        </p>
+        <p className="text-xs text-sx-muted">
+          Buyer protection applies only to orders created from published marketplace listings and paid through eFootballMarket checkout. Deals arranged and paid directly through WhatsApp, Facebook, or another external service are not covered.
+        </p>
+        <p className="text-xs text-sx-muted">
           <strong>Publisher Notice:</strong> Konami&apos;s Terms of Use restrict account transfers and Konami can modify game features or restrict accounts under its own policies. eFootballMarket holds M-Pesa payment during your 24-hour Clean ID check, after which account care rests with you.
         </p>
       </section>

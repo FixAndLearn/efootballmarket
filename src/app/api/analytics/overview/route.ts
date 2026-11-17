@@ -7,7 +7,7 @@ import { NextRequest, NextResponse } from "next/server";
 export async function GET(req: NextRequest) {
   try {
     const ip = getClientIp(req);
-    const rate = checkRateLimit(`analytics_overview:${ip}`, 30, 60000);
+    const rate = await checkRateLimit(`analytics_overview:${ip}`, 30, 60000);
     if (!rate.success) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }

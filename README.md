@@ -26,3 +26,11 @@ npm install
 npm run typecheck
 npm run dev
 ```
+
+### M-Pesa callback verification
+
+Successful callbacks are never trusted on payload contents alone. UnifiedPay settlement checks require its status API to return the requested transaction ID, a valid receipt, and the exact ledger amount. For direct Daraja, the STK Query confirms success and checkout identity; receipt and amount are accepted only from the callback after its `secret` (or `token`) matches `MPESA_WEBHOOK_SECRET` and the values match the payment/order ledger. This composite evidence is recorded as `authenticated_callback_and_status_query`; it is not represented as if STK Query returned the receipt or amount. The direct Daraja STK Push route refuses to initiate if callback URL protection is not configured. Use a high-entropy URL-safe secret, do not log callback request URLs, and keep provider credentials out of application logs. Test forged, replayed, underpaid, duplicate, and genuine callbacks in staging before production rollout.
+
+### Shared server-side state
+
+API rate limits, payment/withdrawal idempotency claims, tournament fallback snapshots, and secure money-action RPCs use Supabase so they remain consistent across Vercel function instances. Migrations `supabase/migrations/20261114184511_shared_runtime_state.sql` and `supabase/migrations/20261114184512_secure_money_action_rpcs.sql` are currently unapplied local artifacts; the latter follows the former. Confirm the exact Supabase project/environment and obtain explicit authorization before applying either migration; do not infer the target from local configuration. The related routes fail closed if their required shared RPCs or the server-only `SUPABASE_SERVICE_ROLE_KEY` are unavailable; the public anon key is not a substitute.

@@ -5,6 +5,32 @@ import { sendBuyerCredentialsDeliveredWhatsApp, sendSellerFundsReleasedWhatsApp 
 import { AccountDelivery, EscrowAccount, EscrowState } from "@/types/database";
 import { SupabaseClient } from "@supabase/supabase-js";
 
+export class SecureEscrowReleaseUnavailableError extends Error {
+  constructor() {
+    super("Secure escrow release is temporarily unavailable. No ledger fallback was attempted; contact support.");
+    this.name = "SecureEscrowReleaseUnavailableError";
+  }
+}
+
+export class SecureEscrowDisputeUnavailableError extends Error {
+  constructor() {
+    super("Secure dispute handling is temporarily unavailable. No balance update was attempted; contact support.");
+    this.name = "SecureEscrowDisputeUnavailableError";
+  }
+}
+
+export interface OpenEscrowDisputeResult {
+  disputeId: string;
+  orderId: string;
+  buyerId: string;
+  sellerId: string;
+  orderNumber: string;
+  wasCompleted: boolean;
+  description: string;
+  listingTitle: string | null;
+  idempotent: boolean;
+}
+
 export interface DeliverySubmissionPayload {
   orderId: string;
   sellerId: string;
@@ -48,7 +74,7 @@ export class EscrowService {
     try {
       const { data: profile } = await this.supabase
         .from("profiles")
-        .select("*")
+        .select("role")
         .eq("id", userId)
         .single();
 
@@ -312,109 +338,20 @@ export class EscrowService {
       );
     }
 
-    let rpcSucceeded = false;
     try {
       const { error: rpcError } = await this.supabase.rpc("release_escrow_funds", {
         p_order_id: orderId,
         p_performed_by: buyerId,
       });
 
-      if (!rpcError) {
-        rpcSucceeded = true;
-      } else {
-        console.warn("RPC release_escrow_funds failed, falling back to direct update:", rpcError.message);
+      if (rpcError) {
+        console.error("Secure escrow release RPC failed; no direct ledger fallback was attempted.");
+        throw new SecureEscrowReleaseUnavailableError();
       }
-    } catch (e: any) {
-      console.warn("RPC call threw error:", e?.message);
-    }
-
-    // release_escrow_funds RPC already atomically updates available_balance, escrow_balance,
-    // completed_sales_count, escrow_accounts, orders, listings, and inserts seller notification.
-    if (!rpcSucceeded) {
-      // Direct update fallback
-      const { data: escrow } = await this.supabase
-        .from("escrow_accounts")
-        .select("*")
-        .eq("order_id", orderId)
-        .single();
-
-      if (!escrow) {
-        throw new Error("Escrow account not found for order.");
-      }
-
-      const validEscrowStates = isCallerAdmin
-        ? ["seller_delivered", "waiting_for_seller"]
-        : ["seller_delivered"];
-
-      if (validEscrowStates.includes(escrow.escrow_state)) {
-        const netAmount = Number(escrow.net_amount || 0);
-        const nowIso = new Date().toISOString();
-
-        // Compare-And-Swap lock on escrow_state so concurrent calls cannot double-credit
-        const { data: casEscrow, error: casError } = await this.supabase
-          .from("escrow_accounts")
-          .update({
-            escrow_state: "completed",
-            released_at: nowIso,
-            completed_at: nowIso,
-            updated_at: nowIso,
-          })
-          .eq("id", escrow.id)
-          .neq("escrow_state", "completed")
-          .select("id")
-          .maybeSingle();
-
-        if (casError || !casEscrow) {
-          throw new Error("Escrow funds have already been released.");
-        }
-
-        const { data: sellerProf } = await this.supabase
-          .from("profiles")
-          .select("available_balance, escrow_balance, completed_sales_count")
-          .eq("id", order.seller_id)
-          .single();
-
-        const currentAvail = Number(sellerProf?.available_balance || 0);
-        const currentEscrow = Number(sellerProf?.escrow_balance || 0);
-        const salesCount = Number(sellerProf?.completed_sales_count || 0);
-
-        await this.supabase
-          .from("profiles")
-          .update({
-            available_balance: currentAvail + netAmount,
-            escrow_balance: Math.max(0, currentEscrow - netAmount),
-            completed_sales_count: salesCount + 1,
-            updated_at: nowIso,
-          })
-          .eq("id", order.seller_id);
-
-        await this.supabase
-          .from("orders")
-          .update({
-            status: "completed",
-            updated_at: nowIso,
-          })
-          .eq("id", orderId);
-
-        if (order.listing_id) {
-          await this.supabase
-            .from("listings")
-            .update({
-              status: "sold",
-              updated_at: nowIso,
-            })
-            .eq("id", order.listing_id);
-        }
-
-        await this.supabase.from("notifications").insert({
-          recipient_id: order.seller_id,
-          type: "funds_released",
-          title: "Order Completed & Funds Released!",
-          message: `Buyer confirmed receipt for order #${order.order_number}. Payout has been transferred to your available balance.`,
-          action_url: "/seller/earnings",
-          is_read: false,
-        });
-      }
+    } catch (error) {
+      if (error instanceof SecureEscrowReleaseUnavailableError) throw error;
+      console.error("Secure escrow release RPC could not be reached; no direct ledger fallback was attempted.");
+      throw new SecureEscrowReleaseUnavailableError();
     }
 
     // Set buyer_confirmed_at on account_deliveries
@@ -459,16 +396,22 @@ export class EscrowService {
   }
 
   /**
-   * Opens an official dispute for an order.
+   * Opens a dispute and pauses a pre-release order in one database transaction.
+   * Post-release reports never move seller balances automatically.
    */
-  async openDispute(orderId: string, openedBy: string, reason: string, description: string): Promise<void> {
-    const { data: order } = await this.supabase
+  async openDispute(
+    orderId: string,
+    openedBy: string,
+    reason: string,
+    description: string
+  ): Promise<OpenEscrowDisputeResult> {
+    const { data: order, error: orderError } = await this.supabase
       .from("orders")
-      .select("id, buyer_id, seller_id, order_number, status, total_amount, seller_net_amount, listing:listings(title)")
+      .select("id, buyer_id, seller_id")
       .eq("id", orderId)
-      .single();
+      .maybeSingle();
 
-    if (!order) {
+    if (orderError || !order) {
       throw new Error("Order not found.");
     }
 
@@ -479,99 +422,86 @@ export class EscrowService {
       }
     }
 
-    const wasCompleted = order.status === "completed";
-    const finalDescription = wasCompleted && !description.startsWith("[POST-RELEASE DISPUTE]")
-      ? `[POST-RELEASE DISPUTE] ${description}`
-      : description;
+    const cleanDescription = description
+      .replace(/^\[POST-RELEASE DISPUTE\]\s*/i, "")
+      .trim();
+    if (cleanDescription.length < 10) {
+      throw new Error("Please provide a detailed description of the dispute.");
+    }
 
-    const { error: disputeError } = await this.supabase
-      .from("disputes")
-      .insert({
-        order_id: orderId,
-        opened_by: openedBy,
-        reason,
-        description: finalDescription,
-        status: "open",
+    let rpcResult: any;
+    try {
+      const { data, error } = await this.supabase.rpc("open_escrow_dispute", {
+        p_order_id: orderId,
+        p_opened_by: openedBy,
+        p_reason: reason,
+        p_description: cleanDescription,
       });
-
-    if (disputeError) {
-      throw new Error(`Failed to open dispute: ${disputeError.message}`);
+      if (error) throw error;
+      rpcResult = data;
+    } catch (error: any) {
+      if (error?.code === "P0001" && typeof error.message === "string") {
+        throw new Error(error.message);
+      }
+      console.error("Atomic escrow dispute RPC failed; no direct balance update was attempted.");
+      throw new SecureEscrowDisputeUnavailableError();
     }
 
-    await this.supabase
-      .from("escrow_accounts")
-      .update({ escrow_state: "disputed", updated_at: new Date().toISOString() })
-      .eq("order_id", orderId);
+    if (
+      !rpcResult?.dispute_id ||
+      !rpcResult?.order_id ||
+      !rpcResult?.buyer_id ||
+      !rpcResult?.seller_id ||
+      !rpcResult?.order_number ||
+      typeof rpcResult.description !== "string" ||
+      typeof rpcResult.was_completed !== "boolean" ||
+      typeof rpcResult.idempotent !== "boolean"
+    ) {
+      console.error("Atomic escrow dispute RPC returned an invalid result.");
+      throw new SecureEscrowDisputeUnavailableError();
+    }
 
-    await this.supabase
-      .from("orders")
-      .update({ status: "disputed", updated_at: new Date().toISOString() })
-      .eq("id", orderId);
+    const result: OpenEscrowDisputeResult = {
+      disputeId: rpcResult.dispute_id,
+      orderId: rpcResult.order_id,
+      buyerId: rpcResult.buyer_id,
+      sellerId: rpcResult.seller_id,
+      orderNumber: rpcResult.order_number,
+      wasCompleted: rpcResult.was_completed,
+      description: rpcResult.description,
+      listingTitle: rpcResult.listing_title || null,
+      idempotent: Boolean(rpcResult.idempotent),
+    };
 
-    // If order was completed, freeze seller available balance into escrow balance
-    if (wasCompleted && order.seller_id) {
-      try {
-        const { data: escrow } = await this.supabase
-          .from("escrow_accounts")
-          .select("net_amount")
-          .eq("order_id", orderId)
-          .single();
-
-        const netAmount = Number(escrow?.net_amount || order.seller_net_amount || order.total_amount || 0);
-
-        const { data: sellerProf } = await this.supabase
-          .from("profiles")
-          .select("available_balance, escrow_balance")
-          .eq("id", order.seller_id)
-          .single();
-
-        if (sellerProf && netAmount > 0) {
-          const currentAvail = Number(sellerProf.available_balance || 0);
-          const currentEscrow = Number(sellerProf.escrow_balance || 0);
-          const amountToFreeze = Math.min(currentAvail, netAmount);
-
-          if (amountToFreeze > 0) {
-            await this.supabase
-              .from("profiles")
-              .update({
-                available_balance: Math.max(0, currentAvail - amountToFreeze),
-                escrow_balance: currentEscrow + amountToFreeze,
-                updated_at: new Date().toISOString(),
-              })
-              .eq("id", order.seller_id);
-          }
+    if (!result.idempotent) {
+      const otherPartyId = openedBy === result.buyerId ? result.sellerId : result.buyerId;
+      if (otherPartyId) {
+        try {
+          const { error: notificationError } = await this.supabase.from("notifications").insert({
+            recipient_id: otherPartyId,
+            type: "order_update",
+            title: result.wasCompleted ? "Post-Release Dispute Review Opened" : "Escrow Dispute Opened",
+            message: result.wasCompleted
+              ? `A post-release dispute was opened for order #${result.orderNumber}. Moderators will review the evidence. This does not automatically hold seller funds or reverse an M-Pesa transfer already sent; any reimbursement is a separate manual decision.`
+              : `A dispute was opened for order #${result.orderNumber}. Seller-balance release is paused while a moderator reviews the case.`,
+            action_url: `/orders/${orderId}`,
+            is_read: false,
+          });
+          if (notificationError) console.warn("Failed to record dispute notification.");
+        } catch {
+          console.warn("Failed to send dispute notification.");
         }
-      } catch (freezeErr) {
-        console.warn("Failed to freeze seller balance on post-release dispute:", freezeErr);
       }
+
+      dispatchAdminWhatsAppAlert({
+        eventType: result.wasCompleted ? "POST_RELEASE_DISPUTE_OPENED" : "DISPUTE_OPENED",
+        orderId,
+        orderNumber: result.orderNumber,
+        listingTitle: result.listingTitle || "eFootball Squad",
+        details: `${reason}: ${result.description}`,
+      }).catch(() => console.warn("Admin dispute alert dispatch failed."));
     }
 
-    const otherPartyId = openedBy === order.buyer_id ? order.seller_id : order.buyer_id;
-    if (otherPartyId) {
-      try {
-        await this.supabase.from("notifications").insert({
-          recipient_id: otherPartyId,
-          type: "order_update",
-          title: wasCompleted ? "Post-Release Escrow Dispute Opened" : "Escrow Dispute Opened",
-          message: wasCompleted
-            ? `A post-release dispute was opened for order #${order.order_number}. Payout has been frozen pending moderator review.`
-            : `A dispute was opened for order #${order.order_number}. Funds are held securely until reviewed by a moderator.`,
-          action_url: `/orders/${orderId}`,
-          is_read: false,
-        });
-      } catch (e) {
-        console.warn("Failed to send dispute notification:", e);
-      }
-    }
-
-    // Dispatch automated WhatsApp alert to admin support desk
-    dispatchAdminWhatsAppAlert({
-      eventType: wasCompleted ? "POST_RELEASE_DISPUTE_OPENED" : "DISPUTE_OPENED",
-      orderId,
-      orderNumber: order.order_number,
-      listingTitle: (order as any)?.listing?.title || "eFootball Squad",
-      amount: Number(order.total_amount || 0),
-      details: `${reason}: ${finalDescription}`,
-    }).catch((err) => console.error("Admin dispute alert error:", err));
+    return result;
   }
 }

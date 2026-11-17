@@ -2,37 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { verifyAdminOrSecret } from "@/lib/security/guards";
-import { PaymentService } from "@/services/paymentService";
 
 export const dynamic = "force-dynamic";
 
 const adminPaymentActionSchema = z.discriminatedUnion("action", [
   z.object({
-    action: z.literal("approve_manual_payment"),
-    orderId: z.string().uuid(),
-    receiptNumber: z
-      .string()
-      .trim()
-      .toUpperCase()
-      .regex(/^[A-Z0-9]{8,12}$/, "Enter a valid 8–12 character Safaricom receipt code"),
-  }),
-  z.object({
     action: z.literal("reject_manual_payment"),
     orderId: z.string().uuid(),
     reason: z.string().trim().min(3).max(300).optional(),
-  }),
-  z.object({
-    action: z.literal("update_middleman_status"),
-    dealId: z.string().min(1).max(80),
-    status: z.enum([
-      "awaiting_payment",
-      "escrow_locked",
-      "seller_delivering",
-      "buyer_verifying",
-      "completed",
-      "disputed",
-    ]),
-    mpesaReceipt: z.string().trim().toUpperCase().max(16).optional(),
   }),
 ]);
 
@@ -45,8 +22,7 @@ export async function GET(req: NextRequest) {
 
     const adminSupabase = createAdminClient();
 
-    const [{ data: pendingOrders }, { data: pendingPayments }, { data: middlemanDeals }] =
-      await Promise.all([
+    const [{ data: pendingOrders }, { data: pendingPayments }] = await Promise.all([
         adminSupabase
           .from("orders")
           .select(
@@ -61,11 +37,6 @@ export async function GET(req: NextRequest) {
           .eq("status", "pending")
           .order("created_at", { ascending: false })
           .limit(60),
-        adminSupabase
-          .from("middleman_deals")
-          .select("*")
-          .order("created_at", { ascending: false })
-          .limit(50),
       ]);
 
     const paymentByOrder = new Map<string, any>();
@@ -100,11 +71,10 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({
       pendingOrders: enrichedPendingOrders,
-      middlemanDeals: middlemanDeals || [],
     });
   } catch (err: any) {
     return NextResponse.json(
-      { error: err.message || "Failed to load Till 1572931 & Middleman queue" },
+      { error: err.message || "Failed to load pending marketplace payment queue" },
       { status: 500 }
     );
   }
@@ -118,6 +88,16 @@ export async function POST(req: NextRequest) {
     }
 
     const json = await req.json();
+    if ((json as any)?.action === "approve_manual_payment") {
+      return NextResponse.json(
+        {
+          error:
+            "Manual receipt claims cannot unlock escrow. Only a provider-confirmed settlement with a matching receipt and amount can mark payment successful.",
+        },
+        { status: 409 }
+      );
+    }
+
     const parsed = adminPaymentActionSchema.safeParse(json);
     if (!parsed.success) {
       return NextResponse.json(
@@ -129,116 +109,9 @@ export async function POST(req: NextRequest) {
     const adminSupabase = createAdminClient();
     const payload = parsed.data;
 
-    // 1. Approve Manual Till 1572931 Receipt & Lock Escrow
-    if (payload.action === "approve_manual_payment") {
-      const { orderId, receiptNumber } = payload;
+    // Reject unverified receipt claims. Admins cannot settle an M-Pesa receipt
+    // by typing a code or bypass provider confirmation.
 
-      const { data: dupPayment } = await adminSupabase
-        .from("payments")
-        .select("id, order_id, status")
-        .eq("mpesa_receipt_number", receiptNumber)
-        .maybeSingle();
-
-      if (dupPayment && dupPayment.order_id !== orderId && dupPayment.status === "completed") {
-        return NextResponse.json(
-          { error: `Receipt ${receiptNumber} is already used on another completed order.` },
-          { status: 400 }
-        );
-      }
-
-      const { data: order } = await adminSupabase
-        .from("orders")
-        .select("*, buyer:profiles!buyer_id(phone_number)")
-        .eq("id", orderId)
-        .maybeSingle();
-
-      if (!order) {
-        return NextResponse.json({ error: "Order not found." }, { status: 404 });
-      }
-
-      if (order.status !== "payment_pending") {
-        return NextResponse.json(
-          { error: `Order is already in '${order.status}' state.` },
-          { status: 400 }
-        );
-      }
-
-      const { data: existingPay } = await adminSupabase
-        .from("payments")
-        .select("*")
-        .eq("order_id", orderId)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .maybeSingle();
-
-      let paymentId = existingPay?.id;
-      const buyerPhone =
-        existingPay?.phone_number ||
-        (Array.isArray(order.buyer) ? order.buyer[0]?.phone_number : order.buyer?.phone_number) ||
-        "254700000000";
-
-      if (!paymentId) {
-        const { data: created, error: insErr } = await adminSupabase
-          .from("payments")
-          .insert({
-            order_id: orderId,
-            payment_method: "mpesa",
-            phone_number: buyerPhone,
-            amount: Number(order.total_amount),
-            currency: order.currency || "KES",
-            merchant_request_id: `TILL-ADMIN-${order.order_number}`,
-            checkout_request_id: `TILL-ADMIN-${order.order_number}`,
-            status: "pending",
-          })
-          .select("id")
-          .single();
-
-        if (insErr || !created) {
-          return NextResponse.json(
-            { error: insErr?.message || "Could not create payment ledger row" },
-            { status: 500 }
-          );
-        }
-        paymentId = created.id;
-      }
-
-      const paymentService = new PaymentService(adminSupabase);
-      await paymentService.markPaymentSuccessful(
-        paymentId,
-        receiptNumber,
-        Number(order.total_amount),
-        {
-          verified_by_admin: auth.email || auth.userId,
-          verified_at: new Date().toISOString(),
-          till_number: "1572931",
-          receipt_number: receiptNumber,
-        }
-      );
-
-      // Write audit log
-      try {
-        await adminSupabase.from("audit_logs").insert({
-          actor_id: auth.userId || order.buyer_id,
-          action: "ADMIN_APPROVED_TILL_RECEIPT",
-          resource_type: "orders",
-          resource_id: orderId,
-          changes: {
-            receipt_number: receiptNumber,
-            amount: order.total_amount,
-            approved_by: auth.email,
-          },
-        });
-      } catch {
-        // non-blocking
-      }
-
-      return NextResponse.json({
-        success: true,
-        message: `Receipt ${receiptNumber} approved! Order #${order.order_number} is now Escrow Locked and seller has been alerted.`,
-      });
-    }
-
-    // 2. Reject unverified receipt claim
     if (payload.action === "reject_manual_payment") {
       const { orderId, reason } = payload;
       const { data: order } = await adminSupabase
@@ -274,33 +147,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({
         success: true,
         message: `Rejected unverified receipt on Order #${order.order_number} and notified buyer.`,
-      });
-    }
-
-    // 3. Advance Middleman Deal Status
-    if (payload.action === "update_middleman_status") {
-      const { dealId, status, mpesaReceipt } = payload;
-
-      const updateFields: Record<string, any> = { status };
-      if (mpesaReceipt) {
-        updateFields.mpesa_receipt = mpesaReceipt;
-      }
-
-      const { data: updated, error: updErr } = await adminSupabase
-        .from("middleman_deals")
-        .update(updateFields)
-        .eq("id", dealId)
-        .select("*")
-        .maybeSingle();
-
-      if (updErr) {
-        return NextResponse.json({ error: updErr.message }, { status: 500 });
-      }
-
-      return NextResponse.json({
-        success: true,
-        deal: updated,
-        message: `Middleman deal updated to '${status.replace(/_/g, " ")}'.`,
       });
     }
 

@@ -108,7 +108,7 @@ export function HomeSquadCatalog({ listings, totalSquads }: HomeSquadCatalogProp
             <Button variant="outline" size="md">
               <span>
                 {activeTab === "all"
-                  ? `View All ${totalSquads} Verified Squads`
+                  ? `View All ${totalSquads} Squad Listings`
                   : `Browse All ${activeTabMeta.label} Squads`}
               </span>
               <ArrowRight className="w-4 h-4" />

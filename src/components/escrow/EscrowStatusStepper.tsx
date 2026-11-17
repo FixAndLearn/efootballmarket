@@ -11,11 +11,12 @@ export function EscrowStatusStepper({ state }: EscrowStatusStepperProps) {
     { id: "escrow", label: "Funds in Escrow" },
     { id: "delivery", label: "Account Delivery" },
     { id: "inspection", label: "24h Inspection" },
-    { id: "completed", label: "Funds Released" },
+    { id: "completed", label: "Released to Seller Balance" },
   ];
 
   let currentStepIndex = 0;
   let isDisputed = state === "disputed";
+  let isRefundPending = state === "refund_pending" || state === "refunded";
 
   switch (state) {
     case "pending":
@@ -49,7 +50,21 @@ export function EscrowStatusStepper({ state }: EscrowStatusStepperProps) {
         <div>
           <h4 className="text-sm font-semibold text-sx-amber-text">Escrow Dispute Opened</h4>
           <p className="text-xs text-sx-amber-text">
-            Funds remain safely locked in escrow while platform moderators investigate evidence.
+            A dispute is open for moderator review. Before order completion, seller-balance release is paused; a post-release dispute does not automatically hold funds or reverse an M-Pesa transfer already sent.
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isRefundPending) {
+    return (
+      <div className="p-4 rounded-xl bg-sx-amber-tint border border-sx-amber-border flex items-center gap-3">
+        <AlertTriangle className="w-6 h-6 text-sx-amber-text shrink-0" />
+        <div>
+          <h4 className="text-sm font-semibold text-sx-amber-text">Refund Decision Recorded</h4>
+          <p className="text-xs text-sx-amber-text">
+            A refund was approved for manual follow-up. This status does not confirm that M-Pesa funds were sent; contact support for an update.
           </p>
         </div>
       </div>

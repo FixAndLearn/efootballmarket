@@ -2,7 +2,7 @@ import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { isSuperAdminEmail, isUserAdmin } from "@/lib/security/adminAuth";
 import { isValidUuid } from "@/lib/security/guards";
-import { EscrowService } from "@/services/escrowService";
+import { EscrowService, SecureEscrowDisputeUnavailableError } from "@/services/escrowService";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
 
@@ -21,7 +21,7 @@ const disputeSchema = z.object({
     "account_banned_or_deducted",
     "other",
   ]),
-  description: z.string().min(10, "Please provide a detailed description of the dispute"),
+  description: z.string().trim().min(10, "Please provide a detailed description of the dispute").max(10000),
   evidenceUrls: z.array(z.string().url()).optional().default([]),
 });
 
@@ -121,49 +121,67 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Invalid dispute submission", details: parsed.error.format() }, { status: 400 });
     }
 
-    const adminSupabase = createAdminClient();
-    const serviceRoleConfigured = hasServiceRoleKey();
-    const primaryClient = serviceRoleConfigured ? adminSupabase : supabase;
-    const escrowService = new EscrowService(primaryClient);
+    if (!hasServiceRoleKey()) {
+      return NextResponse.json(
+        { error: "Secure dispute handling is temporarily unavailable. No balance update was attempted; contact support." },
+        { status: 503 }
+      );
+    }
 
-    await escrowService.openDispute(
+    const primaryClient = createAdminClient();
+    const escrowService = new EscrowService(primaryClient);
+    const openedDispute = await escrowService.openDispute(
       parsed.data.orderId,
       user.id,
       parsed.data.reason,
       parsed.data.description
     );
 
-    // If evidence URLs were provided, record them
+    // If evidence URLs were provided, record them on the exact dispute returned by
+    // the atomic opener rather than looking up a possibly competing row by timestamp.
     if (parsed.data.evidenceUrls && parsed.data.evidenceUrls.length > 0) {
-      const { data: dispute } = await primaryClient
+      const uploaderRole = user.id === openedDispute.sellerId ? "Seller" : "Buyer";
+      const initialEvidence = parsed.data.evidenceUrls.map((url, i) => ({
+        url,
+        title: `Initial Dispute Proof #${i + 1}`,
+        description: "Submitted when dispute was opened",
+        uploaderId: user.id,
+        uploaderRole,
+        uploadedAt: new Date().toISOString(),
+      }));
+
+      const { error: evidenceError } = await primaryClient
         .from("disputes")
-        .select("id")
-        .eq("order_id", parsed.data.orderId)
-        .order("created_at", { ascending: false })
-        .limit(1)
-        .single();
+        .update({ resolution_notes: JSON.stringify(initialEvidence) })
+        .eq("id", openedDispute.disputeId);
 
-      if (dispute) {
-        const initialEvidence = parsed.data.evidenceUrls.map((url, i) => ({
-          url,
-          title: `Initial Dispute Proof #${i + 1}`,
-          description: "Submitted when dispute was opened",
-          uploaderId: user.id,
-          uploaderRole: "Buyer",
-          uploadedAt: new Date().toISOString(),
-        }));
-
-        await primaryClient
-          .from("disputes")
-          .update({
-            resolution_notes: JSON.stringify(initialEvidence),
-          })
-          .eq("id", dispute.id);
+      if (evidenceError) {
+        console.warn("Dispute opened, but initial evidence could not be attached.");
       }
     }
 
-    return NextResponse.json({ success: true, message: "Dispute opened. Funds held until resolution." });
+    return NextResponse.json({
+      success: true,
+      message: openedDispute.wasCompleted
+        ? "Post-release dispute opened for review. This does not automatically hold seller funds or reverse an M-Pesa transfer already sent."
+        : "Dispute opened. Seller-balance release is paused while a moderator reviews the case.",
+      idempotent: openedDispute.idempotent,
+    });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 400 });
+    if (error instanceof SecureEscrowDisputeUnavailableError) {
+      return NextResponse.json({ error: error.message }, { status: 503 });
+    }
+    const message = String(error?.message || "Failed to open dispute.");
+    const normalizedMessage = message.toLowerCase();
+    const status = normalizedMessage.includes("unauthorized")
+      ? 403
+      : normalizedMessage.includes("not found")
+      ? 404
+      : ["already exists", "not eligible", "state changed", "completion states"].some((term) =>
+          normalizedMessage.includes(term)
+        )
+      ? 409
+      : 400;
+    return NextResponse.json({ error: message }, { status });
   }
 }

@@ -51,11 +51,11 @@ export const viewport: Viewport = {
 export const metadata: Metadata = {
   metadataBase: new URL(APP_URL),
   title: {
-    default: "eFootballMarket — eFootball Guides, Tactics & Verified Marketplace Kenya",
+    default: "eFootballMarket — eFootball Guides, Tactics & Squad Marketplace Kenya",
     template: "%s | eFootballMarket",
   },
   description:
-    "eFootball tactical guides, player progression builds, and verified Konami ID marketplace in Kenya with Safaricom M-Pesa Till 1572931 buyer protection.",
+    "Browse seller-listed eFootball squads, tactical guides and builds in Kenya. Seller badges cover identity checks and sale history—not game-account audits. Checkout protection applies to eligible orders.",
   keywords: [
     "eFootball guides Kenya",
     "eFootball player builds",
@@ -90,9 +90,9 @@ export const metadata: Metadata = {
     locale: "en_KE",
     url: APP_URL,
     siteName: "eFootballMarket",
-    title: "eFootballMarket — eFootball Guides, Tactics & Verified Marketplace Kenya",
+    title: "eFootballMarket — eFootball Guides, Tactics & Squad Marketplace Kenya",
     description:
-      "eFootball tactical guides, player progression builds, and M-Pesa protected Konami ID marketplace in Kenya.",
+      "Seller-listed eFootball squads, tactical guides and player builds in Kenya. Seller badges describe identity checks and sale history, not a pre-audit of the game account. Checkout protection applies to eligible orders.",
     images: [
       {
         url: "/opengraph-image",
@@ -104,9 +104,9 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "eFootballMarket — eFootball Guides, Tactics & Verified Marketplace Kenya",
+    title: "eFootballMarket — eFootball Guides, Tactics & Squad Marketplace Kenya",
     description:
-      "eFootball tactical guides, player progression builds, and M-Pesa protected Konami ID marketplace in Kenya.",
+      "Seller-listed eFootball squads, tactical guides and player builds in Kenya. Seller badges describe identity checks and sale history, not a pre-audit of the game account. Checkout protection applies to eligible orders.",
     images: ["/opengraph-image"],
   },
   robots: {

@@ -33,7 +33,7 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
     listing.images?.[0]?.image_url;
 
   const smartTitle = formatSmartListingTitle(listing);
-  const viralText = `*HOT eFootball Account for Sale on EFootballMarket!* 🇰🇪\n\n*Squad*: ${smartTitle}\n⭐ *Team OVR*: ${listing.overall_team_strength}\n*Epic / Boosters*: ${listing.epic_players_count} cards\n*Current Division*: Div ${listing.current_division}\n*Price*: ${formatCurrency(listing.price, listing.currency)}\n\n*Escrow Protected by Safaricom Till 1572931*\nFunds held safely until credentials are verified!\n\n*View Photos & Buy*: https://www.efootballmarket.co.ke/listings/${listing.id}`;
+  const viralText = `*HOT eFootball Account for Sale on EFootballMarket!* 🇰🇪\n\n*Squad*: ${smartTitle}\n⭐ *Team OVR*: ${listing.overall_team_strength}\n*Epic / Boosters*: ${listing.epic_players_count} cards\n*Current Division*: Div ${listing.current_division}\n*Price*: ${formatCurrency(listing.price, listing.currency)}\n\n*Buyer protection applies only through eFootballMarket checkout*\nPay for this published listing through the checkout page.\n\n*View Photos & Buy*: https://www.efootballmarket.co.ke/listings/${listing.id}`;
 
   const drawFlyer = () => {
     const canvas = canvasRef.current;
@@ -76,7 +76,7 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
     ctx.fillStyle = "rgba(255, 255, 255, 0.7)";
     ctx.font = "700 24px system-ui, sans-serif";
     ctx.textAlign = "right";
-    ctx.fillText("KENYA'S ESCROW MARKETPLACE", W - 70, 90);
+    ctx.fillText("KENYA'S SQUAD MARKETPLACE", W - 70, 90);
     ctx.textAlign = "left";
 
     // 3. Title Box
@@ -115,7 +115,7 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
         ctx.fillStyle = "#94a3b8";
         ctx.font = "700 36px system-ui, sans-serif";
         ctx.textAlign = "center";
-        ctx.fillText("eFootball Verified Squad", W / 2, cardY + cardH / 2);
+        ctx.fillText("eFootball Squad Listing", W / 2, cardY + cardH / 2);
         ctx.textAlign = "left";
       }
 
@@ -138,7 +138,7 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
       // Price Tag
       ctx.fillStyle = "#94A3B8";
       ctx.font = "700 24px system-ui, sans-serif";
-      ctx.fillText("PRICE (ESCROW PROTECTED)", 110, bottomY + 55);
+      ctx.fillText("PRICE - BUY VIA CHECKOUT", 110, bottomY + 55);
 
       ctx.fillStyle = "#10B981";
       ctx.font = "900 64px system-ui, sans-serif";
@@ -148,15 +148,15 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
       ctx.fillStyle = "#F59E0B";
       ctx.font = "900 34px system-ui, sans-serif";
       ctx.textAlign = "right";
-      ctx.fillText("LIPA NA M-PESA TILL 1572931", W - 110, bottomY + 65);
+      ctx.fillText("PAY VIA CHECKOUT / TILL 1572931", W - 110, bottomY + 65);
 
       ctx.fillStyle = "#F1F5F9";
       ctx.font = "600 24px system-ui, sans-serif";
-      ctx.fillText("Funds Held Until Login Verified", W - 110, bottomY + 110);
+      ctx.fillText("Checkout orders include inspection", W - 110, bottomY + 110);
 
       ctx.fillStyle = "#34D399";
       ctx.font = "700 22px system-ui, sans-serif";
-      ctx.fillText("Escrow Officer: Brian Okibo (0794400365)", W - 110, bottomY + 155);
+      ctx.fillText("Buyer protection: checkout orders only", W - 110, bottomY + 155);
 
       ctx.textAlign = "left";
 

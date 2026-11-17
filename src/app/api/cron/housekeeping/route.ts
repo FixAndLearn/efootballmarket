@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { EscrowService } from "@/services/escrowService";
 
 export const dynamic = "force-dynamic";
@@ -23,16 +23,44 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized cron invocation" }, { status: 401 });
     }
 
+    if (!hasServiceRoleKey()) {
+      return NextResponse.json(
+        { error: "Secure housekeeping operations are unavailable without the server-only service role key." },
+        { status: 503 }
+      );
+    }
+
     const supabase = createAdminClient();
     const escrowService = new EscrowService(supabase);
     const now = new Date();
+
+
     const results = {
       auto_released_orders: 0,
       expired_offers: 0,
       stale_orders_cancelled: 0,
       unlocked_listings: 0,
+      runtime_state_pruned: 0,
       errors: [] as string[],
     };
+
+    // 0. Prune unbounded runtime state. api_rate_limit_buckets and
+    // api_idempotency_records previously grew forever; nothing deleted
+    // expired rows.
+    try {
+      const { data: pruneData, error: pruneError } = await supabase.rpc("prune_runtime_state");
+      if (pruneError) {
+        results.errors.push(`Runtime state pruning skipped: ${pruneError.message}`);
+      } else {
+        const raw = (pruneData ?? {}) as Record<string, unknown>;
+        const buckets = Number(raw.rate_limit_buckets_pruned || 0);
+        const idem = Number(raw.idempotency_records_pruned || 0);
+        results.runtime_state_pruned = buckets + idem;
+      }
+    } catch (pruneErr: any) {
+      results.errors.push(`Runtime state pruning error: ${pruneErr?.message}`);
+    }
+
 
     // 1. Auto-release orders in `seller_delivered` where 24h inspection window elapsed without open dispute
     try {

@@ -32,9 +32,14 @@ export async function POST(req: NextRequest) {
 
     const { orderId, evidenceUrl, title, description } = parsed.data;
 
-    const adminSupabase = createAdminClient();
-    const serviceRoleConfigured = hasServiceRoleKey();
-    const client = serviceRoleConfigured ? adminSupabase : supabase;
+    if (!hasServiceRoleKey()) {
+      return NextResponse.json(
+        { error: "Secure dispute evidence storage is temporarily unavailable. No evidence record was changed." },
+        { status: 503 }
+      );
+    }
+
+    const client = createAdminClient();
 
     // Fetch order to verify permission
     const { data: order, error: orderError } = await client
@@ -56,16 +61,27 @@ export async function POST(req: NextRequest) {
 
     const uploaderRole = isBuyer ? "Buyer" : "Seller";
 
-    // Fetch active dispute
-    const { data: dispute } = await client
+    // Evidence is attached only to an active case. In particular, never replace
+    // resolution notes on a case that has already been closed.
+    const { data: dispute, error: disputeError } = await client
       .from("disputes")
       .select("*")
       .eq("order_id", orderId)
       .order("created_at", { ascending: false })
       .limit(1)
-      .single();
+      .maybeSingle();
 
-    // Append evidence into dispute description or resolution_notes as structured JSON log
+    if (disputeError) {
+      return NextResponse.json({ error: "Could not safely load the dispute record." }, { status: 503 });
+    }
+    if (!dispute || !["open", "under_review"].includes(dispute.status)) {
+      return NextResponse.json(
+        { error: "There is no active dispute for this order. Contact support to add information to a closed case." },
+        { status: 409 }
+      );
+    }
+
+    // Append evidence into resolution_notes as a structured JSON log.
     const evidenceItem = {
       url: evidenceUrl,
       title,
@@ -75,25 +91,37 @@ export async function POST(req: NextRequest) {
       uploadedAt: new Date().toISOString(),
     };
 
-    if (dispute) {
-      let currentEvidence: any[] = [];
+    let currentEvidence: any[] = [];
+    if (dispute.resolution_notes) {
       try {
-        if (dispute.resolution_notes && dispute.resolution_notes.startsWith("[")) {
-          currentEvidence = JSON.parse(dispute.resolution_notes);
-        }
-      } catch (e) {
-        currentEvidence = [];
+        const parsedEvidence = JSON.parse(dispute.resolution_notes);
+        if (!Array.isArray(parsedEvidence)) throw new Error("Stored dispute notes are not an evidence list.");
+        currentEvidence = parsedEvidence;
+      } catch {
+        return NextResponse.json(
+          { error: "Existing moderator notes could not be safely merged with evidence. Contact support before retrying." },
+          { status: 409 }
+        );
       }
+    }
 
-      currentEvidence.push(evidenceItem);
+    currentEvidence.push(evidenceItem);
+    const { data: updatedDispute, error: updateError } = await client
+      .from("disputes")
+      .update({
+        resolution_notes: JSON.stringify(currentEvidence),
+        updated_at: new Date().toISOString(),
+      })
+      .eq("id", dispute.id)
+      .in("status", ["open", "under_review"])
+      .select("id")
+      .maybeSingle();
 
-      await client
-        .from("disputes")
-        .update({
-          resolution_notes: JSON.stringify(currentEvidence),
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", dispute.id);
+    if (updateError || !updatedDispute) {
+      return NextResponse.json(
+        { error: "The dispute changed while evidence was being attached. Refresh the case and retry." },
+        { status: 409 }
+      );
     }
 
     // Also record a system message in the order chat so both parties and admin see it

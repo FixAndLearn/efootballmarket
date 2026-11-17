@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/Button";
 import { DetailTabLink } from "@/components/ui/DetailTabLink";
 import { formatCurrency, formatSmartListingTitle, getPlatformLabel } from "@/lib/utils";
 import { normalizePhoneNumber } from "@/lib/utils/phone";
-import { isListingOnFlashSale } from "@/lib/utils/flashSale";
 import { calculateEscrowCommission } from "@/lib/utils/commission";
 import { Listing, ListingOffer } from "@/types/database";
 import {
@@ -155,20 +154,15 @@ export function DirectCheckoutForm({
     };
   }, [stkStatus, checkoutRequestId, createdOrderId, router]);
 
-  const isFlashDrop = isListingOnFlashSale(listing);
   const isOwner = Boolean(currentUserId && currentUserId === listing.seller_id);
   const isAvailable = listing.status === "published";
 
   const resolvedOfferPrice = activeOffer
-    ? activeOffer.status === "countered"
-      ? Number(activeOffer.counter_price || activeOffer.offered_price)
-      : Number(activeOffer.counter_price || activeOffer.offered_price)
+    ? Number(activeOffer.counter_price || activeOffer.offered_price)
     : 0;
-  const payablePrice =
-    (!isFlashDrop && resolvedOfferPrice > 0 ? resolvedOfferPrice : 0) || Number(listing.price);
+  const payablePrice = resolvedOfferPrice > 0 ? resolvedOfferPrice : Number(listing.price);
   const isDiscounted = Boolean(
-    !isFlashDrop &&
-      activeOffer &&
+    activeOffer &&
       (activeOffer.status === "accepted" || activeOffer.status === "countered")
   );
   const sellerFee = calculateEscrowCommission(payablePrice);
@@ -313,7 +307,7 @@ export function DirectCheckoutForm({
           listingId: listing.id,
           phoneNumber: norm.digits,
           buyerName: buyerName.trim() || "Verified Buyer",
-          offerId: isFlashDrop ? undefined : activeOffer?.id,
+          offerId: activeOffer?.id,
         }),
       });
 
@@ -348,7 +342,7 @@ export function DirectCheckoutForm({
     `${displayTitle} (${listing.overall_team_strength} OVR) — ${formatCurrency(
       payablePrice,
       listing.currency
-    )} via M-Pesa Till 1572931 Escrow: ${shareUrl}`
+    )} via eFootballMarket marketplace checkout (M-Pesa Till 1572931): ${shareUrl}`
   )}`;
 
   const whatsappSupportHref = `https://wa.me/254794400365?text=${encodeURIComponent(
@@ -403,16 +397,6 @@ export function DirectCheckoutForm({
                 Create Free Account
               </Button>
             </Link>
-          </div>
-        </div>
-      )}
-
-      {isFlashDrop && (
-        <div className="p-3.5 rounded-xl bg-sx-amber-tint border border-sx-amber-border text-xs text-sx-amber-text flex items-start gap-2.5">
-          <Tag className="w-4 h-4 shrink-0 mt-0.5" />
-          <div>
-            <strong className="block font-bold">Friday Drop Promotional Price Active</strong>
-            <span>Locked at {formatCurrency(payablePrice, listing.currency)} — custom offers are paused during drops.</span>
           </div>
         </div>
       )}

@@ -69,7 +69,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const rate = checkRateLimit(`fav_toggle:${user.id}:${ip}`, 30, 60000);
+    const rate = await checkRateLimit(`fav_toggle:${user.id}:${ip}`, 30, 60000);
     if (!rate.success) {
       return NextResponse.json(
         { error: "Too many watchlist updates. Please wait a moment." },

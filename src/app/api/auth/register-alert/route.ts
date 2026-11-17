@@ -15,7 +15,7 @@ const registerAlertSchema = z.object({
 export async function POST(req: NextRequest) {
   try {
     const ip = getClientIp(req);
-    const rate = checkRateLimit(`reg_alert:${ip}`, 3, 600000);
+    const rate = await checkRateLimit(`reg_alert:${ip}`, 3, 600000);
     if (!rate.success) {
       return NextResponse.json({ success: false, error: "Rate limited" }, { status: 429 });
     }

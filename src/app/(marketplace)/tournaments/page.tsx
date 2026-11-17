@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Badge } from "@/components/ui/Badge";
 import { Button } from "@/components/ui/Button";
 import { DetailTabLink } from "@/components/ui/DetailTabLink";
@@ -36,6 +37,7 @@ import {
   Crown,
   Play,
   RotateCw,
+  AlertCircle,
   Lock,
   UserPlus,
   LogIn,
@@ -46,8 +48,10 @@ import {
 } from "lucide-react";
 import { calculateTournamentFee } from "@/lib/utils/tournamentFee";
 import { QuietAlertOptIn } from "@/components/common/QuietAlertOptIn";
+import { saveTournamentRegistrationDraft } from "@/lib/tournaments/registrationDraft";
 
 export default function TournamentsPage() {
+  const router = useRouter();
   const { user, profile, displayName } = useAuth();
   const isAdmin = isSuperAdminEmail(user?.email) || isUserAdmin(user?.email, profile?.role);
 
@@ -65,7 +69,7 @@ export default function TournamentsPage() {
   const [gamerTag, setGamerTag] = useState("");
   const [friendId, setFriendId] = useState("");
   const [phone, setPhone] = useState("");
-  const [paymentMethod, setPaymentMethod] = useState<"wallet" | "mpesa_till">("wallet");
+  const [paymentMethod, setPaymentMethod] = useState<"wallet" | "mpesa_stk">("wallet");
   const [regResult, setRegResult] = useState<{ remaining_balance?: number; paid_via_wallet?: boolean } | null>(null);
   const [submittingReg, setSubmittingReg] = useState(false);
   const [regSuccess, setRegSuccess] = useState(false);
@@ -172,9 +176,25 @@ export default function TournamentsPage() {
     }
 
     setRegError("");
+    const isPaid = (selectedTourney.entry_fee_kes || 0) > 0;
+    if (isPaid && paymentMethod === "mpesa_stk") {
+      const draftSaved = saveTournamentRegistrationDraft({
+        tournament_id: selectedTourney.id,
+        gamer_tag: gamerTag,
+        friend_id: friendId,
+        phone_number: phone,
+      });
+      if (!draftSaved) {
+        setRegError("Your browser could not preserve these details for the payment page. Keep this form open and check your browser storage settings, or continue to the registration page and enter them again.");
+        return;
+      }
+      setIsRegisterOpen(false);
+      router.push(`/tournaments/register?id=${encodeURIComponent(selectedTourney.id)}`);
+      return;
+    }
+
     setSubmittingReg(true);
     try {
-      const isPaid = (selectedTourney.entry_fee_kes || 0) > 0;
       const res = await fetch("/api/tournaments", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -194,7 +214,10 @@ export default function TournamentsPage() {
         throw new Error(data.error || "Failed to register");
       }
 
-      setRegResult(data);
+      setRegResult({
+        remaining_balance: data.remainingBalance,
+        paid_via_wallet: isPaid && paymentMethod === "wallet",
+      });
       setRegSuccess(true);
       await fetchTourneys();
     } catch (err: any) {
@@ -281,7 +304,7 @@ export default function TournamentsPage() {
       await fetchTourneys();
 
       if (data.isChampionCrowned) {
-        alert(`CHAMPION CROWNED! ${data.championName} has won the tournament! Prize money dispatched via Till 1572931.`);
+        alert(`CHAMPION RECORDED! ${data.championName} won the tournament. The desk has been alerted to arrange any published prize manually; this does not confirm payment.`);
       }
     } catch (err: any) {
       setScoreError(err.message || "Failed to post score.");
@@ -292,7 +315,7 @@ export default function TournamentsPage() {
 
   // Handle Tournament Deletion (Admin)
   const handleDeleteTournament = async (tourneyId: string) => {
-    if (!confirm("Are you sure you want to delete this tournament? This cannot be undone.")) return;
+    if (!confirm("Remove this tournament only if it has no payment or registration activity? Removal does not issue a refund. Tournaments with payment or registration records are blocked; contact support for cancellation or refund review.")) return;
     try {
       const res = await fetch(`/api/tournaments?id=${tourneyId}`, { method: "DELETE" });
       if (res.ok) {
@@ -313,7 +336,7 @@ export default function TournamentsPage() {
         <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-6">
           <div className="space-y-3 max-w-2xl">
             <span className="inline-block px-2.5 py-0.5 rounded bg-sx-green-tint border border-sx-green-border text-[11px] font-mono font-bold text-sx-green-text uppercase">
-              Competitive Arena &middot; Till 1572931
+              Competitive Tournament Arena
             </span>
 
             <h1 className="text-2xl sm:text-4xl font-bold text-sx-ink font-display tracking-tight">
@@ -321,7 +344,7 @@ export default function TournamentsPage() {
             </h1>
 
             <p className="text-xs sm:text-sm text-sx-ink-soft leading-relaxed">
-              Register with your eFootball Friend ID, compete in tracked Konami Match Rooms, submit final score screenshots, and receive M-Pesa prize payouts via Till <strong className="text-sx-green-text">1572931</strong>.
+              Register with your eFootball Friend ID, compete in tracked match brackets, and submit final scores. After a final result is recorded, the tournament desk is alerted to review and manually arrange any published prize; this page does not confirm payment.
             </p>
           </div>
 
@@ -358,7 +381,7 @@ export default function TournamentsPage() {
                 Sign In Required to Enter Brackets
               </h3>
               <p className="text-xs text-sx-muted max-w-2xl leading-relaxed">
-                Tournaments pay out real M-Pesa prize pools via Till 1572931. Sign in or create an account so your Friend ID and payout number are verified.
+                Sign in or create an account to register your Friend ID and M-Pesa contact number. Paid entry is confirmed through STK Push or account balance; the tournament desk arranges any prize payment manually after the result is recorded.
               </p>
             </div>
           </div>
@@ -387,7 +410,7 @@ export default function TournamentsPage() {
         <span className="inline-flex items-center gap-2">
           <ShieldCheck className="w-4 h-4 text-sx-green-text shrink-0" />
           <span>
-            <strong className="text-sx-ink">Free cups: KES 0</strong> · Paid pots held on Till 1572931 · 100% refund if cancelled before bracket start
+            <strong className="text-sx-ink">Free cups: KES 0</strong> · Paid entries require STK Push or account balance · Cancelling does not issue an automatic refund; contact support for review
           </span>
         </span>
         <DetailTabLink href="/escrow-guarantee#fees" variant="pill">
@@ -524,7 +547,7 @@ export default function TournamentsPage() {
                     <div className="p-4 rounded-2xl bg-pitch-card border border-pitch-border space-y-2">
                       <div className="flex items-center justify-between">
                         <span className="text-xs text-sx-muted font-semibold">
-                          {t.tournament_type === "1v1" || t.max_players <= 2 ? "Winner Takes All (Net Pool)" : "Total Prize Pool"}
+                          {t.status === "registration_open" ? "Projected Prize Pool (if all slots fill)" : t.tournament_type === "1v1" || t.max_players <= 2 ? "Winner Takes All (Net Pool)" : "Total Prize Pool"}
                         </span>
                         <span className="text-lg font-extrabold text-sx-amber-text font-display">
                           {formatCurrency(t.prize_pool_kes, "KES")}
@@ -546,10 +569,10 @@ export default function TournamentsPage() {
                         <div className="pt-1 text-[10px] text-sx-muted flex items-center justify-between border-t border-pitch-border/40">
                           <span className="flex items-center gap-1 text-sx-green-text font-medium">
                             <ShieldCheck className="w-3.5 h-3.5" />
-                            <span>Escrow Protected</span>
+                            <span>Entry Fees Collected for Tournament</span>
                           </span>
                           <span className="text-sx-amber-text/90 font-mono">
-                            Platform Deal: KES {t.admin_fee_kes ?? calculateTournamentFee(t.entry_fee_kes * t.max_players)}
+                            {t.status === "registration_open" ? "Projected platform fee" : "Platform fee"}: KES {t.admin_fee_kes ?? calculateTournamentFee(t.entry_fee_kes * t.max_players)}
                           </span>
                         </div>
                       )}
@@ -619,7 +642,7 @@ export default function TournamentsPage() {
                     <div className="flex items-center gap-2 pt-1">
                       <a
                         href={`https://wa.me/?text=${encodeURIComponent(
-                          `Join my eFootball tournament "${t.title}"!\nPrize Pool: KES ${t.prize_pool_kes.toLocaleString()}\nEntry Fee: ${
+                          `Join my eFootball tournament "${t.title}"!\n${t.status === "registration_open" ? "Projected Prize Pool (if all slots fill)" : "Prize Pool"}: KES ${t.prize_pool_kes.toLocaleString()}\nEntry Fee: ${
                             t.entry_fee_kes > 0 ? `KES ${t.entry_fee_kes}` : "FREE"
                           }\nFormat: ${t.format}\n\nRegister now: https://efootballmarket.co.ke/tournaments?join=${t.id}`
                         )}`}
@@ -647,7 +670,7 @@ export default function TournamentsPage() {
                     {/* Moderator / Admin Management Buttons */}
                     {isModerator && (
                       <div className="flex items-center gap-2 pt-1 border-t border-pitch-border/40">
-                        {t.status === "registration_open" && (
+                        {t.status === "registration_open" && (!t.matches || t.matches.length === 0) && (
                           <button
                             type="button"
                             onClick={() => {
@@ -665,7 +688,7 @@ export default function TournamentsPage() {
                           type="button"
                           onClick={() => handleDeleteTournament(t.id)}
                           className="p-1.5 rounded-xl text-sx-red-text hover:text-sx-red-text hover:bg-sx-red-tint border border-sx-red-border transition-all cursor-pointer"
-                          title="Delete / cancel tournament"
+                          title="Remove tournament with no payment or registration activity"
                         >
                           <Trash2 className="w-4 h-4" />
                         </button>
@@ -703,23 +726,25 @@ export default function TournamentsPage() {
 
             <div className="flex flex-wrap items-center gap-3">
               <span className="text-xs text-sx-ink-soft font-semibold bg-pitch-card px-3 py-1.5 rounded-xl border border-pitch-border">
-                Prize Pool: <strong className="text-sx-green-text">{formatCurrency(selectedTourney.prize_pool_kes, "KES")}</strong>
+                {selectedTourney.status === "registration_open" ? "Projected Prize Pool (if all slots fill)" : "Prize Pool"}: <strong className="text-sx-green-text">{formatCurrency(selectedTourney.prize_pool_kes, "KES")}</strong>
               </span>
 
-              {((user && selectedTourney.created_by === user.id) || isAdmin) && (
-                <div className="flex items-center gap-2">
-                  <Button
-                    variant="gold"
-                    size="sm"
-                    className="text-xs font-bold flex items-center gap-1.5 cursor-pointer"
-                    disabled={generatingBrackets}
-                    onClick={() => handleGenerateBrackets(false)}
-                  >
-                    <Shuffle className="w-3.5 h-3.5" />
-                    <span>{selectedTourney.matches && selectedTourney.matches.length > 0 ? "Re-form Brackets" : "Form Brackets"}</span>
-                  </Button>
-                </div>
-              )}
+              {((user && selectedTourney.created_by === user.id) || isAdmin) &&
+                selectedTourney.status === "registration_open" &&
+                (!selectedTourney.matches || selectedTourney.matches.length === 0) && (
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="gold"
+                      size="sm"
+                      className="text-xs font-bold flex items-center gap-1.5 cursor-pointer"
+                      disabled={generatingBrackets}
+                      onClick={() => handleGenerateBrackets(false)}
+                    >
+                      <Shuffle className="w-3.5 h-3.5" />
+                      <span>Form Brackets</span>
+                    </Button>
+                  </div>
+                )}
             </div>
           </div>
 
@@ -733,27 +758,28 @@ export default function TournamentsPage() {
                   </div>
                   <div>
                     <span className="text-xs font-black uppercase tracking-wider text-black/70">
-                      Official Tournament Champion Crowned
+                      Champion recorded · prize payment not confirmed
                     </span>
                     <h4 className="text-2xl sm:text-3xl font-black text-black">
                       {selectedTourney.winner_name}
                     </h4>
                     <p className="text-xs font-bold text-black/80 mt-1">
-                      Awarded 1st Place Champion Reward of {formatCurrency(selectedTourney.first_place_kes, "KES")} via Till 1572931!
+                      Published first-place prize: {formatCurrency(selectedTourney.first_place_kes, "KES")}. The tournament desk must arrange any M-Pesa payment manually; this result banner is not a payout receipt.
+                      {selectedTourney.second_place_kes > 0 && ` Runner-up prize: ${formatCurrency(selectedTourney.second_place_kes, "KES")}.`}
                     </p>
                   </div>
                 </div>
 
                 <a
                   href={`https://wa.me/254794400365?text=${encodeURIComponent(
-                    `Congratulations to Champion ${selectedTourney.winner_name} for winning "${selectedTourney.title}"! Prize of KES ${selectedTourney.first_place_kes} confirmed.`
+                    `Hello, the final result for "${selectedTourney.title}" records ${selectedTourney.winner_name} as champion. Please confirm the status of the manual prize payout. Published first-place prize: KES ${selectedTourney.first_place_kes}${selectedTourney.second_place_kes > 0 ? `; runner-up prize: KES ${selectedTourney.second_place_kes}` : ""}.`
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
                   className="px-5 py-3 rounded-xl bg-zinc-950 text-white hover:bg-zinc-800 font-bold text-xs shadow-lg transition-all flex items-center gap-2 shrink-0"
                 >
                   <MessageCircle className="w-4 h-4" />
-                  <span>Verify Payout Receipt</span>
+                  <span>Ask About Prize Payment</span>
                 </a>
               </div>
             </div>
@@ -767,7 +793,7 @@ export default function TournamentsPage() {
                 const rounds = Array.from(new Set(selectedTourney.matches!.map((m) => m.round)));
 
                 return (
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-2">
+                  <div className="grid grid-cols-1 md:grid-cols-3 2xl:grid-cols-4 gap-6 pt-2">
                     {rounds.map((roundName) => {
                       const roundMatches = selectedTourney.matches!.filter((m) => m.round === roundName);
 
@@ -880,7 +906,7 @@ export default function TournamentsPage() {
               <Swords className="w-10 h-10 text-sx-muted mx-auto" />
               <h4 className="text-base font-bold text-sx-ink">Knockout Brackets Pending Formation</h4>
               <p className="text-xs text-sx-muted max-w-md mx-auto">
-                Players are currently registering for this tournament. Once slots are filled or registration ends, the administrator will form the official pairings!
+                Players are registering. The moderator can form brackets after every slot is filled and each paid entry is confirmed.
               </p>
               {isAdmin && (
                 <Button
@@ -940,12 +966,12 @@ export default function TournamentsPage() {
             Standard 12-minute match length, Extra Time enabled, PK shootout enabled. Both players set match duration to 12 mins in eFootball Friend Match settings.
           </div>
           <div className="p-4 rounded-xl bg-pitch-card border border-pitch-border space-y-1.5">
-            <strong className="text-sx-amber-text block font-bold">2. Score Verification</strong>
-            Both players post final match screenshot in the Match Room or submit scores directly on this page.
+            <strong className="text-sx-amber-text block font-bold">2. Score Reporting</strong>
+            Players can share final-score screenshots; the tournament host or administrator records the result. Screenshots are not automatically verified by the system.
           </div>
           <div className="p-4 rounded-xl bg-pitch-card border border-pitch-border space-y-1.5">
-            <strong className="text-sx-amber-text block font-bold">3. Verified Payouts</strong>
-            Winnings are sent to Safaricom M-Pesa after final score verification (Support: 0794 400 365).
+            <strong className="text-sx-amber-text block font-bold">3. M-Pesa Prize Payouts</strong>
+            A final result triggers an alert to the tournament desk. Prize disbursement is manual; timing varies, and a recorded result does not mean funds have been sent.
           </div>
         </div>
       </div>
@@ -986,7 +1012,7 @@ export default function TournamentsPage() {
                   Only Registered Members Can Join Tournaments
                 </h4>
                 <p className="text-xs text-sx-ink-soft leading-relaxed">
-                  To ensure competitive integrity, prevent bracket abandonment, and guarantee secure M-Pesa prize payouts, all players must be registered members of our eFootball Kenya community.
+                  A registered community account ties each entry to a player record and payout contact. The tournament desk reviews and arranges any prize payment manually after the final result.
                 </p>
               </div>
 
@@ -995,13 +1021,13 @@ export default function TournamentsPage() {
                 <div className="flex items-start gap-2.5 text-sx-ink-soft">
                   <ShieldCheck className="w-4 h-4 text-sx-green-text shrink-0 mt-0.5" />
                   <div>
-                    <strong className="text-sx-ink">Fair Play & No Multiple Slots:</strong> One slot per verified community member account.
+                    <strong className="text-sx-ink">Fair Play & No Multiple Slots:</strong> One slot per registered community account.
                   </div>
                 </div>
                 <div className="flex items-start gap-2.5 text-sx-ink-soft">
                   <Award className="w-4 h-4 text-sx-amber-text shrink-0 mt-0.5" />
                   <div>
-                    <strong className="text-sx-ink">Instant M-Pesa Payout:</strong> Winnings sent via Safaricom Till 1572931 directly to your phone.
+                    <strong className="text-sx-ink">Manual Prize Payout:</strong> A recorded winner triggers a desk alert; a staff member must arrange any M-Pesa prize payment. Timing varies, and the bracket page does not show payout completion.
                   </div>
                 </div>
                 <div className="flex items-start gap-2.5 text-sx-ink-soft">
@@ -1091,7 +1117,7 @@ export default function TournamentsPage() {
                         <span>Paid with Account Balance!</span>
                       </div>
                       <p className="text-[11px] text-sx-ink-soft">
-                        Entry fee of <strong>KES {selectedTourney.entry_fee_kes.toLocaleString()}</strong> has been deducted directly from your account balance. Your slot is guaranteed immediately!
+                        Entry fee of <strong>KES {selectedTourney.entry_fee_kes.toLocaleString()}</strong> was deducted from your account balance and your entry was recorded.
                       </p>
                       {regResult.remaining_balance !== undefined && (
                         <div className="pt-1 border-t border-sx-green-border flex items-center justify-between text-[11px]">
@@ -1105,16 +1131,16 @@ export default function TournamentsPage() {
                   ) : selectedTourney.entry_fee_kes > 0 ? (
                     <div className="p-3.5 rounded-2xl bg-sx-amber-tint border border-sx-amber-border text-xs text-sx-ink-soft space-y-1.5 text-left">
                       <div className="flex items-center gap-2 text-sx-amber-text font-bold">
-                        <Smartphone className="w-4 h-4" />
-                        <span>Slot Reserved — Pay via Till 1572931</span>
+                        <AlertCircle className="w-4 h-4" />
+                        <span>Payment confirmation needs support review</span>
                       </div>
                       <p className="text-[11px] text-sx-ink-soft">
-                        Please send <strong>KES {selectedTourney.entry_fee_kes.toLocaleString()}</strong> to Safaricom Buy Goods Till <strong className="text-sx-amber-text font-mono">1572931</strong> (EFootballMarket). Moderator Brian Okibo will verify and approve your slot.
+                        This form cannot confirm a paid entry without an account-balance record or provider-confirmed M-Pesa payment. Contact support before sending money or trying again.
                       </p>
                     </div>
                   ) : (
                     <p className="text-xs text-sx-ink-soft">
-                      Free slot locked in! Get your eFootball squad ready.
+                      Your free entry is recorded. The moderator will form brackets after registration closes and the field is ready.
                     </p>
                   )}
 
@@ -1124,8 +1150,8 @@ export default function TournamentsPage() {
                         regResult?.paid_via_wallet
                           ? `Paid via Account Balance (KES ${selectedTourney.entry_fee_kes})`
                           : selectedTourney.entry_fee_kes > 0
-                          ? `Paying KES ${selectedTourney.entry_fee_kes} via Till 1572931`
-                          : "Free Entry"
+                            ? "Payment confirmation requires support review"
+                            : "Free Entry"
                       }. Ready for match room!`
                     )}`}
                     target="_blank"
@@ -1181,7 +1207,7 @@ export default function TournamentsPage() {
                   />
 
                   <Input
-                    label="Safaricom Phone Number (For M-Pesa Payout)"
+                    label="Safaricom Contact Phone (M-Pesa payment or manual prize follow-up)"
                     placeholder="e.g. +254 712 345 678"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
@@ -1249,7 +1275,7 @@ export default function TournamentsPage() {
                                 <p className="text-[11px] text-sx-muted mt-1 leading-relaxed">
                                   {hasEnough
                                     ? `Instant deduction of KES ${selectedTourney.entry_fee_kes.toLocaleString()} from your wallet. Zero SMS waiting.`
-                                    : `Insufficient wallet balance (KES ${balance.toLocaleString()} available / KES ${selectedTourney.entry_fee_kes.toLocaleString()} required). Top up or choose Till payment below.`}
+                                    : `Insufficient wallet balance (KES ${balance.toLocaleString()} available / KES ${selectedTourney.entry_fee_kes.toLocaleString()} required). Top up or choose M-Pesa STK Push below.`}
                                 </p>
                               </div>
                             </div>
@@ -1257,11 +1283,11 @@ export default function TournamentsPage() {
                         );
                       })()}
 
-                      {/* Option 2: Safaricom Till 1572931 */}
+                      {/* Option 2: M-Pesa STK Push */}
                       <div
-                        onClick={() => setPaymentMethod("mpesa_till")}
+                        onClick={() => setPaymentMethod("mpesa_stk")}
                         className={`p-3.5 rounded-2xl border transition-all cursor-pointer ${
-                          paymentMethod === "mpesa_till"
+                          paymentMethod === "mpesa_stk"
                             ? "bg-sx-amber-tint border-amber-500 ring-1 ring-amber-500/40 shadow-md"
                             : "bg-pitch-card border-pitch-border hover:border-sx-border-strong"
                         }`}
@@ -1269,12 +1295,12 @@ export default function TournamentsPage() {
                         <div className="flex items-start gap-3">
                           <div
                             className={`w-4 h-4 mt-0.5 rounded-full border flex items-center justify-center shrink-0 ${
-                              paymentMethod === "mpesa_till"
+                              paymentMethod === "mpesa_stk"
                                 ? "border-amber-400 bg-amber-500"
                                 : "border-sx-border-strong"
                             }`}
                           >
-                            {paymentMethod === "mpesa_till" && (
+                            {paymentMethod === "mpesa_stk" && (
                               <div className="w-1.5 h-1.5 rounded-full bg-white" />
                             )}
                           </div>
@@ -1282,15 +1308,14 @@ export default function TournamentsPage() {
                             <div className="flex items-center justify-between gap-2 flex-wrap">
                               <span className="text-xs font-bold text-sx-ink flex items-center gap-1.5">
                                 <Smartphone className="w-3.5 h-3.5 text-sx-amber-text" />
-                                <span>Pay via Safaricom Till</span>
+                                <span>Pay by M-Pesa STK Push</span>
                               </span>
-                              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-sx-amber-tint text-sx-amber-text border border-sx-amber-border font-mono">
-                                Till 1572931
+                              <span className="text-[10px] font-extrabold px-2 py-0.5 rounded-full bg-sx-amber-tint text-sx-amber-text border border-sx-amber-border">
+                                Provider confirmation required
                               </span>
                             </div>
                             <p className="text-[11px] text-sx-muted mt-1 leading-relaxed">
-                              Send KES {selectedTourney.entry_fee_kes.toLocaleString()} to Buy Goods Till{" "}
-                              <strong className="text-sx-amber-text font-mono">1572931</strong> (EFootballMarket). Moderator verifies M-Pesa ref.
+                              Continue to the payment page to request an STK prompt and wait for M-Pesa provider confirmation. A manual Till transfer does not register a paid entry through this form.
                             </p>
                           </div>
                         </div>
@@ -1311,7 +1336,11 @@ export default function TournamentsPage() {
                       className="w-full font-bold cursor-pointer"
                       isLoading={submittingReg}
                     >
-                      Confirm Registration
+                      {!selectedTourney.entry_fee_kes
+                        ? "Confirm Free Registration"
+                        : paymentMethod === "wallet"
+                          ? `Pay KES ${selectedTourney.entry_fee_kes.toLocaleString()} from Balance`
+                          : "Continue to M-Pesa STK Push"}
                     </Button>
                   </div>
                 </>

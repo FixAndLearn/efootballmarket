@@ -1,4 +1,12 @@
 import { mpesaClient } from "@/lib/mpesa/client";
+import { VerifiedMpesaSettlement } from "@/lib/mpesa/types";
+import { createAdminClient } from "@/lib/supabase/admin";
+import {
+  amountsMatch,
+  isVerifiedSettlementClaim,
+  normalizeMpesaReceiptNumber,
+  normalizePositiveAmount,
+} from "@/lib/mpesa/settlement";
 import { dispatchAdminWhatsAppAlert } from "@/lib/notifications/adminAlert";
 import { checkRateLimit } from "@/lib/security/rateLimiter";
 import {
@@ -26,7 +34,7 @@ const NO_CACHE_HEADERS = {
 export async function GET(req: NextRequest) {
   try {
     const ip = getClientIp(req);
-    const rate = checkRateLimit(`tourney_pay_status:${ip}`, 90, 60000);
+    const rate = await checkRateLimit(`tourney_pay_status:${ip}`, 90, 60000);
     if (!rate.success) {
       return NextResponse.json(
         { error: "Too many status checks. Please wait a moment." },
@@ -61,66 +69,140 @@ export async function GET(req: NextRequest) {
       );
     }
 
-    // 2. If already completed in DB, return success immediately
+    // 2. A completed row is trusted only if its receipt has a matching global claim.
     if (payment && payment.status === "completed") {
+      const receipt = normalizeMpesaReceiptNumber(payment.mpesa_receipt_number);
+      const adminSupabase = createAdminClient();
+      const { data: receiptClaim, error: receiptClaimError } = receipt
+        ? await adminSupabase
+            .from("mpesa_settlement_receipts")
+            .select("source, entity_id, provider, verification_method, transaction_id, amount")
+            .eq("receipt_number", receipt)
+            .maybeSingle()
+        : { data: null, error: true };
+
+      if (
+        !receipt ||
+        receiptClaimError ||
+        !isVerifiedSettlementClaim(receiptClaim, {
+          source: "tournament",
+          entityId: payment.id,
+          transactionIds: [payment.checkout_request_id, payment.merchant_request_id],
+          amount: payment.amount,
+        })
+      ) {
+        return NextResponse.json(
+          { error: "Provider settlement record could not be confirmed." },
+          { status: 503, headers: NO_CACHE_HEADERS }
+        );
+      }
+
       const tourney = await TournamentService.getTournamentById(payment.tournament_id);
       const participant = (tourney?.participants || []).find(
-        (p) => p.friend_id.toLowerCase() === payment.friend_id.toLowerCase()
+        (p) =>
+          String(p.friend_id || "").trim().toLowerCase() ===
+          String(payment.friend_id || "").trim().toLowerCase()
       );
+      if (
+        !tourney ||
+        !amountsMatch(payment.amount, tourney.entry_fee_kes) ||
+        !participant ||
+        participant.payment_status !== "paid" ||
+        !String(participant.payment_method || "").trim().toLowerCase().startsWith("mpesa") ||
+        !amountsMatch(participant.amount_paid, payment.amount) ||
+        (participant.user_id ?? null) !== (payment.user_id ?? null)
+      ) {
+        return NextResponse.json(
+          { error: "Provider settlement does not match a paid tournament participant." },
+          { status: 503, headers: NO_CACHE_HEADERS }
+        );
+      }
+
       const safeReceipt = authUser
-        ? payment.mpesa_receipt_number || "CONFIRMED"
-        : payment.mpesa_receipt_number
-        ? `${String(payment.mpesa_receipt_number).slice(0, 3)}****${String(
-            payment.mpesa_receipt_number
-          ).slice(-2)}`
-        : "CONFIRMED";
+        ? receipt
+        : `${receipt.slice(0, 3)}****${receipt.slice(-2)}`;
 
       return NextResponse.json(
         {
           status: "completed",
           receiptNumber: safeReceipt,
           resultCode: 0,
-          resultDesc: "Payment verified successfully",
+          resultDesc: "Provider-confirmed payment is registered",
           participant: sanitizeParticipant(participant),
         },
         { headers: NO_CACHE_HEADERS }
       );
     }
 
-    // 3. Actively query UnifiedPay Till 1572931 for live settlement status
+    // 3. Query UnifiedPay only for a transaction linked to the stored tournament payment.
+    const storedTransactionIds = [
+      payment?.checkout_request_id,
+      payment?.merchant_request_id,
+    ]
+      .filter(Boolean)
+      .map((id) => String(id));
+    if (checkoutRequestId && payment && !storedTransactionIds.includes(checkoutRequestId)) {
+      return NextResponse.json(
+        { error: "Checkout ID does not belong to this tournament payment." },
+        { status: 400, headers: NO_CACHE_HEADERS }
+      );
+    }
     const idToPoll = sanitizeTransactionId(
-      checkoutRequestId || payment?.checkout_request_id || payment?.merchant_request_id
+      payment?.checkout_request_id || payment?.merchant_request_id
     );
-    if (idToPoll && mpesaClient.isUnifiedPay()) {
+    if (payment && idToPoll && mpesaClient.isUnifiedPay()) {
       const liveStatus = await mpesaClient.checkUnifiedPayStatus(idToPoll);
-      const expectedAmt = Number(payment?.amount || 0);
-      const settledAmt = Number(liveStatus?.amount || expectedAmt);
+      const expectedAmt = normalizePositiveAmount(payment.amount);
+      const settledAmt = normalizePositiveAmount(liveStatus?.amount);
+      const receipt = normalizeMpesaReceiptNumber(liveStatus?.receiptNumber);
+      const tournament = await TournamentService.getTournamentById(payment.tournament_id);
 
-      if (liveStatus && liveStatus.isSuccess && (expectedAmt <= 0 || settledAmt + 1 >= expectedAmt)) {
-        const receipt = liveStatus.receiptNumber || `CONFIRMED_${Date.now()}`;
+      if (
+        liveStatus?.isSuccess &&
+        receipt &&
+        settledAmt !== null &&
+        expectedAmt !== null &&
+        tournament &&
+        amountsMatch(expectedAmt, tournament.entry_fee_kes) &&
+        amountsMatch(settledAmt, expectedAmt)
+      ) {
+        const settlement: VerifiedMpesaSettlement = {
+          provider: "unifiedpay",
+          verificationMethod: "provider_status_query",
+          providerStatus: "completed",
+          transactionId: idToPoll,
+          checkoutRequestId: payment.checkout_request_id || undefined,
+          merchantRequestId: payment.merchant_request_id || undefined,
+          receiptNumber: receipt,
+          amount: settledAmt,
+          verifiedAt: new Date().toISOString(),
+        };
         const confirmResult = await TournamentService.confirmTournamentPayment(
           idToPoll,
-          receipt,
-          settledAmt || payment?.amount
+          settlement
         );
-
-        const tourney = payment ? await TournamentService.getTournamentById(payment.tournament_id) : null;
+        if (!confirmResult.success) {
+          return NextResponse.json(
+            { status: "pending", resultCode: 100, resultDesc: "Payment confirmation is pending." },
+            { headers: NO_CACHE_HEADERS }
+          );
+        }
 
         await dispatchAdminWhatsAppAlert({
           eventType: "TOURNAMENT_REGISTRATION",
-          listingTitle: tourney?.title || "eFootball Tournament",
-          username: `${payment?.gamer_tag || "Player"} (CONFIRMED PAID)`,
-          buyerPhone: payment?.phone_number || liveStatus.phoneNumber || "254794400365",
-          amount: settledAmt || payment?.amount || 0,
-          details: `Gamer Tag: ${payment?.gamer_tag} | Friend ID: ${payment?.friend_id} | M-Pesa Receipt: ${receipt} | Till 1572931`,
-        }).catch((e) => console.warn("WhatsApp alert error:", e));
+          listingTitle: tournament.title || "eFootball Tournament",
+          username: `${payment.gamer_tag || "Player"} (PROVIDER CONFIRMED)`,
+          buyerPhone: payment.phone_number || liveStatus.phoneNumber || "",
+          amount: settledAmt,
+          details: `Gamer Tag: ${payment.gamer_tag} | Friend ID: ${payment.friend_id} | M-Pesa Receipt: ${receipt} | Till 1572931`,
+        }).catch(() => console.warn("Tournament payment alert failed."));
 
         return NextResponse.json(
           {
             status: "completed",
             receiptNumber: authUser ? receipt : `${String(receipt).slice(0, 3)}****`,
             resultCode: 0,
-            resultDesc: "Payment verified via Safaricom Till 1572931",
+            resultDesc: "Payment verified by the provider",
             participant: sanitizeParticipant(confirmResult.participant),
           },
           { headers: NO_CACHE_HEADERS }
@@ -165,10 +247,10 @@ export async function GET(req: NextRequest) {
       },
       { headers: NO_CACHE_HEADERS }
     );
-  } catch (err: any) {
-    console.error("Tournament payment status route error:", err);
+  } catch {
+    console.error("Tournament payment status check failed.");
     return NextResponse.json(
-      { error: err.message || "Failed to check tournament payment status" },
+      { error: "Failed to check tournament payment status" },
       { status: 500, headers: NO_CACHE_HEADERS }
     );
   }

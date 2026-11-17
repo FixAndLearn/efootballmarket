@@ -1,5 +1,12 @@
 import { mpesaClient } from "@/lib/mpesa/client";
-import { AnyCallbackBody, StkCallbackBody } from "@/lib/mpesa/types";
+import { AnyCallbackBody, VerifiedMpesaSettlement } from "@/lib/mpesa/types";
+import {
+  amountsMatch,
+  isValidSettlementEvidence,
+  isVerifiedSettlementClaim,
+  normalizeMpesaReceiptNumber,
+  normalizePositiveAmount,
+} from "@/lib/mpesa/settlement";
 import { dispatchAdminOrderAlert } from "@/lib/notifications/adminAlert";
 import { sendBuyerPaymentConfirmedSms, sendSellerOrderReceivedSms } from "@/lib/notifications/smsAlert";
 import { sendBuyerPaymentSecuredWhatsApp, sendSellerDeliverCredentialsWhatsApp } from "@/lib/whatsapp/notifications";
@@ -12,7 +19,11 @@ export class PaymentService {
   /**
    * Initiates STK push for an order.
    */
-  async initiateOrderPayment(orderId: string, rawPhoneNumber: string): Promise<{ checkoutRequestId: string; customerMessage: string }> {
+  async initiateOrderPayment(
+    orderId: string,
+    rawPhoneNumber: string,
+    onStkPushRequestStart?: () => void
+  ): Promise<{ checkoutRequestId: string; customerMessage: string }> {
     const { data: order, error: orderError } = await this.supabase
       .from("orders")
       .select("*, listing:listings(title)")
@@ -35,7 +46,7 @@ export class PaymentService {
       amount: order.total_amount,
       orderNumber: order.order_number,
       description: `Payment for ${order.listing?.title || "eFootball Account"}`,
-    });
+    }, onStkPushRequestStart);
 
     // Record pending payment entry
     const { error: insertError } = await this.supabase
@@ -66,204 +77,144 @@ export class PaymentService {
    */
   async markPaymentSuccessful(
     paymentId: string,
-    receiptNumber: string,
-    amount: number,
-    rawCallback: any
+    settlement: VerifiedMpesaSettlement,
+    rawCallback: unknown
   ): Promise<void> {
-    const { data: payment } = await this.supabase
-      .from("payments")
-      .select("*, order:orders(*, listing:listings(title))")
-      .eq("id", paymentId)
+    const receiptNumber = normalizeMpesaReceiptNumber(settlement?.receiptNumber);
+    const amount = normalizePositiveAmount(settlement?.amount);
+    const transactionId = String(settlement?.transactionId || '').trim();
+    const strictId = (value?: string | null) => {
+      const raw = String(value || '').trim();
+      const safe = raw.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 80);
+      return raw && raw === safe ? safe : '';
+    };
+    const safeTransaction = strictId(transactionId);
+    const safeCheckout = strictId(settlement?.checkoutRequestId);
+    const safeMerchant = strictId(settlement?.merchantRequestId);
+
+    if (
+      !receiptNumber ||
+      amount === null ||
+      !safeTransaction ||
+      (!safeCheckout && !safeMerchant) ||
+      !isValidSettlementEvidence(
+        settlement?.provider,
+        settlement?.verificationMethod
+      ) ||
+      settlement?.providerStatus !== 'completed' ||
+      !Number.isFinite(Date.parse(settlement?.verifiedAt || ''))
+    ) {
+      throw new Error('Provider-confirmed settlement proof is incomplete.');
+    }
+
+    const { data: payment, error: paymentError } = await this.supabase
+      .from('payments')
+      .select('*, order:orders(*, listing:listings(title))')
+      .eq('id', paymentId)
       .maybeSingle();
 
-    if (!payment) {
-      try {
-        await this.supabase.rpc("handle_mpesa_payment_success", {
-          p_checkout_request_id: paymentId,
-          p_receipt_number: receiptNumber,
-          p_amount: amount,
-          p_raw_callback: rawCallback,
-        });
-      } catch (e) {
-        console.warn("Direct RPC invocation error without payment record:", e);
-      }
-      return;
+    if (paymentError || !payment) {
+      throw new Error('Matching payment record was not found.');
     }
 
-    if (payment.status === "completed") return;
+    const order = Array.isArray(payment.order) ? payment.order[0] : payment.order;
+    const paymentAmount = normalizePositiveAmount(payment.amount);
+    const orderAmount = normalizePositiveAmount(order?.total_amount);
+    const storedCheckout = String(payment.checkout_request_id || '');
+    const storedMerchant = String(payment.merchant_request_id || '');
+    const storedIds = [storedCheckout, storedMerchant].filter(Boolean);
 
-    const expectedOrderAmount = Number(payment.amount || payment.order?.total_amount || 0);
-    if (expectedOrderAmount > 0 && amount > 0 && amount + 0.01 < expectedOrderAmount) {
-      console.error(
-        `[Security] Blocked underpayment on payment ${paymentId}: paid KES ${amount}, expected KES ${expectedOrderAmount}`
-      );
-      return;
+    if (
+      paymentAmount === null ||
+      orderAmount === null ||
+      !amountsMatch(amount, paymentAmount) ||
+      !amountsMatch(amount, orderAmount) ||
+      !storedIds.includes(safeTransaction) ||
+      (safeCheckout && storedCheckout !== safeCheckout) ||
+      (safeMerchant && storedMerchant !== safeMerchant)
+    ) {
+      throw new Error('Provider settlement does not match the stored order ledger.');
     }
 
-    // 1. First attempt to call the atomic RPC handle_mpesa_payment_success
-    let handledViaRpc = false;
-    try {
-      const { error: rpcError } = await this.supabase.rpc("handle_mpesa_payment_success", {
-        p_checkout_request_id: payment.checkout_request_id || payment.merchant_request_id || paymentId,
+    // The database function atomically claims the global M-Pesa receipt and
+    // updates payment, order, escrow, listing, and seller balance. There is no
+    // non-atomic application fallback if that function is unavailable.
+    const { data: settlementResult, error: settlementError } = await this.supabase.rpc(
+      'settle_mpesa_marketplace_payment',
+      {
+        p_payment_id: paymentId,
         p_receipt_number: receiptNumber,
         p_amount: amount,
-        p_raw_callback: rawCallback,
-      });
-
-      if (!rpcError) {
-        handledViaRpc = true;
-      } else {
-        console.warn("RPC returned error, applying direct database update:", rpcError);
+        p_provider: settlement.provider,
+        p_verification_method: settlement.verificationMethod,
+        p_transaction_id: safeTransaction,
+        p_verified_at: settlement.verifiedAt,
+        p_raw_callback: rawCallback ?? {},
       }
-    } catch (e) {
-      console.warn("RPC invocation error, applying direct database update:", e);
+    );
+
+    if (settlementError || settlementResult?.success !== true) {
+      throw new Error('Could not atomically apply the provider-confirmed settlement.');
     }
+    if (settlementResult.already_settled === true) return;
 
-    // 2. Fallback direct transactional updates ONLY if RPC did not run
-    if (!handledViaRpc) {
-      const now = new Date().toISOString();
-
-      await this.supabase
-        .from("payments")
-        .update({
-          status: "completed",
-          mpesa_receipt_number: receiptNumber,
-          raw_callback: rawCallback,
-          completed_at: now,
-        })
-        .eq("id", paymentId);
-
-      if (payment.order_id) {
-        await this.supabase
-          .from("orders")
-          .update({
-            status: "escrow_locked",
-            updated_at: now,
-          })
-          .eq("id", payment.order_id);
-
-        await this.supabase
-          .from("escrow_accounts")
-          .update({
-            escrow_state: "waiting_for_seller",
-            updated_at: now,
-          })
-          .eq("order_id", payment.order_id);
-
-        if (payment.order?.listing_id) {
-          await this.supabase
-            .from("listings")
-            .update({
-              status: "in_escrow",
-              updated_at: now,
-            })
-            .eq("id", payment.order.listing_id);
-        }
-
-        if (payment.order?.seller_id) {
-          const netAmount =
-            Number(payment.order.seller_net_amount) ||
-            Number(payment.order.total_amount || amount);
-
-          const { data: sellerProfile } = await this.supabase
-            .from("profiles")
-            .select("escrow_balance")
-            .eq("id", payment.order.seller_id)
-            .single();
-
-          const currentEscrow = Number(sellerProfile?.escrow_balance || 0);
-          await this.supabase
-            .from("profiles")
-            .update({
-              escrow_balance: currentEscrow + netAmount,
-              updated_at: now,
-            })
-            .eq("id", payment.order.seller_id);
-
-          await this.supabase.from("notifications").insert({
-            recipient_id: payment.order.seller_id,
-            type: "payment_received",
-            title: "Payment Secured in Escrow!",
-            message: `Buyer paid KES ${amount}. Net KES ${netAmount} is locked in your escrow balance. Deliver credentials within 12 hours to complete.`,
-            action_url: `/orders/${payment.order_id}`,
-            is_read: false,
-          });
-        }
-
-        if (payment.order?.buyer_id) {
-          await this.supabase.from("notifications").insert({
-            recipient_id: payment.order.buyer_id,
-            type: "mpesa_payment",
-            title: "M-Pesa Payment Confirmed on Till 1572931!",
-            message: `KES ${amount} is held safely on your order. Seller has up to 12 hours to submit Konami ID credentials.`,
-            action_url: `/orders/${payment.order_id}`,
-            is_read: false,
-          });
-        }
-      }
-    }
-
-    // 3. Always dispatch external SMS, WhatsApp, and Admin support desk alerts
+    const now = new Date().toISOString();
     if (payment.order_id) {
-
-      // Dispatch instant alert to admin support desk
       dispatchAdminOrderAlert({
-        orderId: payment.order_id || paymentId,
+        orderId: payment.order_id,
         orderNumber: payment.order?.order_number || `ORD-${paymentId.slice(0, 8)}`,
-        listingTitle: payment.order?.listing?.title || "eFootball Verified Squad",
-        amount: amount || Number(payment.order?.total_amount) || 0,
-        currency: "KES",
-        buyerPhone: payment.phone_number || "",
-        receiptNumber: receiptNumber,
-        eventType: "PAYMENT_RECEIVED",
-      }).catch((err) => console.error("Admin order alert error:", err));
+        listingTitle: payment.order?.listing?.title || 'eFootball squad listing',
+        amount,
+        currency: payment.currency || 'KES',
+        buyerPhone: payment.phone_number || '',
+        receiptNumber,
+        eventType: 'PAYMENT_RECEIVED',
+      }).catch(() => console.error('Admin order alert failed.'));
 
-      // Dispatch instant SMS & WhatsApp to Buyer
       if (payment.phone_number) {
         sendBuyerPaymentConfirmedSms(
           payment.phone_number,
           payment.order?.order_number || `ORD-${paymentId.slice(0, 8)}`,
-          amount || Number(payment.order?.total_amount) || 0,
-          payment.order_id || paymentId
-        ).catch((err) => console.warn("Buyer payment SMS failed:", err));
+          amount,
+          payment.order_id
+        ).catch(() => console.warn('Buyer payment SMS failed.'));
 
         sendBuyerPaymentSecuredWhatsApp(
           payment.phone_number,
           payment.order?.order_number || `ORD-${paymentId.slice(0, 8)}`,
-          amount || Number(payment.order?.total_amount) || 0,
-          payment.order?.listing?.title || "eFootball Verified Squad",
-          payment.order_id || paymentId
-        ).catch((err) => console.warn("Buyer payment WhatsApp notice:", err));
+          amount,
+          payment.order?.listing?.title || 'eFootball squad listing',
+          payment.order_id
+        ).catch(() => console.warn('Buyer payment WhatsApp notification failed.'));
       }
 
-      // Dispatch instant SMS & WhatsApp to Seller to deliver Konami credentials
       if (payment.order?.seller_id) {
         try {
-          const { data: sellerProf } = await this.supabase
-            .from("profiles")
-            .select("phone_number")
-            .eq("id", payment.order.seller_id)
-            .single();
+          const { data: sellerProfile } = await this.supabase
+            .from('profiles')
+            .select('phone_number')
+            .eq('id', payment.order.seller_id)
+            .maybeSingle();
 
-          if (sellerProf?.phone_number) {
+          if (sellerProfile?.phone_number) {
             sendSellerOrderReceivedSms(
-              sellerProf.phone_number,
+              sellerProfile.phone_number,
               payment.order?.order_number || `ORD-${paymentId.slice(0, 8)}`,
-              amount || Number(payment.order?.total_amount) || 0,
-              payment.order?.listing?.title || "eFootball Verified Squad",
-              payment.order_id || paymentId
-            ).catch((err) => console.warn("Seller order SMS notice:", err));
+              amount,
+              payment.order?.listing?.title || 'eFootball squad listing',
+              payment.order_id
+            ).catch(() => console.warn('Seller order SMS failed.'));
 
             sendSellerDeliverCredentialsWhatsApp(
-              sellerProf.phone_number,
+              sellerProfile.phone_number,
               payment.order?.order_number || `ORD-${paymentId.slice(0, 8)}`,
-              amount || Number(payment.order?.total_amount) || 0,
-              payment.order?.listing?.title || "eFootball Verified Squad",
-              payment.order_id || paymentId
-            ).catch((err) => console.warn("Seller order WhatsApp notice:", err));
+              amount,
+              payment.order?.listing?.title || 'eFootball squad listing',
+              payment.order_id
+            ).catch(() => console.warn('Seller order WhatsApp notification failed.'));
           }
-        } catch (err) {
-          console.warn("Seller order notification notice:", err);
+        } catch {
+          console.warn('Seller order notification lookup failed.');
         }
       }
     }
@@ -273,248 +224,308 @@ export class PaymentService {
    * Checks the real-time status of a payment by its CheckoutRequestID, MerchantRequestID, or OrderID.
    */
   async getPaymentStatus(identifier?: string, orderId?: string): Promise<Payment | null> {
-    // 1. Direct check on order status if orderId is available (bypasses payment relation delays)
-    if (orderId) {
-      const { data: orderData } = await this.supabase
-        .from("orders")
-        .select("id, status, total_amount, order_number, listing_id, seller_id, buyer_id")
-        .eq("id", orderId)
-        .maybeSingle();
-
-      const fundedOrderStates = [
-        "escrow_locked",
-        "seller_delivered",
-        "buyer_reviewing",
-        "completed",
-        "disputed",
-      ];
-      if (orderData && fundedOrderStates.includes(orderData.status)) {
-        return {
-          id: orderId,
-          order_id: orderId,
-          amount: Number(orderData.total_amount || 0),
-          currency: "KES",
-          phone_number: "",
-          status: "completed",
-          mpesa_receipt_number: "CONFIRMED",
-          result_code: 0,
-          result_desc: "Payment verified in escrow",
-          created_at: new Date().toISOString(),
-          payment_method: "mpesa",
-          order: orderData as any,
-        } as unknown as Payment;
-      }
-    }
-
-    let query = this.supabase.from("payments").select("*, order:orders(*)");
+    let query = this.supabase.from('payments').select('*, order:orders(*)');
 
     if (orderId) {
-      query = query.eq("order_id", orderId);
+      query = query.eq('order_id', orderId);
     } else if (identifier) {
-      const safeIdent = identifier.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 80);
+      const safeIdent = identifier.replace(/[^a-zA-Z0-9_-]/g, '').slice(0, 80);
       if (!safeIdent) return null;
       query = query.or(
-        `checkout_request_id.eq.${safeIdent},merchant_request_id.eq.${safeIdent},id.eq.${safeIdent}`
+        `checkout_request_id.eq.${safeIdent},merchant_request_id.eq.${safeIdent}`
       );
     } else {
       return null;
     }
 
-    const { data: payments, error } = await query.order("created_at", { ascending: false });
+    const { data: payments, error } = await query
+      .order('created_at', { ascending: false })
+      .limit(1);
+    if (error || !payments?.length) return null;
 
-    if (error || !payments || payments.length === 0) {
-      // If we have an orderId, check if order is settled even without payments row
-      if (orderId) {
-        const { data: fallbackOrder } = await this.supabase
-          .from("orders")
-          .select("id, status, total_amount, order_number")
-          .eq("id", orderId)
-          .maybeSingle();
-
-        if (fallbackOrder && fallbackOrder.status !== "payment_pending") {
-          return {
-            id: orderId,
-            order_id: orderId,
-            amount: Number(fallbackOrder.total_amount || 0),
-            currency: "KES",
-            phone_number: "",
-            status: "completed",
-            mpesa_receipt_number: "CONFIRMED",
-            result_code: 0,
-            result_desc: "Payment verified in escrow",
-            created_at: new Date().toISOString(),
-            payment_method: "mpesa",
-            order: fallbackOrder as any,
-          } as unknown as Payment;
-        }
+    const payment = payments[0] as Payment;
+    if (payment.status === 'completed') {
+      const order = Array.isArray(payment.order) ? payment.order[0] : payment.order;
+      const receipt = normalizeMpesaReceiptNumber(payment.mpesa_receipt_number);
+      if (!receipt) return null;
+      const { data: claim, error: claimError } = await this.supabase
+        .from('mpesa_settlement_receipts')
+        .select('source, entity_id, provider, verification_method, transaction_id, amount')
+        .eq('receipt_number', receipt)
+        .maybeSingle();
+      if (
+        claimError ||
+        !isVerifiedSettlementClaim(claim, {
+          source: 'marketplace',
+          entityId: payment.id,
+          transactionIds: [payment.checkout_request_id, payment.merchant_request_id],
+          amount: payment.amount,
+        }) ||
+        !order ||
+        order.status === 'payment_pending' ||
+        !amountsMatch(payment.amount, order.total_amount) ||
+        !amountsMatch(claim?.amount, order.total_amount)
+      ) {
+        return null;
       }
-      return null;
+      return payment;
     }
 
-    const data = payments[0] as Payment;
-
-    if (data.status === "completed") {
-      return data;
-    }
-
-    // If associated order is already escrow_locked or beyond, payment was successfully settled!
     if (
-      data.order &&
-      (data.order.status === "escrow_locked" ||
-        data.order.status === "seller_delivered" ||
-        data.order.status === "completed")
+      ['pending', 'failed'].includes(payment.status) &&
+      mpesaClient.isUnifiedPay()
     ) {
-      await this.supabase
-        .from("payments")
-        .update({
-          status: "completed",
-          mpesa_receipt_number: data.mpesa_receipt_number || "CONFIRMED",
-          completed_at: new Date().toISOString(),
-        })
-        .eq("id", data.id);
-      data.status = "completed";
-      return data;
-    }
-
-    // If still pending and UnifiedPay is enabled, actively verify status
-    if (data.status === "pending" && mpesaClient.isUnifiedPay()) {
       const idsToTry = Array.from(
-        new Set([identifier, data.checkout_request_id, data.merchant_request_id])
-      ).filter(Boolean) as string[];
+        new Set([payment.checkout_request_id, payment.merchant_request_id].filter(Boolean))
+      ) as string[];
+      const order = Array.isArray(payment.order) ? payment.order[0] : payment.order;
 
-      for (const transId of idsToTry) {
-        const liveStatus = await mpesaClient.checkUnifiedPayStatus(transId);
-        if (liveStatus && liveStatus.isSuccess) {
-          const receipt = liveStatus.receiptNumber || `CONFIRMED_${Date.now()}`;
-          await this.markPaymentSuccessful(
-            data.id,
-            receipt,
-            liveStatus.amount || data.amount,
-            liveStatus
-          );
-
-          // Fetch refreshed record
-          const { data: updated } = await this.supabase
-            .from("payments")
-            .select("*, order:orders(*)")
-            .eq("id", data.id)
-            .single();
-
-          return (updated as Payment) || data;
-        } else if (
-          liveStatus &&
-          (liveStatus.resultCode === 1037 ||
-            liveStatus.resultDesc?.toLowerCase().includes("cancelled") ||
-            liveStatus.resultDesc?.toLowerCase().includes("failed"))
+      for (const transactionId of idsToTry) {
+        const liveStatus = await mpesaClient.checkUnifiedPayStatus(transactionId);
+        const receipt = normalizeMpesaReceiptNumber(liveStatus?.receiptNumber);
+        const settledAmount = normalizePositiveAmount(liveStatus?.amount);
+        if (
+          liveStatus?.isSuccess &&
+          receipt &&
+          settledAmount !== null &&
+          amountsMatch(settledAmount, payment.amount) &&
+          order &&
+          amountsMatch(settledAmount, order.total_amount)
         ) {
-          // Explicit failure confirmed by Safaricom / UnifiedPay
-          await this.supabase
-            .from("payments")
-            .update({
-              status: "failed",
-              result_code: liveStatus.resultCode,
-              result_desc: liveStatus.resultDesc,
-            })
-            .eq("id", data.id);
+          const settlement: VerifiedMpesaSettlement = {
+            provider: 'unifiedpay',
+            verificationMethod: 'provider_status_query',
+            providerStatus: 'completed',
+            transactionId,
+            checkoutRequestId: payment.checkout_request_id || undefined,
+            merchantRequestId: payment.merchant_request_id || undefined,
+            receiptNumber: receipt,
+            amount: settledAmount,
+            verifiedAt: new Date().toISOString(),
+          };
+          await this.markPaymentSuccessful(payment.id, settlement, liveStatus);
 
-          data.status = "failed";
-          data.result_desc = liveStatus.resultDesc;
+          const { data: updated } = await this.supabase
+            .from('payments')
+            .select('*, order:orders(*)')
+            .eq('id', payment.id)
+            .maybeSingle();
+          return (updated as Payment) || payment;
+        }
+
+        if (
+          liveStatus &&
+          !liveStatus.isSuccess &&
+          (liveStatus.resultCode === 1037 ||
+            liveStatus.resultDesc?.toLowerCase().includes('cancelled') ||
+            liveStatus.resultDesc?.toLowerCase().includes('failed'))
+        ) {
+          await this.supabase
+            .from('payments')
+            .update({
+              status: 'failed',
+              result_code: liveStatus.resultCode,
+              result_desc: String(liveStatus.resultDesc || 'Provider confirmed payment failure').slice(0, 300),
+            })
+            .eq('id', payment.id)
+            .eq('status', 'pending');
+          payment.status = 'failed';
+          payment.result_desc = liveStatus.resultDesc;
         }
       }
     }
 
-    return data;
+    return payment;
   }
 
   /**
-   * Processes the official Daraja or UnifiedPay callback webhook.
+   * Applies a callback only when the caller has already obtained provider
+   * settlement proof. Raw webhook bodies are never sufficient by themselves.
    */
-  async processCallback(body: AnyCallbackBody | any): Promise<void> {
-    console.log("Processing webhook callback:", JSON.stringify(body));
+  async processCallback(
+    body: AnyCallbackBody | any,
+    settlement: VerifiedMpesaSettlement
+  ): Promise<void> {
     const parsed = mpesaClient.parseCallback(body);
-
-    const unifiedTransId =
-      body.transaction_request_id ||
-      body.TransactionRequestID ||
-      parsed.merchantRequestId ||
-      "";
-    const checkoutId =
-      body.CheckoutRequestID ||
-      body.checkoutRequestId ||
-      parsed.checkoutRequestId ||
-      "";
-    const orderRef =
-      body.TransactionReference ||
-      body.account_reference ||
-      body.reference ||
-      "";
-
-    let paymentId: string | null = null;
-    let fallbackAmount = parsed.amount || 0;
-
-    // 1. Try finding payment by IDs
-    const searchConditions = [];
-    const safeCheckout = checkoutId ? checkoutId.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 80) : "";
-    const safeUnified = unifiedTransId ? unifiedTransId.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 80) : "";
-    if (safeCheckout) searchConditions.push(`checkout_request_id.eq.${safeCheckout}`);
-    if (safeUnified) {
-      searchConditions.push(`merchant_request_id.eq.${safeUnified}`);
-      searchConditions.push(`checkout_request_id.eq.${safeUnified}`);
+    if (
+      !parsed.isSuccess ||
+      mpesaClient.getCallbackProvider(body) !== settlement?.provider
+    ) {
+      throw new Error("Callback provider or status does not match settlement proof.");
     }
 
-    if (searchConditions.length > 0) {
-      const { data: found } = await this.supabase
+    const receiptNumber = normalizeMpesaReceiptNumber(settlement?.receiptNumber);
+    const amount = normalizePositiveAmount(settlement?.amount);
+    const transactionId = String(settlement?.transactionId || "").trim();
+    const checkoutRequestId = String(settlement?.checkoutRequestId || "").trim();
+    const merchantRequestId = String(settlement?.merchantRequestId || "").trim();
+    if (
+      !receiptNumber ||
+      amount === null ||
+      !transactionId ||
+      (!checkoutRequestId && !merchantRequestId) ||
+      !isValidSettlementEvidence(
+        settlement?.provider,
+        settlement?.verificationMethod
+      ) ||
+      settlement?.providerStatus !== "completed" ||
+      !Number.isFinite(Date.parse(settlement?.verifiedAt || ""))
+    ) {
+      throw new Error("Provider settlement proof is incomplete.");
+    }
+
+    const strictId = (value: string) => {
+      const safe = value.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 80);
+      return value === safe ? safe : "";
+    };
+    const callbackCheckout = strictId(String(parsed.checkoutRequestId || "").trim());
+    const callbackMerchant = strictId(String(parsed.merchantRequestId || "").trim());
+    const safeCheckout = strictId(checkoutRequestId);
+    const safeMerchant = strictId(merchantRequestId);
+    const safeTransaction = strictId(transactionId);
+    if (
+      !safeTransaction ||
+      (callbackCheckout && callbackCheckout !== safeCheckout) ||
+      (callbackMerchant && callbackMerchant !== safeMerchant) ||
+      ![safeCheckout, safeMerchant].filter(Boolean).includes(safeTransaction)
+    ) {
+      throw new Error("Callback transaction IDs do not match provider settlement proof.");
+    }
+
+    const callbackReceipt = parsed.receiptNumber
+      ? normalizeMpesaReceiptNumber(parsed.receiptNumber)
+      : null;
+    if (
+      settlement.provider === "safaricom" &&
+      (!callbackReceipt || parsed.amount === undefined)
+    ) {
+      throw new Error("Safaricom callback is missing its receipt or amount metadata.");
+    }
+    if (parsed.receiptNumber && callbackReceipt !== receiptNumber) {
+      throw new Error("Callback receipt does not match provider settlement proof.");
+    }
+    if (parsed.amount !== undefined && !amountsMatch(parsed.amount, amount)) {
+      throw new Error("Callback amount does not match provider settlement proof.");
+    }
+
+    let byCheckout: any = null;
+    let byMerchant: any = null;
+    if (safeCheckout) {
+      const { data, error } = await this.supabase
         .from("payments")
-        .select("id, amount, order_id")
-        .or(searchConditions.join(","));
-
-      if (found && found.length > 0) {
-        paymentId = found[0].id;
-        fallbackAmount = found[0].amount;
-      }
+        .select("id, amount, status, checkout_request_id, merchant_request_id")
+        .eq("checkout_request_id", safeCheckout)
+        .maybeSingle();
+      if (error) throw new Error("Could not resolve payment by checkout ID.");
+      byCheckout = data;
     }
-
-    // 2. If not found, try matching by Order Reference
-    if (!paymentId && orderRef) {
-      const { data: order } = await this.supabase
-        .from("orders")
-        .select("id, payments(id, amount)")
-        .eq("order_number", orderRef)
-        .single();
-
-      if (order && order.payments && (order.payments as any).length > 0) {
-        paymentId = (order.payments as any)[0].id;
-        fallbackAmount = (order.payments as any)[0].amount;
-      }
-    }
-
-    if (parsed.isSuccess && parsed.receiptNumber) {
-      if (paymentId) {
-        await this.markPaymentSuccessful(
-          paymentId,
-          parsed.receiptNumber,
-          parsed.amount || fallbackAmount,
-          body
-        );
-      } else {
-        // Fallback to RPC
-        await this.supabase.rpc("handle_mpesa_payment_success", {
-          p_checkout_request_id: checkoutId || unifiedTransId,
-          p_receipt_number: parsed.receiptNumber,
-          p_amount: parsed.amount || fallbackAmount,
-          p_raw_callback: body as unknown as Record<string, unknown>,
-        });
-      }
-    } else if (paymentId) {
-      await this.supabase
+    if (safeMerchant) {
+      const { data, error } = await this.supabase
         .from("payments")
-        .update({
-          status: "failed",
-          result_code: parsed.resultCode,
-          result_desc: parsed.resultDesc,
-          raw_callback: body as unknown as Record<string, unknown>,
-        })
-        .eq("id", paymentId);
+        .select("id, amount, status, checkout_request_id, merchant_request_id")
+        .eq("merchant_request_id", safeMerchant)
+        .maybeSingle();
+      if (error) throw new Error("Could not resolve payment by merchant ID.");
+      byMerchant = data;
     }
+    if (byCheckout && byMerchant && byCheckout.id !== byMerchant.id) {
+      throw new Error("Callback IDs resolve to different payment records.");
+    }
+
+    const payment = byCheckout || byMerchant;
+    if (!payment) throw new Error("No payment record matches the verified transaction.");
+
+    const storedIds = [payment.checkout_request_id, payment.merchant_request_id]
+      .filter(Boolean)
+      .map((id: string) => String(id));
+    if (
+      !storedIds.includes(safeTransaction) ||
+      (safeCheckout && String(payment.checkout_request_id || "") !== safeCheckout) ||
+      (safeMerchant && String(payment.merchant_request_id || "") !== safeMerchant) ||
+      !amountsMatch(amount, payment.amount)
+    ) {
+      throw new Error("Provider settlement does not match the payment ledger.");
+    }
+
+    await this.markPaymentSuccessful(payment.id, settlement, {
+      provider_callback: body,
+      provider_settlement: {
+        provider: settlement.provider,
+        verification_method: settlement.verificationMethod,
+        provider_status: settlement.providerStatus,
+        transaction_id: safeTransaction,
+        receipt_number: receiptNumber,
+        amount,
+        verified_at: settlement.verifiedAt,
+      },
+    });
+  }
+
+  /** Apply an authenticated provider failure only while the payment is pending. */
+  async processFailureCallback(
+    checkoutRequestId: string,
+    merchantRequestId: string,
+    resultCode: number,
+    resultDesc: string,
+    body: AnyCallbackBody | any
+  ): Promise<void> {
+    if (Number(resultCode) === 0) {
+      throw new Error("A successful callback cannot be applied as a failure.");
+    }
+
+    const strictId = (value: string) => {
+      const trimmed = String(value || "").trim();
+      const safe = trimmed.replace(/[^a-zA-Z0-9_-]/g, "").slice(0, 80);
+      return trimmed === safe ? safe : "";
+    };
+    const checkout = strictId(checkoutRequestId);
+    const merchant = strictId(merchantRequestId);
+    if (!checkout && !merchant) throw new Error("Missing callback transaction ID.");
+
+    let byCheckout: any = null;
+    let byMerchant: any = null;
+    if (checkout) {
+      const { data, error } = await this.supabase
+        .from("payments")
+        .select("id, status, checkout_request_id, merchant_request_id")
+        .eq("checkout_request_id", checkout)
+        .maybeSingle();
+      if (error) throw new Error("Could not resolve payment by checkout ID.");
+      byCheckout = data;
+    }
+    if (merchant) {
+      const { data, error } = await this.supabase
+        .from("payments")
+        .select("id, status, checkout_request_id, merchant_request_id")
+        .eq("merchant_request_id", merchant)
+        .maybeSingle();
+      if (error) throw new Error("Could not resolve payment by merchant ID.");
+      byMerchant = data;
+    }
+    if (byCheckout && byMerchant && byCheckout.id !== byMerchant.id) {
+      throw new Error("Callback IDs resolve to different payment records.");
+    }
+
+    const payment = byCheckout || byMerchant;
+    if (!payment) throw new Error("No payment record matches the callback.");
+    if (
+      (checkout && String(payment.checkout_request_id || "") !== checkout) ||
+      (merchant && String(payment.merchant_request_id || "") !== merchant)
+    ) {
+      throw new Error("Callback IDs do not match the payment record.");
+    }
+    if (payment.status !== "pending") return;
+
+    const { error } = await this.supabase
+      .from("payments")
+      .update({
+        status: "failed",
+        result_code: resultCode,
+        result_desc: String(resultDesc || "Payment failed").slice(0, 300),
+        raw_callback: body as unknown as Record<string, unknown>,
+      })
+      .eq("id", payment.id)
+      .eq("status", "pending");
+    if (error) throw new Error("Could not update failed payment status.");
   }
 }

@@ -36,7 +36,7 @@ export function EarningsWithdrawSection({
           {formatCurrency(availableBalance)}
         </div>
         <p className="text-xs text-sx-muted">
-          Instant disbursement to your registered Safaricom M-Pesa mobile line.
+          Submit a withdrawal request for manual review; processing time varies and no instant transfer is sent by this form.
         </p>
       </div>
 

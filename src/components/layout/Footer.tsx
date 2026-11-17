@@ -25,7 +25,7 @@ export function Footer() {
           <div className="col-span-2 sm:col-span-4 lg:col-span-1 space-y-3">
             <Logo clickable={true} size="sm" />
             <p className="text-xs text-sx-muted leading-relaxed max-w-xs">
-              Kenyan eFootball squad marketplace, WhatsApp Middleman desk &amp; tournaments hub. Payments to Buy Goods Till <strong className="text-sx-ink">1572931</strong> are held during your 24-hour login check.
+              Kenyan eFootball squad marketplace and tournaments hub. Marketplace checkout payments to Buy Goods Till <strong className="text-sx-ink">1572931</strong> are held during your 24-hour login check.
             </p>
           </div>
 
@@ -36,7 +36,7 @@ export function Footer() {
             <ul className="space-y-2">
               <li>
                 <Link href="/browse" className="hover:text-sx-ink transition-colors">
-                  All Verified Squads
+                  Browse Squad Listings
                 </Link>
               </li>
               <li>
@@ -55,11 +55,6 @@ export function Footer() {
                 </Link>
               </li>
               <li>
-                <Link href="/friday-drops" className="hover:text-sx-ink transition-colors">
-                  Friday Drops
-                </Link>
-              </li>
-              <li>
                 <Link href="/compare" className="hover:text-sx-ink transition-colors">
                   Compare Squads
                 </Link>
@@ -73,18 +68,13 @@ export function Footer() {
             </h3>
             <ul className="space-y-2">
               <li>
-                <Link href="/middleman" className="hover:text-sx-ink transition-colors">
-                  WhatsApp Middleman Escrow
-                </Link>
-              </li>
-              <li>
                 <Link href="/wanted" className="hover:text-sx-ink transition-colors">
                   Custom Squad Sourcing
                 </Link>
               </li>
               <li>
-                <Link href="/middleman?title=Account%20Swap%20%2B%20Cash%20Top-Up" className="hover:text-sx-ink transition-colors">
-                  Account Swap + Top-Up
+                <Link href="/browse?swap=1" className="hover:text-sx-ink transition-colors">
+                  Squads Open to Swaps
                 </Link>
               </li>
               <li>

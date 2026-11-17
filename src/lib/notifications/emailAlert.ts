@@ -31,7 +31,7 @@ export async function sendOtpVerificationEmail(params: {
                 <tr>
                   <td style="padding: 28px 32px; background: linear-gradient(135deg, #065f46 0%, #047857 100%); text-align: center;">
                     <h1 style="margin: 0; font-size: 22px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px;">eFootball Market</h1>
-                    <p style="margin: 6px 0 0; font-size: 13px; color: #a7f3d0;">Verified eFootball Marketplace Kenya</p>
+                    <p style="margin: 6px 0 0; font-size: 13px; color: #a7f3d0;">eFootball Marketplace Kenya</p>
                   </td>
                 </tr>
 
@@ -168,7 +168,7 @@ export async function sendUserInvitationEmail(params: {
                 <tr>
                   <td style="padding: 28px 32px; background: linear-gradient(135deg, #1e3a8a 0%, #2563eb 100%); text-align: center;">
                     <h1 style="margin: 0; font-size: 22px; font-weight: 800; color: #ffffff; letter-spacing: 0.5px;">eFootball Market</h1>
-                    <p style="margin: 6px 0 0; font-size: 13px; color: #bfdbfe;">Kenya's #1 Verified Escrow Gaming Platform</p>
+                    <p style="margin: 6px 0 0; font-size: 13px; color: #bfdbfe;">Kenya's eFootball Account Marketplace</p>
                   </td>
                 </tr>
 
@@ -177,7 +177,7 @@ export async function sendUserInvitationEmail(params: {
                   <td style="padding: 32px 32px 24px;">
                     <h2 style="margin: 0 0 12px; font-size: 18px; font-weight: 700; color: #f8fafc;">You've Been Invited!</h2>
                     <p style="margin: 0 0 16px; font-size: 14px; line-height: 1.6; color: #cbd5e1;">
-                      <strong>${params.inviterName}</strong> has invited you to join eFootball Market, Kenya's premier verified platform to safely buy and sell eFootball accounts with automated Safaricom M-Pesa Till 1572931 escrow.
+                      <strong>${params.inviterName}</strong> has invited you to join eFootballMarket, a marketplace for seller-listed eFootball accounts. Account contents are not pre-audited; buyer protection applies only to eligible orders placed from a published listing and paid through marketplace checkout.
                     </p>
 
                     ${
@@ -191,9 +191,9 @@ export async function sendUserInvitationEmail(params: {
                     <!-- Highlights Box -->
                     <div style="background-color: #0b1324; border: 1px solid #1e293b; border-radius: 12px; padding: 18px; margin: 20px 0;">
                       <p style="margin: 0 0 10px; font-size: 13px; font-weight: 700; color: #10b981;">What you get:</p>
-                      <p style="margin: 4px 0; font-size: 13px; color: #cbd5e1;">1. 100% Escrow Protection via Safaricom Till 1572931</p>
-                      <p style="margin: 4px 0; font-size: 13px; color: #cbd5e1;">2. 24-Hour Buyer Inspection Window</p>
-                      <p style="margin: 4px 0; font-size: 13px; color: #cbd5e1;">3. Verified Konami ID transfers &amp; zero scam risk</p>
+                      <p style="margin: 4px 0; font-size: 13px; color: #cbd5e1;">1. Buyer protection for eligible marketplace checkout orders</p>
+                      <p style="margin: 4px 0; font-size: 13px; color: #cbd5e1;">2. 24-hour inspection for eligible marketplace orders</p>
+                      <p style="margin: 4px 0; font-size: 13px; color: #cbd5e1;">3. Konami ID transfer checklist and anti-scam guidance</p>
                     </div>
 
                     <div style="text-align: center; margin: 28px 0 16px;">

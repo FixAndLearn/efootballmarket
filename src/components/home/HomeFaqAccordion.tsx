@@ -12,7 +12,7 @@ const FAQS: FaqItem[] = [
   {
     question: "How does payment protection work?",
     answer:
-      "You pay the squad price into Safaricom M-Pesa Buy Goods Till 1572931 — not to the seller's personal phone number. Buyers pay KES 0 extra fee. eFootballMarket holds the money while the seller delivers login details (within 12 hours) and while you check the squad in-game (for 24 hours).",
+      "For an order created from a published marketplace listing and paid through checkout, you pay via the Safaricom Till or STK prompt shown on the checkout page—not to the seller's personal phone number. Buyers pay KES 0 extra fee. eFootballMarket holds the payment while the seller delivers login details (within 12 hours) and while you inspect the squad in-game (for 24 hours). Direct social-media deals and swaps are not covered.",
   },
   {
     question: "What should I check during my 24-hour inspection?",
@@ -22,17 +22,17 @@ const FAQS: FaqItem[] = [
   {
     question: "What if the login fails or the squad doesn't match the listing?",
     answer:
-      "Tap 'Open Dispute' on your Order Page before the 24-hour timer ends and share a screen recording or uncropped screenshot. Opening a dispute pauses the seller payout while our team reviews the order logs and screenshots within 24 to 48 hours. If the seller missed the 12-hour delivery window, left Google/Apple linked, or misstated permanent cards, your M-Pesa payment is refunded in full.",
+      "Tap 'Open Dispute' on your Order Page before the 24-hour timer ends and share a screen recording or uncropped screenshot. Opening a dispute pauses release while our team reviews the order logs and evidence; review time varies. If the seller missed the 12-hour delivery window, left Google/Apple linked, or misstated permanent cards, a full refund may be approved after evidence review. Approved refunds are arranged manually; transfer timing varies, and the order page does not confirm that funds were sent.",
   },
   {
     question: "When and how is the seller paid?",
     answer:
-      "As soon as the buyer taps 'Confirm & Release' — or automatically 24 hours after valid login delivery if no dispute is opened. We deduct a 5% seller service fee (minimum KES 50, capped at KES 500) and credit the balance for M-Pesa payout.",
+      "When the buyer taps 'Confirm & Release' — or after 24 hours if no dispute is opened — we deduct a 5% seller service fee (minimum KES 50, capped at KES 500) and credit the seller's available balance. The seller must submit a separate M-Pesa withdrawal request. Requests are reviewed and processed manually; timing varies, and sellers can track the status in Seller Earnings or contact support.",
   },
   {
-    question: "Can I use escrow for a squad I found on WhatsApp or TikTok?",
+    question: "Is a WhatsApp or Facebook deal covered by eFootballMarket buyer protection?",
     answer:
-      "Yes. Open the Middleman page, enter the agreed KES price and both phone numbers, and share the deal code with the other person. The same M-Pesa Till 1572931 hold, 12-hour delivery rule, and 24-hour inspection window apply.",
+      "No. Buyer protection applies only to an order created from a published eFootballMarket listing and paid through the marketplace checkout. We no longer provide an off-platform contract or deal-code service. Browse current squads and use the listing checkout to place a protected order.",
   },
 ];
 

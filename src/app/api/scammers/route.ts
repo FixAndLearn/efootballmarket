@@ -18,7 +18,7 @@ export const dynamic = "force-dynamic";
 export async function GET(req: NextRequest) {
   try {
     const ip = getClientIp(req);
-    const rate = checkRateLimit(`scammer_lookup:${ip}`, 30, 60000);
+    const rate = await checkRateLimit(`scammer_lookup:${ip}`, 30, 60000);
     if (!rate.success) {
       return NextResponse.json(
         { error: "Too many lookup requests. Please wait 1 minute.", scammers: [] },
@@ -106,7 +106,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const ip = getClientIp(req);
-    const rate = checkRateLimit(`scammer_report:${ip}`, 5, 600000);
+    const rate = await checkRateLimit(`scammer_report:${ip}`, 5, 600000);
     if (!rate.success) {
       return NextResponse.json(
         { error: "Too many incident reports submitted recently. Please wait 10 minutes." },

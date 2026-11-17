@@ -23,7 +23,7 @@ function getClient() {
 export async function GET(req: NextRequest) {
   try {
     const ip = getClientIp(req);
-    const rate = checkRateLimit(`offer_get:${ip}`, 45, 60000);
+    const rate = await checkRateLimit(`offer_get:${ip}`, 45, 60000);
     if (!rate.success) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }
@@ -169,7 +169,7 @@ export async function GET(req: NextRequest) {
 export async function POST(req: NextRequest) {
   try {
     const ip = getClientIp(req);
-    const rate = checkRateLimit(`offer_post:${ip}`, 10, 60000);
+    const rate = await checkRateLimit(`offer_post:${ip}`, 10, 60000);
     if (!rate.success) {
       return NextResponse.json(
         { error: "Too many offers submitted. Please wait 1 minute." },
@@ -351,7 +351,7 @@ export async function POST(req: NextRequest) {
 export async function PATCH(req: NextRequest) {
   try {
     const ip = getClientIp(req);
-    const rate = checkRateLimit(`offer_patch:${ip}`, 20, 60000);
+    const rate = await checkRateLimit(`offer_patch:${ip}`, 20, 60000);
     if (!rate.success) {
       return NextResponse.json(
         { error: "Too many offer updates. Please wait a moment." },

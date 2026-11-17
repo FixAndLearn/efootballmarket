@@ -144,7 +144,7 @@ export function NewsFeedClient({
             Real eFootball 2027 Updates, Tactics &amp; Trading Guides
           </h1>
           <p className="text-xs sm:text-sm text-sx-ink-soft leading-relaxed">
-            Verified breakdowns of Konami&apos;s latest eFootball 2027 (v6.0 – v6.1.1) drops: the 12 Nov Black Friday Campaign, Big Time Henry, Wenger &amp; Arteta, Fluid Formation, the Overload playstyle, 100-stack Select Skill &amp; Position Tokens, Dual Link-Up 90-proficiency managers, Showdown &amp; Custom Tournaments, $300K Championship 2027 qualifiers, and Clean Konami ID M-Pesa escrow safety.
+            Verified breakdowns of Konami&apos;s latest eFootball 2027 (v6.0 – v6.1.1) drops: the 12 Nov Black Friday Campaign, Big Time Henry, Wenger &amp; Arteta, Fluid Formation, the Overload playstyle, 100-stack Select Skill &amp; Position Tokens, Dual Link-Up 90-proficiency managers, Showdown &amp; Custom Tournaments, $300K Championship 2027 qualifiers, and marketplace checkout safety.
           </p>
         </div>
 

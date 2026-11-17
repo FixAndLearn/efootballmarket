@@ -6,7 +6,6 @@ import {
   Phone,
   Clock,
   MapPin,
-  Handshake,
   Target,
   ArrowLeftRight,
   Trophy,
@@ -15,9 +14,9 @@ import {
 } from "lucide-react";
 
 export const metadata: Metadata = {
-  title: "Direct Services, Escrow Desk & Support Kenya",
+  title: "Marketplace Help & Support Kenya",
   description:
-    "Book WhatsApp Middleman Escrow, Custom Squad Sourcing, Account Swaps, or Paid Cup Hosting with Brian Okibo's Nairobi Desk (M-Pesa Till 1572931 · +254 794 400 365).",
+    "Get help with active marketplace orders, custom squad requests, marketplace swap proposals, tournaments, and buyer protection for eligible marketplace checkout orders from eFootballMarket Kenya.",
   alternates: {
     canonical: "https://www.efootballmarket.co.ke/contact",
   },
@@ -26,32 +25,22 @@ export const metadata: Metadata = {
 export default function ContactPage() {
   const serviceLaunchers = [
     {
-      icon: Handshake,
-      title: "Book WhatsApp / Facebook Middleman",
-      desc: "Agreed on a squad deal off-platform? Lock the buyer's KES payment in Till 1572931 with full 24h login check.",
-      actionLabel: "Open Contract Room",
-      href: "/middleman",
-      external: false,
-    },
-    {
       icon: Target,
       title: "Custom Squad Sourcing (3150+ OVR)",
-      desc: "Tell our desk the exact Epics, Boosters, platform, and KES budget you want sourced from verified Kenyan sellers.",
+      desc: "Tell our desk the exact Epics, Boosters, platform, and KES budget you want to find in seller-listed Kenyan squads. Listing details are seller-provided; any protected purchase must be placed from a published listing and paid through marketplace checkout.",
       actionLabel: "Request on WhatsApp",
       href: `https://wa.me/254794400365?text=${encodeURIComponent(
-        "Hello Brian / eFootballMarket Desk, I want help sourcing a verified Clean Konami ID squad. My platform, target OVR/Epics, and KES budget are:"
+        "Hello Brian / eFootballMarket Desk, I want help finding a seller-listed Clean Konami ID squad. My platform, target OVR/Epics, and KES budget are:"
       )}`,
       external: true,
     },
     {
       icon: ArrowLeftRight,
-      title: "Account Swap + Cash Top-Up Desk",
-      desc: "Upgrade your Clean Konami ID safely with neutral admin verification of both accounts + M-Pesa top-up.",
-      actionLabel: "Book Swap Mediation",
-      href: `https://wa.me/254794400365?text=${encodeURIComponent(
-        "Hello Brian / eFootballMarket Desk, I would like to arrange a protected Account Swap + Cash Top-Up via Till 1572931."
-      )}`,
-      external: true,
+      title: "Marketplace Swap Offers",
+      desc: "Browse squads marked open to swaps and send a proposal from a listing page. Proposals do not hold funds; buyer protection applies only to orders paid through marketplace checkout.",
+      actionLabel: "Browse Swap-Open Squads",
+      href: "/browse?swap=1",
+      external: false,
     },
     {
       icon: Trophy,
@@ -68,20 +57,20 @@ export default function ContactPage() {
       <header className="space-y-3 border-b border-sx-border pb-6">
         <span className="inline-flex items-center gap-1.5 text-xs font-bold uppercase tracking-wider text-sx-green-text">
           <ShieldCheck className="w-4 h-4" />
-          <span>Nairobi Escrow &amp; Support Desk</span>
+          <span>Marketplace Support Desk</span>
         </span>
         <h1 className="text-3xl sm:text-4xl font-extrabold text-sx-ink font-display tracking-tight">
           Direct Services &amp; Support
         </h1>
         <p className="text-sm sm:text-base text-sx-muted leading-relaxed max-w-2xl">
-          Reach <strong>Brian Okibo&apos;s Nairobi Desk</strong> directly for active order help, M-Pesa Till <strong>1572931</strong> verification, custom squad sourcing, protected account swaps, or scammer reports.
+          Reach <strong>eFootballMarket support</strong> for active marketplace orders, M-Pesa Till <strong>1572931</strong> verification, custom squad requests, swap proposals, or scammer reports.
         </p>
       </header>
 
       {/* Direct Concierge & Escrow Services Grid */}
       <section className="space-y-4">
         <h2 className="text-base sm:text-lg font-bold text-sx-ink font-display">
-          Book a Marketplace or Escrow Service
+          Marketplace &amp; Community Services
         </h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           {serviceLaunchers.map((item) => {
@@ -208,7 +197,7 @@ export default function ContactPage() {
             <Link href="/dashboard/buyer" className="text-sx-green-text hover:underline font-semibold">
               Buyer Order Room
             </Link>{" "}
-            first so payout pauses immediately. Staff never ask for your M-Pesa PIN or ask you to pay a personal phone number outside Till <strong>1572931</strong>.
+            first to pause seller-balance release while the order is still in the pre-release inspection window. A post-release dispute does not automatically hold funds or reverse an M-Pesa transfer already sent. Staff never ask for your M-Pesa PIN or ask you to pay a personal phone number outside Till <strong>1572931</strong>.
           </p>
         </div>
         <Link

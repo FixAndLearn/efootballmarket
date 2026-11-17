@@ -2,7 +2,7 @@ import { ImageResponse } from "next/og";
 
 export const runtime = "edge";
 export const alt =
-  "eFootballMarket Kenya — Verified eFootball Squads & M-Pesa Till 1572931 Escrow";
+  "eFootballMarket Kenya — Seller-Listed eFootball Squads & Marketplace Checkout Protection";
 export const size = {
   width: 1200,
   height: 630,
@@ -59,7 +59,7 @@ export default async function Image() {
                 marginTop: "2px",
               }}
             >
-              KENYA · TILL 1572931 ESCROW PROTECTED
+              KENYA · MARKETPLACE CHECKOUT PROTECTION
             </div>
           </div>
         </div>
@@ -75,7 +75,7 @@ export default async function Image() {
               color: "#F8FAFC",
             }}
           >
-            Buy &amp; Sell Verified eFootball Squads in Kenya.
+            Browse Seller-Listed eFootball Squads in Kenya.
           </div>
           <div
             style={{
@@ -86,15 +86,15 @@ export default async function Image() {
               marginTop: "6px",
             }}
           >
-            KES 0 extra buyer fee · 24-hour Clean Konami ID login inspection · Safaricom M-Pesa Till 1572931 custody.
+            Published-listing orders paid through checkout · KES 0 buyer fee · 24-hour login inspection.
           </div>
         </div>
 
         <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
           {[
-            "Clean Konami ID Verified",
-            "M-Pesa Till 1572931 Escrow",
-            "24-Hour Login Check",
+            "Seller-Provided Listings",
+            "Checkout Protection for Eligible Orders",
+            "24-Hour Buyer Inspection",
           ].map((pill) => (
             <div
               key={pill}

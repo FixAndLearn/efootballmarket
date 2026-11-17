@@ -123,7 +123,7 @@ export async function POST(req: NextRequest) {
           error: "prohibited_content",
           userWarningMessage:
             filterResult.userWarningMessage ||
-            "Prohibited: Sharing off-platform contacts (WhatsApp, Telegram, links, phone numbers) is strictly not allowed. Your message was blocked and deleted directly.",
+            "Prohibited: Sharing off-platform contacts (WhatsApp, Telegram, links, phone numbers) is not allowed in order chat. Your message was blocked. Buyer protection applies only to orders from published listings paid through marketplace checkout.",
           category: filterResult.matchedCategory,
         },
         { status: 400 }

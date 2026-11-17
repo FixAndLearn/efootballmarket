@@ -6,14 +6,16 @@ import { Check, Copy, Share2 } from "lucide-react";
 interface ShareStorefrontBarProps {
   username: string;
   activeCount: number;
+  storefrontPath: string;
 }
 
 export function ShareStorefrontBar({
   username,
   activeCount,
+  storefrontPath,
 }: ShareStorefrontBarProps) {
   const [copied, setCopied] = useState(false);
-  const storeUrl = `https://efootballmarket.co.ke/u/${encodeURIComponent(username)}`;
+  const storeUrl = `https://www.efootballmarket.co.ke${storefrontPath}`;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(storeUrl);
@@ -21,7 +23,7 @@ export function ShareStorefrontBar({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const waMessage = `Check out @${username}'s verified eFootball squads (${activeCount} active) with Safaricom M-Pesa Escrow protection:\n${storeUrl}`;
+  const waMessage = `Check out @${username}'s seller-listed eFootball squads (${activeCount} active). Seller listings are not pre-audited; eligible buyer protection applies only to orders paid through eFootballMarket checkout:\n${storeUrl}`;
   const waHref = `https://wa.me/?text=${encodeURIComponent(waMessage)}`;
 
   return (

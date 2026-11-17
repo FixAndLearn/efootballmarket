@@ -91,7 +91,7 @@ export function WithdrawModal({ availableBalance, escrowBalance = 0, isOpen, onC
           </div>
           <div>
             <h3 className="text-base font-bold text-sx-ink">Withdraw Earnings</h3>
-            <p className="text-xs text-sx-muted">Direct Safaricom M-Pesa B2C Payout</p>
+            <p className="text-xs text-sx-muted">Request a manually reviewed M-Pesa withdrawal</p>
           </div>
         </div>
 
@@ -102,7 +102,7 @@ export function WithdrawModal({ availableBalance, escrowBalance = 0, isOpen, onC
             </div>
             <h4 className="text-base font-bold text-sx-ink">Withdrawal Submitted!</h4>
             <p className="text-xs text-sx-ink-soft">
-              Funds request has been queued and is being disbursed to your M-Pesa line.
+              Your request is queued for manual review. This system has not sent an M-Pesa transfer; check Seller Earnings for status updates.
             </p>
           </div>
         ) : (
@@ -149,7 +149,7 @@ export function WithdrawModal({ availableBalance, escrowBalance = 0, isOpen, onC
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
               leftIcon={<Phone className="w-4 h-4" />}
-              helperText="Funds will be deposited directly to this registered M-Pesa line."
+              helperText="Requested destination for a withdrawal that is arranged manually after review."
               required
             />
 

@@ -150,7 +150,7 @@ Log in once during the campaign to receive **1 x "Highlight: Arsenal FC" Chance 
 - **Coin stashes are suddenly valuable.** An account sitting on 500–1,500 unspent Coins can hit the discounted Henry 10-draw or the Wenger pack immediately. Remember Coins **do not move across Android <-> iOS** during Data Transfer, so match the platform badge on any [marketplace listing](/browse) before you pay.
 - **Expect a flood of "Henry + Campbell" listings from 13 November.** Ask the seller for an in-game screenshot of the card inside **My Team > Players** with the Konami ID visible, not just a pack-opening clip.
 - **Campaign progress is account-bound.** If you buy mid-campaign, the Hub spaces already cleared by the seller stay cleared, so an account that has reached the Gold Ticket row is worth more than a fresh one.
-- **Pay only through escrow.** Use [eFootballMarket escrow](/escrow-guarantee) with M-Pesa Till **1572931**; funds release only after you confirm the Konami ID password, email and 2-step code were handed over cleanly. Our [Konami ID buyer checklist](/news/how-to-verify-clean-konami-id-before-releasing-escrow) covers the full hand-over.
+- **Use marketplace checkout for buyer protection.** Place an order from a published [eFootballMarket listing](/browse) and pay through checkout; the M-Pesa payment is held while you inspect the account. Funds release only after you confirm the Konami ID password, email and 2-step code were handed over cleanly. Our [Konami ID buyer checklist](/news/how-to-verify-clean-konami-id-before-releasing-escrow) covers the full hand-over.
 
 ## Quick FAQ
 
@@ -231,7 +231,7 @@ Community pack rating sits around **3.5 / 5**: not the cheapest value box of 202
 1. **Henry adds a premium, Campbell adds almost as much.** Buyers on [eFootballMarket](/browse) value a maxed Henry roughly like a Big Time Del Piero tier card; a Campbell + Henry pair justifies a clear step up over a plain 3150-strength squad.
 2. **Do not pay for an un-levelled Henry as if it were 105.** Ask for a screenshot showing current level and remaining progression points.
 3. **Free Highlight Arsenal cards are not Epics.** The 94 Rice/Saka Highlight cards from the campaign login are nice but every active account can get them; they should not raise a listing price.
-4. **Verify ownership before escrow release.** Follow our [Konami ID buyer checklist](/news/how-to-verify-clean-konami-id-before-releasing-escrow) and keep payment inside escrow via M-Pesa Till **1572931** until you have logged in yourself and seen the card in **My Team**.`,
+4. **Verify ownership before marketplace checkout payout release.** For an order from a published listing paid through checkout, follow our [Konami ID buyer checklist](/news/how-to-verify-clean-konami-id-before-releasing-escrow) and keep payment inside the Order Room until you have logged in yourself and seen the card in **My Team**.`,
     author_name: "eFootballMarket Valuation Desk",
     cover_image_url: "/images/articles/ef27-henry-big-time-arsenal.jpg",
     is_pinned: false,
@@ -292,9 +292,9 @@ Wanyama is not a meta DMF compared with Rijkaard or Vieira, but **Tough Marker**
 
 ## Buyer and Seller Notes
 
-- **Managers transfer with the account** and keep their proficiency levels, so a Wenger or Arteta at high level is a genuine asset. Check **Managers > Owned** on a live screen before releasing [escrow](/escrow-guarantee).
+- **Managers transfer with the account** and keep their proficiency levels, so a Wenger or Arteta at high level is a genuine asset. Check **Managers > Owned** on a live screen during the inspection window for an order from a published listing paid through [marketplace checkout](/browse).
 - **Link-Up Plays only fire with the right roles.** When evaluating a squad for Wenger, confirm the CF is actually a Deep-Lying Forward on his Attacking Playing Style sheet.
-- Trade safely on [eFootballMarket](/browse): pay via M-Pesa Till **1572931** into escrow, verify the Konami ID with our [buyer checklist](/news/how-to-verify-clean-konami-id-before-releasing-escrow), then release.`,
+- For buyer protection on [eFootballMarket](/browse), choose a published listing and pay through marketplace checkout; verify the Konami ID with our [buyer checklist](/news/how-to-verify-clean-konami-id-before-releasing-escrow) before releasing the payment.`,
     author_name: "eFootballMarket Tactical Desk",
     cover_image_url: "/images/articles/ef27-wenger-arsenal-manager.jpg",
     is_pinned: false,
@@ -639,7 +639,7 @@ Between October's **v6.1.0 / v6.1.1** cycle and November's **Black Friday** buil
 
 Konami's 12 November maintenance delivered exactly what the cycle promised: a Campaign Hub with Silver/Gold/Platinum Tickets (up to **5,000 Coins**), **Big Time Thierry Henry** in a 250-player Arsenal box, **Arsène Wenger** and **Mikel Arteta** as Dual Link-Up managers, and a **National Legends Selection** that includes Kenya's **Victor Wanyama**. Read the [full update breakdown](/news/efootball-2027-black-friday-update-nov-12-campaign-hub-henry-arsenal) and the [Henry pack review](/news/big-time-thierry-henry-epic-arsenal-fc-pack-review-builds-kenya).
 
-- **Buyer Tip**: Sellers looking to fund fresh Black Friday spins frequently list clean, well-built 3150–3210+ squads at sharp KES prices on [Friday Drops](/friday-drops) and the [Main Marketplace](/browse).
+- **Buyer Tip**: Sellers looking to fund fresh Black Friday spins frequently list clean, well-built 3150–3210+ squads at sharp KES prices on the [Main Marketplace](/browse).
 - **Coin Carryover Reminder**: eFootball Coins **do not transfer across Android <-> iOS** OS families during Data Transfer (Android coins stay on Android; iOS coins stay on iOS), though all **Epic/Big Time/Show Time players, GP, Select Skill Tokens, and Managers** transfer 100% intact! Always match the listing's platform badge if you are buying an account specifically for its unspent Coin stash.`,
     author_name: "eFootballMarket Valuation Desk",
     cover_image_url: "/images/articles/ef27-messi-yamal-season-art.jpg",
@@ -659,7 +659,7 @@ Konami's 12 November maintenance delivered exactly what the cycle promised: a Ca
       "Updated for eFootball 2027 (v6.0 – v6.1.1): how to verify Google Play / Game Center is Not Linked, check for Konami's new k-ID Child Account restriction, avoid the Android OTP space bug, and rebind 2FA under Till 1572931 escrow.",
     content: `## 4 Checks Every Buyer Must Run Inside the 24-Hour Escrow Window
 
-When you purchase a squad on **eFootballMarket Kenya** (or lock an external deal via our [Middleman Escrow Desk](/middleman)), your KES payment sits safely in **Safaricom Buy Goods Till 1572931** while you inspect the account. With **eFootball 2027 (v6.0.0 – v6.1.1)**, there are **four mandatory security checks** to complete before clicking **Confirm & Release Payout**.
+When you purchase a squad through a published listing and complete checkout on **eFootballMarket Kenya**, your KES payment is held through **Safaricom Buy Goods Till 1572931** while you inspect the account. Deals arranged and paid directly on social media are not covered. With **eFootball 2027 (v6.0.0 – v6.1.1)**, there are **four mandatory security checks** to complete before clicking **Confirm & Release Payout**.
 
 ## Check 1: Perform Title-Screen Data Transfer & Inspect \`Link Data\`
 
@@ -668,7 +668,7 @@ Never tap *Link Data* inside your own existing account—that overwrites links! 
 1. Navigate to **Extras -> Support -> Link Data**.
 2. Confirm **Link Data Using KONAMI ID** says **Linked**.
 3. Confirm **Google Play** (Android) / **Game Center** (iOS) says **Not Linked**.
-   - If Google Play or Apple Game Center shows *Linked*, **stop immediately**—a linked OS account lets the previous owner log back in without your Konami password. Take an uncropped screenshot and click **Raise Dispute** in your order room for a full M-Pesa escrow refund.
+   - If Google Play or Apple Game Center shows *Linked*, **stop immediately**—a linked OS account lets the previous owner log back in without your Konami password. Take an uncropped screenshot and click **Raise Dispute** in your order room for evidence review. A full refund may be approved under the policy; approved M-Pesa refunds are arranged manually.
 
 ## Check 2: Verify It Is NOT a \`k-ID\` Restricted Child Account (New in v6.0.0!)
 
@@ -689,7 +689,7 @@ Once the roster, OVR, Epics, and clean \`Link Data\` check out:
 1. Open **https://my.konami.net** -> **Personal Information -> Email Address** and change the email to a **fresh personal Gmail/Outlook** that already has its own 2FA turned on.
 2. Open **Security -> Password** and set a brand-new 12–20 character password.
 3. Open **Security -> Two-Step Verification** and bind OTP generation strictly to your new email or Authenticator app.
-4. Return to your eFootballMarket order room and click **Confirm & Release Payout**—completing a 100% irreversible, clean handover!`,
+4. Return to your eFootballMarket order room and click **Confirm & Release Payout** only after completing your checks. This completes the order and credits the seller’s available platform balance; any M-Pesa withdrawal is a separate request arranged manually.`,
     author_name: "eFootballMarket Trust & Safety",
     cover_image_url: "/images/articles/ef27-konami-security-pin.jpg",
     is_pinned: false,
@@ -713,20 +713,20 @@ During **October 2026 maintenance updates** in **eFootball 2027**, Konami issued
 1. **Automated Farming & Auto-Clicker Tools**: Konami suspended waves of accounts detected running third-party screen-macro / auto-clicker apps to farm GP, Tour Events, and My League matches unattended.
 2. **Unauthorized Client Modding, Reverse Engineering & Void-Match Exploits**: Following earlier v5.5–v6.1 anti-cheat updates, Konami reiterated strict bans against modified mobile APKs, reverse-engineered clients, and network manipulation in **eFootball League** and **Showdown**.
 
-**Why Escrow Inspection Saves You**: In blind WhatsApp/Telegram cash trades, scammers rush to dump accounts that have just received a Konami match restriction or negative-coin chargeback flag. On **eFootballMarket Kenya**, your M-Pesa payment stays locked in **Till 1572931** until you sign in on the official Play Store / App Store / Steam / PlayStation client and verify the account enters online matchmaking cleanly.
+**Why Escrow Inspection Saves You**: In blind WhatsApp/Telegram cash trades, scammers rush to dump accounts that have just received a Konami match restriction or negative-coin chargeback flag. For an order placed from a published listing and paid through **eFootballMarket Kenya checkout**, the M-Pesa payment stays locked in **Till 1572931** while you sign in on the official Play Store / App Store / Steam / PlayStation client and verify the account enters online matchmaking cleanly.
 
 ## 5 Active WhatsApp & Facebook eFootball Scams in Kenya Right Now
 
 1. **The Pre-Payment \`my.konami.net\` OTP Hijack ("Let Me Log In Just to Check")**: A scammer posing as a serious buyer asks for your Konami ID email, password, and a single 6-digit OTP *"just to view your Fluid Formation in-game before sending M-Pesa."* Instead of opening eFootball, they enter that 6-digit OTP on **my.konami.net** to swap your registered email address and steal your squad in 25 seconds! **Never share a Konami OTP until escrow payment is verified inside an active order room.**
-2. **Edited M-Pesa Confirmation SMS Screenshots**: Fraudsters use fake SMS generators to send \`Confirmed. Ksh6,500.00 sent to...\` screenshots while pressuring you over a phone call that *"Safaricom messages are delayed."* Always check your real M-Pesa balance via \`*334#\` or the M-Pesa App—or trade exclusively through **Till 1572931** escrow.
+2. **Edited M-Pesa Confirmation SMS Screenshots**: Fraudsters use fake SMS generators to send \`Confirmed. Ksh6,500.00 sent to...\` screenshots while pressuring you over a phone call that *"Safaricom messages are delayed."* Always check your real M-Pesa balance via \`*334#\` or the M-Pesa App. For buyer protection, pay only through checkout on a published eFootballMarket listing; payments for direct social-media deals are not covered.
 3. **Stolen 3230+ Ballon d'Or / Henry / Gullit Whale Screenshots for KES 2,000**: Any stranger advertising a squad loaded with 15+ Double-Booster Epics and 90-proficiency managers for KES 1,800 *"urgent school fees quick sale"* is recycling screenshots lifted from TikTok or Telegram.
 4. **Cropped \`Link Data\` Screenshots**: Sellers who crop out the bottom half of **Extras -> Support -> Link Data** are almost always hiding an active **Google Play** or **Game Center** link so they can log back in two days after you pay.
-5. **Fake WhatsApp Group "Trusted Admins"**: Colluding scammers run 900-member trading groups where the "seller" and the "official group middleman" are the exact same person operating two SIM cards.
+5. **Fake WhatsApp Group "Trusted Admins"**: Colluding scammers run large trading groups where the "seller" and the group's purported escrow admin are the same person operating two SIM cards.
 
 ## Trade With Zero Guesswork
 
 - Run every unknown phone number, Till number, or social handle through our free [Scammer Check Database](/scammer-check) before replying.
-- Found a genuine seller on WhatsApp, TikTok, or Facebook? Generate an instant protected deal link on our [Middleman Escrow Desk](/middleman) so neither side ever goes first blindly.`,
+- If you find a seller on WhatsApp, TikTok, or Facebook, do not send money or credentials directly. Buyer protection is available only for an order created from a published eFootballMarket listing and paid through marketplace checkout.`,
     author_name: "eFootballMarket Trust & Safety",
     cover_image_url: "/images/articles/ef27-stadium-night-lights.jpg",
     is_pinned: false,

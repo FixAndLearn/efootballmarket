@@ -27,7 +27,6 @@ export default function NotFound() {
           { label: "Android Squads", href: "/browse?platform=android" },
           { label: "iOS Squads", href: "/browse?platform=ios" },
           { label: "3150+ OVR", href: "/browse?minStrength=3150" },
-          { label: "Middleman Desk", href: "/middleman" },
           { label: "Phone Check", href: "/scammer-check" },
         ].map((chip) => (
           <Link

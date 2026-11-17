@@ -24,7 +24,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const rate = checkRateLimit(`tourney_match:${user.id}:${ip}`, 20, 60000);
+    const rate = await checkRateLimit(`tourney_match:${user.id}:${ip}`, 20, 60000);
     if (!rate.success) {
       return NextResponse.json(
         { error: "Too many match updates. Please wait a moment." },
@@ -35,11 +35,23 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     const { tournament_id, match_id, score1, score2, winner_name, match_code } = body;
 
-    if (!tournament_id || !match_id || score1 === undefined || score2 === undefined || !winner_name) {
+    if (!tournament_id || !match_id || score1 === undefined || score2 === undefined || typeof winner_name !== "string") {
       return NextResponse.json(
-        { error: "tournament_id, match_id, score1, score2, and winner_name are required." },
+        { error: "tournament_id, match_id, scores, and winner_name are required." },
         { status: 400 }
       );
+    }
+
+    const safeScore1 = Number(score1);
+    const safeScore2 = Number(score2);
+    if (
+      !Number.isSafeInteger(safeScore1) ||
+      safeScore1 < 0 ||
+      !Number.isSafeInteger(safeScore2) ||
+      safeScore2 < 0 ||
+      safeScore1 === safeScore2
+    ) {
+      return NextResponse.json({ error: "Enter non-negative whole-number scores with a winner." }, { status: 400 });
     }
 
     // Verify caller is the tournament host or a verified Admin
@@ -69,8 +81,8 @@ export async function POST(req: NextRequest) {
     const result = await TournamentService.submitMatchResult({
       tournament_id,
       match_id,
-      score1: Number(score1),
-      score2: Number(score2),
+      score1: safeScore1,
+      score2: safeScore2,
       winner_name: String(winner_name).trim(),
       match_code,
     });
@@ -79,27 +91,44 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: result.error }, { status: 400 });
     }
 
-    // If Grand Final was won and a Champion is officially crowned:
+    // Notify the desk to arrange any published prizes manually. This event does
+    // not send M-Pesa money or confirm that a payout has been completed.
     if (result.isChampionCrowned && result.championName && result.tournament) {
       const tourney = result.tournament;
-      // 1. WhatsApp alert to Brian Okibo to disburse M-Pesa prize pool
-      await dispatchAdminWhatsAppAlert({
-        eventType: "TOURNAMENT_WINNER_CROWNED",
-        listingTitle: tourney.title,
-        username: result.championName,
-        amount: tourney.first_place_kes,
-        details: `Grand Final Champion: ${result.championName}! Total prize pool KES ${tourney.prize_pool_kes}. Disburse KES ${tourney.first_place_kes} to champion via Till 1572931.`,
-      }).catch((e) => console.warn("WhatsApp champion alert error:", e));
+      if (tourney.first_place_kes > 0 || tourney.second_place_kes > 0) {
+        const champion = (tourney.participants || []).find(
+          (participant) => participant.friend_id === result.championFriendId
+        );
+        const runnerUp = result.runnerUpFriendId
+          ? (tourney.participants || []).find(
+              (participant) => participant.friend_id === result.runnerUpFriendId
+            )
+          : undefined;
+        const runnerUpPrize = result.runnerUpName
+          ? ` Runner-up ${result.runnerUpName}: KES ${tourney.second_place_kes}.`
+          : "";
+
+        await dispatchAdminWhatsAppAlert({
+          eventType: "TOURNAMENT_WINNER_CROWNED",
+          listingTitle: tourney.title,
+          username: result.championName,
+          buyerPhone: champion?.phone_number,
+          sellerPhone: runnerUp?.phone_number,
+          amount: tourney.first_place_kes,
+          details: `Final result recorded. Manually review and arrange first-place prize KES ${tourney.first_place_kes} for ${result.championName}.${runnerUpPrize}`,
+        }).catch(() => console.warn("Tournament prize review alert failed."));
+      }
     }
 
     return NextResponse.json({
       success: true,
       isChampionCrowned: result.isChampionCrowned,
       championName: result.championName,
+      runnerUpName: result.runnerUpName,
       tournament: result.tournament,
       message: result.isChampionCrowned
-        ? `Grand Final complete! ${result.championName} is crowned Tournament Champion!`
-        : `Match result updated! Winner ${winner_name} advances to the next round.`,
+        ? `Final result recorded. ${result.championName} is the tournament champion; the tournament desk has been notified to arrange any published prize manually.`
+        : `Match result updated! ${result.winnerName} advances to the next round.`,
     });
   } catch (err: any) {
     console.error("POST /api/tournaments/matches error:", err);

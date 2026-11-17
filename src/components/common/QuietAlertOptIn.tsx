@@ -33,7 +33,7 @@ export function QuietAlertOptIn({ topic, compact = false }: QuietAlertOptInProps
       placeholder: "Your 07... / 01... buyer number",
       button: "Alert Me",
       waMessage:
-        "Hello eFootballMarket, please notify me when new verified Clean Konami ID squads are listed.",
+        "Hello eFootballMarket, please notify me when new eFootball squad listings are published.",
       confirmed: "Saved! Tap below to confirm on WhatsApp.",
     },
   }[topic];

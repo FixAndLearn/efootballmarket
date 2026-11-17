@@ -27,7 +27,6 @@ import {
   Bell,
   BookOpen,
   Clock,
-  Handshake,
   Lock,
   ShieldAlert,
   ShieldCheck,
@@ -259,7 +258,7 @@ async function GuidesSection() {
               <span>eFootball 2027 Blog &amp; Meta Guides</span>
             </h2>
             <p className="text-xs text-sx-muted mt-0.5">
-              Fluid Formation, v6.1 Select Tokens, Dual Link-Up managers, and safe Konami ID escrow.
+              Fluid Formation, v6.1 Select Tokens, Dual Link-Up managers, and marketplace checkout safety.
             </p>
           </div>
           <Link
@@ -477,7 +476,7 @@ export default async function HomePage() {
                   <span className="inline-flex items-center gap-2">
                     <Lock className="w-3.5 h-3.5 text-sx-green-text shrink-0" />
                     <span>
-                      <strong className="text-sx-ink">M-Pesa Till 1572931 Hold</strong> · KES 0 Buyer Fee · 24h Login Check
+                      <strong className="text-sx-ink">Marketplace Checkout Hold</strong> · KES 0 Buyer Fee · 24h Login Check
                     </span>
                   </span>
                   <DetailTabLink href="/escrow-guarantee">
@@ -590,7 +589,7 @@ export default async function HomePage() {
                 eFootballMarket Kenya Services
               </span>
               <h2 className="text-xl sm:text-2xl font-bold text-sx-ink font-display tracking-tight">
-                Everything Our Desk Handles For Kenyan Players
+                Marketplace Tools &amp; Community Services
               </h2>
             </div>
             <Link
@@ -606,31 +605,24 @@ export default async function HomePage() {
             {[
               {
                 icon: Store,
-                title: "Buy & Sell Verified Squads",
-                desc: "List your Clean Konami ID squad for free or buy verified Android, iOS, PS5 & PC accounts with KES 0 extra buyer fee and 24-hour login inspection.",
+                title: "Buy & Sell eFootball Squads",
+                desc: "Browse seller-listed Android, iOS, PS5 & PC accounts. Squad stats and player names are seller-provided, not pre-audited; eligible checkout orders include a 24-hour buyer inspection and escrow hold.",
                 cta: "List or Browse Squads",
                 href: "/seller/create-listing",
               },
               {
-                icon: Handshake,
-                title: "WhatsApp & Facebook Middleman",
-                desc: "Agreed on a squad deal in a WhatsApp group, TikTok, or Facebook? Generate an official Deal Code and hold payment safely in M-Pesa Till 1572931.",
-                cta: "Open Middleman Contract",
-                href: "/middleman",
-              },
-              {
                 icon: Target,
                 title: "Custom Squad Sourcing",
-                desc: "Looking for 3150+ OVR or specific Epics like Gullit, Vieira, or Blitz Curler Son? Post your KES budget and let our desk & verified sellers match you.",
+                desc: "Looking for 3150+ OVR or specific Epics like Gullit, Vieira, or Blitz Curler Son? Post your KES budget and let our desk and participating sellers respond.",
                 cta: "Request Your Dream Squad",
                 href: "/wanted",
               },
               {
                 icon: ArrowLeftRight,
-                title: "Account Swap + Cash Top-Up",
-                desc: "Upgrade your current squad safely—propose a Clean Konami ID trade-in plus M-Pesa top-up settled through neutral Order Room inspection.",
-                cta: "Start Protected Swap",
-                href: "/middleman?title=Account%20Swap%20%2B%20Cash%20Top-Up",
+                title: "Marketplace Swap Offers",
+                desc: "Browse squads marked open to swaps and send a proposal from the listing page. A proposal is not an order; only marketplace checkout has buyer protection.",
+                cta: "Browse Swap-Open Squads",
+                href: "/browse?swap=1",
               },
               {
                 icon: Trophy,
@@ -688,7 +680,7 @@ export default async function HomePage() {
                 Full Rules &amp; Fee Table
               </DetailTabLink>
               <DetailTabLink href="/dispute-policy" variant="pill">
-                Refund Guarantee
+                Refund &amp; Dispute Rules
               </DetailTabLink>
             </div>
           </div>

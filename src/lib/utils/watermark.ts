@@ -1,7 +1,7 @@
 /**
  * Squad Screenshot Auto-Watermarking Utility
  * Protects eFootball squad screenshots against theft, Facebook/WhatsApp scam reposts,
- * and impersonation by embedding an indelible eFootballMarket Escrow watermark.
+ * and impersonation by embedding an indelible eFootballMarket listing watermark.
  */
 
 export interface WatermarkOptions {
@@ -24,7 +24,7 @@ export async function watermarkSquadImage(
   }
 
   const {
-    sellerUsername = "Verified Seller",
+    sellerUsername = "eFootballMarket Seller",
     websiteUrl = "efootballmarket.co.ke",
   } = options;
 
@@ -67,7 +67,7 @@ export async function watermarkSquadImage(
           ctx.textBaseline = "middle";
 
           // Center watermark stamp
-          ctx.fillText(`${websiteUrl.toUpperCase()} | ESCROW PROTECTED`, 0, -fontSizeCenter);
+          ctx.fillText(`${websiteUrl.toUpperCase()} | MARKETPLACE LISTING`, 0, -fontSizeCenter);
 
           ctx.font = `700 ${Math.round(fontSizeCenter * 0.65)}px system-ui, -apple-system, sans-serif`;
           ctx.fillStyle = "rgba(245, 158, 11, 0.22)"; // amber-tinted
@@ -76,7 +76,7 @@ export async function watermarkSquadImage(
           ctx.restore();
 
           // ------------------------------------------------------------------
-          // 2. High-Tech Bottom Escrow Security Ribbon
+          // 2. High-Tech Bottom Listing Security Ribbon
           // ------------------------------------------------------------------
           const ribbonHeight = Math.max(34, Math.round(h * 0.055));
           const yPos = h - ribbonHeight;
@@ -100,13 +100,13 @@ export async function watermarkSquadImage(
           ctx.fillStyle = "#10B981"; // Emerald
           ctx.textAlign = "left";
           ctx.textBaseline = "middle";
-          ctx.fillText("ESCROW VERIFIED ASSET", Math.max(12, Math.round(w * 0.02)), yPos + ribbonHeight / 2);
+          ctx.fillText("EFOOTBALLMARKET LISTING", Math.max(12, Math.round(w * 0.02)), yPos + ribbonHeight / 2);
 
           ctx.font = `600 ${Math.max(11, Math.round(ribbonHeight * 0.34))}px system-ui, -apple-system, sans-serif`;
           ctx.fillStyle = "#F8FAFC"; // White text
           ctx.textAlign = "right";
           ctx.fillText(
-            `${websiteUrl} — Safe M-Pesa Till 1572931`,
+            `Buyer protection via marketplace checkout only`,
             w - Math.max(12, Math.round(w * 0.02)),
             yPos + ribbonHeight / 2
           );

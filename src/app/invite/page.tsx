@@ -46,7 +46,7 @@ function InviteContent() {
   };
 
   const handleWhatsAppShare = () => {
-    const text = `Join me on eFootballMarket.co.ke - Kenya's premier verified platform to safely buy and sell eFootball accounts with Safaricom Till 1572931 escrow. Sign up here: ${shareLink}`;
+    const text = `Join me on eFootballMarket.co.ke to browse seller-listed eFootball squads. Game-account contents are not pre-audited; buyer protection applies only to eligible orders placed from a published listing and paid through marketplace checkout. Sign up here: ${shareLink}`;
     const url = `https://wa.me/?text=${encodeURIComponent(text)}`;
     window.open(url, "_blank");
   };
@@ -111,25 +111,25 @@ function InviteContent() {
 
         <div className="p-4 rounded-xl bg-sx-subtle border border-pitch-border/80 space-y-3">
           <p className="text-xs font-semibold text-sx-ink-soft">
-            Why join Kenya&apos;s #1 Escrow Gaming Network?
+            Why join eFootballMarket?
           </p>
           <div className="space-y-2 text-xs text-sx-ink-soft">
             <div className="flex items-start gap-2">
               <BadgeCheck className="w-4 h-4 text-sx-green-text shrink-0 mt-0.5" />
               <span>
-                <strong>Safaricom Till 1572931:</strong> Funds stay protected until you verify Konami ID credentials.
+                <strong>Checkout-only payment hold:</strong> For an order from a published listing paid through marketplace checkout, funds are held while you verify the Konami ID credentials.
               </span>
             </div>
             <div className="flex items-start gap-2">
               <Clock className="w-4 h-4 text-sx-amber-text shrink-0 mt-0.5" />
               <span>
-                <strong>24H Inspection Window:</strong> Full money-back guarantee if the squad does not match.
+                <strong>24-hour inspection:</strong> Eligible marketplace checkout orders include an inspection window; refund eligibility follows the published dispute policy.
               </span>
             </div>
             <div className="flex items-start gap-2">
               <ShieldCheck className="w-4 h-4 text-sky-400 shrink-0 mt-0.5" />
               <span>
-                <strong>Anti-Scam Protection:</strong> Zero Google-link guarantee &amp; Konami ID transfer checklist.
+                <strong>Account checks:</strong> Use the Konami ID transfer checklist to verify account links and the listed squad.
               </span>
             </div>
           </div>
@@ -164,7 +164,7 @@ function InviteContent() {
         </div>
         <h1 className="text-2xl font-bold text-sx-ink font-display">Invite Friends &amp; Traders</h1>
         <p className="text-xs text-sx-muted mt-1">
-          Bring trusted buyers and sellers to eFootballMarket and trade with 100% escrow protection
+          Invite friends to browse published listings and complete purchases through marketplace checkout; eligible orders receive buyer protection.
         </p>
       </div>
 
@@ -231,7 +231,7 @@ function InviteContent() {
             <span>Send Branded Email Invitation</span>
           </h2>
           <p className="text-[11px] text-sx-muted mt-0.5">
-            We will dispatch an official eFootballMarket invitation with your username &amp; verified escrow badge.
+            We will dispatch an official eFootballMarket invitation with your username and details about buyer protection for eligible checkout orders.
           </p>
         </div>
 
@@ -251,7 +251,7 @@ function InviteContent() {
           </label>
           <textarea
             rows={2}
-            placeholder="Hey bro, check out this verified eFootball account marketplace..."
+            placeholder="Hey bro, check out these seller-listed eFootball squads..."
             value={personalMessage}
             onChange={(e) => setPersonalMessage(e.target.value)}
             className="w-full bg-sx-subtle border border-pitch-border rounded-xl px-3 py-2 text-xs text-sx-ink-soft placeholder:text-sx-muted focus:outline-none focus:border-brand-500"
@@ -274,8 +274,8 @@ function InviteContent() {
       <div className="p-3.5 rounded-xl bg-sx-subtle border border-pitch-border text-xs text-sx-muted space-y-1.5">
         <p className="font-semibold text-sx-ink-soft">Invite Benefits:</p>
         <p>1. Strengthen your trader reputation score across the platform.</p>
-        <p>2. Safeguard your gaming friends from Telegram and Facebook scammers.</p>
-        <p>3. Every trade made by your invites is backed by Safaricom Till 1572931 escrow.</p>
+        <p>2. Share scam-avoidance tips and encourage friends to use marketplace checkout.</p>
+        <p>3. Orders placed from published listings and paid through marketplace checkout are eligible for buyer protection.</p>
       </div>
 
       <div className="text-center pt-1">

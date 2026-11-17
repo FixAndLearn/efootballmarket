@@ -48,7 +48,7 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
           supabase.from("disputes").select("*", { count: "exact", head: true }).eq("status", "open"),
           supabase.from("seller_withdrawals").select("*", { count: "exact", head: true }).eq("status", "pending"),
           supabase.from("listings").select("*", { count: "exact", head: true }),
-          supabase.from("profiles").select("*", { count: "exact", head: true }),
+          supabase.from("profiles").select("id", { count: "exact", head: true }),
         ]);
 
         setCounts({
@@ -86,7 +86,7 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
     },
     {
       id: "payments",
-      label: "Till 1572931 & Middleman",
+      label: "Till 1572931 Payments",
       icon: Smartphone,
       href: "/admin?tab=payments",
       badge: null,

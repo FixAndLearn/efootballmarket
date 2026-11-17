@@ -103,6 +103,8 @@ export interface Profile {
   created_at: string;
   updated_at: string;
   deleted_at: string | null;
+  /** Computed, privacy-safe storefront URL; not a database column. */
+  public_storefront_path?: string;
 }
 
 export type NewsCategory =

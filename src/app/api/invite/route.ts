@@ -45,7 +45,7 @@ export async function POST(request: NextRequest) {
     }
 
     const ip = getClientIp(request);
-    const rate = checkRateLimit(`invite_email:${user.id}:${ip}`, 5, 600000);
+    const rate = await checkRateLimit(`invite_email:${user.id}:${ip}`, 5, 600000);
     if (!rate.success) {
       return NextResponse.json(
         { error: "Invitation limit reached. Please wait a few minutes before sending more." },

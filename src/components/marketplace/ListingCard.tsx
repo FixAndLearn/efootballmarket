@@ -15,7 +15,6 @@ import {
   getShortPlatformLabel,
   getShortPlaystyleLabel,
 } from "@/lib/utils";
-import { isListingOnFlashSale } from "@/lib/utils/flashSale";
 import {
   ArrowRight,
   Coins,
@@ -97,7 +96,6 @@ export function ListingCard({ listing, priority = false }: ListingCardProps) {
   const [imgIdx, setImgIdx] = useState(0);
   const activeImage = galleryImages[imgIdx]?.image_url || galleryImages[0]?.image_url;
 
-  const isFlashDrop = isListingOnFlashSale(listing);
   const isAvailable = listing.status === "published";
 
   const epics =
@@ -202,11 +200,7 @@ export function ListingCard({ listing, priority = false }: ListingCardProps) {
         {/* Bottom Overlay: Optional Division / Photo Count + Compare & Save */}
         <div className="absolute bottom-2 left-2.5 right-2.5 flex items-center justify-between gap-2 z-20 pointer-events-none">
           <div className="flex items-center gap-1.5">
-            {isFlashDrop ? (
-              <span className="px-2 py-0.5 rounded-md bg-sx-green text-white text-[10px] font-bold uppercase tracking-wide">
-                Friday Drop
-              </span>
-            ) : division >= 1 && division <= 3 ? (
+            {division >= 1 && division <= 3 ? (
               <span className="px-2 py-0.5 rounded-md bg-black/75 border border-white/15 text-[10px] font-bold text-amber-300 inline-flex items-center gap-1">
                 <Trophy className="w-2.5 h-2.5" />
                 <span>Div {division}</span>

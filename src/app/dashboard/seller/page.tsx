@@ -6,6 +6,7 @@ import { SellerDashboardView } from "@/components/seller/SellerDashboardView";
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { Listing, Order } from "@/types/database";
+import { getPublicStorefrontPath } from "@/lib/security/publicSanitizer";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -79,9 +80,10 @@ export default async function SellerDashboardPage() {
 
         <div className="flex flex-wrap items-center gap-2.5 shrink-0">
           <Link
-            href={`/u/${encodeURIComponent(
+            href={getPublicStorefrontPath(
+              user.id,
               profile?.username || user.user_metadata?.username || user.id
-            )}`}
+            )}
           >
             <Button variant="secondary" size="md">
               <ExternalLink className="w-4 h-4" />

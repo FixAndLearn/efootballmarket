@@ -27,7 +27,7 @@ export async function POST(req: NextRequest) {
     }
 
     const ip = getClientIp(req);
-    const rate = checkRateLimit(`sync_prof:${user.id}:${ip}`, 15, 60000);
+    const rate = await checkRateLimit(`sync_prof:${user.id}:${ip}`, 15, 60000);
     if (!rate.success) {
       return NextResponse.json({ error: "Too many requests" }, { status: 429 });
     }

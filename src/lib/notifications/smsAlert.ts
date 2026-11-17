@@ -215,12 +215,12 @@ export async function sendSellerFundsReleasedSms(
   orderNumber: string,
   netAmountKes: number
 ): Promise<SmsDispatchResult> {
-  const message = `EFootballMarket: Handover complete for Order #${orderNumber}! KES ${netAmountKes} is credited to your wallet balance. You can withdraw to M-Pesa anytime.`;
+  const message = `EFootballMarket: Handover complete for Order #${orderNumber}. KES ${netAmountKes} was credited to your available balance. M-Pesa withdrawals require a separate request and manual review; timing varies.`;
   return sendSmsAlert({ toPhone: sellerPhone, message });
 }
 
 /**
- * Alert seller immediately when an M-Pesa withdrawal is completed or rejected.
+ * Alert seller when an administrator records a withdrawal as paid or rejected.
  */
 export async function sendSellerWithdrawalStatusSms(
   sellerPhone: string,
@@ -230,8 +230,8 @@ export async function sendSellerWithdrawalStatusSms(
 ): Promise<SmsDispatchResult> {
   const message =
     status === "completed"
-      ? `EFootballMarket: Your M-Pesa withdrawal of KES ${amountKes.toLocaleString()} has been approved & disbursed! Check your M-Pesa for incoming funds.`
-      : `EFootballMarket: Withdrawal of KES ${amountKes.toLocaleString()} could not be processed.${failureReason ? ` Reason: ${failureReason}.` : ""} Funds refunded to your balance.`;
+      ? `EFootballMarket: An administrator marked your KES ${amountKes.toLocaleString()} M-Pesa withdrawal as paid after manual handling. This system does not verify the transfer; check your M-Pesa SMS/receipt.`
+      : `EFootballMarket: Your KES ${amountKes.toLocaleString()} withdrawal was rejected. The reserved amount is returned to your available balance when rejection is recorded.${failureReason ? ` Reason: ${failureReason}.` : ""}`;
   return sendSmsAlert({ toPhone: sellerPhone, message });
 }
 

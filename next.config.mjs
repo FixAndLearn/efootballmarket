@@ -77,6 +77,26 @@ const nextConfig = {
       permanent: true,
     },
     {
+      source: '/middleman/:path*',
+      destination: '/browse',
+      permanent: true,
+    },
+    {
+      source: '/friday-drops/:path*',
+      destination: '/browse',
+      permanent: true,
+    },
+    {
+      source: '/middleman',
+      destination: '/browse',
+      permanent: true,
+    },
+    {
+      source: '/friday-drops',
+      destination: '/browse',
+      permanent: true,
+    },
+    {
       source: '/seller/orders/:id',
       destination: '/orders/:id',
       permanent: true,

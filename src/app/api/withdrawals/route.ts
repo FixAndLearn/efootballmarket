@@ -4,8 +4,10 @@ import { mpesaClient } from "@/lib/mpesa/client";
 import { dispatchAdminWhatsAppAlert } from "@/lib/notifications/adminAlert";
 import {
   checkRateLimit,
-  getIdempotencyResult,
-  setIdempotencyResult,
+  claimIdempotencyKey,
+  completeIdempotencyKey,
+  hashSharedIdempotencyKey,
+  releaseIdempotencyKey,
 } from "@/lib/security/rateLimiter";
 import { getClientIp } from "@/lib/security/guards";
 import { NextRequest, NextResponse } from "next/server";
@@ -30,7 +32,7 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Unauthorized. Please log in to withdraw." }, { status: 401 });
     }
 
-    const rate = checkRateLimit(`withdraw:${user.id}:${ip}`, 3, 60000);
+    const rate = await checkRateLimit(`withdraw:${user.id}:${ip}`, 3, 60000);
     if (!rate.success) {
       return NextResponse.json(
         { error: "Too many withdrawal attempts. Please wait 1 minute before retrying." },
@@ -40,7 +42,6 @@ export async function POST(req: NextRequest) {
 
     const json = await req.json();
     const parsed = withdrawalSchema.safeParse(json);
-
     if (!parsed.success) {
       return NextResponse.json(
         { error: "Invalid withdrawal parameters", details: parsed.error.format() },
@@ -49,211 +50,140 @@ export async function POST(req: NextRequest) {
     }
 
     const amount = Math.round(parsed.data.amount * 100) / 100;
-    const { phoneNumber } = parsed.data;
-    const normalizedPhone = mpesaClient.normalizePhoneNumber(phoneNumber);
-
-    const idemKey =
-      req.headers.get("x-idempotency-key") ||
-      `withdraw:${user.id}:${amount}:${normalizedPhone}`;
-    const existingIdem = getIdempotencyResult<any>(idemKey, 30000);
-    if (existingIdem) {
-      return NextResponse.json(existingIdem);
+    const normalizedPhone = mpesaClient.normalizePhoneNumber(parsed.data.phoneNumber);
+    if (!/^254[17]\d{8}$/.test(normalizedPhone)) {
+      return NextResponse.json({ error: "Please enter a valid Kenyan M-Pesa phone number." }, { status: 400 });
     }
 
-    const adminSupabase = createAdminClient();
-    const serviceRoleConfigured = hasServiceRoleKey();
-    const primaryClient = serviceRoleConfigured ? adminSupabase : supabase;
-
-    // Fetch user profile and verify balance
-    let profile = null;
-    const { data: p1 } = await primaryClient
-      .from("profiles")
-      .select("username, available_balance, escrow_balance, is_suspended")
-      .eq("id", user.id)
-      .single();
-
-    if (p1) {
-      profile = p1;
-    } else {
-      const { data: p2 } = await adminSupabase
-        .from("profiles")
-        .select("username, available_balance, escrow_balance, is_suspended")
-        .eq("id", user.id)
-        .single();
-      profile = p2;
-    }
-
-    if (!profile) {
-      return NextResponse.json({ error: "Seller profile not found." }, { status: 404 });
-    }
-
-    if (profile.is_suspended) {
-      return NextResponse.json({ error: "Account is suspended. Withdrawals disabled." }, { status: 403 });
-    }
-
-    const availBal = Number(profile.available_balance || 0);
-    const escrowBal = Number(profile.escrow_balance || 0);
-
-    if (availBal < amount) {
-      if (escrowBal > 0) {
-        return NextResponse.json(
-          {
-            error: `Insufficient available balance (KES ${availBal.toLocaleString()}). You have KES ${escrowBal.toLocaleString()} currently locked in Escrow. Escrow funds are released to your Available Balance as soon as the buyer confirms the account or the 24h inspection window ends.`,
-          },
-          { status: 400 }
-        );
-      }
+    if (!hasServiceRoleKey()) {
       return NextResponse.json(
-        {
-          error: `Insufficient available balance. You currently have KES ${availBal.toLocaleString()} available to withdraw.`,
-        },
-        { status: 400 }
+        { error: "Secure withdrawal requests are unavailable without the server-only service role key." },
+        { status: 503 }
+      );
+    }
+    const adminSupabase = createAdminClient();
+
+    const suppliedIdempotencyKey = req.headers.get("x-idempotency-key")?.trim() || "";
+    if (suppliedIdempotencyKey.length > 255) {
+      return NextResponse.json({ error: "Idempotency key is too long." }, { status: 400 });
+    }
+    const idemKey = `withdrawal:${user.id}:${suppliedIdempotencyKey || `${amount}:${normalizedPhone}`}`;
+    const idempotencyClaim = await claimIdempotencyKey<any>(idemKey, 30000, 300000);
+    if (idempotencyClaim.status === "cached") {
+      return NextResponse.json({ ...idempotencyClaim.response, idempotent: true });
+    }
+    if (idempotencyClaim.status === "in_progress") {
+      return NextResponse.json(
+        { error: "A withdrawal request with this idempotency key is already processing. Retry shortly." },
+        { status: 409, headers: { "Retry-After": "2" } }
       );
     }
 
-    // Atomic Compare-And-Swap (CAS) balance deduction: prevents parallel race-condition double-spends
-    const newAvailBal = Math.round(Math.max(0, availBal - amount) * 100) / 100;
-
-    const { data: casPrimary, error: deductErr1 } = await primaryClient
-      .from("profiles")
-      .update({
-        available_balance: newAvailBal,
-        updated_at: new Date().toISOString(),
-      })
-      .eq("id", user.id)
-      .eq("available_balance", availBal)
-      .gte("available_balance", amount)
-      .select("id");
-
-    if (deductErr1 || !casPrimary || casPrimary.length === 0) {
-      const { data: casAdmin, error: deductErr2 } = await adminSupabase
-        .from("profiles")
-        .update({
-          available_balance: newAvailBal,
-          updated_at: new Date().toISOString(),
-        })
-        .eq("id", user.id)
-        .eq("available_balance", availBal)
-        .gte("available_balance", amount)
-        .select("id");
-
-      if (deductErr2 || !casAdmin || casAdmin.length === 0) {
-        return NextResponse.json(
-          {
-            error:
-              "Concurrent balance change detected. Please refresh your wallet balance and try again.",
-          },
-          { status: 409 }
-        );
+    const releaseClaim = async () => {
+      try {
+        await releaseIdempotencyKey(idemKey, idempotencyClaim.ownerToken);
+      } catch {
+        console.warn("Could not release an unused withdrawal idempotency claim.");
       }
-    }
-
-    // Insert withdrawal record using multi-tier clients
-    let withdrawal = null;
-    let withdrawalError = null;
-
-    const insertPayload = {
-      seller_id: user.id,
-      amount,
-      payout_method: "mpesa",
-      phone_number: normalizedPhone,
-      status: "pending",
     };
 
-    // Attempt 1: primaryClient
-    const { data: w1, error: wErr1 } = await primaryClient
-      .from("seller_withdrawals")
-      .insert(insertPayload)
-      .select()
-      .single();
-
-    if (!wErr1 && w1) {
-      withdrawal = w1;
-    } else {
-      withdrawalError = wErr1;
-      // Attempt 2: adminSupabase
-      const { data: w2, error: wErr2 } = await adminSupabase
-        .from("seller_withdrawals")
-        .insert(insertPayload)
-        .select()
-        .single();
-
-      if (!wErr2 && w2) {
-        withdrawal = w2;
-        withdrawalError = null;
-      } else {
-        withdrawalError = wErr2 || wErr1;
+    const { data: withdrawal, error: requestError } = await adminSupabase.rpc(
+      "request_seller_withdrawal",
+      {
+        p_seller_id: user.id,
+        p_amount: amount,
+        p_phone_number: normalizedPhone,
+        p_request_key: hashSharedIdempotencyKey(idemKey),
       }
-    }
+    );
 
-    if (withdrawalError || !withdrawal) {
-      console.error("Withdrawal record creation error:", withdrawalError);
-      // Revert balance deduction on failure
-      try {
-        await primaryClient
-          .from("profiles")
-          .update({ available_balance: availBal })
-          .eq("id", user.id);
-      } catch {
-        // try fallback
-      }
-
-      try {
-        await adminSupabase
-          .from("profiles")
-          .update({ available_balance: availBal })
-          .eq("id", user.id);
-      } catch {
-        // ignore
-      }
-
+    if (requestError) {
+      await releaseClaim();
+      const message = requestError.message || "Could not record the withdrawal request.";
+      const status = /suspended/i.test(message)
+        ? 403
+        : /profile not found/i.test(message)
+        ? 404
+        : /insufficient|amount must|valid Kenyan M-Pesa/i.test(message)
+        ? 400
+        : 503;
+      if (status === 503) console.error("Atomic withdrawal reservation failed; no direct balance fallback was attempted.");
       return NextResponse.json(
-        { error: `Failed to initiate withdrawal: ${withdrawalError?.message || "Database insert failed"}` },
-        { status: 500 }
+        { error: status === 503 ? "Withdrawal request could not be safely recorded. Please try again later." : message },
+        { status }
       );
     }
 
-    // Create notification for seller
-    try {
-      await primaryClient.from("notifications").insert({
-        recipient_id: user.id,
-        type: "order_update",
-        title: "M-Pesa Withdrawal Submitted",
-        message: `Your withdrawal request of KES ${amount} to ${normalizedPhone} has been received and queued for disbursement.`,
-        action_url: "/seller/earnings",
-        is_read: false,
-      });
-    } catch (notifErr) {
-      console.warn("Notification error:", notifErr);
+    const withdrawalRecord = withdrawal as {
+      id?: string;
+      amount?: number | string;
+      phone_number?: string;
+      idempotent?: boolean;
+    } | null;
+
+    if (!withdrawalRecord?.id) {
+      await releaseClaim();
+      console.error("Atomic withdrawal reservation returned no request record.");
+      return NextResponse.json(
+        { error: "Withdrawal status could not be verified. Contact support before retrying." },
+        { status: 503 }
+      );
     }
 
-    // Automated high-priority alerts to Brian Okibo (Telegram smartphone push + WhatsApp + SMS)
-    const sellerUsername =
-      profile?.username ||
-      user.user_metadata?.username ||
-      (user.email ? user.email.split("@")[0] : "Trader");
+    const withdrawalAmount = Number(withdrawalRecord.amount || amount);
+    const wasReused = Boolean(withdrawalRecord.idempotent);
 
-    dispatchAdminWhatsAppAlert({
-      eventType: "WITHDRAWAL_REQUESTED",
-      orderId: withdrawal.id,
-      amount,
-      sellerPhone: normalizedPhone,
-      username: sellerUsername,
-      userEmail: user.email || undefined,
-    }).catch((err) => {
-      console.warn("Admin alert dispatch warning:", err);
-    });
+    if (!wasReused) {
+      try {
+        const { error: notificationError } = await adminSupabase.from("notifications").insert({
+          recipient_id: user.id,
+          type: "order_update",
+          title: "M-Pesa Withdrawal Submitted",
+          message: `Your withdrawal request of KES ${withdrawalAmount} to ${normalizedPhone} is queued for manual review. This system has not sent an M-Pesa transfer.`,
+          action_url: "/seller/earnings",
+          is_read: false,
+        });
+        if (notificationError) console.warn("Withdrawal notification was not recorded.");
+      } catch {
+        console.warn("Withdrawal notification dispatch failed.");
+      }
+
+      const sellerUsername =
+        user.user_metadata?.username ||
+        (user.email ? user.email.split("@")[0] : "Trader");
+
+      dispatchAdminWhatsAppAlert({
+        eventType: "WITHDRAWAL_REQUESTED",
+        orderId: withdrawalRecord.id,
+        amount: withdrawalAmount,
+        sellerPhone: normalizedPhone,
+        username: sellerUsername,
+        userEmail: user.email || undefined,
+      }).catch(() => {
+        console.warn("Admin withdrawal alert dispatch failed.");
+      });
+    }
 
     const responsePayload = {
       success: true,
-      message: `Withdrawal of KES ${amount} to ${normalizedPhone} submitted successfully.`,
+      message: wasReused
+        ? "This withdrawal request was already recorded. No second balance reservation was made."
+        : `Your withdrawal request of KES ${withdrawalAmount} to ${normalizedPhone} is queued for manual review. This system has not sent an M-Pesa transfer.`,
       withdrawal,
+      idempotent: wasReused,
     };
-    setIdempotencyResult(idemKey, responsePayload);
+
+    try {
+      await completeIdempotencyKey(idemKey, idempotencyClaim.ownerToken, responsePayload, 30000);
+    } catch {
+      // The ledger RPC also stores a request key, so a cache failure cannot create
+      // a second reservation when this same request is retried.
+      console.error("Withdrawal was recorded, but its shared response cache could not be completed.");
+    }
 
     return NextResponse.json(responsePayload);
-  } catch (error: any) {
-    return NextResponse.json({ error: error.message }, { status: 500 });
+  } catch {
+    return NextResponse.json({ error: "Withdrawal request could not be safely completed. Check Seller Earnings before retrying." }, { status: 500 });
   }
 }
 

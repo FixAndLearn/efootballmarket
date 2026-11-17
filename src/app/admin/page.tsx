@@ -2,7 +2,7 @@
 
 import { Button } from "@/components/ui/Button";
 import { AdminBloggerStudio } from "@/components/admin/AdminBloggerStudio";
-import { AdminPaymentsAndMiddlemanTab } from "@/components/admin/AdminPaymentsAndMiddlemanTab";
+import { AdminPaymentsTab } from "@/components/admin/AdminPaymentsTab";
 import { AdminAvailabilityPingsPanel } from "@/components/admin/AdminAvailabilityPingsPanel";
 import { useAuth } from "@/hooks/useAuth";
 import { isSuperAdminEmail, isUserAdmin } from "@/lib/security/adminAuth";
@@ -95,7 +95,7 @@ function AdminControlCenterContent() {
   const [listingSearch, setListingSearch] = useState("");
   const [userSearch, setUserSearch] = useState("");
   const [withdrawalSearch, setWithdrawalSearch] = useState("");
-  const [withdrawalFilter, setWithdrawalFilter] = useState<"all" | "pending" | "completed" | "rejected">("pending");
+  const [withdrawalFilter, setWithdrawalFilter] = useState<"all" | "pending" | "processing" | "completed" | "rejected">("pending");
   const [copiedPhone, setCopiedPhone] = useState<string | null>(null);
 
   // Post News Form state
@@ -454,7 +454,7 @@ function AdminControlCenterContent() {
     );
   });
 
-  const pendingWithdrawals = withdrawals.filter((w) => w.status === "pending");
+  const pendingWithdrawals = withdrawals.filter((w) => ["pending", "processing"].includes(w.status));
   const pendingWithdrawalsCount = pendingWithdrawals.length;
   const pendingWithdrawalsSum = pendingWithdrawals.reduce(
     (sum, w) => sum + Number(w.amount || 0),
@@ -608,7 +608,7 @@ function AdminControlCenterContent() {
           className="text-left p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 shadow-sm hover:border-sx-amber-border hover:bg-pitch-surface/80 transition-all cursor-pointer group"
         >
           <span className="text-xs font-semibold text-sx-amber-text uppercase tracking-wider flex items-center justify-between">
-            <span>PENDING PAYOUTS</span>
+            <span>WITHDRAWALS TO REVIEW</span>
             {pendingWithdrawalsCount > 0 && (
               <span className="w-2.5 h-2.5 rounded-full bg-amber-400 animate-pulse" />
             )}
@@ -1132,6 +1132,9 @@ function AdminControlCenterContent() {
                             rows={2}
                             className="w-full rounded-xl bg-pitch-surface border border-pitch-border p-2.5 text-xs text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-amber-400"
                           />
+                          <p className="text-[11px] text-sx-amber-text">
+                            Approving a buyer refund records the decision only. It does not send M-Pesa funds; arrange any approved transfer manually and confirm its status with the buyer.
+                          </p>
                         </div>
 
                         <div className="flex items-center justify-end gap-2 flex-wrap pt-1">
@@ -1168,7 +1171,7 @@ function AdminControlCenterContent() {
                             className="text-xs font-bold"
                           >
                             <UserMinus className="w-3.5 h-3.5 mr-1" />
-                            Refund Buyer (Fraud / Bad Credentials)
+                            Approve Buyer Refund
                           </Button>
                           <Button
                             variant="primary"
@@ -1430,13 +1433,13 @@ function AdminControlCenterContent() {
             <div>
               <div className="inline-flex items-center gap-1.5 text-sx-amber-text text-xs font-bold uppercase tracking-wider mb-1">
                 <Banknote className="w-3.5 h-3.5" />
-                <span>Safaricom Daraja B2C</span>
+                <span>Manual M-Pesa disbursements</span>
               </div>
               <h2 className="text-2xl font-bold text-sx-ink font-display flex items-center gap-2.5">
                 <span>M-Pesa Payouts</span>
                 {pendingWithdrawalsCount > 0 ? (
                   <span className="text-xs px-2.5 py-0.5 rounded-full bg-sx-amber-tint text-sx-amber-text border border-sx-amber-border font-mono font-bold animate-pulse">
-                    {pendingWithdrawalsCount} pending
+                    {pendingWithdrawalsCount} awaiting action
                   </span>
                 ) : (
                   <span className="text-xs px-2.5 py-0.5 rounded-full bg-sx-stone text-sx-ink-soft font-mono font-bold">
@@ -1445,7 +1448,7 @@ function AdminControlCenterContent() {
                 )}
               </h2>
               <p className="text-xs text-sx-muted mt-0.5">
-                Review and disburse seller wallet balance withdrawals or reject suspicious requests.
+                Review requests, arrange any M-Pesa transfer manually outside this system, and record the outcome. The status here does not verify a provider transaction.
               </p>
             </div>
           </div>
@@ -1453,7 +1456,7 @@ function AdminControlCenterContent() {
           {/* Filters & Search */}
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-3">
             <div className="flex items-center gap-1.5 p-1 rounded-xl bg-pitch-surface border border-pitch-border text-xs overflow-x-auto">
-              {(["all", "pending", "completed", "rejected"] as const).map((filter) => {
+              {(["all", "pending", "processing", "completed", "rejected"] as const).map((filter) => {
                 const count =
                   filter === "all"
                     ? withdrawals.length
@@ -1540,7 +1543,8 @@ function AdminControlCenterContent() {
                   </thead>
                   <tbody className="divide-y divide-pitch-border/50">
                     {filteredWithdrawals.map((w) => {
-                      const isPending = w.status === "pending";
+                      const isPending = w.status === "pending" || w.status === "processing";
+                      const isProcessing = w.status === "processing";
                       const isCompleted = w.status === "completed";
                       const isRejected = w.status === "rejected";
 
@@ -1590,20 +1594,20 @@ function AdminControlCenterContent() {
                             {isPending && (
                               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-sx-amber-tint border border-sx-amber-border text-sx-amber-text">
                                 <Clock className="w-3 h-3 animate-spin text-sx-amber-text" />
-                                Pending Payout
+                                {isProcessing ? "Processing · Manual Review" : "Pending Review"}
                               </span>
                             )}
                             {isCompleted && (
                               <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-sx-green-tint border border-sx-green-border text-sx-green-text">
                                 <CheckCircle2 className="w-3 h-3 text-sx-green-text" />
-                                Completed / Paid
+                                Marked Paid · Manual Confirmation
                               </span>
                             )}
                             {isRejected && (
                               <div className="space-y-0.5">
                                 <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-sx-red-tint border border-sx-red-border text-sx-red-text">
                                 <XCircle className="w-3 h-3 text-sx-red-text" />
-                                Rejected &amp; Refunded
+                                Rejected
                               </span>
                                 {w.failure_reason && (
                                   <p className="text-[10px] text-sx-muted italic max-w-xs truncate">
@@ -1631,7 +1635,7 @@ function AdminControlCenterContent() {
                                   disabled={actionLoading}
                                   className="text-xs"
                                 >
-                                  Reject &amp; Refund
+                                  Reject &amp; Restore Balance
                                 </Button>
                                 <Button
                                   variant="gold"
@@ -1649,7 +1653,7 @@ function AdminControlCenterContent() {
                                   className="text-xs font-bold"
                                 >
                                   <Check className="w-3.5 h-3.5 mr-1" />
-                                  Mark Paid
+                                  Record Manual Payment
                                 </Button>
                               </div>
                             ) : (
@@ -1667,10 +1671,8 @@ function AdminControlCenterContent() {
         </div>
       )}
 
-      {/* TAB: TILL 1572931 RECEIPTS & MIDDLEMAN DESK */}
-      {activeTab === "payments" && (
-        <AdminPaymentsAndMiddlemanTab onFeedback={setFeedback} />
-      )}
+      {/* TAB: TILL 1572931 RECEIPTS */}
+      {activeTab === "payments" && <AdminPaymentsTab onFeedback={setFeedback} />}
 
       {/* Modal: Takedown Listing with Reason */}
       {takedownTarget && (
@@ -1738,7 +1740,7 @@ function AdminControlCenterContent() {
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2 text-sx-red-text">
                 <AlertTriangle className="w-5 h-5" />
-                <h3 className="text-base font-bold text-sx-ink">Reject Withdrawal &amp; Refund</h3>
+                <h3 className="text-base font-bold text-sx-ink">Reject Withdrawal &amp; Restore Balance</h3>
               </div>
               <button
                 type="button"
@@ -1758,7 +1760,7 @@ function AdminControlCenterContent() {
               <strong className="text-sx-ink">
                 {rejectModalTarget.seller?.username || rejectModalTarget.phone_number}
               </strong>
-              . The funds will be automatically credited back to their Available Balance.
+              . The reserved amount is restored to their available balance in the same database transaction as the rejection; if restoration fails, the status change is rolled back.
             </p>
 
             <div className="space-y-1.5">

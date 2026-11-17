@@ -65,7 +65,7 @@ export class MessageService {
       conversation_id: newConv.id,
       sender_id: buyerId,
       message_type: "system",
-      content: "Secure order conversation initialized. All communications and agreements are logged for buyer & seller escrow protection.",
+      content: "Secure order conversation initialized. Messages are logged as part of this marketplace order. Buyer protection applies only when an order from a published listing is paid through checkout.",
     });
 
     return newConv as Conversation;

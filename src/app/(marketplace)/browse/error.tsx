@@ -55,7 +55,7 @@ export default function BrowseError({
             <span>Looking for specific players?</span>
           </div>
           <p className="text-xs text-sx-muted leading-normal">
-            Post what squad or Epics you need on our Wanted Board and verified sellers will bring options directly to you.
+            Post what squad or Epics you need on our Wanted Board and participating sellers can respond directly to you.
           </p>
         </div>
         <Link href="/wanted" className="shrink-0 w-full sm:w-auto">

@@ -145,9 +145,7 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
   };
 
   const isPostRelease = Boolean(
-    dispute?.description?.includes("[POST-RELEASE DISPUTE]") ||
-    dispute?.reason === "google_linked_breach" ||
-    dispute?.reason === "account_banned_or_deducted"
+    dispute?.description?.startsWith("[POST-RELEASE DISPUTE]")
   );
 
   return (
@@ -166,11 +164,11 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
                   ? "bg-sx-amber-tint border-amber-700 text-sx-amber-text"
                   : "bg-sx-red-tint border-sx-red-border text-sx-red-text"
               }`}>
-                {isPostRelease ? "Post-Release Freeze Active" : "Audit Active"}
+                {isPostRelease ? "Post-Release Dispute" : "Pre-Release Dispute"}
               </span>
             </div>
             <p className="text-xs text-sx-muted mt-0.5">
-              Both parties must provide photographic verification for administrator review.
+              Upload relevant screenshots or records to help moderators review the case. Evidence uploads do not decide a refund or move funds automatically.
             </p>
           </div>
         </div>
@@ -190,10 +188,10 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
         <div className="p-3.5 rounded-xl bg-sx-amber-tint border border-sx-amber-border text-xs text-sx-amber-text space-y-1">
           <div className="flex items-center gap-2 font-bold text-sx-amber-text">
             <ShieldAlert className="w-4 h-4 text-sx-amber-text shrink-0" />
-            <span>Post-Release Breach Arbitration (Seller Payout Frozen)</span>
+            <span>Post-Release Dispute Review</span>
           </div>
           <p className="text-[11px] text-sx-amber-text/90 leading-relaxed">
-            This dispute was raised after order funds were initially released. The seller available balance is frozen until platform administration verifies Konami account recovery logs, Google Play link status, or game integrity records.
+            This dispute was raised after the order was completed. Opening a post-release dispute does not automatically hold seller funds or reverse an M-Pesa transfer already sent. Moderators review the evidence; any reimbursement is a separate manual decision.
           </p>
         </div>
       )}

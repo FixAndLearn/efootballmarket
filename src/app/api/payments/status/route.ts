@@ -1,6 +1,13 @@
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { mpesaClient } from "@/lib/mpesa/client";
+import { VerifiedMpesaSettlement } from "@/lib/mpesa/types";
+import {
+  amountsMatch,
+  isVerifiedSettlementClaim,
+  normalizeMpesaReceiptNumber,
+  normalizePositiveAmount,
+} from "@/lib/mpesa/settlement";
 import { dispatchAdminOrderAlert } from "@/lib/notifications/adminAlert";
 import { checkRateLimit } from "@/lib/security/rateLimiter";
 import {
@@ -27,7 +34,7 @@ const NO_CACHE_HEADERS = {
 export async function GET(req: NextRequest) {
   try {
     const ip = getClientIp(req);
-    const rate = checkRateLimit(`pay_status_get:${ip}`, 90, 60000);
+    const rate = await checkRateLimit(`pay_status_get:${ip}`, 90, 60000);
     if (!rate.success) {
       return NextResponse.json(
         { error: "Too many status requests. Please wait a moment." },
@@ -69,33 +76,21 @@ export async function GET(req: NextRequest) {
 
       order = orderData;
 
-      // Require caller to either own the order (authenticated) or supply the matching checkoutRequestId
-      if (!checkoutRequestId) {
-        if (!user) {
-          return NextResponse.json(
-            { error: "Authentication or checkoutRequestId required for status lookup" },
-            { status: 401, headers: NO_CACHE_HEADERS }
-          );
-        }
-        if (order && order.buyer_id !== user.id && order.seller_id !== user.id) {
-          return NextResponse.json(
-            { error: "Forbidden order status lookup" },
-            { status: 403, headers: NO_CACHE_HEADERS }
-          );
-        }
-      }
-
-      if (order && order.status !== "payment_pending") {
+      // Require an authenticated user to own the order. Anonymous callers may
+      // use a matching stored checkout ID, which is checked below.
+      if (!checkoutRequestId && !user) {
         return NextResponse.json(
-          {
-            status: "completed",
-            receiptNumber: "CONFIRMED",
-            resultCode: 0,
-            resultDesc: "Payment verified in escrow",
-          },
-          { headers: NO_CACHE_HEADERS }
+          { error: "Authentication or checkoutRequestId required for status lookup" },
+          { status: 401, headers: NO_CACHE_HEADERS }
         );
       }
+      if (user && order && order.buyer_id !== user.id && order.seller_id !== user.id) {
+        return NextResponse.json(
+          { error: "Forbidden order status lookup" },
+          { status: 403, headers: NO_CACHE_HEADERS }
+        );
+      }
+
     }
 
     // 2. Safe parameterized lookup on payments table (no raw string interpolation in .or())
@@ -112,7 +107,7 @@ export async function GET(req: NextRequest) {
     } else if (checkoutRequestId) {
       const { data: byCheckout } = await primaryClient
         .from("payments")
-        .select("*")
+        .select("*, order:orders(total_amount, status)")
         .eq("checkout_request_id", checkoutRequestId)
         .order("created_at", { ascending: false })
         .limit(1);
@@ -122,7 +117,7 @@ export async function GET(req: NextRequest) {
       } else {
         const { data: byMerchant } = await primaryClient
           .from("payments")
-          .select("*")
+          .select("*, order:orders(total_amount, status)")
           .eq("merchant_request_id", checkoutRequestId)
           .order("created_at", { ascending: false })
           .limit(1);
@@ -130,66 +125,118 @@ export async function GET(req: NextRequest) {
       }
     }
 
+    const storedTransactionIds = [
+      payment?.checkout_request_id,
+      payment?.merchant_request_id,
+    ]
+      .filter(Boolean)
+      .map((id: string) => String(id));
+    if (checkoutRequestId && !storedTransactionIds.includes(checkoutRequestId)) {
+      return NextResponse.json(
+        { error: "Checkout ID does not belong to this payment." },
+        { status: 400, headers: NO_CACHE_HEADERS }
+      );
+    }
+
     if (payment && payment.status === "completed") {
+      const completedReceipt = normalizeMpesaReceiptNumber(payment.mpesa_receipt_number);
+      const { data: receiptClaim, error: receiptClaimError } = completedReceipt
+        ? await adminSupabase
+            .from("mpesa_settlement_receipts")
+            .select("source, entity_id, provider, verification_method, transaction_id, amount")
+            .eq("receipt_number", completedReceipt)
+            .maybeSingle()
+        : { data: null, error: true };
+
+      const linkedOrder = Array.isArray(payment.order)
+        ? payment.order[0]
+        : payment.order || order;
+
+      if (
+        !completedReceipt ||
+        receiptClaimError ||
+        !isVerifiedSettlementClaim(receiptClaim, {
+          source: "marketplace",
+          entityId: payment.id,
+          transactionIds: [payment.checkout_request_id, payment.merchant_request_id],
+          amount: payment.amount,
+        }) ||
+        !linkedOrder ||
+        linkedOrder.status === "payment_pending" ||
+        !amountsMatch(payment.amount, linkedOrder.total_amount) ||
+        !amountsMatch(receiptClaim?.amount, linkedOrder.total_amount)
+      ) {
+        return NextResponse.json(
+          { error: "Provider settlement record could not be confirmed." },
+          { status: 503, headers: NO_CACHE_HEADERS }
+        );
+      }
+
       const safeReceipt = user
-        ? payment.mpesa_receipt_number || "CONFIRMED"
-        : payment.mpesa_receipt_number
-        ? `${String(payment.mpesa_receipt_number).slice(0, 3)}****${String(
-            payment.mpesa_receipt_number
-          ).slice(-2)}`
-        : "CONFIRMED";
+        ? completedReceipt
+        : `${completedReceipt.slice(0, 3)}****${completedReceipt.slice(-2)}`;
       return NextResponse.json(
         {
           status: "completed",
           receiptNumber: safeReceipt,
           resultCode: 0,
-          resultDesc: "Payment completed successfully",
+          resultDesc: "Provider-confirmed payment is locked in escrow",
         },
         { headers: NO_CACHE_HEADERS }
       );
     }
 
-    // 3. Actively query UnifiedPay upstream when configured
+    // 3. Query UnifiedPay only for the transaction attached to this stored payment.
     const transIdToCheck = sanitizeTransactionId(
-      checkoutRequestId ||
-        payment?.checkout_request_id ||
-        payment?.merchant_request_id
+      payment?.checkout_request_id || payment?.merchant_request_id
     );
 
     if (
+      payment &&
       transIdToCheck &&
       mpesaClient.isUnifiedPay() &&
-      (forceCheck || payment?.status === "pending")
+      (forceCheck || payment.status === "pending")
     ) {
       const liveStatus = await mpesaClient.checkUnifiedPayStatus(transIdToCheck);
-      const expectedAmount = Number(
-        payment?.amount || order?.total_amount || 0
+      const linkedOrder = Array.isArray(payment.order)
+        ? payment.order[0]
+        : payment.order;
+      const expectedPaymentAmount = normalizePositiveAmount(payment.amount);
+      const expectedOrderAmount = normalizePositiveAmount(
+        order?.total_amount ?? linkedOrder?.total_amount
       );
-      const settledAmount = Number(liveStatus?.amount || expectedAmount);
+      const settledAmount = normalizePositiveAmount(liveStatus?.amount);
+      const receipt = normalizeMpesaReceiptNumber(liveStatus?.receiptNumber);
 
       if (
-        liveStatus &&
-        liveStatus.isSuccess &&
-        (expectedAmount <= 0 || settledAmount + 0.01 >= expectedAmount)
+        liveStatus?.isSuccess &&
+        receipt &&
+        settledAmount !== null &&
+        expectedPaymentAmount !== null &&
+        expectedOrderAmount !== null &&
+        amountsMatch(expectedPaymentAmount, expectedOrderAmount) &&
+        amountsMatch(settledAmount, expectedPaymentAmount)
       ) {
-        const receipt = liveStatus.receiptNumber || `CONFIRMED_${Date.now()}`;
+        const settlement: VerifiedMpesaSettlement = {
+          provider: "unifiedpay",
+          verificationMethod: "provider_status_query",
+          providerStatus: "completed",
+          transactionId: transIdToCheck,
+          checkoutRequestId: payment.checkout_request_id || undefined,
+          merchantRequestId: payment.merchant_request_id || undefined,
+          receiptNumber: receipt,
+          amount: settledAmount,
+          verifiedAt: new Date().toISOString(),
+        };
         const paymentService = new PaymentService(primaryClient);
-
-        if (payment) {
-          await paymentService.markPaymentSuccessful(
-            payment.id,
-            receipt,
-            settledAmount,
-            liveStatus
-          );
-        }
+        await paymentService.markPaymentSuccessful(payment.id, settlement, liveStatus);
 
         return NextResponse.json(
           {
             status: "completed",
             receiptNumber: receipt,
             resultCode: 0,
-            resultDesc: "Payment verified via Safaricom Till 1572931",
+            resultDesc: "Payment verified by the provider and locked in escrow",
           },
           { headers: NO_CACHE_HEADERS }
         );
@@ -204,8 +251,8 @@ export async function GET(req: NextRequest) {
       },
       { headers: NO_CACHE_HEADERS }
     );
-  } catch (error: any) {
-    console.error("Status check route error:", error);
+  } catch {
+    console.error("Payment status check failed.");
     return NextResponse.json(
       { error: "Failed to check payment status" },
       { status: 500, headers: NO_CACHE_HEADERS }
@@ -235,7 +282,7 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const rate = checkRateLimit(`receipt_verify:${user.id}:${ip}`, 5, 60000);
+    const rate = await checkRateLimit(`receipt_verify:${user.id}:${ip}`, 5, 60000);
     if (!rate.success) {
       return NextResponse.json(
         { error: "Too many receipt verification attempts. Please wait 1 minute." },
@@ -291,13 +338,8 @@ export async function POST(req: NextRequest) {
 
     if (order.status !== "payment_pending") {
       return NextResponse.json(
-        {
-          success: true,
-          status: "completed",
-          receiptNumber: cleanReceipt,
-          message: "Payment is already secured in escrow.",
-        },
-        { headers: NO_CACHE_HEADERS }
+        { error: "Order is not awaiting payment; submitted receipt was not applied." },
+        { status: 409, headers: NO_CACHE_HEADERS }
       );
     }
 
@@ -322,22 +364,38 @@ export async function POST(req: NextRequest) {
       existingByReceipt &&
       existingByReceipt.order_id === orderId &&
       existingByReceipt.status === "completed" &&
-      Number(existingByReceipt.amount || 0) + 0.01 >= expectedAmount
+      amountsMatch(existingByReceipt.amount, expectedAmount)
     ) {
-      const paymentService = new PaymentService(primaryClient);
-      await paymentService.markPaymentSuccessful(
-        existingByReceipt.id,
-        cleanReceipt,
-        Number(existingByReceipt.amount),
-        existingByReceipt.raw_callback || { verified_from_completed_payment: true }
-      );
+      const { data: receiptClaim, error: receiptClaimError } = await primaryClient
+        .from("mpesa_settlement_receipts")
+        .select("source, entity_id, provider, verification_method, transaction_id, amount")
+        .eq("receipt_number", cleanReceipt)
+        .maybeSingle();
+
+      if (
+        receiptClaimError ||
+        !isVerifiedSettlementClaim(receiptClaim, {
+          source: "marketplace",
+          entityId: existingByReceipt.id,
+          transactionIds: [
+            existingByReceipt.checkout_request_id,
+            existingByReceipt.merchant_request_id,
+          ],
+          amount: expectedAmount,
+        })
+      ) {
+        return NextResponse.json(
+          { error: "Provider settlement record could not be confirmed." },
+          { status: 503, headers: NO_CACHE_HEADERS }
+        );
+      }
 
       return NextResponse.json(
         {
           success: true,
           status: "completed",
           receiptNumber: cleanReceipt,
-          message: "Payment verified via Safaricom callback and locked in escrow.",
+          message: "This receipt is already recorded as provider-confirmed for this order.",
         },
         { headers: NO_CACHE_HEADERS }
       );
@@ -352,42 +410,66 @@ export async function POST(req: NextRequest) {
       .limit(1)
       .maybeSingle();
 
+    const storedOrderTransactionIds = [
+      existingOrderPayment?.checkout_request_id,
+      existingOrderPayment?.merchant_request_id,
+    ]
+      .filter(Boolean)
+      .map((id: string) => String(id));
+    if (checkoutRequestId && !storedOrderTransactionIds.includes(checkoutRequestId)) {
+      return NextResponse.json(
+        { error: "Checkout ID does not belong to this order." },
+        { status: 400, headers: NO_CACHE_HEADERS }
+      );
+    }
     const transId = sanitizeTransactionId(
-      checkoutRequestId ||
-        existingOrderPayment?.checkout_request_id ||
+      existingOrderPayment?.checkout_request_id ||
         existingOrderPayment?.merchant_request_id
     );
 
-    if (transId && mpesaClient.isUnifiedPay()) {
+    if (transId && existingOrderPayment && mpesaClient.isUnifiedPay()) {
       const liveStatus = await mpesaClient.checkUnifiedPayStatus(transId);
-      const liveReceipt = String(liveStatus?.receiptNumber || "").trim().toUpperCase();
-      const liveAmount = Number(liveStatus?.amount || 0);
+      const liveReceipt = normalizeMpesaReceiptNumber(liveStatus?.receiptNumber);
+      const liveAmount = normalizePositiveAmount(liveStatus?.amount);
+      const paymentAmount = normalizePositiveAmount(existingOrderPayment.amount);
+      const expectedAmountValue = normalizePositiveAmount(expectedAmount);
 
       if (
-        liveStatus &&
-        liveStatus.isSuccess &&
-        (!liveReceipt || liveReceipt === cleanReceipt) &&
-        (liveAmount <= 0 || liveAmount + 0.01 >= expectedAmount)
+        liveStatus?.isSuccess &&
+        liveReceipt === cleanReceipt &&
+        liveAmount !== null &&
+        paymentAmount !== null &&
+        expectedAmountValue !== null &&
+        amountsMatch(paymentAmount, expectedAmountValue) &&
+        amountsMatch(liveAmount, expectedAmountValue)
       ) {
+        const settlement: VerifiedMpesaSettlement = {
+          provider: "unifiedpay",
+          verificationMethod: "provider_status_query",
+          providerStatus: "completed",
+          transactionId: transId,
+          checkoutRequestId: existingOrderPayment.checkout_request_id || undefined,
+          merchantRequestId: existingOrderPayment.merchant_request_id || undefined,
+          receiptNumber: liveReceipt,
+          amount: liveAmount,
+          verifiedAt: new Date().toISOString(),
+        };
         const paymentService = new PaymentService(primaryClient);
-        if (existingOrderPayment) {
-          await paymentService.markPaymentSuccessful(
-            existingOrderPayment.id,
-            liveReceipt || cleanReceipt,
-            liveAmount || expectedAmount,
-            liveStatus
-          );
+        await paymentService.markPaymentSuccessful(
+          existingOrderPayment.id,
+          settlement,
+          liveStatus
+        );
 
-          return NextResponse.json(
-            {
-              success: true,
-              status: "completed",
-              receiptNumber: liveReceipt || cleanReceipt,
-              message: "Payment verified upstream on Till 1572931 and locked in escrow.",
-            },
-            { headers: NO_CACHE_HEADERS }
-          );
-        }
+        return NextResponse.json(
+          {
+            success: true,
+            status: "completed",
+            receiptNumber: liveReceipt,
+            message: "Payment verified upstream and locked in escrow.",
+          },
+          { headers: NO_CACHE_HEADERS }
+        );
       }
     }
 
@@ -443,7 +525,7 @@ export async function POST(req: NextRequest) {
         status: "pending_verification",
         receiptNumber: cleanReceipt,
         message:
-          "Receipt submitted for Till 1572931 statement verification. Escrow unlocks automatically as soon as Safaricom confirms settlement.",
+          "Receipt claim recorded. The receipt text alone cannot unlock escrow; settlement remains pending until the provider confirms the matching transaction and amount.",
       },
       { status: 202, headers: NO_CACHE_HEADERS }
     );

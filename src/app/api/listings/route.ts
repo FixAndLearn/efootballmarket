@@ -8,7 +8,7 @@ import { z } from "zod";
 
 const listingCreateSchema = z.object({
   title: z.string().min(3, "Title must be at least 3 characters").max(255),
-  description: z.string().default("Verified eFootball account with confirmed squad strength and player assets."),
+  description: z.string().default("Seller-listed eFootball account. Squad stats and player names are not independently pre-audited; confirm them in-game before releasing payment."),
   price: z.coerce.number().min(100, "Listing price must be at least 100 KES"),
   currency: z.string().default("KES"),
   platform: z.enum([
@@ -172,6 +172,13 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    if (parsed.data.status === "published" && parsed.data.image_urls.length < 3) {
+      return NextResponse.json(
+        { error: "Published listings require all 3 requested in-game screenshots." },
+        { status: 400 }
+      );
+    }
+
     // 1. Ensure the seller's profile record exists in public.profiles table
     const adminSupabase = createAdminClient();
     const cleanId = user.id.replace(/-/g, "").slice(0, 6);
@@ -257,10 +264,18 @@ export async function POST(req: NextRequest) {
     }
 
     const { image_urls, ...rawListingData } = parsed.data;
+    const sanitizedDescription = redactAccidentalPii(rawListingData.description);
+    const listingDisclosure =
+      "Squad stats, card counts, and player names are seller-provided and not independently pre-audited by eFootballMarket. Confirm them in-game before releasing funds. Buyer protection applies only to eligible orders from this published listing paid through eFootballMarket checkout.";
+    const hasRequiredListingDisclosure =
+      sanitizedDescription.includes("seller-provided and not independently pre-audited by eFootballMarket") &&
+      sanitizedDescription.includes("Buyer protection applies only to eligible orders from this published listing paid through eFootballMarket checkout.");
     const listingData = {
       ...rawListingData,
       title: redactAccidentalPii(rawListingData.title),
-      description: redactAccidentalPii(rawListingData.description),
+      description: hasRequiredListingDisclosure
+        ? sanitizedDescription
+        : `${sanitizedDescription.trim()}\n\n${listingDisclosure}`,
       dream_team_name: rawListingData.dream_team_name
         ? redactAccidentalPii(rawListingData.dream_team_name)
         : null,

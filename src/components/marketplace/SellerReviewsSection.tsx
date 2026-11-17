@@ -52,7 +52,7 @@ export function SellerReviewsSection({
             <span>Verified Escrow Buyer Feedback</span>
           </h2>
           <p className="text-xs text-sx-muted">
-            Only buyers who completed a verified Konami ID handover via Till 1572931 can rate @{sellerUsername}.
+            Only buyers who completed a checkout order and confirmed the Konami ID handover can rate @{sellerUsername}.
           </p>
         </div>
 

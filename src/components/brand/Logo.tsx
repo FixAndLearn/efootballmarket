@@ -76,7 +76,7 @@ export function Logo({
               subtitleSizes
             )}
           >
-            Escrow Protected
+            Marketplace Checkout
           </span>
         </div>
       )}

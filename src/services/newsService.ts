@@ -1,10 +1,12 @@
 import { EDITORIAL_GUIDES, resolveRealArticlePhoto } from "@/lib/data/editorialGuides";
+import { isContentDateReached, safeUpdatedAt } from "@/lib/news/publishing";
 import { NewsArticle, NewsCategory } from "@/types/database";
 import { SupabaseClient } from "@supabase/supabase-js";
 
-function normalizeArticlePhoto(article: NewsArticle): NewsArticle {
+function normalizeArticlePhoto(article: NewsArticle, now: Date): NewsArticle {
   return {
     ...article,
+    updated_at: safeUpdatedAt(article.created_at, article.updated_at, now),
     cover_image_url: resolveRealArticlePhoto(
       article.slug,
       article.category,
@@ -27,6 +29,8 @@ export class NewsService {
    */
   async getPublishedArticles(category?: string): Promise<NewsArticle[]> {
     let dbArticles: NewsArticle[] = [];
+    const now = new Date();
+    const publishCutoff = now.toISOString();
 
     if (hasLiveSupabaseConfig()) {
       try {
@@ -34,6 +38,7 @@ export class NewsService {
           .from("news_articles")
           .select("*")
           .eq("is_published", true)
+          .lte("created_at", publishCutoff)
           .order("is_pinned", { ascending: false })
           .order("created_at", { ascending: false });
 
@@ -44,7 +49,11 @@ export class NewsService {
         const { data, error } = await query;
 
         if (!error && Array.isArray(data)) {
-          dbArticles = data as NewsArticle[];
+          dbArticles = (data as NewsArticle[]).filter(
+            (article) =>
+              article.is_published &&
+              isContentDateReached(article.created_at, now)
+          );
         }
       } catch (err) {
         console.warn("News query fallback to editorial guides:", err);
@@ -53,7 +62,7 @@ export class NewsService {
 
     const seenSlugs = new Set(dbArticles.map((a) => a.slug.toLowerCase()));
     const staticGuides = EDITORIAL_GUIDES.filter((g) => {
-      if (!g.is_published) return false;
+      if (!g.is_published || !isContentDateReached(g.created_at, now)) return false;
       if (seenSlugs.has(g.slug.toLowerCase())) return false;
       if (category && category !== "all" && g.category !== category) return false;
       return true;
@@ -67,7 +76,7 @@ export class NewsService {
       return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
     });
 
-    return combined.map(normalizeArticlePhoto);
+    return combined.map((article) => normalizeArticlePhoto(article, now));
   }
 
   /**
@@ -76,6 +85,7 @@ export class NewsService {
    */
   async getArticleBySlug(identifier: string): Promise<NewsArticle | null> {
     if (!identifier) return null;
+    const now = new Date();
     const clean = decodeURIComponent(identifier).trim();
     const cleanLower = clean.toLowerCase();
 
@@ -95,6 +105,11 @@ export class NewsService {
         const { data, error } = await query.limit(1).maybeSingle();
 
         if (!error && data) {
+          const article = data as NewsArticle;
+          if (!article.is_published || !isContentDateReached(article.created_at, now)) {
+            return null;
+          }
+
           try {
             this.supabase
               .from("news_articles")
@@ -108,7 +123,7 @@ export class NewsService {
             // Non-blocking view increment
           }
 
-          return normalizeArticlePhoto(data as NewsArticle);
+          return normalizeArticlePhoto(article, now);
         }
       } catch (err) {
         console.warn("getArticleBySlug DB lookup fallback:", err);
@@ -118,10 +133,11 @@ export class NewsService {
     const staticMatch = EDITORIAL_GUIDES.find(
       (g) =>
         g.is_published &&
+        isContentDateReached(g.created_at, now) &&
         (g.slug.toLowerCase() === cleanLower || g.id.toLowerCase() === cleanLower)
     );
 
-    return staticMatch ? normalizeArticlePhoto(staticMatch) : null;
+    return staticMatch ? normalizeArticlePhoto(staticMatch, now) : null;
   }
 
   /**

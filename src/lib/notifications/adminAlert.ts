@@ -23,7 +23,6 @@ export type AdminEventType =
   | "POST_RELEASE_DISPUTE_OPENED"
   | "NEW_OFFER_SUBMITTED"
   | "AVAILABILITY_PING"
-  | "MIDDLEMAN_DEAL_CREATED"
   | "WANTED_REQUEST_POSTED"
   | "WITHDRAWAL_REQUESTED"
   | "TOURNAMENT_REGISTRATION"
@@ -121,13 +120,13 @@ export function formatAdminWhatsAppMessage(payload: AdminAlertPayload): string {
       break;
 
     case "POST_RELEASE_DISPUTE_OPENED":
-      header = "*POST-RELEASE DISPUTE OPENED (FUNDS FROZEN)*";
+      header = "*POST-RELEASE DISPUTE OPENED (REVIEW NEEDED)*";
       lines = [
         `*Order:* ${payload.orderNumber}`,
         `*Squad:* ${payload.listingTitle}`,
         payload.amount !== undefined ? `*Disputed Amount:* ${formattedAmount}` : "",
-        `*Conflict:* Post-handover dispute raised by buyer after fund release.`,
-        `*Action Taken:* Seller wallet balance frozen. Immediate Konami account audit required.`,
+        `*Conflict:* Post-completion dispute report; review the evidence and any requested remedy.`,
+        `*Important:* This report does not automatically hold seller funds or reverse an M-Pesa transfer already sent. Record any separate manual decision.`,
         payload.details ? `*Details:* ${payload.details}` : "",
       ];
       break;
@@ -159,17 +158,6 @@ export function formatAdminWhatsAppMessage(payload: AdminAlertPayload): string {
       ];
       break;
 
-    case "MIDDLEMAN_DEAL_CREATED":
-      header = "*NEW BYOD MIDDLEMAN DEAL*";
-      lines = [
-        `*Deal Code:* ${payload.orderNumber}`,
-        `*Item:* ${payload.listingTitle}`,
-        `*Volume:* ${formattedAmount}`,
-        payload.buyerPhone ? `*Buyer:* ${formatDisplayPhone(payload.buyerPhone)}` : "",
-        payload.sellerPhone ? `*Seller:* ${formatDisplayPhone(payload.sellerPhone)}` : "",
-      ];
-      break;
-
     case "WANTED_REQUEST_POSTED":
       header = "*NEW WANTED SQUAD REQUEST*";
       lines = [
@@ -195,7 +183,7 @@ export function formatAdminWhatsAppMessage(payload: AdminAlertPayload): string {
         payload.amount ? `*Entry Fee:* ${formattedAmount}` : "*Entry Fee:* Free Entry",
         payload.buyerPhone ? `*Player Phone:* ${formatDisplayPhone(payload.buyerPhone)}` : "",
         payload.details ? `*Player Info:* ${payload.details}` : "",
-        `*Action:* Add to Match Room brackets & confirm M-Pesa entry fee.`,
+        `*Action:* Review the tournament details above and follow up as needed.`,
       ];
       break;
 
@@ -205,8 +193,10 @@ export function formatAdminWhatsAppMessage(payload: AdminAlertPayload): string {
         `*Tournament:* ${payload.listingTitle || "eFootball Tournament"}`,
         payload.username ? `*Champion:* ${payload.username}` : "",
         payload.amount !== undefined ? `*1st Place Prize:* ${formattedAmount}` : "",
+        payload.buyerPhone ? `*Champion M-Pesa:* ${formatDisplayPhone(payload.buyerPhone)}` : "",
+        payload.sellerPhone ? `*Runner-up M-Pesa:* ${formatDisplayPhone(payload.sellerPhone)}` : "",
         payload.details ? `*Details:* ${payload.details}` : "",
-        `*Action:* Disburse prize money via Safaricom Till 1572931 / M-Pesa.`,
+        `*Action:* Manually review and arrange the listed prize transfer; this alert does not send money.`,
       ];
       break;
 

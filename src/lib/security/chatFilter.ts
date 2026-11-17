@@ -1,7 +1,7 @@
 /**
  * eFootballMarket Anti-Circumvention & Anti-Fraud Chat Shield
  * Strict zero-tolerance detection for off-platform contacts (WhatsApp, Telegram, phone numbers, external URLs).
- * Prevents off-platform bypass scams and protects buyers & sellers within automated M-Pesa escrow.
+ * Blocks off-platform contact attempts in marketplace order chat. Buyer protection applies only to orders from published listings paid through checkout.
  */
 
 export interface FilterResult {
@@ -86,7 +86,7 @@ export function detectProhibitedOffPlatformContent(rawContent: string): FilterRe
         reason: "Detected WhatsApp solicitation or contact handle",
         matchedCategory: "whatsapp",
         userWarningMessage:
-          "Prohibited: Sharing or requesting WhatsApp contact is strictly forbidden. For your financial safety, all conversations, orders, and deliveries must stay within eFootballMarket's automated M-Pesa escrow. Moving off-platform voids your buyer/seller guarantee and will lead to account suspension.",
+          "Prohibited: Sharing or requesting WhatsApp contact is blocked in order chat. Keep order communications within eFootballMarket. Buyer protection applies only to orders from published listings paid through marketplace checkout; external deals are not covered and may result in account action.",
       };
     }
   }
@@ -97,7 +97,7 @@ export function detectProhibitedOffPlatformContent(rawContent: string): FilterRe
       reason: "Detected obfuscated WhatsApp keyword",
       matchedCategory: "whatsapp",
       userWarningMessage:
-        "Prohibited: Sharing or requesting WhatsApp contact is strictly forbidden. Communications must remain in our protected escrow messaging center.",
+        "Prohibited: Sharing or requesting WhatsApp contact is blocked in order chat. Use eFootballMarket for order communications; buyer protection applies only to orders from published listings paid through marketplace checkout.",
     };
   }
 
@@ -109,7 +109,7 @@ export function detectProhibitedOffPlatformContent(rawContent: string): FilterRe
         reason: "Detected Telegram handle or link",
         matchedCategory: "telegram",
         userWarningMessage:
-          "Prohibited: Sharing or requesting Telegram contact is strictly forbidden. All negotiations and account transfers must remain inside eFootballMarket to protect your funds in escrow.",
+          "Prohibited: Sharing or requesting Telegram contact is blocked in order chat. Use eFootballMarket for order communications; buyer protection applies only to orders from published listings paid through marketplace checkout.",
       };
     }
   }
@@ -145,7 +145,7 @@ export function detectProhibitedOffPlatformContent(rawContent: string): FilterRe
         reason: "Detected personal phone number exchange",
         matchedCategory: "phone_number",
         userWarningMessage:
-          "Prohibited: Sharing direct phone numbers is blocked. Transactions must proceed via automated M-Pesa STK Push inside the escrow vault without off-platform contact.",
+          "Prohibited: Sharing direct phone numbers is blocked in order chat. Buyer protection applies only when you place an order from a published listing and pay through marketplace checkout.",
       };
     }
   }
@@ -158,7 +158,7 @@ export function detectProhibitedOffPlatformContent(rawContent: string): FilterRe
         reason: "Detected solicitation for off-platform contact",
         matchedCategory: "off_platform",
         userWarningMessage:
-          "Prohibited: Soliciting off-platform contacts or phone numbers is strictly forbidden. All negotiations and escrow transactions must remain inside eFootballMarket.",
+          "Prohibited: Soliciting off-platform contacts or phone numbers is blocked in order chat. Buyer protection applies only to orders from published listings paid through marketplace checkout.",
       };
     }
   }
@@ -171,7 +171,7 @@ export function detectProhibitedOffPlatformContent(rawContent: string): FilterRe
         reason: "Detected off-platform contact channel or raw email",
         matchedCategory: "off_platform",
         userWarningMessage:
-          "Prohibited: Sharing external social media accounts or off-platform contact details is forbidden. All order support and credential delivery take place right here.",
+          "Prohibited: Sharing external social media accounts or off-platform contact details is blocked. Use Order Chat and the encrypted handover for active marketplace orders.",
       };
     }
   }
