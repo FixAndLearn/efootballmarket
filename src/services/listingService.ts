@@ -165,13 +165,12 @@ export class ListingService {
         });
       }
       if (allowsSwap && error.message.includes("allows_swap")) {
-        return this.getListings({
-          ...filters,
-          allowsSwap: false,
-          search: filters.search ? `${filters.search} swap` : "swap",
-        });
+        // Retry without the swap constraint, keeping every other filter and the
+        // caller's search term intact. The previous fallback appended the word
+        // "swap" to the search query and silently changed what the shopper saw.
+        return this.getListings({ ...filters, allowsSwap: false });
       }
-      console.error("Listing query error:", error);
+      console.error("Listing query error:", error.message, error.code ?? "");
       throw new Error(`Failed to fetch listings: ${error.message}`);
     }
 

@@ -7,8 +7,9 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ListingService } from "@/services/listingService";
 import { Listing, Platform, Playstyle } from "@/types/database";
 import { getPlaystyleLabel } from "@/lib/utils";
-import { ArrowLeft, ArrowRight, ShieldCheck, X } from "lucide-react";
+import { AlertCircle, ArrowLeft, ArrowRight, RotateCcw, ShieldCheck, X } from "lucide-react";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Metadata } from "next";
 
 export const revalidate = 0;
@@ -23,6 +24,46 @@ export const metadata: Metadata = {
 };
 
 const PAGE_SIZE = 24;
+
+/**
+ * Enum values accepted by the database CHECK constraints on
+ * public.listings. Anything outside these sets is rejected by PostgREST with
+ * a 400, which previously surfaced to the shopper as "no squads match your
+ * filters" -- a claim about inventory made when no inventory query ever ran.
+ */
+const VALID_PLATFORMS = new Set([
+  "android",
+  "ios",
+  "pc_steam",
+  "playstation_4",
+  "playstation_5",
+  "xbox_one",
+  "xbox_series_x",
+]);
+
+const VALID_PLAYSTYLES = new Set([
+  "possession",
+  "quick_counter",
+  "long_ball_counter",
+  "out_wide",
+  "long_ball",
+]);
+
+const VALID_SORTS = new Set([
+  "newest",
+  "price_asc",
+  "price_desc",
+  "strength_desc",
+  "coins_desc",
+  "views",
+]);
+
+function toPositiveInt(raw: string | undefined): number | undefined {
+  if (raw === undefined || raw === "") return undefined;
+  const n = Number(raw);
+  if (!Number.isFinite(n) || n <= 0) return undefined;
+  return Math.floor(n);
+}
 
 const SORT_OPTIONS = [
   { id: "newest", label: "Newest" },
@@ -53,39 +94,77 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
   const supabase = createServerSupabaseClient();
   const listingService = new ListingService(supabase);
 
-  const currentPage = Math.max(1, Number(searchParams.page) || 1);
-  const offset = (currentPage - 1) * PAGE_SIZE;
-  const activeSort = searchParams.sortBy || "newest";
+  const currentPage = Math.max(1, Math.floor(Number(searchParams.page)) || 1);
+
+  // Drop unknown enum values instead of forwarding them to PostgREST. An
+  // invalid value would 400 the whole query and render as an empty catalogue.
+  const platform =
+    searchParams.platform && VALID_PLATFORMS.has(searchParams.platform)
+      ? searchParams.platform
+      : undefined;
+  const playstyle =
+    searchParams.playstyle && VALID_PLAYSTYLES.has(searchParams.playstyle)
+      ? searchParams.playstyle
+      : undefined;
+  const activeSort =
+    searchParams.sortBy && VALID_SORTS.has(searchParams.sortBy)
+      ? searchParams.sortBy
+      : "newest";
+
+  const minPrice = toPositiveInt(searchParams.minPrice);
+  const maxPrice = toPositiveInt(searchParams.maxPrice);
+  // An inverted range can never match; treat it as "no price filter" rather
+  // than returning a misleading zero-result catalogue.
+  const priceRangeInverted =
+    minPrice !== undefined && maxPrice !== undefined && minPrice > maxPrice;
 
   const filters = {
     search: searchParams.search,
-    platform: searchParams.platform,
-    playstyle: searchParams.playstyle,
-    minStrength: searchParams.minStrength ? Number(searchParams.minStrength) : undefined,
-    minEpics: searchParams.minEpics ? Number(searchParams.minEpics) : undefined,
-    minCoins: searchParams.minCoins ? Number(searchParams.minCoins) : undefined,
+    platform,
+    playstyle,
+    minStrength: toPositiveInt(searchParams.minStrength),
+    minEpics: toPositiveInt(searchParams.minEpics),
+    minCoins: toPositiveInt(searchParams.minCoins),
     allowsSwap: searchParams.swap === "1",
     manager: searchParams.manager,
-    minPrice: searchParams.minPrice ? Number(searchParams.minPrice) : undefined,
-    maxPrice: searchParams.maxPrice ? Number(searchParams.maxPrice) : undefined,
+    minPrice: priceRangeInverted ? undefined : minPrice,
+    maxPrice: priceRangeInverted ? undefined : maxPrice,
     sortBy: activeSort,
     limit: PAGE_SIZE,
-    offset,
+    offset: (currentPage - 1) * PAGE_SIZE,
   };
 
   let listings: Listing[] = [];
   let totalCount = 0;
-  let hasSearchError = false;
+  let loadError: string | null = null;
 
   try {
     const result = await listingService.getListings(filters);
     listings = result.listings;
     totalCount = result.totalCount;
-  } catch {
-    hasSearchError = true;
+  } catch (err) {
+    // Previously swallowed by a bare `catch {}`, which hid a malformed query
+    // behind the "no squads match your filters" empty state.
+    loadError = err instanceof Error ? err.message : "Unknown listing query failure";
+    console.error("[browse] listing query failed:", loadError);
   }
 
   const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+
+  // A stale or hand-edited ?page= beyond the last page used to render an empty
+  // catalogue with "no open squads available right now" -- while stock was
+  // live. Send the shopper to the last real page instead. Only redirect when
+  // the query actually succeeded, so a genuine failure is never disguised as a
+  // page clamp.
+  if (!loadError && totalCount > 0 && currentPage > totalPages) {
+    const params = new URLSearchParams();
+    Object.entries(searchParams || {}).forEach(([k, v]) => {
+      if (v && k !== "page") params.set(k, v);
+    });
+    if (totalPages > 1) params.set("page", String(totalPages));
+    const qs = params.toString();
+    redirect(qs ? `/browse?${qs}` : "/browse");
+  }
 
   const buildQueryHref = (overrides: Record<string, string | undefined>) => {
     const params = new URLSearchParams();
@@ -290,10 +369,41 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
             </div>
           )}
 
-          <ListingGrid listings={listings} filters={filters} />
+          {loadError ? (
+            <div
+              role="alert"
+              className="rounded-xl border border-sx-red-border bg-sx-red-tint p-6 sm:p-8 text-center space-y-3"
+            >
+              <div className="w-12 h-12 rounded-full bg-sx-canvas border border-sx-red-border flex items-center justify-center text-sx-red-text mx-auto">
+                <AlertCircle className="w-5 h-5" />
+              </div>
+              <h2 className="text-base font-bold text-sx-ink">
+                We couldn&apos;t load the squads
+              </h2>
+              <p className="text-xs sm:text-sm text-sx-muted max-w-md mx-auto leading-relaxed">
+                This is a temporary problem on our side — the marketplace itself is
+                fine and nothing about your account or any escrow order has changed.
+              </p>
+              <div className="flex flex-wrap items-center justify-center gap-2 pt-1">
+                <Link href="/browse">
+                  <Button variant="primary" size="sm">
+                    <RotateCcw className="w-3.5 h-3.5 mr-1.5" />
+                    Try again
+                  </Button>
+                </Link>
+                <Link href="/wanted">
+                  <Button variant="outline" size="sm">
+                    Request a Squad
+                  </Button>
+                </Link>
+              </div>
+            </div>
+          ) : (
+            <ListingGrid listings={listings} filters={filters} />
+          )}
 
           {/* Pagination Bar */}
-          {totalPages > 1 && (
+          {!loadError && totalPages > 1 && (
             <nav
               aria-label="Squad catalog pagination"
               className="pt-4 border-t border-sx-border flex items-center justify-between gap-3"
@@ -334,7 +444,7 @@ export default async function BrowsePage({ searchParams }: BrowsePageProps) {
           <AdBanner
             slot="browse_bottom_feed"
             format="horizontal"
-            hasContent={listings.length >= 4 && !hasSearchError}
+            hasContent={listings.length >= 4 && !loadError}
           />
         </div>
       </div>
