@@ -28,6 +28,19 @@ const EMAIL_REGEX = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
 const KENYAN_PHONE_IN_TEXT_REGEX =
   /(?:\+?254|0)\s*[17]\d{1,2}[\s-]*\d{3}[\s-]*\d{3}\b/g;
 
+/**
+ * Masks a phone number for logs and diagnostics: keeps enough of the tail to
+ * correlate a support ticket without publishing a reachable subscriber number.
+ * `+254794400365` -> `+2547****0365`
+ */
+export function maskPhone(raw?: string | null): string {
+  const digits = String(raw ?? "").replace(/[^0-9]/g, "");
+  if (digits.length < 6) return "[phone hidden]";
+  const head = digits.slice(0, 5);
+  const tail = digits.slice(-4);
+  return `${raw?.trim().startsWith("+") ? "+" : ""}${head}****${tail}`;
+}
+
 /** Treat any at-sign in a public handle as private email-like content. */
 export function isEmailLikeUsername(raw?: string | null): boolean {
   return Boolean(raw?.trim().includes("@"));

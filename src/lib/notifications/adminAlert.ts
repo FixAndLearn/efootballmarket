@@ -4,6 +4,7 @@
  */
 
 import { formatDisplayPhone, formatInternationalPhone, formatWhatsAppPhone } from "@/lib/utils/phone";
+import { maskPhone, redactAccidentalPii } from "@/lib/security/publicSanitizer";
 import { isMetaCloudApiConfigured, sendWhatsAppMessage } from "@/lib/whatsapp/cloudApi";
 import { sendSmsAlert } from "./smsAlert";
 
@@ -238,7 +239,10 @@ export function getAdminWhatsAppAlertUrl(payload: AdminAlertPayload): string {
  */
 export async function dispatchAdminWhatsAppAlert(payload: AdminAlertPayload): Promise<void> {
   const alertText = formatAdminWhatsAppMessage(payload);
-  console.log(`[ADMIN NOTIFICATION -> ${ADMIN_INTERNATIONAL_PHONE}]`, alertText);
+  console.log(
+    `[ADMIN NOTIFICATION -> ${maskPhone(ADMIN_INTERNATIONAL_PHONE)}]`,
+    redactAccidentalPii(alertText)
+  );
 
   // 1. Automated Meta WhatsApp Business Cloud API (Official Graph API v21.0)
   if (isMetaCloudApiConfigured()) {
@@ -248,7 +252,7 @@ export async function dispatchAdminWhatsAppAlert(payload: AdminAlertPayload): Pr
         message: alertText,
       });
       if (res.success && res.provider === "meta_cloud_api") {
-        console.log(`[MetaCloud:WhatsApp] Delivered to ${ADMIN_INTERNATIONAL_PHONE}: ${res.messageId}`);
+        console.log(`[MetaCloud:WhatsApp] Delivered to ${maskPhone(ADMIN_INTERNATIONAL_PHONE)}: ${res.messageId}`);
         return;
       }
     } catch (err: any) {
@@ -283,7 +287,7 @@ export async function dispatchAdminWhatsAppAlert(payload: AdminAlertPayload): Pr
         alertText
       )}&apikey=${callmebotKey.trim()}`;
       await fetch(callmebotUrl, { method: "GET" });
-      console.log(`[CallMeBot:WhatsApp] Dispatched to ${ADMIN_INTERNATIONAL_PHONE}`);
+      console.log(`[CallMeBot:WhatsApp] Dispatched to ${maskPhone(ADMIN_INTERNATIONAL_PHONE)}`);
     } catch (err: any) {
       console.warn("CallMeBot WhatsApp dispatch note:", err.message);
     }

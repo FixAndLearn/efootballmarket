@@ -4,6 +4,7 @@
  * Supports Africa's Talking, Advanta SMS, and resilient fallback delivery logging.
  */
 
+import { maskPhone, redactAccidentalPii } from "@/lib/security/publicSanitizer";
 export interface SmsDispatchPayload {
   toPhone: string;
   message: string;
@@ -90,7 +91,7 @@ export async function sendSmsAlert({
       const recipientData = data?.SMSMessageData?.Recipients?.[0];
 
       if (recipientData && (recipientData.status === "Success" || recipientData.statusCode === 101)) {
-        console.log(`[SMS:AT] Successfully sent to ${normalizedPhone}: ${recipientData.messageId}`);
+        console.log(`[SMS:AT] Successfully sent to ${maskPhone(normalizedPhone)}: ${recipientData.messageId}`);
         return {
           success: true,
           provider: "africas_talking",
@@ -127,7 +128,7 @@ export async function sendSmsAlert({
 
       const data = await res.json();
       if (data?.responses?.[0]?.["response-code"] === 200) {
-        console.log(`[SMS:ADVANTA] Successfully sent to ${normalizedPhone}`);
+        console.log(`[SMS:ADVANTA] Successfully sent to ${maskPhone(normalizedPhone)}`);
         return {
           success: true,
           provider: "advanta",
@@ -145,10 +146,11 @@ export async function sendSmsAlert({
   // ---------------------------------------------------------------------------
   const simulatedId = `sim_sms_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
   console.log(`=======================================================`);
-  console.log(`[KENYA SMS ALERT] Dispatched to: ${normalizedPhone}`);
+  console.log(`[KENYA SMS ALERT] Dispatched to: ${maskPhone(normalizedPhone)}`);
   console.log(`[SENDER ID] ${senderId}`);
   console.log(`[MESSAGE CONTENT]`);
-  console.log(message);
+  // Redact before logging: SMS bodies contain order and contact details.
+  console.log(redactAccidentalPii(message));
   console.log(`=======================================================`);
 
   return {

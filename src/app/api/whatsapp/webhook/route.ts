@@ -4,6 +4,7 @@ import { formatWhatsAppPhone } from "@/lib/utils/phone";
 import { sendWhatsAppMessage } from "@/lib/whatsapp/cloudApi";
 import { dispatchAdminWhatsAppAlert } from "@/lib/notifications/adminAlert";
 import { checkRateLimit } from "@/lib/security/rateLimiter";
+import { maskPhone } from "@/lib/security/publicSanitizer";
 import { getClientIp, timingSafeCompare } from "@/lib/security/guards";
 import { NextRequest, NextResponse } from "next/server";
 
@@ -84,7 +85,11 @@ export async function POST(req: NextRequest) {
     const cleanSender = formatWhatsAppPhone(sender);
     const trimmedText = text.trim().toUpperCase();
 
-    console.log(`[WhatsApp:Inbound] Received message from ${cleanSender}: "${text}"`);
+    // Log shape, not content: this handler ingests customer support
+    // conversations and the platform retains logs for 30 days.
+    console.log(
+      `[WhatsApp:Inbound] ${maskPhone(cleanSender)} len=${text.length} cmd=${text.trim().toUpperCase().slice(0, 24)}`
+    );
 
     // Automated 24/7 Bot Assistant responses
     if (trimmedText === "HI" || trimmedText === "HELLO" || trimmedText === "MENU" || trimmedText === "HELP" || trimmedText === "START") {

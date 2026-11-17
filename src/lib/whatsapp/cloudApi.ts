@@ -1,3 +1,5 @@
+import { maskPhone, redactAccidentalPii } from "@/lib/security/publicSanitizer";
+
 /**
  * Multi-Provider WhatsApp Business & Real-Time Alert Engine
  * 
@@ -145,7 +147,7 @@ export async function sendWhatsAppMessage({
 
       const data = await res.json();
       if (res.ok && (data.sent === "true" || data.id)) {
-        console.log(`[WhatsApp:UltraMsg] Delivered to ${cleanPhone}: ${data.id}`);
+        console.log(`[WhatsApp:UltraMsg] Delivered to ${maskPhone(cleanPhone)}: ${data.id}`);
         return {
           success: true,
           provider: "ultramsg",
@@ -188,7 +190,7 @@ export async function sendWhatsAppMessage({
 
       const data = await res.json();
       if (res.ok && data?.messages?.[0]?.id) {
-        console.log(`[WhatsApp:MetaCloud] Message sent to ${cleanPhone}: ${data.messages[0].id}`);
+        console.log(`[WhatsApp:MetaCloud] Message sent to ${maskPhone(cleanPhone)}: ${data.messages[0].id}`);
         return {
           success: true,
           provider: "meta_cloud_api",
@@ -223,7 +225,7 @@ export async function sendWhatsAppMessage({
 
       const data = await res.json();
       if (res.ok && data.id) {
-        console.log(`[WhatsApp:Wassenger] Delivered to ${cleanPhone}: ${data.id}`);
+        console.log(`[WhatsApp:Wassenger] Delivered to ${maskPhone(cleanPhone)}: ${data.id}`);
         return {
           success: true,
           provider: "wassenger",
@@ -267,7 +269,7 @@ export async function sendWhatsAppMessage({
 
       const data = await res.json();
       if (res.ok && data.sid) {
-        console.log(`[WhatsApp:Twilio] Delivered to ${cleanPhone}: ${data.sid}`);
+        console.log(`[WhatsApp:Twilio] Delivered to ${maskPhone(cleanPhone)}: ${data.sid}`);
         return {
           success: true,
           provider: "twilio",
@@ -302,7 +304,7 @@ export async function sendWhatsAppMessage({
       });
 
       if (res.ok) {
-        console.log(`[WhatsApp:Gateway] Dispatched to ${cleanPhone}`);
+        console.log(`[WhatsApp:Gateway] Dispatched to ${maskPhone(cleanPhone)}`);
         return {
           success: true,
           provider: "whatsapp_gateway",
@@ -324,7 +326,7 @@ export async function sendWhatsAppMessage({
         message
       )}&apikey=${callmebotKey.trim()}`;
       await fetch(url, { method: "GET" });
-      console.log(`[WhatsApp:CallMeBot] Dispatched to ${cleanPhone}`);
+      console.log(`[WhatsApp:CallMeBot] Dispatched to ${maskPhone(cleanPhone)}`);
       return {
         success: true,
         provider: "callmebot",
@@ -339,9 +341,12 @@ export async function sendWhatsAppMessage({
   // 8. Simulated Local / Console Logger
   // ---------------------------------------------------------------------------
   const simulatedId = `wa_sim_${Date.now()}_${Math.random().toString(36).substring(2, 7)}`;
+  // Never log a full customer phone number or message body: this fallback runs
+  // whenever no provider is configured, so it would otherwise dump every
+  // outbound notification to the platform logs in plaintext.
   console.log(`=======================================================`);
-  console.log(`[WHATSAPP BUSINESS DISPATCH LOG] -> ${cleanPhone}`);
-  console.log(message);
+  console.log(`[WHATSAPP BUSINESS DISPATCH] -> ${maskPhone(cleanPhone)}`);
+  console.log(redactAccidentalPii(message));
   console.log(`=======================================================`);
 
   return {
