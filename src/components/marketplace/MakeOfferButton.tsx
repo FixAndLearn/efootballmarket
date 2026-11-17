@@ -52,7 +52,7 @@ export function MakeOfferButton({
         variant={variant}
         size={size}
         onClick={() => setIsOpen(true)}
-        className={`font-bold border-sx-amber-border text-sx-amber-text hover:bg-sx-amber-tint hover:border-amber-400 active:scale-95 transition-all whitespace-nowrap ${className}`}
+        className={`font-bold border-sx-amber-border text-sx-amber-text hover:bg-sx-amber-tint hover:border-amber-400 active:scale-95 transition whitespace-nowrap ${className}`}
       >
         <Handshake className="w-3.5 h-3.5 sm:w-4 sm:h-4 mr-1.5 text-sx-amber-text shrink-0" />
         <span>{size === "sm" ? "Bargain" : "Bargain / Make Offer"}</span>

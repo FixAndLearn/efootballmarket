@@ -129,7 +129,7 @@ export function ListingGallery({
                   loading="eager"
                   fetchPriority={activeIndex === 0 ? "high" : "auto"}
                   decoding="async"
-                  className={`w-full h-full transition-all duration-200 ${
+                  className={`w-full h-full transition duration-200 ${
                     fitMode === "contain"
                       ? "object-contain"
                       : "object-cover scale-100"
@@ -171,7 +171,7 @@ export function ListingGallery({
                     e.stopPropagation();
                     setFitMode((prev) => (prev === "contain" ? "cover" : "contain"));
                   }}
-                  className="px-2.5 py-1.5 rounded-xl bg-black/80 hover:bg-black text-zinc-100 hover:text-white backdrop-blur-md border border-white/20 text-xs font-medium transition-all shadow-lg flex items-center gap-1.5 cursor-pointer"
+                  className="px-2.5 py-1.5 rounded-xl bg-black/80 hover:bg-black text-zinc-100 hover:text-white backdrop-blur-md border border-white/20 text-xs font-medium transition shadow-lg flex items-center gap-1.5 cursor-pointer"
                   title={
                     fitMode === "contain"
                       ? "Switch to Fill Frame"
@@ -197,7 +197,7 @@ export function ListingGallery({
                     e.stopPropagation();
                     setIsLightboxOpen(true);
                   }}
-                  className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-sx-green hover:bg-sx-green-hover text-white border border-emerald-400/40 text-xs font-semibold transition-all shadow-lg flex items-center gap-1.5 cursor-pointer"
+                  className="p-1.5 sm:px-2.5 sm:py-1.5 rounded-xl bg-sx-green hover:bg-sx-green-hover text-white border border-emerald-400/40 text-xs font-semibold transition shadow-lg flex items-center gap-1.5 cursor-pointer"
                   title="Open Fullscreen Lightbox & Zoom"
                 >
                   <Eye className="w-3.5 h-3.5" />
@@ -233,7 +233,7 @@ export function ListingGallery({
                       e.stopPropagation();
                       handlePrev();
                     }}
-                    className="absolute left-3 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-black/75 hover:bg-black text-white backdrop-blur-md border border-white/20 transition-all shadow-xl cursor-pointer"
+                    className="absolute left-3 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-black/75 hover:bg-black text-white backdrop-blur-md border border-white/20 transition shadow-xl cursor-pointer"
                     aria-label="Previous screenshot"
                   >
                     <ChevronLeft className="w-5 h-5" />
@@ -244,7 +244,7 @@ export function ListingGallery({
                       e.stopPropagation();
                       handleNext();
                     }}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-black/75 hover:bg-black text-white backdrop-blur-md border border-white/20 transition-all shadow-xl cursor-pointer"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 z-20 p-2 rounded-full bg-black/75 hover:bg-black text-white backdrop-blur-md border border-white/20 transition shadow-xl cursor-pointer"
                     aria-label="Next screenshot"
                   >
                     <ChevronRight className="w-5 h-5" />
@@ -273,7 +273,7 @@ export function ListingGallery({
                 }}
                 aria-label={`View screenshot ${idx + 1}`}
                 aria-current={activeIndex === idx ? "true" : undefined}
-                className={`relative w-24 h-16 rounded-xl overflow-hidden shrink-0 border transition-all duration-200 bg-zinc-900 cursor-pointer ${
+                className={`relative w-24 h-16 rounded-xl overflow-hidden shrink-0 border transition duration-200 bg-zinc-900 cursor-pointer ${
                   activeIndex === idx
                     ? "border-sx-green ring-2 ring-sx-green/40"
                     : "border-sx-border opacity-70 hover:opacity-100"
@@ -331,7 +331,7 @@ export function ListingGallery({
                   type="button"
                   onClick={() => setZoomLevel((z) => Math.max(1, z - 0.25))}
                   disabled={zoomLevel <= 1}
-                  className="p-1 rounded-lg text-zinc-200 hover:text-white hover:bg-white/10 disabled:opacity-30 transition-all cursor-pointer"
+                  className="p-1 rounded-lg text-zinc-200 hover:text-white hover:bg-white/10 disabled:opacity-30 transition cursor-pointer"
                   title="Zoom Out"
                 >
                   <ZoomOut className="w-4 h-4" />
@@ -343,7 +343,7 @@ export function ListingGallery({
                   type="button"
                   onClick={() => setZoomLevel((z) => Math.min(3, z + 0.25))}
                   disabled={zoomLevel >= 3}
-                  className="p-1 rounded-lg text-zinc-200 hover:text-white hover:bg-white/10 disabled:opacity-30 transition-all cursor-pointer"
+                  className="p-1 rounded-lg text-zinc-200 hover:text-white hover:bg-white/10 disabled:opacity-30 transition cursor-pointer"
                   title="Zoom In"
                 >
                   <ZoomIn className="w-4 h-4" />
@@ -351,7 +351,7 @@ export function ListingGallery({
                 <button
                   type="button"
                   onClick={() => setZoomLevel(1)}
-                  className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition-all ml-1 border-l border-white/15 pl-2 cursor-pointer"
+                  className="p-1 rounded-lg text-zinc-400 hover:text-white hover:bg-white/10 transition ml-1 border-l border-white/15 pl-2 cursor-pointer"
                   title="Reset to 100%"
                 >
                   <RotateCcw className="w-3.5 h-3.5" />
@@ -362,7 +362,7 @@ export function ListingGallery({
                 href={activeImage}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-100 hover:text-white border border-white/15 text-xs font-medium transition-all flex items-center gap-1.5"
+                className="p-2 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-zinc-100 hover:text-white border border-white/15 text-xs font-medium transition flex items-center gap-1.5"
                 title="Open full resolution in new tab"
               >
                 <ExternalLink className="w-4 h-4" />
@@ -376,7 +376,7 @@ export function ListingGallery({
                   setZoomLevel(1);
                 }}
                 aria-label="Close lightbox"
-                className="p-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white border border-white/20 transition-all shadow-xl cursor-pointer"
+                className="p-2.5 rounded-xl bg-zinc-900 hover:bg-zinc-800 text-white border border-white/20 transition shadow-xl cursor-pointer"
                 title="Close Lightbox (Esc)"
               >
                 <X className="w-5 h-5" />
@@ -404,7 +404,7 @@ export function ListingGallery({
                   handlePrev();
                 }}
                 aria-label="Previous screenshot"
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-40 p-3 rounded-full bg-zinc-900/90 hover:bg-zinc-800 text-white border border-white/20 transition-all shadow-2xl cursor-pointer"
+                className="absolute left-4 top-1/2 -translate-y-1/2 z-40 p-3 rounded-full bg-zinc-900/90 hover:bg-zinc-800 text-white border border-white/20 transition shadow-2xl cursor-pointer"
               >
                 <ChevronLeft className="w-6 h-6" />
               </button>
@@ -440,7 +440,7 @@ export function ListingGallery({
                   handleNext();
                 }}
                 aria-label="Next screenshot"
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-40 p-3 rounded-full bg-zinc-900/90 hover:bg-zinc-800 text-white border border-white/20 transition-all shadow-2xl cursor-pointer"
+                className="absolute right-4 top-1/2 -translate-y-1/2 z-40 p-3 rounded-full bg-zinc-900/90 hover:bg-zinc-800 text-white border border-white/20 transition shadow-2xl cursor-pointer"
               >
                 <ChevronRight className="w-6 h-6" />
               </button>

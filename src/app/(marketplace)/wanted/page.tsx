@@ -281,7 +281,7 @@ export default function WantedBoardPage() {
           {filteredRequests.map((req) => (
             <div
               key={req.id}
-              className="bg-pitch-surface border border-pitch-border hover:border-sx-amber-border rounded-2xl p-6 flex flex-col justify-between shadow-xl transition-all duration-300 group hover:-translate-y-1"
+              className="bg-pitch-surface border border-pitch-border hover:border-sx-amber-border rounded-2xl p-6 flex flex-col justify-between shadow-xl transition duration-300 group hover:-translate-y-1"
             >
               <div className="space-y-4">
                 {/* Header Pills */}

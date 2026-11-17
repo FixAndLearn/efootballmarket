@@ -312,7 +312,7 @@ function ProfileContent() {
         <button
           type="button"
           onClick={() => setActiveTab("details")}
-          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
+          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition whitespace-nowrap shrink-0 ${
             activeTab === "details"
               ? "bg-sx-canvas text-sx-ink border border-sx-border shadow-sx-card"
               : "text-sx-muted hover:text-sx-ink"
@@ -325,7 +325,7 @@ function ProfileContent() {
         <button
           type="button"
           onClick={() => setActiveTab("email")}
-          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
+          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition whitespace-nowrap shrink-0 ${
             activeTab === "email"
               ? "bg-sx-canvas text-sx-ink border border-sx-border shadow-sx-card"
               : "text-sx-muted hover:text-sx-ink"
@@ -338,7 +338,7 @@ function ProfileContent() {
         <button
           type="button"
           onClick={() => setActiveTab("security")}
-          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
+          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition whitespace-nowrap shrink-0 ${
             activeTab === "security"
               ? "bg-sx-canvas text-sx-ink border border-sx-border shadow-sx-card"
               : "text-sx-muted hover:text-sx-ink"
@@ -351,7 +351,7 @@ function ProfileContent() {
         <button
           type="button"
           onClick={() => setActiveTab("invites")}
-          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition-all whitespace-nowrap shrink-0 ${
+          className={`flex items-center gap-1.5 px-3.5 py-2 rounded-lg text-xs font-bold transition whitespace-nowrap shrink-0 ${
             activeTab === "invites"
               ? "bg-sx-canvas text-sx-ink border border-sx-border shadow-sx-card"
               : "text-sx-muted hover:text-sx-ink"

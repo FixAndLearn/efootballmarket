@@ -357,7 +357,7 @@ function NotificationsContent() {
           <button
             type="button"
             onClick={() => setActiveTab("all")}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
               activeTab === "all"
                 ? "bg-sx-green text-white shadow-sm"
                 : "bg-pitch-surface text-sx-muted hover:text-sx-ink hover:bg-pitch-card"
@@ -368,7 +368,7 @@ function NotificationsContent() {
           <button
             type="button"
             onClick={() => setActiveTab("unread")}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all flex items-center gap-1.5 ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition flex items-center gap-1.5 ${
               activeTab === "unread"
                 ? "bg-sx-green text-white shadow-sm"
                 : "bg-pitch-surface text-sx-muted hover:text-sx-ink hover:bg-pitch-card"
@@ -384,7 +384,7 @@ function NotificationsContent() {
           <button
             type="button"
             onClick={() => setActiveTab("messages")}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
               activeTab === "messages"
                 ? "bg-sx-green text-white shadow-sm"
                 : "bg-pitch-surface text-sx-muted hover:text-sx-ink hover:bg-pitch-card"
@@ -395,7 +395,7 @@ function NotificationsContent() {
           <button
             type="button"
             onClick={() => setActiveTab("escrow")}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
               activeTab === "escrow"
                 ? "bg-sx-green text-white shadow-sm"
                 : "bg-pitch-surface text-sx-muted hover:text-sx-ink hover:bg-pitch-card"
@@ -406,7 +406,7 @@ function NotificationsContent() {
           <button
             type="button"
             onClick={() => setActiveTab("orders")}
-            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
+            className={`px-3 py-1.5 rounded-xl text-xs font-semibold transition ${
               activeTab === "orders"
                 ? "bg-sx-green text-white shadow-sm"
                 : "bg-pitch-surface text-sx-muted hover:text-sx-ink hover:bg-pitch-card"
@@ -437,7 +437,7 @@ function NotificationsContent() {
               <div
                 key={item.id}
                 onClick={() => handleOpenNotification(item)}
-                className={`p-4 sm:p-5 rounded-2xl border transition-all duration-200 cursor-pointer flex flex-col sm:flex-row items-start justify-between gap-4 ${
+                className={`p-4 sm:p-5 rounded-2xl border transition duration-200 cursor-pointer flex flex-col sm:flex-row items-start justify-between gap-4 ${
                   !item.is_read
                     ? "bg-pitch-surface border-sx-amber-border shadow-lg shadow-amber-950/20 hover:border-amber-400/80"
                     : "bg-pitch-surface/60 border-pitch-border/80 hover:bg-pitch-surface hover:border-sx-border-strong"

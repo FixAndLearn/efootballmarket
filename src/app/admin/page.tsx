@@ -557,7 +557,7 @@ function AdminControlCenterContent() {
         <button
           type="button"
           onClick={() => switchTab("users")}
-          className="text-left p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 shadow-sm hover:border-cyan-500/50 hover:bg-pitch-surface/80 transition-all cursor-pointer group"
+          className="text-left p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 shadow-sm hover:border-cyan-500/50 hover:bg-pitch-surface/80 transition cursor-pointer group"
         >
           <span className="text-xs font-semibold text-sx-muted uppercase tracking-wider block group-hover:text-sx-ink-soft transition-colors">
             TOTAL ACCOUNTS
@@ -571,7 +571,7 @@ function AdminControlCenterContent() {
         <button
           type="button"
           onClick={() => switchTab("listings")}
-          className="text-left p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 shadow-sm hover:border-cyan-500/50 hover:bg-pitch-surface/80 transition-all cursor-pointer group"
+          className="text-left p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 shadow-sm hover:border-cyan-500/50 hover:bg-pitch-surface/80 transition cursor-pointer group"
         >
           <span className="text-xs font-semibold text-sx-muted uppercase tracking-wider block group-hover:text-sx-ink-soft transition-colors">
             TOTAL LISTINGS
@@ -585,7 +585,7 @@ function AdminControlCenterContent() {
         <button
           type="button"
           onClick={() => switchTab("disputes")}
-          className="text-left p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 shadow-sm hover:border-sx-red-border hover:bg-pitch-surface/80 transition-all cursor-pointer group"
+          className="text-left p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 shadow-sm hover:border-sx-red-border hover:bg-pitch-surface/80 transition cursor-pointer group"
         >
           <span className="text-xs font-semibold text-red-400 uppercase tracking-wider flex items-center justify-between">
             <span className="flex items-center gap-1.5">
@@ -605,7 +605,7 @@ function AdminControlCenterContent() {
         <button
           type="button"
           onClick={() => switchTab("withdrawals")}
-          className="text-left p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 shadow-sm hover:border-sx-amber-border hover:bg-pitch-surface/80 transition-all cursor-pointer group"
+          className="text-left p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 shadow-sm hover:border-sx-amber-border hover:bg-pitch-surface/80 transition cursor-pointer group"
         >
           <span className="text-xs font-semibold text-sx-amber-text uppercase tracking-wider flex items-center justify-between">
             <span>WITHDRAWALS TO REVIEW</span>
@@ -624,7 +624,7 @@ function AdminControlCenterContent() {
         <button
           type="button"
           onClick={() => switchTab("users")}
-          className="text-left p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 shadow-sm hover:border-sx-red-border hover:bg-pitch-surface/80 transition-all cursor-pointer group"
+          className="text-left p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 shadow-sm hover:border-sx-red-border hover:bg-pitch-surface/80 transition cursor-pointer group"
         >
           <span className="text-xs font-semibold text-sx-muted uppercase tracking-wider block group-hover:text-sx-ink-soft transition-colors">
             ACTIVE BANS
@@ -640,7 +640,7 @@ function AdminControlCenterContent() {
         <button
           type="button"
           onClick={() => switchTab("news")}
-          className="text-left p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 shadow-sm hover:border-cyan-500/50 hover:bg-pitch-surface/80 transition-all cursor-pointer group"
+          className="text-left p-6 rounded-2xl bg-pitch-surface border border-pitch-border space-y-2 shadow-sm hover:border-cyan-500/50 hover:bg-pitch-surface/80 transition cursor-pointer group"
         >
           <span className="text-xs font-semibold text-sx-muted uppercase tracking-wider block group-hover:text-sx-ink-soft transition-colors">
             NEWS &amp; ALERTS
@@ -831,7 +831,7 @@ function AdminControlCenterContent() {
               <button
                 type="button"
                 onClick={() => setDisputeFilter("open")}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${
                   disputeFilter === "open"
                     ? "bg-sx-red text-white shadow"
                     : "text-sx-muted hover:text-sx-ink"
@@ -842,7 +842,7 @@ function AdminControlCenterContent() {
               <button
                 type="button"
                 onClick={() => setDisputeFilter("all")}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${
                   disputeFilter === "all"
                     ? "bg-sx-contrast text-sx-contrast-fg shadow"
                     : "text-sx-muted hover:text-sx-ink"
@@ -853,7 +853,7 @@ function AdminControlCenterContent() {
               <button
                 type="button"
                 onClick={() => setDisputeFilter("resolved")}
-                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition-all ${
+                className={`px-3 py-1.5 text-xs font-bold rounded-lg transition ${
                   disputeFilter === "resolved"
                     ? "bg-sx-green text-white shadow"
                     : "text-sx-muted hover:text-sx-ink"
@@ -889,7 +889,7 @@ function AdminControlCenterContent() {
                 return (
                   <div
                     key={disp.id}
-                    className={`p-6 rounded-3xl bg-pitch-surface border transition-all shadow-xl space-y-5 ${
+                    className={`p-6 rounded-3xl bg-pitch-surface border transition shadow-xl space-y-5 ${
                       isOpen ? "border-sx-red-border ring-1 ring-rose-500/20" : "border-pitch-border"
                     }`}
                   >
@@ -1075,7 +1075,7 @@ function AdminControlCenterContent() {
                             <div
                               key={idx}
                               onClick={() => setAdminZoomImage(ev.url)}
-                              className="group relative rounded-xl overflow-hidden bg-sx-subtle border border-pitch-border hover:border-brand-400 transition-all cursor-pointer aspect-video"
+                              className="group relative rounded-xl overflow-hidden bg-sx-subtle border border-pitch-border hover:border-brand-400 transition cursor-pointer aspect-video"
                             >
                               {/* eslint-disable-next-line @next/next/no-img-element */}
                               <img
@@ -1466,7 +1466,7 @@ function AdminControlCenterContent() {
                     key={filter}
                     type="button"
                     onClick={() => setWithdrawalFilter(filter)}
-                    className={`px-3 py-1.5 rounded-lg font-medium transition-all capitalize flex items-center gap-1.5 shrink-0 ${
+                    className={`px-3 py-1.5 rounded-lg font-medium transition capitalize flex items-center gap-1.5 shrink-0 ${
                       withdrawalFilter === filter
                         ? "bg-amber-500 text-zinc-950 font-bold shadow"
                         : "text-sx-muted hover:text-sx-ink"

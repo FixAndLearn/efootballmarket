@@ -416,7 +416,7 @@ export default async function HomePage() {
       {/* 1. SQUAD-FIRST HERO SCREEN */}
       <section className="pt-4 pb-8 sm:pt-8 sm:pb-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="rounded-2xl bg-sx-subtle border border-sx-border grid grid-cols-1 lg:grid-cols-12 items-stretch">
+          <div className="rounded-3xl bg-sx-subtle border border-sx-border shadow-raised grid grid-cols-1 lg:grid-cols-12 items-stretch overflow-hidden">
             <div className="lg:col-span-7 min-w-0 p-5 sm:p-9 lg:p-11 flex flex-col justify-between space-y-6">
               <div className="space-y-4">
                 {totalSquads > 0 && (
@@ -442,7 +442,7 @@ export default async function HomePage() {
                   </div>
                 )}
 
-                <h1 className="text-3xl sm:text-4xl lg:text-[42px] font-extrabold font-display tracking-[-0.03em] text-sx-ink leading-[1.1]">
+                <h1 className="text-[32px] sm:text-[40px] lg:text-[46px] font-extrabold font-display tracking-[-0.035em] text-sx-ink leading-[1.06] text-balance">
                   Find Your Next eFootball Squad in Kenya.
                 </h1>
 
@@ -668,7 +668,7 @@ export default async function HomePage() {
                 <Link
                   key={srv.title}
                   href={srv.href}
-                  className="group p-5 rounded-2xl bg-sx-subtle hover:bg-sx-stone border border-sx-border hover:border-sx-green-border transition-all flex flex-col justify-between space-y-4"
+                  className="group p-5 rounded-2xl bg-sx-subtle hover:bg-sx-stone border border-sx-border hover:border-sx-green-border transition flex flex-col justify-between space-y-4"
                 >
                   <div className="space-y-2.5">
                     <div className="w-9 h-9 rounded-xl bg-sx-canvas border border-sx-border flex items-center justify-center text-sx-green-text group-hover:border-sx-green-border transition-colors">
@@ -731,12 +731,12 @@ export default async function HomePage() {
               ].map((stat) => (
                 <div
                   key={stat.label}
-                  className="p-4 rounded-xl bg-sx-canvas border border-sx-border"
+                  className="p-4 rounded-xl bg-sx-canvas border border-sx-border shadow-panel transition-colors hover:border-sx-green-border"
                 >
-                  <div className="text-2xl sm:text-3xl font-bold text-sx-ink font-display tabular-nums">
+                  <div className="text-[28px] sm:text-[32px] font-extrabold text-sx-ink font-display tabular-nums leading-none tracking-tight">
                     {stat.value.toLocaleString("en-KE")}
                   </div>
-                  <div className="text-[10px] font-mono uppercase tracking-wider text-sx-muted mt-1">
+                  <div className="text-[10px] font-mono uppercase tracking-[0.09em] text-sx-muted mt-2">
                     {stat.label}
                   </div>
                 </div>

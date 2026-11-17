@@ -458,7 +458,7 @@ export default function RegisterTournamentPage() {
             <div className="shrink-0">
               <Link
                 href="/tournaments/host"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-pitch-card border border-pitch-border hover:border-sx-amber-border text-sx-amber-text text-xs font-bold transition-all shadow-md"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl bg-pitch-card border border-pitch-border hover:border-sx-amber-border text-sx-amber-text text-xs font-bold transition shadow-md"
               >
                 <Swords className="w-4 h-4 text-sx-amber-text" />
                 <span>Host Your Own</span>
@@ -644,7 +644,7 @@ export default function RegisterTournamentPage() {
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-sx-green hover:bg-sx-green-hover text-white font-bold text-xs shadow-lg transition-all cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-sx-green hover:bg-sx-green-hover text-white font-bold text-xs shadow-lg transition cursor-pointer"
               >
                 <MessageCircle className="w-4 h-4 fill-white" />
                 <span>Join Tournament WhatsApp Room</span>
@@ -652,7 +652,7 @@ export default function RegisterTournamentPage() {
 
               <Link
                 href="/tournaments"
-                className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-pitch-card hover:bg-sx-stone border border-pitch-border text-sx-ink-soft font-bold text-xs transition-all cursor-pointer"
+                className="w-full inline-flex items-center justify-center gap-2 px-5 py-3 rounded-2xl bg-pitch-card hover:bg-sx-stone border border-pitch-border text-sx-ink-soft font-bold text-xs transition cursor-pointer"
               >
                 <span>Back to Tournaments</span>
               </Link>
@@ -794,7 +794,7 @@ export default function RegisterTournamentPage() {
                     {/* Option 1: Safaricom M-Pesa STK Push (Recommended) */}
                     <div
                       onClick={() => setPaymentMethod("mpesa_stk")}
-                      className={`p-4 rounded-2xl border transition-all cursor-pointer ${
+                      className={`p-4 rounded-2xl border transition cursor-pointer ${
                         paymentMethod === "mpesa_stk"
                           ? "bg-sx-amber-tint border-amber-500 ring-1 ring-amber-500/40 shadow-md"
                           : "bg-pitch-card border-pitch-border hover:border-sx-border-strong"
@@ -839,7 +839,7 @@ export default function RegisterTournamentPage() {
                           onClick={() => {
                             if (hasEnough) setPaymentMethod("wallet");
                           }}
-                          className={`p-4 rounded-2xl border transition-all ${
+                          className={`p-4 rounded-2xl border transition ${
                             !hasEnough
                               ? "bg-sx-subtle border-sx-border opacity-60 cursor-not-allowed"
                               : paymentMethod === "wallet"

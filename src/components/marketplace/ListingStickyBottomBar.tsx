@@ -50,7 +50,7 @@ export function ListingStickyBottomBar({
   return (
     <div
       aria-hidden={inlineVisible}
-      className={`fixed bottom-0 left-0 right-0 z-40 bg-sx-canvas/95 backdrop-blur-md border-t border-sx-border px-4 py-2.5 lg:hidden flex items-center justify-between gap-2.5 safe-area-pb transition-all duration-200 ${
+      className={`fixed bottom-0 left-0 right-0 z-40 bg-sx-canvas/95 backdrop-blur-md border-t border-sx-border px-4 py-2.5 lg:hidden flex items-center justify-between gap-2.5 safe-area-pb transition duration-200 ${
         inlineVisible
           ? "translate-y-full opacity-0 pointer-events-none"
           : "translate-y-0 opacity-100"

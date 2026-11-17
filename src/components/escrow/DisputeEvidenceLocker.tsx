@@ -243,7 +243,7 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
               <div
                 key={idx}
                 onClick={() => setZoomImage(item.url)}
-                className="group relative rounded-xl overflow-hidden border border-pitch-border bg-sx-subtle cursor-zoom-in aspect-[4/3] transition-all hover:border-amber-400/80 shadow-md"
+                className="group relative rounded-xl overflow-hidden border border-pitch-border bg-sx-subtle cursor-zoom-in aspect-[4/3] transition hover:border-amber-400/80 shadow-md"
               >
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img

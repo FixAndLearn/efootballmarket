@@ -101,7 +101,7 @@ export function FavoriteButton({
       onClick={handleToggle}
       aria-label={favorited ? "Remove from Watchlist" : "Save to Watchlist"}
       title={favorited ? "Saved in Watchlist" : "Save Squad to Watchlist"}
-      className={`w-7 h-7 rounded-full border flex items-center justify-center transition-all ${
+      className={`w-7 h-7 rounded-full border flex items-center justify-center transition ${
         favorited
           ? "bg-sx-canvas border-sx-red-border text-sx-red-text"
           : "bg-sx-canvas/90 hover:bg-sx-canvas border-sx-border text-sx-muted hover:text-sx-ink"

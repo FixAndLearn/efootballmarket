@@ -380,7 +380,7 @@ function LoginForm() {
             setOtpSent(false);
             setError("");
           }}
-          className={`flex items-center justify-center gap-1 py-2.5 font-bold rounded-lg transition-all ${
+          className={`flex items-center justify-center gap-1 py-2.5 font-bold rounded-lg transition ${
             authMethod === "password"
               ? "bg-sx-canvas text-sx-ink shadow-card border border-sx-border"
               : "text-sx-muted hover:text-sx-ink"
@@ -395,7 +395,7 @@ function LoginForm() {
             setAuthMethod("magic-link");
             setError("");
           }}
-          className={`flex items-center justify-center gap-1 py-2.5 font-bold rounded-lg transition-all ${
+          className={`flex items-center justify-center gap-1 py-2.5 font-bold rounded-lg transition ${
             authMethod === "magic-link"
               ? "bg-sx-canvas text-sx-green-text shadow-card border border-sx-green-border"
               : "text-sx-muted hover:text-sx-ink"
@@ -410,7 +410,7 @@ function LoginForm() {
             setAuthMethod("otp");
             setError("");
           }}
-          className={`flex items-center justify-center gap-1 py-2.5 font-bold rounded-lg transition-all ${
+          className={`flex items-center justify-center gap-1 py-2.5 font-bold rounded-lg transition ${
             authMethod === "otp"
               ? "bg-sx-canvas text-sx-amber-text shadow-card border border-sx-amber-border"
               : "text-sx-muted hover:text-sx-ink"

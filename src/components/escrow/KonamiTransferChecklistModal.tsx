@@ -129,7 +129,7 @@ export function KonamiTransferChecklistModal({ isOpen, onClose }: Props) {
           </div>
           <div className="w-36 h-2 bg-sx-stone rounded-full overflow-hidden p-0.5 border border-sx-border-strong">
             <div
-              className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition-all duration-300"
+              className="h-full bg-gradient-to-r from-emerald-500 to-teal-400 rounded-full transition duration-300"
               style={{ width: `${progressPercent}%` }}
             />
           </div>
@@ -176,7 +176,7 @@ export function KonamiTransferChecklistModal({ isOpen, onClose }: Props) {
               <div
                 key={step.id}
                 onClick={() => toggleStep(step.id)}
-                className={`p-4 rounded-2xl border transition-all cursor-pointer ${
+                className={`p-4 rounded-2xl border transition cursor-pointer ${
                   isDone
                     ? "bg-sx-green-tint border-sx-green-border"
                     : "bg-pitch-card/50 border-pitch-border hover:border-slate-500"
@@ -251,7 +251,7 @@ export function KonamiTransferChecklistTrigger({ className = "" }: { className?:
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sx-green-tint border border-sx-green-border text-sx-green-text hover:text-sx-green-text hover:border-emerald-700 text-xs font-semibold transition-all shadow-md ${className}`}
+        className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sx-green-tint border border-sx-green-border text-sx-green-text hover:text-sx-green-text hover:border-emerald-700 text-xs font-semibold transition shadow-md ${className}`}
       >
         <ShieldCheck className="w-4 h-4 text-sx-green-text" />
         <span>Buyer Security Checklist</span>

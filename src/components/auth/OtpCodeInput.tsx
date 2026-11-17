@@ -128,7 +128,7 @@ export function OtpCodeInput({
           onKeyDown={(e) => handleKeyDown(idx, e)}
           onPaste={handlePaste}
           onFocus={(e) => e.target.select()}
-          className={`w-full h-11 sm:h-13 text-center text-base sm:text-xl font-extrabold font-mono rounded-lg sm:rounded-xl bg-sx-stone border transition-all outline-none ${
+          className={`w-full h-11 sm:h-13 text-center text-base sm:text-xl font-extrabold font-mono rounded-lg sm:rounded-xl bg-sx-stone border transition outline-none ${
             digit
               ? "border-sx-green text-sx-ink bg-sx-green-tint shadow-sm"
               : "border-sx-border-strong text-sx-ink focus:border-sx-ink focus:ring-1 focus:ring-sx-ink"

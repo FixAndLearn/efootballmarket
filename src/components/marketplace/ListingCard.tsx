@@ -117,7 +117,7 @@ export function ListingCard({ listing, priority = false }: ListingCardProps) {
       activeImage!.includes("images.unsplash.com"));
 
   return (
-    <article className="group sx-card-lift relative w-full h-full flex flex-col rounded-2xl bg-sx-subtle border border-sx-border hover:border-sx-green-border overflow-hidden shadow-sm">
+    <article className="group sx-card-lift relative w-full h-full flex flex-col rounded-2xl bg-sx-subtle border border-sx-border hover:border-sx-green-border overflow-hidden shadow-raised hover:shadow-floating">
       {/* 1. Squad Screenshot + Multi-Photo Scrubber */}
       <Link
         href={`/listings/${listing.id}`}
@@ -133,7 +133,7 @@ export function ListingCard({ listing, priority = false }: ListingCardProps) {
             loading={priority ? "eager" : "lazy"}
             sizes="(max-width: 640px) 94vw, (max-width: 1024px) 46vw, 24vw"
             unoptimized={!canOptimize}
-            className="object-cover transition-transform duration-300 group-hover:scale-[1.02]"
+            className="object-cover object-top transition-transform duration-500 ease-premium group-hover:scale-[1.03]"
           />
         ) : (
           <SquadPlaceholder ovr={listing.overall_team_strength} />

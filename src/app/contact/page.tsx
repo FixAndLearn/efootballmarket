@@ -99,7 +99,7 @@ export default function ContactPage() {
                 href={item.href}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="group p-5 rounded-2xl bg-sx-subtle hover:bg-sx-stone border border-sx-border hover:border-sx-green-border transition-all flex flex-col justify-between"
+                className="group p-5 rounded-2xl bg-sx-subtle hover:bg-sx-stone border border-sx-border hover:border-sx-green-border transition flex flex-col justify-between"
               >
                 {inner}
               </a>
@@ -107,7 +107,7 @@ export default function ContactPage() {
               <Link
                 key={item.title}
                 href={item.href}
-                className="group p-5 rounded-2xl bg-sx-subtle hover:bg-sx-stone border border-sx-border hover:border-sx-green-border transition-all flex flex-col justify-between"
+                className="group p-5 rounded-2xl bg-sx-subtle hover:bg-sx-stone border border-sx-border hover:border-sx-green-border transition flex flex-col justify-between"
               >
                 {inner}
               </Link>

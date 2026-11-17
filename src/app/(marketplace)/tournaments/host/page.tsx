@@ -169,7 +169,7 @@ export default function HostTournamentPage() {
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex items-center justify-between gap-3">
           <Link
             href="/tournaments"
-            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-pitch-card hover:bg-sx-stone border border-pitch-border text-xs font-semibold text-sx-ink-soft hover:text-sx-ink transition-all whitespace-nowrap group shadow-sm active:scale-95"
+            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-pitch-card hover:bg-sx-stone border border-pitch-border text-xs font-semibold text-sx-ink-soft hover:text-sx-ink transition whitespace-nowrap group shadow-sm active:scale-95"
           >
             <ArrowLeft className="w-3.5 h-3.5 text-sx-muted group-hover:-translate-x-0.5 transition-transform" />
             <span>Tournaments Arena</span>
@@ -181,7 +181,7 @@ export default function HostTournamentPage() {
             </span>
             <Link
               href="/browse"
-              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pitch-card hover:bg-sx-stone border border-pitch-border text-xs font-semibold text-sx-ink-soft hover:text-sx-ink transition-all"
+              className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-pitch-card hover:bg-sx-stone border border-pitch-border text-xs font-semibold text-sx-ink-soft hover:text-sx-ink transition"
             >
               <span>Marketplace</span>
             </Link>
@@ -255,7 +255,7 @@ export default function HostTournamentPage() {
               <button
                 type="button"
                 onClick={() => handleSwitchArenaType("1v1")}
-                className={`p-4 rounded-2xl border text-left transition-all cursor-pointer relative overflow-hidden ${
+                className={`p-4 rounded-2xl border text-left transition cursor-pointer relative overflow-hidden ${
                   arenaType === "1v1"
                     ? "bg-sx-amber-tint border-amber-500 ring-2 ring-amber-500/30 shadow-lg shadow-amber-500/10"
                     : "bg-pitch-card border-pitch-border hover:border-sx-border-strong"
@@ -281,7 +281,7 @@ export default function HostTournamentPage() {
               <button
                 type="button"
                 onClick={() => handleSwitchArenaType("tournament")}
-                className={`p-4 rounded-2xl border text-left transition-all cursor-pointer relative overflow-hidden ${
+                className={`p-4 rounded-2xl border text-left transition cursor-pointer relative overflow-hidden ${
                   arenaType === "tournament"
                     ? "bg-sx-green-tint border-emerald-500 ring-2 ring-emerald-500/30 shadow-lg shadow-emerald-500/10"
                     : "bg-pitch-card border-pitch-border hover:border-sx-border-strong"
@@ -314,7 +314,7 @@ export default function HostTournamentPage() {
               <button
                 type="button"
                 onClick={() => setHostType("paid")}
-                className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+                className={`p-3.5 rounded-2xl border text-left transition cursor-pointer ${
                   hostType === "paid"
                     ? "bg-sx-amber-tint border-amber-500 text-sx-amber-text ring-1 ring-amber-500/30"
                     : "bg-pitch-card border-pitch-border text-sx-muted hover:border-sx-border-strong"
@@ -329,7 +329,7 @@ export default function HostTournamentPage() {
               <button
                 type="button"
                 onClick={() => setHostType("free")}
-                className={`p-3.5 rounded-2xl border text-left transition-all cursor-pointer ${
+                className={`p-3.5 rounded-2xl border text-left transition cursor-pointer ${
                   hostType === "free"
                     ? "bg-sx-green-tint border-emerald-500 text-sx-green-text ring-1 ring-emerald-500/30"
                     : "bg-pitch-card border-pitch-border text-sx-muted hover:border-sx-border-strong"
@@ -425,7 +425,7 @@ export default function HostTournamentPage() {
                       key={preset}
                       type="button"
                       onClick={() => setEntryFee(preset)}
-                      className={`py-1.5 px-2 rounded-xl text-xs font-bold border transition-all cursor-pointer ${
+                      className={`py-1.5 px-2 rounded-xl text-xs font-bold border transition cursor-pointer ${
                         entryFee === preset
                           ? "bg-amber-500 text-black border-amber-400 shadow-md"
                           : "bg-pitch-card border-pitch-border text-sx-ink-soft hover:text-sx-ink"
@@ -457,7 +457,7 @@ export default function HostTournamentPage() {
                     <button
                       type="button"
                       onClick={() => setPayoutSplit("winner_takes_all")}
-                      className={`p-2.5 rounded-xl border text-center text-xs font-semibold transition-all cursor-pointer ${
+                      className={`p-2.5 rounded-xl border text-center text-xs font-semibold transition cursor-pointer ${
                         payoutSplit === "winner_takes_all"
                           ? "bg-amber-500 text-black border-amber-400 font-bold shadow-md"
                           : "bg-pitch-card border-pitch-border text-sx-ink-soft hover:text-sx-ink"
@@ -469,7 +469,7 @@ export default function HostTournamentPage() {
                     <button
                       type="button"
                       onClick={() => setPayoutSplit("80_20")}
-                      className={`p-2.5 rounded-xl border text-center text-xs font-semibold transition-all cursor-pointer ${
+                      className={`p-2.5 rounded-xl border text-center text-xs font-semibold transition cursor-pointer ${
                         payoutSplit === "80_20"
                           ? "bg-amber-500 text-black border-amber-400 font-bold shadow-md"
                           : "bg-pitch-card border-pitch-border text-sx-ink-soft hover:text-sx-ink"
@@ -481,7 +481,7 @@ export default function HostTournamentPage() {
                     <button
                       type="button"
                       onClick={() => setPayoutSplit("70_30")}
-                      className={`p-2.5 rounded-xl border text-center text-xs font-semibold transition-all cursor-pointer ${
+                      className={`p-2.5 rounded-xl border text-center text-xs font-semibold transition cursor-pointer ${
                         payoutSplit === "70_30"
                           ? "bg-amber-500 text-black border-amber-400 font-bold shadow-md"
                           : "bg-pitch-card border-pitch-border text-sx-ink-soft hover:text-sx-ink"
@@ -566,7 +566,7 @@ export default function HostTournamentPage() {
               <button
                 type="button"
                 onClick={() => setFormat("Best of 3 Series (12-Minute Matches)")}
-                className={`p-3 rounded-2xl border text-left text-xs transition-all cursor-pointer ${
+                className={`p-3 rounded-2xl border text-left text-xs transition cursor-pointer ${
                   format.includes("Best of 3")
                     ? "bg-sx-amber-tint border-amber-500 text-sx-amber-text ring-1 ring-amber-500/30 font-bold"
                     : "bg-pitch-card border-pitch-border text-sx-muted hover:border-sx-border-strong"
@@ -581,7 +581,7 @@ export default function HostTournamentPage() {
               <button
                 type="button"
                 onClick={() => setFormat("Single Knockout 1v1 (12-Minute Game + Extra Time & PKs)")}
-                className={`p-3 rounded-2xl border text-left text-xs transition-all cursor-pointer ${
+                className={`p-3 rounded-2xl border text-left text-xs transition cursor-pointer ${
                   format.includes("Single Knockout")
                     ? "bg-sx-amber-tint border-amber-500 text-sx-amber-text ring-1 ring-amber-500/30 font-bold"
                     : "bg-pitch-card border-pitch-border text-sx-muted hover:border-sx-border-strong"
@@ -596,7 +596,7 @@ export default function HostTournamentPage() {
               <button
                 type="button"
                 onClick={() => setFormat("Home & Away 1v1 (12-Minute Two-Leg Aggregate)")}
-                className={`p-3 rounded-2xl border text-left text-xs transition-all cursor-pointer ${
+                className={`p-3 rounded-2xl border text-left text-xs transition cursor-pointer ${
                   format.includes("Two-Leg")
                     ? "bg-sx-amber-tint border-amber-500 text-sx-amber-text ring-1 ring-amber-500/30 font-bold"
                     : "bg-pitch-card border-pitch-border text-sx-muted hover:border-sx-border-strong"

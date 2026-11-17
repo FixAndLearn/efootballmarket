@@ -78,6 +78,32 @@ const config: Config = {
       boxShadow: {
         panel: "0 1px 2px rgba(15, 15, 15, 0.04)",
         card: "0 2px 8px rgba(15, 15, 15, 0.06)",
+        // Layered elevation. A single soft shadow reads flat at these radii;
+        // stacking a tight contact shadow under a wide ambient one is what
+        // separates a premium surface from a plain bordered box.
+        raised:
+          "0 1px 2px rgba(9, 13, 20, 0.05), 0 4px 10px -4px rgba(9, 13, 20, 0.10)",
+        floating:
+          "0 1px 2px rgba(9, 13, 20, 0.06), 0 8px 20px -8px rgba(9, 13, 20, 0.16), 0 2px 6px -2px rgba(9, 13, 20, 0.08)",
+        overlay:
+          "0 2px 4px rgba(9, 13, 20, 0.06), 0 24px 48px -12px rgba(9, 13, 20, 0.28)",
+      },
+      transitionTimingFunction: {
+        // Slightly overshooting ease-out; motion settles instead of stopping dead.
+        premium: "cubic-bezier(0.16, 1, 0.3, 1)",
+      },
+      keyframes: {
+        "fade-rise": {
+          from: { opacity: "0", transform: "translateY(6px)" },
+          to: { opacity: "1", transform: "translateY(0)" },
+        },
+        shimmer: {
+          "100%": { transform: "translateX(100%)" },
+        },
+      },
+      animation: {
+        "fade-rise": "fade-rise 320ms cubic-bezier(0.16, 1, 0.3, 1) both",
+        shimmer: "shimmer 1.6s ease-in-out infinite",
       },
     },
   },

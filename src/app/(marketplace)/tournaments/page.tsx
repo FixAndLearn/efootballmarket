@@ -482,7 +482,7 @@ export default function TournamentsPage() {
               return (
                 <div
                   key={t.id}
-                  className={`bg-pitch-surface border rounded-3xl p-6 flex flex-col justify-between shadow-2xl transition-all duration-300 ${
+                  className={`bg-pitch-surface border rounded-3xl p-6 flex flex-col justify-between shadow-2xl transition duration-300 ${
                     isSelected
                       ? "border-amber-500 shadow-amber-500/10 ring-1 ring-amber-500/50"
                       : "border-pitch-border hover:border-sx-border-strong"
@@ -586,7 +586,7 @@ export default function TournamentsPage() {
                       </div>
                       <div className="w-full h-2 rounded-full bg-sx-stone overflow-hidden">
                         <div
-                          className="h-full bg-gradient-to-r from-amber-500 to-emerald-400 rounded-full transition-all"
+                          className="h-full bg-gradient-to-r from-amber-500 to-emerald-400 rounded-full transition"
                           style={{ width: `${progressPercent}%` }}
                         />
                       </div>
@@ -617,7 +617,7 @@ export default function TournamentsPage() {
                       {t.status === "registration_open" && (
                         <Link
                           href={isFull ? "#" : `/tournaments/register?id=${t.id}`}
-                          className={`flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl font-bold text-xs transition-all ${
+                          className={`flex-1 inline-flex items-center justify-center gap-1.5 py-2 px-3 rounded-xl font-bold text-xs transition ${
                             isFull
                               ? "bg-sx-stone text-sx-muted cursor-not-allowed pointer-events-none"
                               : "bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black shadow-md shadow-amber-500/10 cursor-pointer"
@@ -648,7 +648,7 @@ export default function TournamentsPage() {
                         )}`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl bg-sx-green-tint hover:bg-sx-green-tint border border-sx-green-border text-sx-green-text font-bold text-[11px] transition-all shadow-sm cursor-pointer"
+                        className="flex-1 inline-flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-xl bg-sx-green-tint hover:bg-sx-green-tint border border-sx-green-border text-sx-green-text font-bold text-[11px] transition shadow-sm cursor-pointer"
                       >
                         <MessageCircle className="w-3.5 h-3.5 text-sx-green-text fill-emerald-400" />
                         <span>Invite on WhatsApp</span>
@@ -656,7 +656,7 @@ export default function TournamentsPage() {
                       <button
                         type="button"
                         onClick={() => handleCopyInvite(t)}
-                        className="p-2 rounded-xl bg-pitch-card hover:bg-sx-stone border border-pitch-border text-sx-ink-soft hover:text-sx-ink transition-all text-xs cursor-pointer"
+                        className="p-2 rounded-xl bg-pitch-card hover:bg-sx-stone border border-pitch-border text-sx-ink-soft hover:text-sx-ink transition text-xs cursor-pointer"
                         title="Copy Tournament Link"
                       >
                         {copiedTourneyId === t.id ? (
@@ -678,7 +678,7 @@ export default function TournamentsPage() {
                               handleGenerateBrackets(false);
                             }}
                             disabled={generatingBrackets}
-                            className="flex-1 text-[11px] font-bold text-sx-amber-text hover:text-sx-amber-text py-1.5 px-2 rounded-xl bg-sx-amber-tint hover:bg-sx-amber-tint border border-sx-amber-border transition-all text-center flex items-center justify-center gap-1 cursor-pointer"
+                            className="flex-1 text-[11px] font-bold text-sx-amber-text hover:text-sx-amber-text py-1.5 px-2 rounded-xl bg-sx-amber-tint hover:bg-sx-amber-tint border border-sx-amber-border transition text-center flex items-center justify-center gap-1 cursor-pointer"
                           >
                             <Play className="w-3 h-3" />
                             <span>Form Brackets</span>
@@ -687,7 +687,7 @@ export default function TournamentsPage() {
                         <button
                           type="button"
                           onClick={() => handleDeleteTournament(t.id)}
-                          className="p-1.5 rounded-xl text-sx-red-text hover:text-sx-red-text hover:bg-sx-red-tint border border-sx-red-border transition-all cursor-pointer"
+                          className="p-1.5 rounded-xl text-sx-red-text hover:text-sx-red-text hover:bg-sx-red-tint border border-sx-red-border transition cursor-pointer"
                           title="Remove tournament with no payment or registration activity"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -776,7 +776,7 @@ export default function TournamentsPage() {
                   )}`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="px-5 py-3 rounded-xl bg-zinc-950 text-white hover:bg-zinc-800 font-bold text-xs shadow-lg transition-all flex items-center gap-2 shrink-0"
+                  className="px-5 py-3 rounded-xl bg-zinc-950 text-white hover:bg-zinc-800 font-bold text-xs shadow-lg transition flex items-center gap-2 shrink-0"
                 >
                   <MessageCircle className="w-4 h-4" />
                   <span>Ask About Prize Payment</span>
@@ -812,7 +812,7 @@ export default function TournamentsPage() {
                               return (
                                 <div
                                   key={m.id}
-                                  className={`p-4 rounded-2xl bg-pitch-card border space-y-2 text-xs shadow-md transition-all ${
+                                  className={`p-4 rounded-2xl bg-pitch-card border space-y-2 text-xs shadow-md transition ${
                                     m.is_completed
                                       ? "border-sx-green-border ring-1 ring-emerald-500/20"
                                       : "border-pitch-border hover:border-sx-border-strong"
@@ -882,7 +882,7 @@ export default function TournamentsPage() {
                                           setIsScoreOpen(true);
                                           setScoreError("");
                                         }}
-                                        className="w-full py-1.5 px-3 rounded-xl bg-sx-amber-tint hover:bg-amber-500/25 border border-sx-amber-border text-sx-amber-text font-bold text-[11px] transition-all flex items-center justify-center gap-1.5"
+                                        className="w-full py-1.5 px-3 rounded-xl bg-sx-amber-tint hover:bg-amber-500/25 border border-sx-amber-border text-sx-amber-text font-bold text-[11px] transition flex items-center justify-center gap-1.5"
                                       >
                                         <Award className="w-3.5 h-3.5" />
                                         <span>{m.is_completed ? "Update Score (Moderator)" : "Post Match Result"}</span>
@@ -1000,7 +1000,7 @@ export default function TournamentsPage() {
               <button
                 type="button"
                 onClick={() => setIsAuthRequiredOpen(false)}
-                className="p-1.5 rounded-lg text-sx-muted hover:text-sx-ink hover:bg-sx-stone transition-all"
+                className="p-1.5 rounded-lg text-sx-muted hover:text-sx-ink hover:bg-sx-stone transition"
               >
                 <X className="w-4 h-4" />
               </button>
@@ -1053,7 +1053,7 @@ export default function TournamentsPage() {
               <div className="space-y-2.5 pt-1">
                 <Link
                   href="/register?redirect=/tournaments"
-                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold text-xs shadow-lg shadow-amber-500/20 transition-all text-center"
+                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-gradient-to-r from-amber-500 to-amber-600 hover:from-amber-400 hover:to-amber-500 text-black font-extrabold text-xs shadow-lg shadow-amber-500/20 transition text-center"
                 >
                   <UserPlus className="w-4 h-4" />
                   <span>Create Free Account & Join Tournament</span>
@@ -1061,7 +1061,7 @@ export default function TournamentsPage() {
 
                 <Link
                   href="/login?redirect=/tournaments"
-                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-pitch-card hover:bg-sx-stone border border-pitch-border text-sx-ink font-bold text-xs transition-all text-center"
+                  className="w-full inline-flex items-center justify-center gap-2 py-3 px-4 rounded-xl bg-pitch-card hover:bg-sx-stone border border-pitch-border text-sx-ink font-bold text-xs transition text-center"
                 >
                   <LogIn className="w-4 h-4" />
                   <span>Already Have an Account? Log In</span>
@@ -1070,7 +1070,7 @@ export default function TournamentsPage() {
                 <button
                   type="button"
                   onClick={() => setIsAuthRequiredOpen(false)}
-                  className="w-full py-2 text-xs text-sx-muted hover:text-sx-muted text-center transition-all"
+                  className="w-full py-2 text-xs text-sx-muted hover:text-sx-muted text-center transition"
                 >
                   Maybe Later
                 </button>
@@ -1156,7 +1156,7 @@ export default function TournamentsPage() {
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sx-green hover:bg-sx-green-hover text-white font-bold text-xs transition-all shadow-lg"
+                    className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sx-green hover:bg-sx-green-hover text-white font-bold text-xs transition shadow-lg"
                   >
                     <MessageCircle className="w-4 h-4 fill-white" />
                     <span>Join Tournament WhatsApp Room</span>
@@ -1236,7 +1236,7 @@ export default function TournamentsPage() {
                             onClick={() => {
                               if (hasEnough) setPaymentMethod("wallet");
                             }}
-                            className={`p-3.5 rounded-2xl border transition-all ${
+                            className={`p-3.5 rounded-2xl border transition ${
                               !hasEnough
                                 ? "bg-sx-subtle border-sx-border opacity-60 cursor-not-allowed"
                                 : paymentMethod === "wallet"
@@ -1286,7 +1286,7 @@ export default function TournamentsPage() {
                       {/* Option 2: M-Pesa STK Push */}
                       <div
                         onClick={() => setPaymentMethod("mpesa_stk")}
-                        className={`p-3.5 rounded-2xl border transition-all cursor-pointer ${
+                        className={`p-3.5 rounded-2xl border transition cursor-pointer ${
                           paymentMethod === "mpesa_stk"
                             ? "bg-sx-amber-tint border-amber-500 ring-1 ring-amber-500/40 shadow-md"
                             : "bg-pitch-card border-pitch-border hover:border-sx-border-strong"

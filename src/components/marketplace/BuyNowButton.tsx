@@ -59,7 +59,7 @@ export function BuyNowButton({ listingId, priceFormatted, compact = false }: Buy
       <Button
         variant="gold"
         size="sm"
-        className="font-bold text-xs whitespace-nowrap px-3.5 py-2.5 shadow-md shadow-amber-500/10 active:scale-95 transition-all"
+        className="font-bold text-xs whitespace-nowrap px-3.5 py-2.5 shadow-md shadow-amber-500/10 active:scale-95 transition"
         onClick={handleBuyNow}
         isLoading={loading}
       >

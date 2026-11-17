@@ -510,7 +510,7 @@ export default function EditListingPage() {
                 <button
                   type="button"
                   onClick={() => setPrice("2500")}
-                  className={`text-[10px] px-2 py-0.5 rounded border transition-all ${
+                  className={`text-[10px] px-2 py-0.5 rounded border transition ${
                     price === "2500"
                       ? "bg-sx-contrast text-sx-contrast-fg font-bold border-sx-contrast"
                       : "bg-pitch-card border-pitch-border text-sx-ink-soft hover:border-amber-400/50"
@@ -521,7 +521,7 @@ export default function EditListingPage() {
                 <button
                   type="button"
                   onClick={() => setPrice("4500")}
-                  className={`text-[10px] px-2 py-0.5 rounded border transition-all ${
+                  className={`text-[10px] px-2 py-0.5 rounded border transition ${
                     price === "4500"
                       ? "bg-sx-contrast text-sx-contrast-fg font-bold border-sx-contrast"
                       : "bg-pitch-card border-pitch-border text-sx-ink-soft hover:border-amber-400/50"
@@ -707,7 +707,7 @@ export default function EditListingPage() {
               onDragOver={handleDragOver}
               onDragLeave={handleDragLeave}
               onClick={() => fileInputRef.current?.click()}
-              className={`p-6 sm:p-8 rounded-2xl border-2 border-dashed text-center cursor-pointer transition-all duration-200 flex flex-col items-center justify-center gap-2 ${
+              className={`p-6 sm:p-8 rounded-2xl border-2 border-dashed text-center cursor-pointer transition duration-200 flex flex-col items-center justify-center gap-2 ${
                 isDragOver
                   ? "border-emerald-500 bg-sx-green-tint"
                   : "border-sx-border-strong hover:border-emerald-500/60 bg-sx-subtle hover:bg-sx-subtle"

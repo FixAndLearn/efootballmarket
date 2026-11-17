@@ -64,7 +64,7 @@ export function CompareButton({ listing, variant = "icon" }: CompareButtonProps)
           : "Add to Compare"
       }
       aria-label={active ? "Remove squad from comparison" : "Add squad to comparison"}
-      className={`h-7 px-2 rounded-full backdrop-blur-md border text-[10.5px] font-bold inline-flex items-center gap-1 transition-all cursor-pointer ${
+      className={`h-7 px-2 rounded-full backdrop-blur-md border text-[10.5px] font-bold inline-flex items-center gap-1 transition cursor-pointer ${
         limitFlash
           ? "bg-amber-500/95 border-amber-300 text-slate-950"
           : active

@@ -177,7 +177,7 @@ export function NewsFeedClient({
                 key={cat.id}
                 type="button"
                 onClick={() => setActiveCategory(cat.id)}
-                className={`inline-flex items-center justify-center gap-1.5 h-9 px-3.5 rounded-full text-xs font-semibold whitespace-nowrap transition-all border cursor-pointer ${
+                className={`inline-flex items-center justify-center gap-1.5 h-9 px-3.5 rounded-full text-xs font-semibold whitespace-nowrap transition border cursor-pointer ${
                   active
                     ? "bg-sx-green text-white border-sx-green shadow-sm"
                     : "bg-sx-subtle border-sx-border text-sx-ink hover:border-sx-border-strong"
@@ -229,7 +229,7 @@ export function NewsFeedClient({
           {featuredArticle && (
             <Link
               href={`/news/${featuredArticle.slug}`}
-              className="block group rounded-2xl bg-sx-subtle border border-sx-border hover:border-sx-green-border overflow-hidden transition-all shadow-sm hover:shadow-md"
+              className="block group rounded-2xl bg-sx-subtle border border-sx-border hover:border-sx-green-border overflow-hidden transition shadow-sm hover:shadow-md"
             >
               <article className="grid grid-cols-1 lg:grid-cols-12">
                 {featuredArticle.cover_image_url && (
@@ -337,7 +337,7 @@ export function NewsFeedClient({
                     <Link
                       key={post.id}
                       href={`/news/${post.slug}`}
-                      className="group rounded-xl bg-sx-subtle border border-sx-border hover:border-sx-amber-border p-4 sm:p-5 flex flex-col justify-between gap-4 transition-all"
+                      className="group rounded-xl bg-sx-subtle border border-sx-border hover:border-sx-amber-border p-4 sm:p-5 flex flex-col justify-between gap-4 transition"
                     >
                       <div className="space-y-2.5">
                         <div className="flex items-center justify-between gap-2 text-[11px]">
@@ -391,7 +391,7 @@ export function NewsFeedClient({
                     <Link
                       key={article.id}
                       href={`/news/${article.slug}`}
-                      className="group rounded-xl bg-sx-subtle border border-sx-border hover:border-sx-green-border hover:-translate-y-0.5 overflow-hidden flex flex-col justify-between transition-all shadow-sm hover:shadow-md"
+                      className="group rounded-xl bg-sx-subtle border border-sx-border hover:border-sx-green-border hover:-translate-y-0.5 overflow-hidden flex flex-col justify-between transition shadow-sm hover:shadow-md"
                     >
                       <article className="flex flex-col justify-between h-full">
                         <div>

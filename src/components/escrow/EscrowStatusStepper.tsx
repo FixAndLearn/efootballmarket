@@ -77,7 +77,7 @@ export function EscrowStatusStepper({ state }: EscrowStatusStepperProps) {
         {/* Connecting line */}
         <div className="absolute top-1/2 left-0 right-0 -translate-y-1/2 h-0.5 bg-sx-stone z-0" />
         <div
-          className="absolute top-1/2 left-0 -translate-y-1/2 h-0.5 bg-emerald-500 z-0 transition-all duration-500"
+          className="absolute top-1/2 left-0 -translate-y-1/2 h-0.5 bg-emerald-500 z-0 transition duration-500"
           style={{ width: `${(currentStepIndex / (steps.length - 1)) * 100}%` }}
         />
 
@@ -88,7 +88,7 @@ export function EscrowStatusStepper({ state }: EscrowStatusStepperProps) {
           return (
             <div key={step.id} className="relative z-10 flex flex-col items-center group">
               <div
-                className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-bold transition-all shadow-md ${
+                className={`w-7 h-7 sm:w-8 sm:h-8 rounded-full flex items-center justify-center text-xs font-bold transition shadow-md ${
                   isDone
                     ? "bg-sx-green text-white"
                     : isCurrent

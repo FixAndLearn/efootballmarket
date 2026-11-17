@@ -158,7 +158,7 @@ export function ChatSellerWhatsAppButton({
             ? "Seller notified on phone"
             : `Ping ${safeHandle} to check availability`
         }
-        className={`w-8 h-8 rounded-full bg-sx-green-tint border border-sx-green-border text-sx-green-text flex items-center justify-center transition-all shrink-0 cursor-pointer ${className}`}
+        className={`w-8 h-8 rounded-full bg-sx-green-tint border border-sx-green-border text-sx-green-text flex items-center justify-center transition shrink-0 cursor-pointer ${className}`}
       >
         {sending ? (
           <Loader2 className="w-4 h-4 animate-spin" />

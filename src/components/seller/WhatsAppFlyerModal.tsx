@@ -266,7 +266,7 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
             <a
               href={downloadUrl}
               download={`efootball_squad_${listing.id.slice(0, 8)}.png`}
-              className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sx-green hover:bg-sx-green-hover text-white font-bold text-xs shadow-lg transition-all"
+              className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sx-green hover:bg-sx-green-hover text-white font-bold text-xs shadow-lg transition"
             >
               <Download className="w-4 h-4" />
               <span>Download Poster Image</span>
@@ -277,7 +277,7 @@ export function WhatsAppFlyerModal({ listing, isOpen, onClose }: Props) {
             href={`https://api.whatsapp.com/send?text=${encodeURIComponent(viralText)}`}
             target="_blank"
             rel="noopener noreferrer"
-            className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sx-green hover:bg-sx-green-hover text-white font-bold text-xs shadow-lg transition-all"
+            className="w-full sm:flex-1 inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sx-green hover:bg-sx-green-hover text-white font-bold text-xs shadow-lg transition"
           >
             <MessageCircle className="w-4 h-4 fill-white" />
             <span>Share Directly to WhatsApp</span>

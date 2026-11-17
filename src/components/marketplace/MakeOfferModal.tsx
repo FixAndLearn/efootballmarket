@@ -238,7 +238,7 @@ export function MakeOfferModal({
                   href={submittedData.whatsappUrl}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs transition-all shadow-lg active:scale-95"
+                  className="w-full inline-flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-emerald-700 hover:bg-emerald-600 text-white font-bold text-xs transition shadow-lg active:scale-95"
                 >
                   <MessageCircle className="w-4 h-4" />
                   <span>Send Courtesy WhatsApp Ping (Optional)</span>
@@ -285,7 +285,7 @@ export function MakeOfferModal({
                       key={pct}
                       type="button"
                       onClick={() => handlePresetClick(pct)}
-                      className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all flex flex-col items-center justify-center gap-0.5 ${
+                      className={`py-2 px-2 rounded-xl text-xs font-semibold border transition flex flex-col items-center justify-center gap-0.5 ${
                         selectedPreset === pct
                           ? "bg-sx-amber-tint border-amber-400 text-sx-amber-text shadow-md shadow-amber-500/10"
                           : "bg-pitch-card border-pitch-border text-sx-ink-soft hover:bg-pitch-surface hover:text-sx-ink"
@@ -301,7 +301,7 @@ export function MakeOfferModal({
                   <button
                     type="button"
                     onClick={() => setSelectedPreset("custom")}
-                    className={`py-2 px-2 rounded-xl text-xs font-semibold border transition-all flex flex-col items-center justify-center gap-0.5 ${
+                    className={`py-2 px-2 rounded-xl text-xs font-semibold border transition flex flex-col items-center justify-center gap-0.5 ${
                       selectedPreset === "custom"
                         ? "bg-sx-amber-tint border-amber-400 text-sx-amber-text shadow-md shadow-amber-500/10"
                         : "bg-pitch-card border-pitch-border text-sx-ink-soft hover:bg-pitch-surface hover:text-sx-ink"

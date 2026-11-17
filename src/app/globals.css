@@ -134,12 +134,20 @@ html[data-theme="dark"] {
     font-variant-numeric: tabular-nums;
   }
 
+  /* Keyboard focus must be visible on every interactive control. Inputs and
+     textareas were previously missing, so keyboard users lost their place in
+     checkout, escrow and dispute forms. */
   a:focus-visible,
   button:focus-visible,
   select:focus-visible,
-  summary:focus-visible {
+  summary:focus-visible,
+  input:focus-visible,
+  textarea:focus-visible,
+  [role="button"]:focus-visible,
+  [tabindex]:not([tabindex="-1"]):focus-visible {
     outline: 2px solid var(--sx-green-text);
     outline-offset: 2px;
+    border-radius: 4px;
   }
 }
 
@@ -159,14 +167,15 @@ html[data-theme="dark"] {
 }
 
 .sx-card-lift {
-  transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1),
-    border-color 180ms ease,
-    box-shadow 180ms ease;
+  transition: transform 220ms cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 220ms ease,
+    box-shadow 220ms ease;
 }
 
+/* Elevation now comes from the shadow-raised -> shadow-floating pair on the
+   element itself, so the hover transform only has to supply the lift. */
 .sx-card-lift:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 10px 26px -8px rgba(0, 0, 0, 0.18);
+  transform: translateY(-3px);
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -177,6 +186,15 @@ html[data-theme="dark"] {
   .sx-card-lift:hover {
     transition: none;
     transform: none;
+  }
+  /* Respect the OS setting everywhere, not only on card hover. */
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
   }
 }
 

@@ -505,7 +505,7 @@ export function SellerDashboardView({
             </div>
             <div className="w-full h-2 rounded-full bg-sx-stone overflow-hidden border border-sx-border">
               <div
-                className="h-full bg-sx-green transition-all duration-500 rounded-full"
+                className="h-full bg-sx-green transition duration-500 rounded-full"
                 style={{ width: `${progressPercent}%` }}
               />
             </div>
