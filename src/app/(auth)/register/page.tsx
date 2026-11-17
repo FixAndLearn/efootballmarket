@@ -140,7 +140,7 @@ function RegisterForm() {
     const nameParts = fullName.trim().split(/\s+/);
     const firstName = nameParts[0] || "Trader";
     const lastName = nameParts.slice(1).join(" ") || "";
-    const cleanUsername = username.toLowerCase().trim().replace(/[^a-z0-9_]/g, "");
+    const cleanUsername = username.toLowerCase().trim().replace(/[^a-z0-9_-]/g, "");
 
     if (cleanUsername.length < 3) {
       setError("Username must be at least 3 characters (letters, numbers, underscores).");
@@ -277,7 +277,7 @@ function RegisterForm() {
       }
 
       const nameParts = fullName.trim().split(/\s+/);
-      const cleanUsername = username.toLowerCase().trim().replace(/[^a-z0-9_]/g, "");
+      const cleanUsername = username.toLowerCase().trim().replace(/[^a-z0-9_-]/g, "");
       const normPhone = phoneNumber ? normalizePhoneNumber(phoneNumber) : null;
 
       await syncProfileAndNavigate({

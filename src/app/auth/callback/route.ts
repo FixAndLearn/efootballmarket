@@ -71,13 +71,18 @@ export async function GET(request: NextRequest) {
         const nameParts = fullName.split(" ");
         const firstName = metadata.first_name || nameParts[0] || "Trader";
         const lastName = metadata.last_name || nameParts.slice(1).join(" ") || "";
-        const baseUsername = (
+        // A 1-2 character email local part (e.g. "a@x.com") must not become a
+        // handle: profiles_username_charset_check requires 3-24 characters.
+        const rawHandle = (
           metadata.user_name ||
           user.email?.split("@")[0] ||
-          `trader_${user.id.slice(0, 6)}`
+          ""
         )
           .toLowerCase()
-          .replace(/[^a-z0-9_]/g, "");
+          .replace(/[^a-z0-9_-]/g, "")
+          .slice(0, 24);
+        const baseUsername =
+          rawHandle.length >= 3 ? rawHandle : `trader_${user.id.slice(0, 8)}`;
 
         await supabase.from("profiles").upsert(
           {

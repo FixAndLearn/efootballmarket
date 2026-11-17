@@ -45,10 +45,10 @@ export async function POST(req: NextRequest) {
       `trader_${user.id.slice(0, 6)}`
     )
       .toLowerCase()
-      .replace(/[^a-z0-9_]/g, "")
-      .slice(0, 28);
+      .replace(/[^a-z0-9_-]/g, "")
+      .slice(0, 24);
 
-    const baseUsername = rawUsername.length >= 3 ? rawUsername : `trader_${user.id.slice(0, 6)}`;
+    const baseUsername = rawUsername.length >= 3 ? rawUsername : `trader_${user.id.slice(0, 8)}`;
     const firstName = (input.firstName || meta.first_name || "Trader").trim();
     const lastName = (input.lastName ?? meta.last_name ?? "").trim();
     const rawPhone = (input.phoneNumber || meta.phone_number || "").trim();
@@ -73,7 +73,9 @@ export async function POST(req: NextRequest) {
         .maybeSingle();
 
       if (taken && taken.id !== user.id) {
-        finalUsername = `${baseUsername.slice(0, 22)}_${user.id.slice(0, 4)}`;
+        // Keep the total within the 24 character limit enforced by
+        // profiles_username_charset_check.
+        finalUsername = `${baseUsername.slice(0, 19)}_${user.id.slice(0, 4)}`;
       }
 
       await client.from("profiles").upsert(

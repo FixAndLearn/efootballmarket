@@ -116,9 +116,20 @@ function ProfileContent() {
       return;
     }
 
+    const cleanUsername = username.toLowerCase().trim().replace(/[^a-z0-9_-]/g, "");
+
+    // The public storefront is keyed by username, so an empty or 1-2 character
+    // handle would squat the blank slug and break the storefront link forever.
+    if (cleanUsername.length < 3 || cleanUsername.length > 24) {
+      setProfileError(
+        "Username must be 3 to 24 characters, using letters, numbers, underscores or hyphens."
+      );
+      setSavingProfile(false);
+      return;
+    }
+
     try {
       const supabase = createClient();
-      const cleanUsername = username.toLowerCase().trim().replace(/[^a-z0-9_]/g, "");
 
       const { error: upsertErr } = await supabase.from("profiles").upsert({
         id: userId,

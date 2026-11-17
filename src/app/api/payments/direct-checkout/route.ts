@@ -156,12 +156,13 @@ export async function POST(req: NextRequest) {
           "trader"
         )
           .toLowerCase()
-          .replace(/[^a-z0-9_]/g, "")
+          .replace(/[^a-z0-9_-]/g, "")
           .slice(0, 16);
 
         await adminSupabase.from("profiles").upsert(
           {
             id: buyerId,
+            // 16 + "_" + 6 = 23 characters, inside the 24 character limit.
             username: `${baseName || "trader"}_${cleanId}`,
             first_name: buyerName?.trim() || user.user_metadata?.first_name || "Trader",
             phone_number: internationalPhone,
