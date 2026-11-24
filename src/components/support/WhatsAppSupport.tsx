@@ -87,3 +87,83 @@ export function WhatsAppChannelButton({
     </a>
   );
 }
+
+/**
+ * Full-width "join the channel" banner.
+ *
+ * Deliberately NOT another outline pill: the hero already carries six filter
+ * pills, a search field and two CTAs, and a seventh chip would read as
+ * decoration. This is a distinct, self-contained surface with room for the
+ * reason to join and a single obvious action.
+ */
+export function WhatsAppChannelBanner({
+  variant = "default",
+  className = "",
+}: {
+  variant?: "default" | "compact";
+  className?: string;
+}) {
+  const compact = variant === "compact";
+
+  return (
+    <div
+      className={`relative overflow-hidden rounded-2xl border border-sx-green-border bg-sx-green-tint ${
+        compact ? "p-3.5" : "p-4 sm:p-5"
+      } ${className}`}
+    >
+      {/* Soft brand wash, purely decorative */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full bg-sx-green/10 blur-2xl"
+      />
+
+      <div className="relative flex items-center gap-3.5">
+        <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full bg-sx-green text-white shadow-sm">
+          <WhatsAppIcon className="h-5 w-5" />
+        </span>
+
+        <div className="min-w-0 flex-1">
+          <p
+            className={`font-bold text-sx-ink leading-tight ${
+              compact ? "text-xs" : "text-sm sm:text-base"
+            }`}
+          >
+            Join the eFootballMarket WhatsApp Channel
+          </p>
+          <p
+            className={`text-sx-muted leading-snug ${
+              compact ? "text-[11px]" : "text-[11px] sm:text-xs"
+            } mt-0.5`}
+          >
+            New squad drops, price cuts and restock alerts&nbsp;&mdash; straight to
+            WhatsApp. No group chat, no spam, leave anytime.
+          </p>
+        </div>
+
+        <a
+          href={SUPPORT_WHATSAPP_CHANNEL_URL}
+          target="_blank"
+          rel="noopener noreferrer"
+          className={`shrink-0 inline-flex items-center justify-center gap-1.5 rounded-full bg-sx-green text-white font-bold hover:bg-sx-green-hover transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sx-green ${
+            compact ? "h-8 px-3 text-[11px]" : "h-9 sm:h-10 px-3.5 sm:px-4 text-xs"
+          }`}
+        >
+          <span className="hidden sm:inline">Follow Channel</span>
+          <span className="sm:hidden">Follow</span>
+          <svg
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="currentColor"
+            strokeWidth="2.5"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            aria-hidden="true"
+            className="h-3.5 w-3.5"
+          >
+            <path d="M5 12h14M13 6l6 6-6 6" />
+          </svg>
+        </a>
+      </div>
+    </div>
+  );
+}

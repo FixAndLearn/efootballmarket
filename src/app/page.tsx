@@ -1,7 +1,10 @@
 import React, { Suspense } from "react";
 import { Metadata } from "next";
 import Link from "next/link";
-import { WhatsAppIcon } from "@/components/support/WhatsAppSupport";
+import {
+  WhatsAppIcon,
+  WhatsAppChannelBanner,
+} from "@/components/support/WhatsAppSupport";
 import Image from "next/image";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
@@ -508,6 +511,9 @@ export default async function HomePage() {
                     Detailed Escrow Info
                   </DetailTabLink>
                 </div>
+
+                {/* Channel invite: the hero's single growth action. */}
+                <WhatsAppChannelBanner />
               </div>
             </div>
 
@@ -576,6 +582,8 @@ export default async function HomePage() {
               <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
+
+          <WhatsAppChannelBanner variant="compact" />
 
           {listings.length > 0 ? (
             <HomeSquadCatalog listings={listings} totalSquads={totalSquads} />

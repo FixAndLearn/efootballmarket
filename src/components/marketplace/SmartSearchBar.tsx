@@ -319,7 +319,7 @@ export function SmartSearchBar({
               autoComplete="off"
               aria-label="Search squads by player, OVR, or coach"
               placeholder="Search by player (Gullit, Messi), OVR (3200), or coach..."
-              className="w-full h-12 pl-10 pr-9 rounded-xl bg-sx-canvas border border-sx-border-strong text-sm text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-sx-green transition-colors"
+              className="w-full h-12 pl-10 pr-12 sm:pr-24 rounded-xl bg-sx-canvas border border-sx-border-strong text-sm text-sx-ink placeholder:text-sx-muted focus:outline-none focus:border-sx-green transition-colors"
             />
             {query && (
               <button
@@ -329,15 +329,26 @@ export function SmartSearchBar({
                   inputRef.current?.focus();
                 }}
                 aria-label="Clear search"
-                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded text-sx-muted hover:text-sx-ink cursor-pointer"
+                className="absolute right-3 top-1/2 -translate-y-1/2 p-1 rounded text-sx-muted hover:text-sx-ink cursor-pointer sm:right-[5.5rem]"
               >
                 <X className="w-3.5 h-3.5" />
               </button>
             )}
+            {/*
+              Search lives INSIDE the field. It used to be a separate full-width
+              primary button stacked directly above the "Browse Squads" primary
+              button, which on a phone read as two identical green blocks and
+              buried the actual catalogue behind a second call to action.
+            */}
+            <button
+              type="submit"
+              aria-label="Search squads"
+              className="absolute right-1.5 top-1/2 -translate-y-1/2 inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-sx-green px-3 text-xs font-bold text-white transition-colors hover:bg-sx-green-hover focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-sx-green"
+            >
+              <Search className="w-3.5 h-3.5 sm:hidden" />
+              <span className="hidden sm:inline">Search</span>
+            </button>
           </div>
-          <Button type="submit" variant="primary" size="lg" className="h-12 shrink-0">
-            <span>Search</span>
-          </Button>
         </form>
       ) : variant === "mobile" ? (
         <form
