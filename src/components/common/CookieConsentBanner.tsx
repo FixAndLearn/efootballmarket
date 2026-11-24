@@ -34,6 +34,9 @@ export function CookieConsentBanner() {
     updateGoogleConsent(newConsent);
     try {
       localStorage.setItem("efootball_cookie_consent", JSON.stringify(newConsent));
+    // Let other fixed-position widgets re-measure: while this banner is on
+    // screen nothing else may occupy the space it covers.
+    window.dispatchEvent(new CustomEvent("efm:cookie-consent-settled"));
     } catch {
       // storage disabled
     }

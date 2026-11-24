@@ -65,12 +65,31 @@ export function SupportHubWidget() {
 
   const isListingDetail = pathname?.startsWith("/listings/");
 
+  // The cookie banner is full-width on phones and sits in this widget's lane.
+  // Rather than fight for the corner, step aside until consent is recorded --
+  // a first-time visitor gets one unobstructed decision, then support returns.
+  const [cookieSettled, setCookieSettled] = useState(false);
+
+  useEffect(() => {
+    const check = () => {
+      try {
+        setCookieSettled(Boolean(localStorage.getItem("efootball_cookie_consent")));
+      } catch {
+        setCookieSettled(true);
+      }
+    };
+
+    check();
+    window.addEventListener("efm:cookie-consent-settled", check);
+    return () => window.removeEventListener("efm:cookie-consent-settled", check);
+  }, []);
+
   return (
     <div
       ref={rootRef}
       className={`fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] md:bottom-5 right-3 sm:right-4 z-40 ${
         isListingDetail ? "hidden lg:block" : ""
-      }`}
+      } ${cookieSettled ? "" : "max-md:hidden"}`}
     >
       {open && (
         <div
