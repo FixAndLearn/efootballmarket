@@ -100,6 +100,29 @@ export async function POST(request: NextRequest) {
       personalMessage: safeMessage || undefined,
     });
 
+    // A missing mail provider is an outage on our side, not a bad request from
+    // the user. Previously this returned 500 for every invitation ever sent,
+    // because RESEND_API_KEY is configured-but-empty. Report it honestly as
+    // unavailable and hand back the link so the flow is still completable.
+    const deliveryUnavailable =
+      !result.success &&
+      typeof result.error === "string" &&
+      /not configured|RESEND_API_KEY/i.test(result.error);
+
+    if (deliveryUnavailable) {
+      console.warn("[invite] email provider unavailable; returning shareable link");
+      return NextResponse.json(
+        {
+          success: false,
+          delivery: "unavailable",
+          inviteUrl,
+          message:
+            "Email delivery is temporarily unavailable. Share your invite link directly instead.",
+        },
+        { status: 503 }
+      );
+    }
+
     if (result.error) {
       return NextResponse.json(
         { error: result.error || "Failed to deliver invitation email." },
@@ -109,6 +132,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       success: true,
+      delivery: "email",
       message: `Invitation successfully sent to ${parsed.data.toEmail}!`,
       inviteUrl,
     });

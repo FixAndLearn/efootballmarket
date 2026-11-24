@@ -233,3 +233,77 @@ export async function sendUserInvitationEmail(params: {
   });
 }
 
+
+/**
+ * Admin operations alert.
+ *
+ * Rendered as email because every push channel (Meta Cloud API, CallMeBot,
+ * webhook, SMS) requires credentials this deployment does not hold. Email
+ * needs one key, has no per-message cost, and lands on a phone instantly via
+ * the mail app -- so it is the only path that actually reaches a human.
+ *
+ * Deliberately plain: a monospace block that survives dark mode, small
+ * screens, and text-only clients. Tables and gradients are for customers;
+ * an operator needs to read the amount and the order number and move on.
+ */
+export async function sendAdminAlertEmail(params: {
+  toEmail: string;
+  subject: string;
+  body: string;
+  severity?: "info" | "action";
+}) {
+  const isAction = params.severity === "action";
+  const accent = isAction ? "#b91c1c" : "#047857";
+  const accentSoft = isAction ? "#fee2e2" : "#d1fae5";
+
+  const safeBody = params.body
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+
+  const html = `
+  <!DOCTYPE html>
+  <html>
+    <head>
+      <meta charset="utf-8" />
+      <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <title>${params.subject}</title>
+    </head>
+    <body style="margin:0;padding:0;background-color:#0b1120;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;">
+      <table width="100%" cellpadding="0" cellspacing="0" style="background-color:#0b1120;padding:24px 12px;">
+        <tr>
+          <td align="center">
+            <table width="100%" cellpadding="0" cellspacing="0" style="max-width:560px;background-color:#111c33;border:1px solid #1e293b;border-radius:14px;overflow:hidden;">
+              <tr>
+                <td style="padding:16px 20px;background-color:${accent};">
+                  <p style="margin:0;font-size:13px;font-weight:800;color:#ffffff;letter-spacing:0.4px;">
+                    ${isAction ? "ACTION REQUIRED" : "eFootballMarket"} &middot; Admin Alert
+                  </p>
+                </td>
+              </tr>
+              <tr>
+                <td style="padding:20px;">
+                  <h1 style="margin:0 0 14px;font-size:17px;line-height:1.35;color:#f8fafc;font-weight:700;">
+                    ${params.subject}
+                  </h1>
+                  <pre style="margin:0;padding:14px;background-color:${accentSoft};border-radius:10px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;line-height:1.65;color:#0f172a;white-space:pre-wrap;word-break:break-word;">${safeBody}</pre>
+                  <p style="margin:16px 0 0;font-size:11px;line-height:1.6;color:#64748b;">
+                    Sent automatically by eFootballMarket. Reply to this message to reach the
+                    operator who receives it.
+                  </p>
+                </td>
+              </tr>
+            </table>
+          </td>
+        </tr>
+      </table>
+    </body>
+  </html>`;
+
+  return sendTransactionalEmail({
+    to: params.toEmail,
+    subject: `${isAction ? "[ACTION] " : ""}${params.subject}`,
+    html,
+    text: `${params.subject}\n\n${params.body}`,
+  });
+}

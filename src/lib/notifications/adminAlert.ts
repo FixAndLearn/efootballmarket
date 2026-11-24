@@ -7,6 +7,7 @@ import { formatDisplayPhone, formatInternationalPhone, formatWhatsAppPhone } fro
 import { maskPhone, redactAccidentalPii } from "@/lib/security/publicSanitizer";
 import { isMetaCloudApiConfigured, sendWhatsAppMessage } from "@/lib/whatsapp/cloudApi";
 import { sendSmsAlert } from "./smsAlert";
+import { sendAdminAlertEmail } from "./emailAlert";
 
 import {
   SUPPORT_PHONE_LOCAL as ADMIN_PHONE_NUMBER,
@@ -303,7 +304,34 @@ export async function dispatchAdminWhatsAppAlert(payload: AdminAlertPayload): Pr
     }
   }
 
-  // 4. Fallback High-Priority SMS to Brian Okibo for Financial Events (Payments / Disputes / Withdrawals)
+
+  // 4. Email fallback. This is the channel that actually works today: every
+  // push channel above needs credentials this deployment does not hold, so
+  // without this step a "dispatched" alert reached nobody but the server log.
+  // Placed last so a future configured channel still takes precedence, and
+  // limited to a single recipient to avoid leaking order details to a list.
+  const adminEmail = (process.env.ADMIN_EMAIL || ADMIN_EMAIL).trim();
+  if (adminEmail && !adminEmail.includes("placeholder")) {
+    try {
+      const severity =
+        payload.eventType.includes("DISPUTE") || payload.eventType === "WITHDRAWAL_REQUESTED"
+          ? ("action" as const)
+          : ("info" as const);
+
+      const subject = `${payload.eventType.replace(/_/g, " ")}${payload.orderNumber ? ` - ${payload.orderNumber}` : ""}`;
+
+      await sendAdminAlertEmail({
+        toEmail: adminEmail,
+        subject,
+        body: alertText,
+        severity,
+      });
+    } catch (err: any) {
+      console.warn("Admin alert email dispatch note:", err?.message);
+    }
+  }
+
+  // 5. Fallback High-Priority SMS to Brian Okibo for Financial Events (Payments / Disputes / Withdrawals)
   if (["PAYMENT_RECEIVED", "DISPUTE_OPENED", "POST_RELEASE_DISPUTE_OPENED", "WITHDRAWAL_REQUESTED"].includes(payload.eventType)) {
     try {
       const smsSummary = `[eFootballMarket] ${payload.eventType}: ${payload.orderNumber || payload.listingTitle || ""} KES ${payload.amount || ""}. Check WhatsApp/Admin.`;

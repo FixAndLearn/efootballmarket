@@ -73,6 +73,16 @@ function InviteContent() {
       });
 
       const data = await res.json();
+
+      // Provider outage: surface the link so the invite still happens.
+      if (!res.ok && data?.delivery === "unavailable" && data?.inviteUrl) {
+        setStatusMessage({
+          type: "error",
+          text: `${data.message} Link: ${data.inviteUrl}`,
+        });
+        return;
+      }
+
       if (!res.ok) {
         throw new Error(data.error || "Failed to dispatch email invite.");
       }
