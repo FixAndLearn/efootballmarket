@@ -14,7 +14,7 @@ export const PUBLIC_SELLER_PROFILE_SELECT =
  * code must never use `.select("*")` on `public.profiles`.
  */
 export const SELF_PROFILE_SELECT =
-  `${PUBLIC_SELLER_PROFILE_SELECT}, first_name, last_name, phone_number, email, whatsapp_number, telegram_chat_id, telegram_username, telegram_phone, available_balance, escrow_balance, deleted_at`;
+  `${PUBLIC_SELLER_PROFILE_SELECT}, first_name, last_name, phone_number, email, whatsapp_number, available_balance, escrow_balance, deleted_at`;
 
 /**
  * Safe public columns on `public.tournament_participants`.

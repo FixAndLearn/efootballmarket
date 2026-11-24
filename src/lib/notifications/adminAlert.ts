@@ -238,10 +238,11 @@ export function getAdminWhatsAppAlertUrl(payload: AdminAlertPayload): string {
 
 /**
  * Dispatches automated real-time alerts to Brian Okibo's WhatsApp (+254105472373).
- * Automatically delivers via:
- * 1. CallMeBot WhatsApp API (Free automated WhatsApp bot to Brian's personal WhatsApp)
- * 2. WhatsApp Webhook / External Notification Hub (if configured)
- * 3. SMS Alert (Africa's Talking / Advanta SMS)
+ * Automatically delivers via, in order:
+ * 1. Meta WhatsApp Cloud API (official Graph API)
+ * 2. CallMeBot WhatsApp API (automated WhatsApp message to Brian's handset)
+ * 3. WhatsApp Webhook / External Notification Hub (if configured)
+ * 4. SMS Alert (Africa's Talking / Advanta SMS), financial events only
  */
 export async function dispatchAdminWhatsAppAlert(payload: AdminAlertPayload): Promise<void> {
   const alertText = formatAdminWhatsAppMessage(payload);
@@ -266,26 +267,7 @@ export async function dispatchAdminWhatsAppAlert(payload: AdminAlertPayload): Pr
     }
   }
 
-  // 2. Automated Telegram Bot Dispatch (uses TELEGRAM_BOT_TOKEN + TELEGRAM_CHAT_ID on Vercel)
-  const tgToken = process.env.TELEGRAM_BOT_TOKEN?.trim();
-  const tgChatId = process.env.TELEGRAM_CHAT_ID?.trim();
-  if (tgToken && tgChatId) {
-    try {
-      await fetch(`https://api.telegram.org/bot${tgToken}/sendMessage`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          chat_id: tgChatId,
-          text: alertText,
-          disable_web_page_preview: true,
-        }),
-      });
-    } catch (tgErr: any) {
-      console.warn("Telegram admin alert dispatch note:", tgErr?.message);
-    }
-  }
-
-  // 3. Automated WhatsApp Dispatch via CallMeBot API (Instant WhatsApp message to 254105472373)
+  // 2. Automated WhatsApp Dispatch via CallMeBot API (Instant WhatsApp message to 254105472373)
   const callmebotKey = process.env.CALLMEBOT_API_KEY || process.env.WHATSAPP_BOT_API_KEY;
   if (callmebotKey) {
     try {
@@ -299,7 +281,7 @@ export async function dispatchAdminWhatsAppAlert(payload: AdminAlertPayload): Pr
     }
   }
 
-  // 4. Automated Webhook (Zapier, Make, Wassenger, or custom WhatsApp gateway)
+  // 3. Automated Webhook (Zapier, Make, Wassenger, or custom WhatsApp gateway)
   const webhookUrl = process.env.ADMIN_ALERT_WEBHOOK_URL || process.env.WHATSAPP_WEBHOOK_URL;
   if (webhookUrl) {
     try {
@@ -321,7 +303,7 @@ export async function dispatchAdminWhatsAppAlert(payload: AdminAlertPayload): Pr
     }
   }
 
-  // 5. Fallback High-Priority SMS to Brian Okibo for Financial Events (Payments / Disputes / Withdrawals)
+  // 4. Fallback High-Priority SMS to Brian Okibo for Financial Events (Payments / Disputes / Withdrawals)
   if (["PAYMENT_RECEIVED", "DISPUTE_OPENED", "POST_RELEASE_DISPUTE_OPENED", "WITHDRAWAL_REQUESTED"].includes(payload.eventType)) {
     try {
       const smsSummary = `[eFootballMarket] ${payload.eventType}: ${payload.orderNumber || payload.listingTitle || ""} KES ${payload.amount || ""}. Check WhatsApp/Admin.`;
