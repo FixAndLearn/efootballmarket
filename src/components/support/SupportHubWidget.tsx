@@ -46,6 +46,25 @@ export function SupportHubWidget() {
     };
   }, [open]);
 
+  // The cookie banner is full-width on phones and sits in this widget's lane.
+  // Rather than fight for the corner, step aside until consent is recorded --
+  // a first-time visitor gets one unobstructed decision, then support returns.
+  const [cookieSettled, setCookieSettled] = useState(false);
+
+  useEffect(() => {
+    const check = () => {
+      try {
+        setCookieSettled(Boolean(localStorage.getItem("efootball_cookie_consent")));
+      } catch {
+        setCookieSettled(true);
+      }
+    };
+
+    check();
+    window.addEventListener("efm:cookie-consent-settled", check);
+    return () => window.removeEventListener("efm:cookie-consent-settled", check);
+  }, []);
+
   // Hide floating help pill inside Checkout, Order Rooms, Auth forms & Standalone Policy pages
   if (
     isStandaloneDocPath(pathname) ||
@@ -65,24 +84,6 @@ export function SupportHubWidget() {
 
   const isListingDetail = pathname?.startsWith("/listings/");
 
-  // The cookie banner is full-width on phones and sits in this widget's lane.
-  // Rather than fight for the corner, step aside until consent is recorded --
-  // a first-time visitor gets one unobstructed decision, then support returns.
-  const [cookieSettled, setCookieSettled] = useState(false);
-
-  useEffect(() => {
-    const check = () => {
-      try {
-        setCookieSettled(Boolean(localStorage.getItem("efootball_cookie_consent")));
-      } catch {
-        setCookieSettled(true);
-      }
-    };
-
-    check();
-    window.addEventListener("efm:cookie-consent-settled", check);
-    return () => window.removeEventListener("efm:cookie-consent-settled", check);
-  }, []);
 
   return (
     <div
