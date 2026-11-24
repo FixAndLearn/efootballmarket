@@ -2,6 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
+import { WhatsAppIcon } from "@/components/support/WhatsAppSupport";
 import { Logo } from "@/components/brand/Logo";
 import { ArrowLeft, ShieldCheck, X } from "lucide-react";
 
@@ -136,12 +137,12 @@ export function StandaloneDocLayout({
             </a>{" "}
             ·{" "}
             <a
-              href="https://wa.me/254794400365"
+              href="https://wa.me/254105472373"
               target="_blank"
               rel="noopener noreferrer"
               className="underline hover:text-sx-ink"
             >
-              WhatsApp 0794 400 365
+              <WhatsAppIcon className="w-3.5 h-3.5 inline" /> WhatsApp Support
             </a>
           </p>
         </footer>

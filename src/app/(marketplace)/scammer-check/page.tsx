@@ -113,7 +113,7 @@ export default function ScammerCheckPage() {
             </Button>
           </Link>
           <a
-            href="https://wa.me/254794400365?text=Hello%2C%20I%20want%20to%20report%20a%20scam%20incident%20with%20evidence"
+            href="https://wa.me/254105472373?text=Hello%2C%20I%20want%20to%20report%20a%20scam%20incident%20with%20evidence"
             target="_blank"
             rel="noopener noreferrer"
           >

@@ -184,7 +184,7 @@ export function MpesaPaymentModal({
         // retrying a prompt that will never arrive.
         if (res.status === 503 || data?.code === "PROVIDER_NOT_CONFIGURED") {
           throw new Error(
-            "M-Pesa payments are temporarily unavailable. Please contact support on WhatsApp +254 794 400 365 so we can complete your order."
+            "M-Pesa payments are temporarily unavailable. Please contact support on WhatsApp so we can complete your order."
           );
         }
         throw new Error(data.error || "Failed to initiate M-Pesa payment");

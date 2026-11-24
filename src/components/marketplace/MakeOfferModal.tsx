@@ -115,7 +115,7 @@ export function MakeOfferModal({
 
     const norm = normalizePhoneNumber(buyerPhone);
     if (!norm.isValid) {
-      setError("Please provide a valid phone number (e.g. 0794400365 or +254 794 400 365).");
+      setError("Please provide a valid phone number (e.g. 0712345678 or +254 712 345 678).");
       return;
     }
 
@@ -369,7 +369,7 @@ export function MakeOfferModal({
                   </label>
                   <input
                     type="tel"
-                    placeholder="e.g. 0794400365 or +254 794 400 365"
+                    placeholder="e.g. 0712345678 or +254 712 345 678"
                     value={buyerPhone}
                     onChange={(e) => setBuyerPhone(e.target.value)}
                     required

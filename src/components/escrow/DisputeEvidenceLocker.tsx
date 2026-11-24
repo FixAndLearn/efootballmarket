@@ -357,7 +357,7 @@ export function DisputeEvidenceLocker({ order, currentUserId }: DisputeEvidenceL
           Need urgent mediation? Escrow Director Brian Okibo inspects evidence directly on WhatsApp.
         </p>
         <a
-          href={`https://wa.me/254794400365?text=${encodeURIComponent(
+          href={`https://wa.me/254105472373?text=${encodeURIComponent(
             `Hello Brian Okibo, I have uploaded evidence for Order #${order.order_number} (${order.listing?.title || "eFootball Squad"}). Please review the Dispute Evidence Locker.`
           )}`}
           target="_blank"

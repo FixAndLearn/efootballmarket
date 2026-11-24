@@ -771,7 +771,7 @@ export default function TournamentsPage() {
                 </div>
 
                 <a
-                  href={`https://wa.me/254794400365?text=${encodeURIComponent(
+                  href={`https://wa.me/254105472373?text=${encodeURIComponent(
                     `Hello, the final result for "${selectedTourney.title}" records ${selectedTourney.winner_name} as champion. Please confirm the status of the manual prize payout. Published first-place prize: KES ${selectedTourney.first_place_kes}${selectedTourney.second_place_kes > 0 ? `; runner-up prize: KES ${selectedTourney.second_place_kes}` : ""}.`
                   )}`}
                   target="_blank"
@@ -1145,7 +1145,7 @@ export default function TournamentsPage() {
                   )}
 
                   <a
-                    href={`https://wa.me/254794400365?text=${encodeURIComponent(
+                    href={`https://wa.me/254105472373?text=${encodeURIComponent(
                       `Hello Brian Okibo, I registered for "${selectedTourney.title}"! Gamer Tag: ${gamerTag}, Friend ID: ${friendId}. Phone: ${phone}. Payment: ${
                         regResult?.paid_via_wallet
                           ? `Paid via Account Balance (KES ${selectedTourney.entry_fee_kes})`

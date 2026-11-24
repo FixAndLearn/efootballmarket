@@ -1,6 +1,7 @@
 import React, { Suspense } from "react";
 import { Metadata } from "next";
 import Link from "next/link";
+import { WhatsAppIcon } from "@/components/support/WhatsAppSupport";
 import Image from "next/image";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
@@ -395,7 +396,7 @@ export default async function HomePage() {
         logo: "https://www.efootballmarket.co.ke/icon-512.png",
         contactPoint: {
           "@type": "ContactPoint",
-          telephone: "+254-794-400-365",
+          telephone: "+254-105-472-373",
           contactType: "customer support",
           areaServed: "KE",
           availableLanguage: ["en", "sw"],
@@ -866,12 +867,13 @@ export default async function HomePage() {
               <p className="text-xs sm:text-sm text-sx-muted">
                 Every guide and policy opens in a separate reference tab so you never lose your place. Nairobi desk:{" "}
                 <a
-                  href="https://wa.me/254794400365"
+                  href="https://wa.me/254105472373"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="font-bold text-sx-ink underline hover:text-sx-green-text"
+                  className="font-bold text-sx-ink underline hover:text-sx-green-text inline-flex items-center gap-1 align-baseline"
                 >
-                  WhatsApp 0794 400 365
+                  <WhatsAppIcon className="w-3.5 h-3.5 inline" />
+                  <span>WhatsApp</span>
                 </a>{" "}
                 (8 AM – 10 PM EAT).
               </p>

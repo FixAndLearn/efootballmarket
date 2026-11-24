@@ -631,7 +631,7 @@ export default function RegisterTournamentPage() {
             {/* Actions */}
             <div className="flex flex-col sm:flex-row items-center justify-center gap-3 pt-2 max-w-md mx-auto">
               <a
-                href={`https://wa.me/254794400365?text=${encodeURIComponent(
+                href={`https://wa.me/254105472373?text=${encodeURIComponent(
                   `Hello Brian Okibo, ${selectedTourney.entry_fee_kes > 0 ? "my entry payment was confirmed" : "I registered for free"} for "${selectedTourney.title}"!\nGamer Tag: ${gamerTag || profile?.username}\nFriend ID: ${friendId}\nPhone: ${phone}\nPayment: ${
                     regResult?.receipt_number
                       ? `M-Pesa Receipt: ${regResult.receipt_number}`

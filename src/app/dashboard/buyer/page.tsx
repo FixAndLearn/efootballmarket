@@ -189,13 +189,13 @@ export default async function BuyerDashboardPage() {
           <strong className="font-mono text-sx-ink">1572931</strong> or need help verifying a Konami ID?
         </span>
         <a
-          href="https://wa.me/254794400365?text=Hello%20eFootballMarket%20Escrow%20Desk%2C%20I%20need%20help%20with%20my%20buyer%20order."
+          href="https://wa.me/254105472373?text=Hello%20eFootballMarket%20Escrow%20Desk%2C%20I%20need%20help%20with%20my%20buyer%20order."
           target="_blank"
           rel="noopener noreferrer"
           className="inline-flex items-center gap-1.5 font-bold text-sx-green-text hover:underline shrink-0"
         >
           <MessageCircle className="w-4 h-4" />
-          <span>WhatsApp Escrow Desk (+254 794 400 365)</span>
+          <span>WhatsApp Escrow Desk</span>
         </a>
       </div>
     </div>

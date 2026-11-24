@@ -438,7 +438,7 @@ export default function WantedBoardPage() {
                     />
                     <Input
                       label="Your Phone / WhatsApp"
-                      placeholder="e.g. +254 794 400 365"
+                      placeholder="e.g. +254 712 345 678"
                       value={buyerPhone}
                       onChange={(e) => setBuyerPhone(e.target.value)}
                       required

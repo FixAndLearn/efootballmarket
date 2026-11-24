@@ -188,7 +188,7 @@ export function ScammerLookupTool() {
           {/* Report Incident & Appeal Bar */}
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 pt-2 border-t border-sx-border text-xs text-sx-muted">
             <a
-              href={`https://wa.me/254794400365?text=${encodeURIComponent(
+              href={`https://wa.me/254105472373?text=${encodeURIComponent(
                 "Hello eFootballMarket Moderation, I want to submit evidence for a new scam incident report."
               )}`}
               target="_blank"
@@ -292,7 +292,7 @@ export function ScammerLookupTool() {
             />
             <div className="flex flex-wrap items-center justify-between gap-2">
               <a
-                href={`https://wa.me/254794400365?text=${encodeURIComponent(
+                href={`https://wa.me/254105472373?text=${encodeURIComponent(
                   "Hello eFootballMarket Moderation, I submitted an online scam report and want to attach screenshot proof:"
                 )}`}
                 target="_blank"

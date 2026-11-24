@@ -1,6 +1,6 @@
 /**
  * Admin Notification & WhatsApp Automated Dispatcher
- * Directly routes all high-priority platform events to admin support desk at +254 794 400 365.
+ * Directly routes all high-priority platform events to admin support desk at +254 105 472 373.
  */
 
 import { formatDisplayPhone, formatInternationalPhone, formatWhatsAppPhone } from "@/lib/utils/phone";
@@ -8,9 +8,14 @@ import { maskPhone, redactAccidentalPii } from "@/lib/security/publicSanitizer";
 import { isMetaCloudApiConfigured, sendWhatsAppMessage } from "@/lib/whatsapp/cloudApi";
 import { sendSmsAlert } from "./smsAlert";
 
-export const ADMIN_PHONE_NUMBER = "0794400365";
-export const ADMIN_WHATSAPP_NUMBER = "254794400365";
-export const ADMIN_INTERNATIONAL_PHONE = "+254794400365";
+import {
+  SUPPORT_PHONE_LOCAL as ADMIN_PHONE_NUMBER,
+  SUPPORT_WHATSAPP_DIGITS as ADMIN_WHATSAPP_NUMBER,
+  SUPPORT_PHONE_E164 as ADMIN_INTERNATIONAL_PHONE,
+} from "@/lib/constants/support";
+
+// Re-exported under their historical names so existing importers keep working.
+export { ADMIN_PHONE_NUMBER, ADMIN_WHATSAPP_NUMBER, ADMIN_INTERNATIONAL_PHONE };
 export const ADMIN_EMAIL = process.env.ADMIN_EMAIL || "support@efootballmarket.co.ke";
 
 export type AdminEventType =
@@ -224,7 +229,7 @@ export function formatAdminOrderAlertMessage(payload: AdminAlertPayload): string
 }
 
 /**
- * Generates direct WhatsApp click-to-chat URL to message Brian Okibo at +254 794 400 365.
+ * Generates direct WhatsApp click-to-chat URL to message Brian Okibo at +254 105 472 373.
  */
 export function getAdminWhatsAppAlertUrl(payload: AdminAlertPayload): string {
   const text = formatAdminWhatsAppMessage(payload);
@@ -232,7 +237,7 @@ export function getAdminWhatsAppAlertUrl(payload: AdminAlertPayload): string {
 }
 
 /**
- * Dispatches automated real-time alerts to Brian Okibo's WhatsApp (+254794400365).
+ * Dispatches automated real-time alerts to Brian Okibo's WhatsApp (+254105472373).
  * Automatically delivers via:
  * 1. CallMeBot WhatsApp API (Free automated WhatsApp bot to Brian's personal WhatsApp)
  * 2. WhatsApp Webhook / External Notification Hub (if configured)
@@ -280,7 +285,7 @@ export async function dispatchAdminWhatsAppAlert(payload: AdminAlertPayload): Pr
     }
   }
 
-  // 3. Automated WhatsApp Dispatch via CallMeBot API (Instant WhatsApp message to 254794400365)
+  // 3. Automated WhatsApp Dispatch via CallMeBot API (Instant WhatsApp message to 254105472373)
   const callmebotKey = process.env.CALLMEBOT_API_KEY || process.env.WHATSAPP_BOT_API_KEY;
   if (callmebotKey) {
     try {

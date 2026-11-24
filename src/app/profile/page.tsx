@@ -110,7 +110,7 @@ function ProfileContent() {
 
     const normPhone = normalizePhoneNumber(phoneNumber);
     if (phoneNumber && !normPhone.isValid) {
-      setProfileError("Please enter a valid phone number (e.g. 0794400365 or +254794400365).");
+      setProfileError("Please enter a valid phone number (e.g. 0712345678 or +254712345678).");
       setSavingProfile(false);
       return;
     }
@@ -418,7 +418,7 @@ function ProfileContent() {
             <Input
               label="Safaricom M-Pesa & WhatsApp Number"
               type="tel"
-              placeholder="0794400365 or +254794400365"
+              placeholder="0712345678 or +254712345678"
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
               leftIcon={<Phone className="w-4 h-4 text-sx-green-text" />}

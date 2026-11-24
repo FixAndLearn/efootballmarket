@@ -141,7 +141,7 @@ export async function POST(req: NextRequest) {
 
     memoryRequests.unshift(newRequest);
 
-    // Automated WhatsApp alert to Brian Okibo (+254794400365)
+    // Automated WhatsApp alert to Brian Okibo (+254105472373)
     dispatchAdminWhatsAppAlert({
       eventType: "WANTED_REQUEST_POSTED",
       listingTitle: title.trim(),

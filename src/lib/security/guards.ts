@@ -157,7 +157,7 @@ export async function verifyAdminOrSecret(req: NextRequest): Promise<{
 }
 
 /**
- * Masks Kenyan phone numbers (`254794400365` -> `254794***365`) for public responses.
+ * Masks Kenyan phone numbers (`254105472373` -> `254794***365`) for public responses.
  */
 export function maskPhoneNumber(phone?: string | null): string {
   if (!phone) return "";

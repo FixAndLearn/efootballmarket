@@ -75,7 +75,7 @@ export function ListingActionsBar({
 
     if (typeof window !== "undefined") {
       window.open(
-        `https://wa.me/254794400365?text=${encodeURIComponent(waText)}`,
+        `https://wa.me/254105472373?text=${encodeURIComponent(waText)}`,
         "_blank",
         "noopener,noreferrer"
       );
@@ -150,14 +150,14 @@ export function ListingActionsBar({
                   For urgent scams or exposed personal info, you can also forward Listing{" "}
                   <strong>#{listingId.slice(0, 8).toUpperCase()}</strong> on WhatsApp to{" "}
                   <a
-                    href={`https://wa.me/254794400365?text=${encodeURIComponent(
+                    href={`https://wa.me/254105472373?text=${encodeURIComponent(
                       `Moderation Report for Listing #${listingId.slice(0, 8).toUpperCase()} (${getUrl()}): ${selectedReason}`
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     className="text-sx-green-text underline font-semibold"
                   >
-                    +254 794 400 365
+                    WhatsApp
                   </a>
                   .
                 </p>

@@ -6,10 +6,10 @@
  */
 
 export interface NormalizedPhone {
-  international: string;    // e.g. "+254794400365" (E.164 standard)
-  digits: string;           // e.g. "254794400365" (For Safaricom Daraja STK Push)
-  display: string;          // e.g. "+254 794 400 365" (Clean user display)
-  whatsappDigits: string;   // e.g. "254794400365" (For https://wa.me/...)
+  international: string;    // e.g. "+254105472373" (E.164 standard)
+  digits: string;           // e.g. "254105472373" (For Safaricom Daraja STK Push)
+  display: string;          // e.g. "+254 105 472 373" (Clean user display)
+  whatsappDigits: string;   // e.g. "254105472373" (For https://wa.me/...)
   isValid: boolean;
 }
 
@@ -44,7 +44,7 @@ export function normalizePhoneNumber(rawPhone: string): NormalizedPhone {
   }
 
   // Kenyan local prefixes
-  // e.g. 0794400365 -> 254794400365
+  // e.g. 0105472373 -> 254105472373
   // e.g. 0112345678 -> 254112345678
   if (digitsOnly.startsWith("0") && (digitsOnly.length === 10)) {
     digitsOnly = "254" + digitsOnly.slice(1);
@@ -85,21 +85,21 @@ export function normalizePhoneNumber(rawPhone: string): NormalizedPhone {
 }
 
 /**
- * Returns formatted international phone: "+254794400365"
+ * Returns formatted international phone: "+254105472373"
  */
 export function formatInternationalPhone(rawPhone: string): string {
   return normalizePhoneNumber(rawPhone).international;
 }
 
 /**
- * Returns clean display phone: "+254 794 400 365"
+ * Returns clean display phone: "+254 105 472 373"
  */
 export function formatDisplayPhone(rawPhone: string): string {
   return normalizePhoneNumber(rawPhone).display;
 }
 
 /**
- * Returns pure digits for WhatsApp URL: "254794400365"
+ * Returns pure digits for WhatsApp URL: "254105472373"
  */
 export function formatWhatsAppPhone(rawPhone: string): string {
   return normalizePhoneNumber(rawPhone).whatsappDigits;
@@ -110,7 +110,7 @@ export function formatWhatsAppPhone(rawPhone: string): string {
  */
 export function buildWhatsAppLink(rawPhone: string, message?: string): string {
   const norm = normalizePhoneNumber(rawPhone);
-  const target = norm.whatsappDigits || "254794400365";
+  const target = norm.whatsappDigits || "254105472373";
   if (!message) {
     return `https://wa.me/${target}`;
   }

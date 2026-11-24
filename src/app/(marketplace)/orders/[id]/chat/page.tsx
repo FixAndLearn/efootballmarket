@@ -113,7 +113,7 @@ export default async function OrderDedicatedChatPage({
           </div>
 
           <a
-            href={`https://wa.me/254794400365?text=${encodeURIComponent(
+            href={`https://wa.me/254105472373?text=${encodeURIComponent(
               `Hello eFootballMarket Escrow Desk, I need assistance in Order Chat (#${order.order_number}) with @${counterpartyName}: ${orderUrl}`
             )}`}
             target="_blank"

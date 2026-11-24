@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import { WhatsAppIcon } from "@/components/support/WhatsAppSupport";
 import { ShieldCheck, Lock, Smartphone, Scale, Building2 } from "lucide-react";
 
 export const metadata: Metadata = {
@@ -44,8 +45,15 @@ export default function AboutPage() {
           </li>
           <li>
             <span className="text-sx-muted">Support WhatsApp:</span>{" "}
-            <a href="https://wa.me/254794400365" className="font-semibold text-sx-ink underline">
-              +254 794 400 365
+            <a
+              href="https://wa.me/254105472373"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label="Chat with eFootballMarket support on WhatsApp"
+              className="font-semibold text-sx-ink underline inline-flex items-center gap-1.5"
+            >
+              <WhatsAppIcon className="w-3.5 h-3.5" />
+              Chat on WhatsApp
             </a>
           </li>
           <li>

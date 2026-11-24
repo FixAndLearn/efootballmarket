@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
         `*OFFICIAL SAFARICOM M-PESA PAYMENT DETAILS*\n\n` +
         `*Store Name:* EFootballMarket\n` +
         `*Buy Goods Till Number:* *1572931*\n` +
-        `*Support:* +254 794 400 365\n\n` +
+        `*Support:* +254 105 472 373\n\n` +
         `*Safety Warning:* Pay only through checkout for an active eFootballMarket listing. The checkout page will show the official Till or STK prompt. Payments for external Facebook / WhatsApp deals or to personal numbers are not covered.`;
 
       await sendWhatsAppMessage({ toPhone: cleanSender, message: tillInfo });
@@ -183,8 +183,8 @@ export async function POST(req: NextRequest) {
     if (trimmedText === "4" || trimmedText === "5" || trimmedText.includes("AGENT") || trimmedText.includes("BRIAN")) {
       const agentReply =
         `*CONNECTING TO SUPPORT DESK*\n\n` +
-        `Your message has been escalated to Brian Okibo (+254 794 400 365).\n` +
-        `You can also reach him directly on WhatsApp: https://wa.me/254794400365\n\n` +
+        `Your message has been escalated to Brian Okibo (+254 105 472 373).\n` +
+        `You can also reach him directly on WhatsApp: https://wa.me/254105472373\n\n` +
         `An officer will get back to you shortly. Thank you!`;
 
       await sendWhatsAppMessage({ toPhone: cleanSender, message: agentReply });
@@ -204,7 +204,7 @@ export async function POST(req: NextRequest) {
     const fallback =
       `Thank you for contacting *eFootballMarket*!\n\n` +
       `We received your message: _"${text}"_\n\n` +
-      `Reply with *MENU* to see options or *4* to message Support (+254 794 400 365).\n\n` +
+      `Reply with *MENU* to see options or *4* to message Support (+254 105 472 373).\n\n` +
       `Official Website: https://www.efootballmarket.co.ke`;
 
     await sendWhatsAppMessage({ toPhone: cleanSender, message: fallback });

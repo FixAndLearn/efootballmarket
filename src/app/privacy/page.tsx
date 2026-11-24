@@ -28,7 +28,7 @@ export default function PrivacyPage() {
           1. Data Controller Identity
         </h2>
         <p>
-          Under the <strong>Kenya Data Protection Act, 2019 (Act No. 24 of 2019)</strong>, the data controller for <strong>efootballmarket.co.ke</strong> is <strong>eFootballMarket Kenya</strong> (sole proprietorship operated in Nairobi, Kenya by <strong>Brian Okibo</strong>). Contact our Data &amp; Support Desk at <strong>support@efootballmarket.co.ke</strong> or WhatsApp <strong>+254 794 400 365</strong>.
+          Under the <strong>Kenya Data Protection Act, 2019 (Act No. 24 of 2019)</strong>, the data controller for <strong>efootballmarket.co.ke</strong> is <strong>eFootballMarket Kenya</strong> (sole proprietorship operated in Nairobi, Kenya by <strong>Brian Okibo</strong>). Contact our Data &amp; Support Desk at <strong>support@efootballmarket.co.ke</strong> or via our <strong>WhatsApp support desk</strong>.
         </p>
       </section>
 

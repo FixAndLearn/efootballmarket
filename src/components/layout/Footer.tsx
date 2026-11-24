@@ -2,6 +2,7 @@
 
 import React from "react";
 import Link from "next/link";
+import { WhatsAppIcon } from "@/components/support/WhatsAppSupport";
 import { usePathname } from "next/navigation";
 import { ArrowUpRight, Facebook, Instagram } from "lucide-react";
 import { Logo } from "@/components/brand/Logo";
@@ -107,12 +108,16 @@ export function Footer() {
               </li>
               <li>
                 <a
-                  href="https://wa.me/254794400365"
+                  href="https://wa.me/254105472373"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="hover:text-sx-ink transition-colors"
+                  aria-label="Chat with eFootballMarket support on WhatsApp"
+                  title="Chat with eFootballMarket support on WhatsApp"
+                  className="inline-flex items-center gap-1.5 hover:text-sx-ink transition-colors"
                 >
-                  WhatsApp: 0794 400 365
+                  <WhatsAppIcon className="w-3.5 h-3.5" />
+                  <span>WhatsApp Support</span>
+                  <span className="sr-only">(opens a chat, number not shown)</span>
                 </a>
               </li>
               <li>
@@ -121,6 +126,17 @@ export function Footer() {
                   className="hover:text-sx-ink transition-colors"
                 >
                   support@efootballmarket.co.ke
+                </a>
+              </li>
+              <li>
+                <a
+                  href="https://whatsapp.com/channel/0029VbE0fut1yT2AtW2Fr50h"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 hover:text-sx-ink transition-colors font-semibold text-sx-green-text"
+                >
+                  <WhatsAppIcon className="w-3.5 h-3.5" />
+                  <span>Join our WhatsApp Channel</span>
                 </a>
               </li>
             </ul>

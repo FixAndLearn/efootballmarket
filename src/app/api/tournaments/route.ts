@@ -166,7 +166,7 @@ export async function POST(req: NextRequest) {
         eventType: "TOURNAMENT_REGISTRATION",
         listingTitle: createdTournament.title,
         username: memberProfile?.username || authUser.email || "Community Host",
-        buyerPhone: "254794400365",
+        buyerPhone: "254105472373",
         amount: createdTournament.entry_fee_kes,
         details: `Tournament hosted: ${createdTournament.title} (${createdTournament.max_players} players, Prize KES ${createdTournament.prize_pool_kes})`,
       }).catch((e) => console.warn("WhatsApp alert error:", e));

@@ -31,7 +31,7 @@ const KENYAN_PHONE_IN_TEXT_REGEX =
 /**
  * Masks a phone number for logs and diagnostics: keeps enough of the tail to
  * correlate a support ticket without publishing a reachable subscriber number.
- * `+254794400365` -> `+2547****0365`
+ * `+254105472373` -> `+2547****0365`
  */
 export function maskPhone(raw?: string | null): string {
   const digits = String(raw ?? "").replace(/[^0-9]/g, "");

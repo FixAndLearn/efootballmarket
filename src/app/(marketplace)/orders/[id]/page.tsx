@@ -274,7 +274,7 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
               <span>Share Order</span>
             </a>
             <a
-              href={`https://wa.me/254794400365?text=${encodeURIComponent(
+              href={`https://wa.me/254105472373?text=${encodeURIComponent(
                 `Hello eFootballMarket Escrow Desk, I need help with Order #${order.order_number} (${
                   order.listing?.title || "Squad"
                 }, KES ${totalAmount.toLocaleString()}).`
@@ -424,7 +424,7 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
             </Link>
 
             <a
-              href={`https://wa.me/254794400365?text=${encodeURIComponent(
+              href={`https://wa.me/254105472373?text=${encodeURIComponent(
                 `Hello eFootballMarket Escrow Desk, please ping @${counterpartyName} to check our Order Chat (#${order.order_number}): ${orderUrl}/chat`
               )}`}
               target="_blank"

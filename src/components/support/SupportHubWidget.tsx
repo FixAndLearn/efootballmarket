@@ -1,6 +1,11 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { WhatsAppIcon } from "@/components/support/WhatsAppSupport";
+import {
+  SUPPORT_WHATSAPP_DIGITS,
+  SUPPORT_WHATSAPP_CHANNEL_URL,
+} from "@/lib/constants/support";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
@@ -16,7 +21,7 @@ import {
 import { isStandaloneDocPath } from "@/components/legal/StandaloneDocLayout";
 
 const WHATSAPP_NUMBER =
-  process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP || "254794400365";
+  process.env.NEXT_PUBLIC_SUPPORT_WHATSAPP || SUPPORT_WHATSAPP_DIGITS;
 
 export function SupportHubWidget() {
   const pathname = usePathname();
@@ -96,6 +101,22 @@ export function SupportHubWidget() {
           </div>
 
           <div className="p-3 space-y-1">
+            <a
+              href={SUPPORT_WHATSAPP_CHANNEL_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="flex items-start gap-2.5 px-2.5 py-2 rounded-xl bg-sx-green-tint border border-sx-green-border hover:brightness-[0.98] transition-all"
+            >
+              <WhatsAppIcon className="w-4 h-4 mt-0.5 shrink-0 text-sx-green-text" />
+              <span className="min-w-0">
+                <span className="block text-xs font-bold text-sx-ink">
+                  Join our WhatsApp Channel
+                </span>
+                <span className="block text-[11px] text-sx-muted leading-snug">
+                  Restocks, price drops &amp; guides. No chat spam.
+                </span>
+              </span>
+            </a>
             <Link
               href="/wanted"
               onClick={() => setOpen(false)}
@@ -148,7 +169,7 @@ export function SupportHubWidget() {
               rel="noopener noreferrer"
               className="w-full inline-flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-sx-green hover:bg-sx-green-hover text-white text-xs font-bold transition-colors"
             >
-              <MessageCircle className="w-4 h-4" />
+              <WhatsAppIcon className="w-4 h-4" />
               Chat With Nairobi Desk (WhatsApp)
               <ExternalLink className="w-3.5 h-3.5 opacity-80" />
             </a>

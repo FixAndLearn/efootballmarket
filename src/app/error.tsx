@@ -46,7 +46,7 @@ export default function ErrorPage({
 
       <div className="p-3.5 rounded-xl bg-sx-stone border border-sx-border flex items-center justify-center gap-2 text-xs text-sx-muted">
         <ShieldCheck className="w-4 h-4 text-sx-green-text" />
-        <span>Need urgent escrow assistance? WhatsApp Support: +254 794 400 365</span>
+        <span>Need urgent escrow assistance? Reach WhatsApp Support</span>
       </div>
     </div>
   );

@@ -316,7 +316,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // Automated WhatsApp alert to Escrow Desk (+254794400365)
+    // Automated WhatsApp alert to Escrow Desk (+254105472373)
     dispatchAdminWhatsAppAlert({
       eventType: "NEW_LISTING_CREATED",
       orderId: listing.id,

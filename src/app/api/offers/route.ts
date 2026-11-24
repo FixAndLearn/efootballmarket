@@ -326,7 +326,7 @@ export async function POST(req: NextRequest) {
     const waText = encodeURIComponent(
       `Hello eFootballMarket Support! I submitted an offer of KES ${offerNum.toLocaleString()} (${discountPercentage}% off) for "${listing.title}" (https://www.efootballmarket.co.ke/listings/${listing.id}). Escrow via Till 1572931.`
     );
-    const whatsappUrl = `https://wa.me/254794400365?text=${waText}`;
+    const whatsappUrl = `https://wa.me/254105472373?text=${waText}`;
 
     // Admin WhatsApp alert
     dispatchAdminWhatsAppAlert({

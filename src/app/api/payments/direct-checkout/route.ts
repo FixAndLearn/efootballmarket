@@ -278,7 +278,7 @@ export async function POST(req: NextRequest) {
       }
     );
 
-    // Automated WhatsApp alert to Brian Okibo (+254794400365)
+    // Automated WhatsApp alert to Brian Okibo (+254105472373)
     dispatchAdminWhatsAppAlert({
       eventType: "NEW_ORDER_CREATED",
       orderId: order.id,

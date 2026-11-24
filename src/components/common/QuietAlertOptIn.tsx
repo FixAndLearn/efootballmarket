@@ -56,7 +56,7 @@ export function QuietAlertOptIn({ topic, compact = false }: QuietAlertOptInProps
     setSaved(true);
   };
 
-  const whatsappHref = `https://wa.me/254794400365?text=${encodeURIComponent(
+  const whatsappHref = `https://wa.me/254105472373?text=${encodeURIComponent(
     phone.trim() ? `${labels.waMessage} (My number: ${phone.trim()})` : labels.waMessage
   )}`;
 

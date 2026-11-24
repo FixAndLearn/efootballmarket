@@ -1,5 +1,6 @@
 import { Metadata } from "next";
 import Link from "next/link";
+import { WhatsAppIcon } from "@/components/support/WhatsAppSupport";
 import {
   Mail,
   MessageCircle,
@@ -29,7 +30,7 @@ export default function ContactPage() {
       title: "Custom Squad Sourcing (3150+ OVR)",
       desc: "Tell our desk the exact Epics, Boosters, platform, and KES budget you want to find in seller-listed Kenyan squads. Listing details are seller-provided; any protected purchase must be placed from a published listing and paid through marketplace checkout.",
       actionLabel: "Request on WhatsApp",
-      href: `https://wa.me/254794400365?text=${encodeURIComponent(
+      href: `https://wa.me/254105472373?text=${encodeURIComponent(
         "Hello Brian / eFootballMarket Desk, I want help finding a seller-listed Clean Konami ID squad. My platform, target OVR/Epics, and KES budget are:"
       )}`,
       external: true,
@@ -134,12 +135,22 @@ export default function ContactPage() {
             </div>
             <div>
               <a
-                href="https://wa.me/254794400365"
+                href="https://wa.me/254105472373"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-full bg-sx-green hover:bg-sx-green-hover text-white text-xs font-bold transition-colors"
               >
-                <span>Chat on WhatsApp: +254 794 400 365</span>
+                <WhatsAppIcon className="w-4 h-4 shrink-0" />
+                <span>Chat with support on WhatsApp</span>
+              </a>
+              <a
+                href="https://whatsapp.com/channel/0029VbE0fut1yT2AtW2Fr50h"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="mt-2 w-full inline-flex items-center justify-center gap-1.5 h-9 px-4 rounded-full border border-sx-green-border bg-sx-green-tint text-sx-green-text hover:brightness-[0.98] text-xs font-bold transition-all"
+              >
+                <WhatsAppIcon className="w-4 h-4 shrink-0" />
+                <span>Join our WhatsApp Channel</span>
               </a>
             </div>
           </div>
@@ -170,7 +181,7 @@ export default function ContactPage() {
               <span>Direct Helpline &amp; Official Till</span>
             </div>
             <p className="text-xs text-sx-muted">
-              Helpline: <strong className="text-sx-ink">0794 400 365</strong> · Official M-Pesa Buy Goods Till: <strong className="text-sx-green-text font-mono">1572931</strong>
+              Helpline available on WhatsApp <strong className="text-sx-ink">(tap to chat)</strong> · Official M-Pesa Buy Goods Till: <strong className="text-sx-green-text font-mono">1572931</strong>
             </p>
           </div>
 

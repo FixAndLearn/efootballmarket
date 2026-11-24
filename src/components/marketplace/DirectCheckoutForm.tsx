@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
+import { WhatsAppIcon } from "@/components/support/WhatsAppSupport";
 import { Button } from "@/components/ui/Button";
 import { DetailTabLink } from "@/components/ui/DetailTabLink";
 import { formatCurrency, formatSmartListingTitle, getPlatformLabel } from "@/lib/utils";
@@ -345,7 +346,7 @@ export function DirectCheckoutForm({
     )} via eFootballMarket marketplace checkout (M-Pesa Till 1572931): ${shareUrl}`
   )}`;
 
-  const whatsappSupportHref = `https://wa.me/254794400365?text=${encodeURIComponent(
+  const whatsappSupportHref = `https://wa.me/254105472373?text=${encodeURIComponent(
     `Hello eFootballMarket Support, I need assistance checking out "${displayTitle}" (KES ${payablePrice.toLocaleString()}) via Till 1572931.`
   )}`;
 
@@ -666,7 +667,7 @@ export function DirectCheckoutForm({
               </ol>
 
               <a
-                href={`https://wa.me/254794400365?text=${encodeURIComponent(
+                href={`https://wa.me/254105472373?text=${encodeURIComponent(
                   `Hello eFootballMarket Support, I have paid KES ${payablePrice.toLocaleString()} to Buy Goods Till 1572931 for "${formatSmartListingTitle(listing)}" (ID: ${listing.id.slice(0, 8)}). My M-Pesa receipt code is: `
                 )}`}
                 target="_blank"
@@ -688,7 +689,8 @@ export function DirectCheckoutForm({
               className="inline-flex items-center gap-1.5 font-semibold text-sx-green-text hover:underline"
             >
               <MessageCircle className="w-3.5 h-3.5" />
-              <span>Checkout Help (0794 400 365)</span>
+              <WhatsAppIcon className="w-3.5 h-3.5 inline" />
+              <span>Checkout Help</span>
             </a>
 
             <div className="flex items-center gap-3">

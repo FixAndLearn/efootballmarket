@@ -62,13 +62,13 @@ export default function NotFound() {
         <p className="leading-relaxed">
           Message our Nairobi support desk on WhatsApp at{" "}
           <a
-            href="https://wa.me/254794400365"
+            href="https://wa.me/254105472373"
             target="_blank"
             rel="noopener noreferrer"
             className="text-sx-green-text hover:underline font-bold inline-flex items-center gap-1"
           >
             <Phone className="w-3 h-3 inline" />
-            0794 400 365
+            WhatsApp Support
           </a>
           .
         </p>

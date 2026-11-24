@@ -121,7 +121,7 @@ export async function sendWhatsAppMessage({
       success: false,
       provider: "error",
       recipient: toPhone,
-      error: `Invalid recipient phone format: "${toPhone}". Must format to international digits (e.g. 254794400365).`,
+      error: `Invalid recipient phone format: "${toPhone}". Must format to international digits (e.g. 254105472373).`,
     };
   }
 
@@ -320,7 +320,7 @@ export async function sendWhatsAppMessage({
   // 7. CallMeBot Gateway (if available)
   // ---------------------------------------------------------------------------
   const callmebotKey = process.env.CALLMEBOT_API_KEY;
-  if (callmebotKey && cleanPhone === "254794400365") {
+  if (callmebotKey && cleanPhone === "254105472373") {
     try {
       const url = `https://api.callmebot.com/whatsapp.php?phone=${cleanPhone}&text=${encodeURIComponent(
         message
