@@ -418,11 +418,11 @@ export default async function HomePage() {
       />
 
       {/* 1. SQUAD-FIRST HERO SCREEN */}
-      <section className="pt-4 pb-8 sm:pt-8 sm:pb-10">
+      <section className="pt-3 pb-6 sm:pt-8 sm:pb-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="rounded-3xl bg-sx-subtle border border-sx-border shadow-raised grid grid-cols-1 lg:grid-cols-12 items-stretch overflow-hidden">
-            <div className="lg:col-span-7 min-w-0 p-5 sm:p-9 lg:p-11 flex flex-col justify-between space-y-6">
-              <div className="space-y-4">
+            <div className="lg:col-span-7 min-w-0 p-4 sm:p-9 lg:p-11 flex flex-col justify-between space-y-4 sm:space-y-6">
+              <div className="space-y-3 sm:space-y-4">
                 {totalSquads > 0 && (
                   <div className="inline-flex flex-wrap items-center gap-2 px-3 py-1 rounded-full bg-sx-canvas border border-sx-border text-[11px] font-medium text-sx-muted">
                     <span className="w-2 h-2 rounded-full bg-sx-green" />
@@ -446,7 +446,7 @@ export default async function HomePage() {
                   </div>
                 )}
 
-                <h1 className="text-[32px] sm:text-[40px] lg:text-[46px] font-extrabold font-display tracking-[-0.035em] text-sx-ink leading-[1.06] text-balance">
+                <h1 className="text-[27px] sm:text-[40px] lg:text-[46px] font-extrabold font-display tracking-[-0.035em] text-sx-ink leading-[1.08] sm:leading-[1.06] text-balance">
                   Find Your Next eFootball Squad in Kenya.
                 </h1>
 
@@ -454,7 +454,7 @@ export default async function HomePage() {
                 <SmartSearchBar variant="hero" />
 
                 {/* Quick Filter Pills */}
-                <div className="flex items-center gap-1.5 flex-wrap text-xs">
+                <div className="flex items-center gap-1.5 flex-wrap text-[11px] sm:text-xs">
                   <span className="text-sx-muted font-medium mr-0.5">Popular:</span>
                   {[
                     { label: "Under KES 1,000", href: "/browse?maxPrice=1000" },
@@ -476,7 +476,7 @@ export default async function HomePage() {
               </div>
 
               {/* Primary CTAs: Browse Squads beside Sell Your Squad */}
-              <div className="space-y-4 pt-1">
+              <div className="space-y-3 sm:space-y-4 pt-0.5 sm:pt-1">
                 <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2.5 sm:gap-3">
                   <Link href="/browse" className="w-full sm:w-auto">
                     <Button
@@ -511,9 +511,6 @@ export default async function HomePage() {
                     Detailed Escrow Info
                   </DetailTabLink>
                 </div>
-
-                {/* Channel invite: the hero's single growth action. */}
-                <WhatsAppChannelBanner />
               </div>
             </div>
 

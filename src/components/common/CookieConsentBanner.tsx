@@ -69,7 +69,7 @@ export function CookieConsentBanner() {
     <aside
       role="region"
       aria-label="Cookie preferences"
-      className="fixed bottom-20 md:bottom-5 left-3 right-24 sm:left-5 sm:right-auto sm:max-w-md z-40 select-none"
+      className="fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] md:bottom-5 left-3 right-3 sm:left-5 sm:right-auto sm:max-w-md z-50 select-none"
     >
       <div className="p-4 rounded-lg bg-sx-canvas border border-sx-border-strong shadow-xl text-sx-ink space-y-3">
         <p className="text-xs text-sx-ink-soft leading-relaxed">
@@ -80,7 +80,7 @@ export function CookieConsentBanner() {
             rel="noopener noreferrer"
             className="text-sx-green-text underline font-semibold"
           >
-            Privacy &amp; Cookie Policy &nearr;
+            Privacy &amp; Cookie Policy ↗
           </Link>
           .
         </p>

@@ -86,7 +86,7 @@ export default function AboutPage() {
               rel="noopener noreferrer"
               className="text-sx-green-text underline font-semibold"
             >
-              Refund &amp; Dispute Policy &nearr;
+              Refund &amp; Dispute Policy ↗
             </Link>
             .
           </li>
@@ -145,7 +145,7 @@ export default function AboutPage() {
             rel="noopener noreferrer"
             className="text-sx-green-text underline font-semibold"
           >
-            Payment Protection &amp; Fee Guide &nearr;
+            Payment Protection &amp; Fee Guide ↗
           </Link>{" "}
           and{" "}
           <Link
@@ -154,7 +154,7 @@ export default function AboutPage() {
             rel="noopener noreferrer"
             className="text-sx-green-text underline font-semibold"
           >
-            Terms of Service &nearr;
+            Terms of Service ↗
           </Link>{" "}
           before trading.
         </p>

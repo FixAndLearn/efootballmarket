@@ -68,7 +68,7 @@ export function SupportHubWidget() {
   return (
     <div
       ref={rootRef}
-      className={`fixed bottom-20 md:bottom-5 right-3 sm:right-4 z-40 ${
+      className={`fixed bottom-[calc(4.5rem+env(safe-area-inset-bottom))] md:bottom-5 right-3 sm:right-4 z-40 ${
         isListingDetail ? "hidden lg:block" : ""
       }`}
     >
@@ -157,7 +157,7 @@ export function SupportHubWidget() {
                 Escrow &amp; Fee Rules
               </span>
               <span className="text-[11px] text-sx-muted group-hover:text-sx-ink">
-                Read &nearr;
+                Read ↗
               </span>
             </Link>
           </div>

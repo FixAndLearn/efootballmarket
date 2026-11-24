@@ -166,7 +166,7 @@ export function Header() {
                 rel="noopener noreferrer"
                 className="hover:text-sx-ink transition-colors"
               >
-                How Escrow Works &nearr;
+                How Escrow Works ↗
               </Link>
               <Link href="/news" className="hover:text-sx-ink transition-colors">
                 Guides
