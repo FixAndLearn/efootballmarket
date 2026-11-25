@@ -81,6 +81,11 @@ alter table public.profiles
 comment on column public.profiles.confirmed_recall_count is
   'Upheld account-recovery claims against this seller. Never reset; one confirmed recall is grounds for restriction.';
 
+-- These are public trust signals shown on seller cards and listing pages; keep
+-- access limited to the three non-sensitive columns, not SELECT on the whole row.
+grant select (seller_tier, confirmed_recall_count, recall_claims_count)
+  on table public.profiles to anon, authenticated;
+
 -- ---------------------------------------------------------------------------
 -- 3. Post-sale recall claims
 -- ---------------------------------------------------------------------------
