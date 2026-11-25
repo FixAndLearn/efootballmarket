@@ -177,17 +177,40 @@ export async function POST(
       },
     });
 
-    // Optional insert into reviews table if present
-    try {
-      await client.from("reviews").insert({
-        order_id: orderId,
-        reviewer_id: user.id,
-        seller_id: order.seller_id,
-        rating,
-        comment: comment || "",
-      });
-    } catch {
-      // non-blocking if reviews table is omitted
+    // Persist the review itself.
+    //
+    // This used to sit in a bare `try { ... } catch {}` labelled "non-blocking".
+    // supabase-js does not throw on a failed write -- it resolves with
+    // { data, error } -- so the catch block could never fire and ANY failure
+    // here was invisible. The rolling average below still ran, which meant a
+    // seller could accumulate a rating with no reviews table rows behind it:
+    // an inflated trust signal with no audit trail.
+    //
+    // The review row is now the source of truth. If it cannot be written we
+    // do not touch the seller's rating at all -- an honest zero beats a
+    // fabricated average.
+    const { error: reviewError } = await client.from("reviews").insert({
+      order_id: orderId,
+      reviewer_id: user.id,
+      seller_id: order.seller_id,
+      rating,
+      comment: comment || "",
+    });
+
+    if (reviewError) {
+      // 23505 = unique_violation on reviews_order_id_key: this order was
+      // already rated. Treat as a conflict rather than moving the average.
+      const status = reviewError.code === "23505" ? 409 : 500;
+      console.error("[rate] review insert failed:", reviewError.code, reviewError.message);
+      return NextResponse.json(
+        {
+          error:
+            reviewError.code === "23505"
+              ? "This order has already been rated."
+              : "Could not save the review, so the seller rating was left unchanged.",
+        },
+        { status }
+      );
     }
 
     // 3. Recompute rolling seller_rating & total_reviews_count on seller profile
