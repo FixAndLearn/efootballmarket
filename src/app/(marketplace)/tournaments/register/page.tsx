@@ -1,5 +1,7 @@
 "use client";
 
+import { Suspense } from "react";
+
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -31,7 +33,7 @@ import {
   Zap,
 } from "lucide-react";
 
-export default function RegisterTournamentPage() {
+function RegisterTournamentPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const tourneyId = searchParams.get("id");
@@ -916,5 +918,13 @@ export default function RegisterTournamentPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function RegisterTournamentPage() {
+  return (
+    <Suspense fallback={null}>
+      <RegisterTournamentPageInner />
+    </Suspense>
   );
 }

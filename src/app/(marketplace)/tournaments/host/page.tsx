@@ -1,5 +1,7 @@
 "use client";
 
+import { Suspense } from "react";
+
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -28,7 +30,7 @@ import {
   Share2,
 } from "lucide-react";
 
-export default function HostTournamentPage() {
+function HostTournamentPageInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { user, profile, loading: authLoading } = useAuth();
@@ -641,5 +643,13 @@ export default function HostTournamentPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function HostTournamentPage() {
+  return (
+    <Suspense fallback={null}>
+      <HostTournamentPageInner />
+    </Suspense>
   );
 }
