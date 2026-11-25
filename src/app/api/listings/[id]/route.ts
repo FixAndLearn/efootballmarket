@@ -3,6 +3,7 @@ import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ListingService } from "@/services/listingService";
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { z } from "zod";
 
 const listingUpdateSchema = z.object({
@@ -121,6 +122,14 @@ export async function PATCH(
       isAdmin
     );
 
+    // The sitemap only lists status='published' rows, but it is cached. Without
+    // this, a squad archived a minute ago keeps being advertised to search
+    // engines until the window expires. Cheap and exact: only rebuild when the
+    // status actually moved.
+    if (listingData.status !== undefined) {
+      revalidatePath("/sitemap.xml");
+    }
+
     return NextResponse.json({
       success: true,
       message: "Listing updated successfully",
@@ -158,6 +167,9 @@ export async function DELETE(
 
     const service = new ListingService(primaryClient);
     await service.deleteListing(params.id, user.id, isAdmin);
+
+    // deleteListing sets deleted_at; the sitemap filters those out.
+    revalidatePath("/sitemap.xml");
 
     return NextResponse.json({
       success: true,

@@ -5,11 +5,17 @@ import { EDITORIAL_GUIDES } from "@/lib/data/editorialGuides";
 import { isContentDateReached, safeLastModified } from "@/lib/news/publishing";
 import { getPublicStorefrontPath } from "@/lib/security/publicSanitizer";
 
-// Was 3600. A listing archived (or sold) minutes ago would keep appearing in
-// the sitemap for up to an hour, so search engines were told about squads that
-// were no longer purchasable. The query already filters to status='published',
-// so a shorter window is the whole fix.
-export const revalidate = 300;
+// The listing query filters to status='published', so the only way a stale
+// entry can appear is cache age. api/listings/[id] now calls
+// revalidatePath("/sitemap.xml") on any status change or delete, which is what
+// actually keeps this honest; the TTL is only a backstop for rows that change
+// through some other path (direct SQL, admin scripts).
+//
+// 300 was chosen when the TTL *was* the mechanism. It forced a full rebuild --
+// several queries against listings, profiles and news -- every five minutes
+// whether anything had changed or not. 900 is enough as a backstop now that
+// the real trigger is on-demand.
+export const revalidate = 900;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = "https://www.efootballmarket.co.ke";
