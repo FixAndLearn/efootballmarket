@@ -40,7 +40,8 @@ interface SellerStorefrontProps {
 function safelyDecodeRouteSegment(rawSegment: string): string {
   try {
     return decodeURIComponent(rawSegment);
-  } catch {
+  } catch (err: any) {
+    if (typeof err?.digest === "string" && err.digest.startsWith("NEXT_")) throw err;
     return rawSegment;
   }
 }

@@ -137,10 +137,14 @@ export async function generateMetadata({ params }: ListingDetailPageProps): Prom
         images: [primaryImage],
       },
     };
-  } catch {
-    return {
-      title: "Squad Listing",
-    };
+  } catch (err: any) {
+    // notFound() and redirect() work by THROWING a control-flow signal whose
+    // digest starts with "NEXT_". A bare `catch` here swallows it, so the 404
+    // never reaches Next and the route answers 200 with a fallback title --
+    // which is exactly what was happening. Re-throw those; swallow only
+    // genuine lookup faults.
+    if (typeof err?.digest === "string" && err.digest.startsWith("NEXT_")) throw err;
+    return { title: "Squad Listing" };
   }
 }
 
