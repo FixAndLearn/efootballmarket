@@ -25,9 +25,24 @@ const directCheckoutSchema = z.object({
 export async function POST(req: NextRequest) {
   let claimedKey: { key: string; ownerToken: string } | null = null;
   let providerRequestStarted = false;
+  let reservedCheckout: { listingId: string; orderId: string } | null = null;
 
   const releaseUnusedClaim = async () => {
-    if (!claimedKey || providerRequestStarted) return;
+    if (providerRequestStarted) return;
+    if (reservedCheckout) {
+      const reservation = reservedCheckout;
+      reservedCheckout = null;
+      try {
+        const { error } = await createAdminClient().rpc("release_listing_reservation", {
+          p_listing_id: reservation.listingId,
+          p_order_id: reservation.orderId,
+        });
+        if (error) console.warn("Listing reservation release failed:", error.message);
+      } catch {
+        console.warn("Could not release the unused listing reservation.");
+      }
+    }
+    if (!claimedKey) return;
     const claim = claimedKey;
     claimedKey = null;
     try {
@@ -222,6 +237,25 @@ export async function POST(req: NextRequest) {
     }
 
     if (reusableOrder) {
+      // Re-acquire/refresh its reservation before every payment attempt. An old
+      // payment_pending order may have outlived the original 30-minute hold.
+      const { data: reserved, error: reserveError } = await adminSupabase.rpc(
+        "reserve_listing_for_checkout",
+        { p_listing_id: listing.id, p_order_id: reusableOrder.id, p_hold_minutes: 30 }
+      );
+      if (reserveError) {
+        console.error("Could not reserve listing for checkout:", reserveError.message);
+        await releaseUnusedClaim();
+        return NextResponse.json({ error: "Checkout protection is temporarily unavailable. Please try again shortly." }, { status: 503 });
+      }
+      if (reserved !== true) {
+        await releaseUnusedClaim();
+        return NextResponse.json(
+          { error: "Another buyer is checking out this squad right now. It becomes available again in a few minutes if they do not complete payment." },
+          { status: 409 }
+        );
+      }
+      reservedCheckout = { listingId: listing.id, orderId: reusableOrder.id };
       order = reusableOrder;
     } else {
       const timestamp = Date.now().toString(36).toUpperCase();
@@ -265,10 +299,17 @@ export async function POST(req: NextRequest) {
       );
 
       if (reserveError) {
-        // A reservation failure must not silently block a payable checkout;
-        // log it and let the existing single-order checks do their job.
-        console.warn("Listing reservation failed; continuing:", reserveError.message);
-      } else if (reserved === false) {
+        // Fail closed before any M-Pesa initiation if the single-buyer hold
+        // cannot be established. No payment code is altered or invoked here.
+        console.error("Could not reserve listing for checkout:", reserveError.message);
+        await adminSupabase
+          .from("orders")
+          .update({ status: "cancelled", updated_at: new Date().toISOString() })
+          .eq("id", createdOrder.id)
+          .eq("status", "payment_pending");
+        await releaseUnusedClaim();
+        return NextResponse.json({ error: "Checkout protection is temporarily unavailable. Please try again shortly." }, { status: 503 });
+      } else if (reserved !== true) {
         await adminSupabase
           .from("orders")
           .update({ status: "cancelled", updated_at: new Date().toISOString() })
@@ -284,6 +325,7 @@ export async function POST(req: NextRequest) {
         );
       }
 
+      reservedCheckout = { listingId: listing.id, orderId: createdOrder.id };
       order = createdOrder;
 
       // 5. Create Escrow Account record
