@@ -11,6 +11,7 @@ export const STANDALONE_DOC_PATHS = [
   "/privacy",
   "/dispute-policy",
   "/escrow-guarantee",
+  "/pricing",
   "/fraud-prevention",
   "/seller/guidelines",
   "/policies",

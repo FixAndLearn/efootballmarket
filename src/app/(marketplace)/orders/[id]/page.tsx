@@ -58,6 +58,12 @@ const getStatusConfig = (status: OrderStatus | string) => {
         colorClass: "bg-sx-green-tint text-sx-green-text border-sx-green-border",
         icon: ShieldCheck,
       };
+    case "recall_window":
+      return {
+        label: "Account-Recovery Window Open",
+        colorClass: "bg-sx-info-tint text-sx-info-text border-sx-info-border",
+        icon: ShieldAlert,
+      };
     case "seller_delivered":
     case "buyer_reviewing":
       return {
@@ -212,6 +218,17 @@ export default async function OrderDetailPage({ params }: OrderPageProps) {
           deadline: "Within 12 hours of payment confirmation",
           evidence: "Keep all OTP and handover messages inside Order Chat below.",
           nextStep: "Your 24-hour buyer inspection clock starts only after the seller submits login credentials. If the seller misses 12 hours, open a dispute or contact support for review. A full refund may be approved; approved M-Pesa refunds are arranged manually, and this page does not confirm that funds were sent.",
+        };
+      case "recall_window":
+        return {
+          stepIndex: 4,
+          label: "Account-Recovery Window · Held Funds Protected",
+          actor: "Buyer & Seller",
+          deadline: "7 days from confirmation",
+          evidence:
+            "Keep every email from Konami support, plus screenshots of the Konami ID page showing the current registered email.",
+          nextStep:
+            "You have been paid the majority of this order. The remainder stays in escrow for 7 days. If the seller recovers the account during that window, report it here and the held funds freeze immediately pending review. If nothing goes wrong, the remainder releases automatically when the window closes.",
         };
       case "seller_delivered":
       case "buyer_reviewing":

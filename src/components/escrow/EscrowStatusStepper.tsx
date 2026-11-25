@@ -33,6 +33,11 @@ export function EscrowStatusStepper({ state }: EscrowStatusStepperProps) {
     case "buyer_reviewing":
       currentStepIndex = 3;
       break;
+    // Funds are partly released but the order is not finished: the held
+    // remainder is still exposed to a recovery report.
+    case "recall_window":
+      currentStepIndex = 3;
+      break;
     case "completed":
       currentStepIndex = 4;
       break;

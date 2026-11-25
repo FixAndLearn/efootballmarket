@@ -2,7 +2,7 @@
 
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
-import { useSearchParams, useRouter } from "next/navigation";
+import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { AlertTriangle, ArrowLeft, Banknote, Crown, Flag, Layers, Newspaper, ShieldAlert, ShieldCheck, Smartphone, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
@@ -13,6 +13,7 @@ interface AdminSidebarProps {
 export function AdminSidebar({ userEmail }: AdminSidebarProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const pathname = usePathname();
   const rawTab = searchParams.get("tab") || "listings";
   const activeTab = rawTab;
 
@@ -22,6 +23,7 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
     openDisputes: 0,
     pendingReports: 0,
     pendingScammers: 0,
+    openRecallClaims: 0,
     totalListings: 0,
     totalUsers: 0,
   });
@@ -67,10 +69,22 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
           // non-blocking
         }
 
+        let openRecallClaims = 0;
+        try {
+          const recallRes = await fetch("/api/admin/recall-claims", { cache: "no-store" });
+          if (recallRes.ok) {
+            const recallData = await recallRes.json();
+            openRecallClaims = (recallData.claims || []).filter((claim: any) => ["open", "investigating"].includes(claim.status)).length;
+          }
+        } catch {
+          // non-blocking
+        }
+
         setCounts({
           openDisputes: disputesCount || 0,
           pendingReports,
           pendingScammers,
+          openRecallClaims,
           pendingWithdrawals: withdrawalsCount || 0,
           totalListings: listingsCount || 0,
           totalUsers: usersCount || 0,
@@ -93,6 +107,14 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
       href: "/admin?tab=listings",
       badge: counts.totalListings > 0 ? `${counts.totalListings}` : null,
       badgeColor: "bg-sx-green-tint text-sx-green-text border-sx-green-border",
+    },
+    {
+      id: "recall-claims",
+      label: "Account Recovery Claims",
+      icon: ShieldAlert,
+      href: "/admin/recall-claims",
+      badge: counts.openRecallClaims > 0 ? `${counts.openRecallClaims} to review` : null,
+      badgeColor: "bg-sx-red-tint text-sx-red-text border-sx-red-border animate-pulse",
     },
     {
       id: "disputes",
@@ -153,8 +175,17 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
   ];
 
   const handleNavClick = (tabId: string) => {
+    if (tabId === "recall-claims") {
+      router.push("/admin/recall-claims");
+      return;
+    }
     router.push(`/admin?tab=${tabId}`, { scroll: false });
   };
+
+  const isSelected = (tabId: string) =>
+    tabId === "recall-claims"
+      ? pathname.startsWith("/admin/recall-claims")
+      : activeTab === tabId;
 
   return (
     <aside className="w-full lg:w-64 bg-sx-stone border-r border-sx-border flex flex-col shrink-0">
@@ -188,19 +219,19 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
         <div className="flex lg:hidden overflow-x-auto gap-1.5 pb-2">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isSelected = activeTab === item.id;
+            const selected = isSelected(item.id);
             return (
               <button
                 key={item.id}
                 type="button"
                 onClick={() => handleNavClick(item.id)}
                 className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold whitespace-nowrap border transition cursor-pointer ${
-                  isSelected
+                  selected
                     ? "bg-sx-green-tint border-emerald-500/70 text-sx-green-text shadow-md shadow-emerald-500/10 ring-1 ring-emerald-500/40"
                     : "bg-sx-canvas border-transparent text-sx-muted hover:text-sx-ink"
                 }`}
               >
-                <Icon className={`w-3.5 h-3.5 ${isSelected ? "text-sx-green-text" : "text-sx-muted"}`} />
+                <Icon className={`w-3.5 h-3.5 ${selected ? "text-sx-green-text" : "text-sx-muted"}`} />
                 <span>{item.label}</span>
                 {item.badge && (
                   <span className={`text-[9px] px-1.5 py-0.5 rounded-full border ${item.badgeColor || "bg-sx-stone text-sx-ink-soft border-sx-border-strong"}`}>
@@ -216,14 +247,14 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
         <div className="hidden lg:block space-y-1.5">
           {navItems.map((item) => {
             const Icon = item.icon;
-            const isSelected = activeTab === item.id;
+            const selected = isSelected(item.id);
             return (
               <button
                 key={item.id}
                 type="button"
                 onClick={() => handleNavClick(item.id)}
                 className={`w-full flex items-center justify-between px-3 py-2.5 rounded-xl text-xs font-semibold transition border text-left cursor-pointer ${
-                  isSelected
+                  selected
                     ? "bg-sx-green-tint border-emerald-500/60 text-sx-ink shadow-[0_0_20px_rgba(16,185,129,0.15)] ring-1 ring-emerald-500/40"
                     : "border-transparent text-sx-ink-soft hover:text-sx-ink hover:bg-sx-stone hover:border-sx-border"
                 }`}
@@ -231,14 +262,14 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
                 <div className="flex items-center gap-2.5 min-w-0">
                   <div
                     className={`w-7 h-7 rounded-lg flex items-center justify-center shrink-0 transition-colors ${
-                      isSelected
+                      selected
                         ? "bg-sx-green-tint text-sx-green-text border border-sx-green-border"
                         : "bg-sx-stone text-sx-muted"
                     }`}
                   >
                     <Icon className="w-3.5 h-3.5" />
                   </div>
-                  <span className={`truncate ${isSelected ? "font-bold text-sx-ink" : "font-medium"}`}>
+                  <span className={`truncate ${selected ? "font-bold text-sx-ink" : "font-medium"}`}>
                     {item.label}
                   </span>
                 </div>
@@ -251,7 +282,7 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
                   >
                     {item.badge}
                   </span>
-                ) : isSelected ? (
+                ) : selected ? (
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_8px_#10B981] shrink-0" />
                 ) : null}
               </button>

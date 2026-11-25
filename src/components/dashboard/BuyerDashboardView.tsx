@@ -57,7 +57,7 @@ export const BuyerDashboardView: React.FC<BuyerDashboardViewProps> = ({
   const actionNeededCount = useMemo(
     () =>
       orders.filter((o) =>
-        ["payment_pending", "seller_delivered", "buyer_reviewing"].includes(o.status)
+        ["payment_pending", "seller_delivered", "buyer_reviewing", "recall_window"].includes(o.status)
       ).length,
     [orders]
   );
@@ -65,7 +65,7 @@ export const BuyerDashboardView: React.FC<BuyerDashboardViewProps> = ({
   const filteredOrders = useMemo(() => {
     return orders.filter((order) => {
       if (filter === "action_needed") {
-        if (!["payment_pending", "seller_delivered", "buyer_reviewing"].includes(order.status)) {
+        if (!["payment_pending", "seller_delivered", "buyer_reviewing", "recall_window"].includes(order.status)) {
           return false;
         }
       } else if (filter === "active") {
@@ -75,6 +75,7 @@ export const BuyerDashboardView: React.FC<BuyerDashboardViewProps> = ({
             "escrow_locked",
             "seller_delivered",
             "buyer_reviewing",
+            "recall_window",
             "disputed",
           ].includes(order.status)
         ) {

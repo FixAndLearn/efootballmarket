@@ -3,6 +3,7 @@
 import { CredentialsDeliveryForm } from "@/components/escrow/CredentialsDeliveryForm";
 import { CredentialsRevealModal } from "@/components/escrow/CredentialsRevealModal";
 import { DisputeModal } from "@/components/escrow/DisputeModal";
+import { RecallClaimModal } from "@/components/escrow/RecallClaimModal";
 import { EscrowStatusStepper } from "@/components/escrow/EscrowStatusStepper";
 import { EscrowReceiptModal } from "@/components/escrow/EscrowReceiptModal";
 import { DisputeEvidenceLocker } from "@/components/escrow/DisputeEvidenceLocker";
@@ -28,6 +29,7 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
   const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
   const [isRevealModalOpen, setIsRevealModalOpen] = useState(false);
   const [isDisputeModalOpen, setIsDisputeModalOpen] = useState(false);
+  const [isRecallModalOpen, setIsRecallModalOpen] = useState(false);
   const [isReceiptModalOpen, setIsReceiptModalOpen] = useState(false);
 
   const isBuyer = currentUserId === order.buyer_id;
@@ -204,6 +206,16 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
               >
                 <FileText className="w-3.5 h-3.5 text-sx-amber-text shrink-0" />
                 <span>Order Record</span>
+              </button>
+            )}
+            {currentStatus === "recall_window" && order.buyer_id === currentUserId && (
+              <button
+                type="button"
+                onClick={() => setIsRecallModalOpen(true)}
+                className="text-xs text-sx-red-text hover:text-sx-red-text flex items-center gap-1.5 font-bold transition-colors cursor-pointer bg-sx-red-tint border border-sx-red-border px-2.5 py-1.5 rounded-xl shadow-sm"
+              >
+                <ShieldAlert className="w-3.5 h-3.5 text-sx-red-text shrink-0" />
+                <span>Account Recovered?</span>
               </button>
             )}
             {currentStatus !== "payment_pending" && currentStatus !== "cancelled" && currentStatus !== "refunded" && currentStatus !== "disputed" && (
@@ -756,6 +768,13 @@ export function OrderEscrowController({ order, currentUserId }: OrderEscrowContr
           setIsDisputeModalOpen(false);
           refreshPage();
         }}
+      />
+
+      <RecallClaimModal
+        orderId={order.id}
+        orderNumber={order.order_number}
+        open={isRecallModalOpen}
+        onClose={() => setIsRecallModalOpen(false)}
       />
 
       <KonamiTransferChecklistModal

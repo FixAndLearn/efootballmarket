@@ -108,7 +108,7 @@ export class AnalyticsService {
     let ordersCount = 0;
     let ordersVolume = 0;
     for (const o of orders) {
-      if (["completed", "escrow_locked", "seller_delivered", "buyer_reviewing"].includes(o.status)) {
+      if (["completed", "escrow_locked", "seller_delivered", "buyer_reviewing", "recall_window"].includes(o.status)) {
         ordersCount++;
         ordersVolume += Number(o.total_amount || 0);
       }

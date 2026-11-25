@@ -1,5 +1,7 @@
 import { Listing, ListingImage, ListingStatus, Platform, Playstyle } from "@/types/database";
 import { SupabaseClient } from "@supabase/supabase-js";
+import { checkListingIntegrity, recordListingFingerprint } from "@/lib/security/listingIntegrity";
+import { verifyListingScreenshot, exactHash, perceptualHash } from "@/lib/security/listingVerification";
 import {
   PUBLIC_SELLER_PROFILE_SELECT,
   sanitizeListingForPublic,
@@ -297,6 +299,160 @@ export class ListingService {
       if (imgError) {
         console.error("Failed to associate listing images:", imgError);
       }
+    }
+
+    // Screenshot screening runs server-side against the claimed squad strength
+    // and known image hashes. OCR is optional: when it cannot read the screenshot
+    // we mark it pending/manual rather than falsely claiming it was verified.
+    let screenshotStatus: "pending" | "verified" | "mismatch" | "rejected" = "pending";
+    let screenshotStrength: number | null = null;
+    let screenshotNotes = "Screenshot queued for manual review.";
+    const recordedImageHashes: string[] = [];
+    try {
+      const supabaseOrigin = new URL(process.env.NEXT_PUBLIC_SUPABASE_URL || "").origin;
+      const { data: priorFingerprints } = await this.supabase
+        .from("listing_fingerprints")
+        .select("image_hashes")
+        .neq("listing_id", newListing.id)
+        .limit(500);
+      const exactKnown: string[] = [];
+      const perceptualKnown: string[] = [];
+      for (const row of priorFingerprints || []) {
+        for (const tagged of row.image_hashes || []) {
+          if (tagged.startsWith("exact:")) exactKnown.push(tagged.slice(6));
+          else if (tagged.startsWith("phash:")) perceptualKnown.push(tagged.slice(6));
+          // Legacy untagged entries were perceptual hashes.
+          else if (/^[01]{64}$/.test(tagged)) perceptualKnown.push(tagged);
+        }
+      }
+
+      const outcomes: string[] = [];
+      for (const imageUrl of imageUrls || []) {
+        try {
+          const parsedUrl = new URL(imageUrl);
+          // Only fetch images from this project's public Supabase Storage. Do
+          // not turn seller-controlled URLs into an SSRF primitive.
+          if (parsedUrl.origin !== supabaseOrigin || !parsedUrl.pathname.includes("/storage/v1/object/public/")) continue;
+          const controller = new AbortController();
+          const timer = setTimeout(() => controller.abort(), 8000);
+          let response: Response;
+          try {
+            response = await fetch(parsedUrl.toString(), { signal: controller.signal });
+          } finally {
+            clearTimeout(timer);
+          }
+          if (!response.ok) continue;
+          const contentLength = Number(response.headers.get("content-length") || 0);
+          if (contentLength > 8 * 1024 * 1024) continue;
+          const bytes = Buffer.from(await response.arrayBuffer());
+          if (!bytes.length || bytes.length > 8 * 1024 * 1024) continue;
+
+          const result = await verifyListingScreenshot(
+            bytes,
+            Number(newListing.overall_team_strength),
+            { exact: exactKnown, perceptual: perceptualKnown }
+          );
+          outcomes.push(result.outcome);
+          screenshotNotes = result.notes;
+          screenshotStrength = result.detectedStrength ?? screenshotStrength;
+          const exact = exactHash(bytes);
+          const perceptual = await perceptualHash(bytes);
+          recordedImageHashes.push(`exact:${exact}`, `phash:${perceptual}`);
+          exactKnown.push(exact);
+          perceptualKnown.push(perceptual);
+        } catch {
+          // A missing/unreadable image remains a manual check, not a publish crash.
+        }
+      }
+      if (outcomes.includes("rejected")) screenshotStatus = "rejected";
+      else if (outcomes.includes("mismatch")) screenshotStatus = "mismatch";
+      else if (outcomes.length > 0 && outcomes.every((outcome) => outcome === "verified")) screenshotStatus = "verified";
+      else screenshotStatus = "pending";
+      await this.supabase.from("listings").update({
+        verification_status: screenshotStatus,
+        verified_strength: screenshotStrength,
+        verification_notes: screenshotNotes,
+        verified_at: screenshotStatus === "verified" ? new Date().toISOString() : null,
+      }).eq("id", newListing.id);
+    } catch (verificationErr) {
+      console.warn("Screenshot verification deferred to manual review:", verificationErr);
+    }
+
+    // Anti-fraud pass. Records the account fingerprint so future listings can be
+    // compared against this one, and blocks outright when the same squad is being
+    // relisted after it already sold -- the sell/recall/resell pattern.
+    //
+    // Never throws: a failure here must not cost the seller their listing.
+    try {
+      const created = newListing as Listing;
+      const flags = await checkListingIntegrity(this.supabase, {
+        id: created.id,
+        seller_id: created.seller_id,
+        dream_team_name: created.dream_team_name,
+        overall_team_strength: created.overall_team_strength,
+        matches_played: created.matches_played,
+        wins: created.wins,
+        goals_scored: created.goals_scored,
+      });
+
+      const blocking = flags.filter((f) => f.severity === "block");
+      const screenshotBlocked = screenshotStatus === "mismatch" || screenshotStatus === "rejected";
+      if (blocking.length > 0 || screenshotBlocked) {
+        // Unpublish rather than delete: keep the seller's work, hold the listing
+        // for an admin decision, and make the verification outcome visible.
+        const notes = [
+          ...blocking.map((f) => f.message),
+          ...(screenshotBlocked ? [screenshotNotes] : []),
+        ].join(" ");
+        await this.supabase
+          .from("listings")
+          .update({
+            status: "pending_review",
+            verification_status: screenshotStatus,
+            verification_notes: notes,
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", created.id);
+        await recordListingFingerprint(this.supabase, {
+          id: created.id,
+          seller_id: created.seller_id,
+          dream_team_name: created.dream_team_name,
+          overall_team_strength: created.overall_team_strength,
+          matches_played: created.matches_played,
+          wins: created.wins,
+          goals_scored: created.goals_scored,
+        }, recordedImageHashes);
+
+        return {
+          ...(newListing as Listing),
+          status: "pending_review" as any,
+          verification_status: screenshotStatus,
+          verification_notes: notes,
+        } as Listing;
+      }
+
+      const review = flags.filter((f) => f.severity === "review");
+      if (review.length > 0) {
+        await this.supabase
+          .from("listings")
+          .update({
+            verification_notes: review.map((f) => f.message).join(" "),
+            updated_at: new Date().toISOString(),
+          })
+          .eq("id", created.id);
+      }
+
+      await recordListingFingerprint(this.supabase, {
+        id: created.id,
+        seller_id: created.seller_id,
+        dream_team_name: created.dream_team_name,
+        overall_team_strength: created.overall_team_strength,
+        matches_played: created.matches_played,
+        wins: created.wins,
+        goals_scored: created.goals_scored,
+      }, recordedImageHashes);
+    } catch (integrityErr) {
+      console.warn("Listing integrity check skipped:", integrityErr);
     }
 
     return newListing as Listing;

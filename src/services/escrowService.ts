@@ -48,6 +48,16 @@ export interface DecryptedCredentials {
   deliveredAt: string;
 }
 
+/** Share of the seller's net amount paid at confirmation. */
+export const RECALL_INITIAL_RELEASE_PCT = 0.8;
+
+/**
+ * Days the remainder stays held after confirmation. PlayerSells allows 30,
+ * G2G 14, Eldorado 5-14, PlayerAuctions 7/14/30. Seven is the shortest window
+ * that still covers the "sold it, waited a week, recovered it" pattern.
+ */
+export const RECALL_WINDOW_DAYS = 7;
+
 export class EscrowService {
   constructor(private supabase: SupabaseClient) {}
 
@@ -342,10 +352,21 @@ export class EscrowService {
       );
     }
 
+    // Confirmation no longer pays the seller in full. It releases the initial
+    // portion (80% by default) and opens a recall window; the remainder stays in
+    // the seller's escrow balance until that window closes with no upheld claim.
+    //
+    // Rationale is in COMPETITOR-RESEARCH.md: seller recovers the Konami ID on
+    // day 20 after being paid on day 2 was the single most common fraud in this
+    // category, and every comparable marketplace holds a post-sale window.
+    // release_escrow_funds is left in place and untouched for any admin path
+    // that still needs a one-shot release on a legacy order.
     try {
-      const { error: rpcError } = await this.supabase.rpc("release_escrow_funds", {
+      const { error: rpcError } = await this.supabase.rpc("confirm_and_open_recall_window", {
         p_order_id: orderId,
         p_performed_by: buyerId,
+        p_initial_release_pct: RECALL_INITIAL_RELEASE_PCT,
+        p_window_days: RECALL_WINDOW_DAYS,
       });
 
       if (rpcError) {
@@ -502,5 +523,48 @@ export class EscrowService {
     }
 
     return result;
+  }
+
+  /**
+   * Buyer reports that the account was taken back by the seller.
+   *
+   * This never moves money. It freezes the held portion and puts the order in
+   * front of an admin, which is the whole point: the window exists so a report
+   * arrives while funds are still recoverable.
+   */
+  async openRecallClaim(params: {
+    orderId: string;
+    claimantId: string;
+    description: string;
+    evidenceUrls?: string[];
+    konamiNoticeReference?: string;
+  }): Promise<string> {
+    const { data, error } = await this.supabase.rpc("open_account_recall_claim", {
+      p_order_id: params.orderId,
+      p_claimant_id: params.claimantId,
+      p_description: params.description,
+      p_evidence_urls: params.evidenceUrls ?? [],
+      p_konami_notice_reference: params.konamiNoticeReference ?? null,
+    });
+
+    if (error) {
+      throw new Error(error.message || "Could not file the account-recovery report.");
+    }
+    return data as string;
+  }
+
+  /**
+   * Releases the held remainder once the window has closed clean.
+   * p_performed_by is null when the scheduled job is the caller; the RPC allows
+   * that, and refuses a buyer trying to release their own held funds early.
+   */
+  async releaseRemainder(orderId: string, performedBy: string | null): Promise<void> {
+    const { error } = await this.supabase.rpc("release_escrow_remainder", {
+      p_order_id: orderId,
+      p_performed_by: performedBy,
+    });
+    if (error) {
+      throw new Error(error.message || "Could not release held funds.");
+    }
   }
 }

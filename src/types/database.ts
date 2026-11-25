@@ -50,6 +50,9 @@ export type OrderStatus =
   | 'escrow_locked'
   | 'seller_delivered'
   | 'buyer_reviewing'
+  // Set when the buyer confirms: the initial portion is paid and the remainder
+  // is held for the account-recovery window.
+  | 'recall_window'
   | 'completed'
   | 'disputed'
   | 'cancelled'
@@ -62,6 +65,7 @@ export type EscrowState =
   | 'waiting_for_seller'
   | 'seller_delivered'
   | 'buyer_reviewing'
+  | 'recall_window'
   | 'completed'
   | 'refund_pending'
   | 'refunded'
@@ -94,6 +98,9 @@ export interface Profile {
   bio: string | null;
   role?: UserRole;
   is_verified_seller: boolean;
+  seller_tier?: 'new' | 'established' | 'trusted' | 'restricted';
+  confirmed_recall_count?: number;
+  recall_claims_count?: number;
   seller_rating: number;
   total_reviews_count: number;
   completed_sales_count: number;
@@ -177,6 +184,18 @@ export interface Listing {
   konami_id_status: 'linked_changeable' | 'unlinked' | 'linked_immutable';
   linked_email_status: 'transferable_full_access' | 'buyer_email_bindable';
   status: ListingStatus;
+  // Anti-fraud + checkout state (see the 2026-11-18 trust & safety migration)
+  verification_status?:
+    | 'unverified'
+    | 'pending'
+    | 'verified'
+    | 'mismatch'
+    | 'rejected';
+  verified_strength?: number | null;
+  verification_notes?: string | null;
+  verified_at?: string | null;
+  reserved_until?: string | null;
+  reserved_order_id?: string | null;
   views_count: number;
   favorites_count: number;
   is_featured: boolean;

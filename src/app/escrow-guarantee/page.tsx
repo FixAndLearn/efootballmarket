@@ -113,7 +113,7 @@ export default function EscrowGuaranteePage() {
           Buyer protection applies only to orders created from published marketplace listings and paid through eFootballMarket checkout. Deals arranged and paid directly through WhatsApp, Facebook, or another external service are not covered.
         </p>
         <p className="text-xs text-sx-muted">
-          <strong>Publisher Notice:</strong> Konami&apos;s Terms of Use restrict account transfers and Konami can modify game features or restrict accounts under its own policies. eFootballMarket holds M-Pesa payment during your 24-hour Clean ID check, after which account care rests with you.
+          <strong>Publisher Notice:</strong> Konami&apos;s Terms of Use restrict account transfers and Konami can modify game features or restrict accounts under its own policies. eFootballMarket holds your M-Pesa payment during the Clean ID check and then keeps 20% of the seller&apos;s payout for 7 more days against account recovery. After that held balance is released, account care rests with you.
         </p>
       </section>
     </StandaloneDocLayout>

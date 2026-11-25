@@ -26,7 +26,7 @@ export function Footer() {
           <div className="col-span-2 sm:col-span-4 lg:col-span-1 space-y-3">
             <Logo clickable={true} size="sm" />
             <p className="text-xs text-sx-muted leading-relaxed max-w-xs">
-              Kenyan eFootball squad marketplace and tournaments hub. Marketplace checkout payments to Buy Goods Till <strong className="text-sx-ink">1572931</strong> are held during your 24-hour login check.
+              Kenyan eFootball squad marketplace and tournaments hub. Marketplace checkout payments to Buy Goods Till <strong className="text-sx-ink">1572931</strong> are held during your 24-hour login check, then 20% of the seller&apos;s payout stays held for 7 days against account recovery.
             </p>
           </div>
 
@@ -166,6 +166,17 @@ export function Footer() {
                   className="inline-flex items-center gap-0.5 hover:text-sx-ink transition-colors"
                 >
                   <span>Privacy &amp; Cookies</span>
+                  <ArrowUpRight className="w-3 h-3 opacity-70" />
+                </Link>
+              </li>
+              <li>
+                <Link
+                  href="/pricing"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-0.5 hover:text-sx-ink transition-colors"
+                >
+                  <span>Pricing &amp; Fees</span>
                   <ArrowUpRight className="w-3 h-3 opacity-70" />
                 </Link>
               </li>

@@ -28,7 +28,7 @@ export default function DisputePolicyPage() {
           1. How the Payment Pause Works
         </h2>
         <p>
-          For an order created from a published marketplace listing and paid through eFootballMarket checkout, the payment received through Safaricom M-Pesa Buy Goods Till <strong>1572931</strong> is not paid to the seller upfront. It remains on hold through the <strong>12-hour seller delivery window</strong> and your <strong>24-hour login inspection window</strong>. Tapping <strong>Open Dispute</strong> inside your Order Room before the 24-hour timer ends immediately pauses automatic payout until a moderator reviews both sides. Direct social-media deals and swaps that do not proceed through checkout are not covered.
+          For an order created from a published marketplace listing and paid through eFootballMarket checkout, the payment received through Safaricom M-Pesa Buy Goods Till <strong>1572931</strong> is not paid to the seller upfront. It is split in two. The seller receives <strong>80%</strong> when you confirm the logins work. The remaining <strong>20%</strong> stays held with eFootballMarket for <strong>7 days after that confirmation</strong>. Inside those 7 days, if the seller takes the account back through Konami support, you tap <strong>Account Recovered?</strong> on your Order Room and the held 20% freezes instantly for review. Tapping <strong>Open Dispute</strong> at any point before confirmation also pauses payout until a moderator reviews both sides. Direct social-media deals and swaps that do not proceed through checkout are not covered.
         </p>
       </section>
 
@@ -56,7 +56,8 @@ export default function DisputePolicyPage() {
             <li>• <strong>Change of Mind:</strong> Deciding you no longer want a squad that matches all listed stats and Clean Konami ID rules.</li>
             <li>• <strong>Android vs iOS Coin Separation:</strong> Logging into an Android squad on an iPhone (or vice versa) where Konami separates OS coin wallets.</li>
             <li>• <strong>Altered Squad:</strong> Spending coins/GP, releasing players, or running Legacy Transfers before requesting a refund.</li>
-            <li>• <strong>Missed 24h Window:</strong> Waiting past 24 hours after valid delivery without inspecting, or tapping <em>Confirm &amp; Release</em> early.</li>
+            <li>• <strong>Missed Inspection Window:</strong> Waiting past your inspection window after valid delivery without inspecting.</li>
+            <li>• <strong>Recovery Reported After Day 7:</strong> An account recovered more than 7 days after you confirmed the logins worked. The held 20% is released to the seller on day 7, so report anything suspicious before then. A late report can still be reviewed as a policy matter, but the funds are no longer held.</li>
           </ul>
         </div>
       </section>

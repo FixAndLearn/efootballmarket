@@ -251,6 +251,39 @@ export async function POST(req: NextRequest) {
           { status: 500 }
         );
       }
+
+      // Take a 30-minute reservation on the listing. Two buyers paying for one
+      // squad means either a refund or a missing account, and with volume
+      // growing that stops being theoretical.
+      //
+      // This runs BEFORE any payment is initiated. It changes no payment code:
+      // it only decides whether this checkout is allowed to start. Losing the
+      // race returns 409 and the order we just created is cancelled.
+      const { data: reserved, error: reserveError } = await adminSupabase.rpc(
+        "reserve_listing_for_checkout",
+        { p_listing_id: listing.id, p_order_id: createdOrder.id, p_hold_minutes: 30 }
+      );
+
+      if (reserveError) {
+        // A reservation failure must not silently block a payable checkout;
+        // log it and let the existing single-order checks do their job.
+        console.warn("Listing reservation failed; continuing:", reserveError.message);
+      } else if (reserved === false) {
+        await adminSupabase
+          .from("orders")
+          .update({ status: "cancelled", updated_at: new Date().toISOString() })
+          .eq("id", createdOrder.id)
+          .eq("status", "payment_pending");
+        await releaseUnusedClaim();
+        return NextResponse.json(
+          {
+            error:
+              "Another buyer is checking out this squad right now. It becomes available again in a few minutes if they do not complete payment.",
+          },
+          { status: 409 }
+        );
+      }
+
       order = createdOrder;
 
       // 5. Create Escrow Account record

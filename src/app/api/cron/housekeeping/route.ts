@@ -40,6 +40,7 @@ export async function GET(req: NextRequest) {
       expired_offers: 0,
       stale_orders_cancelled: 0,
       unlocked_listings: 0,
+      recall_remainders_released: 0,
       runtime_state_pruned: 0,
       errors: [] as string[],
     };
@@ -218,6 +219,9 @@ export async function GET(req: NextRequest) {
               "escrow_locked",
               "seller_delivered",
               "buyer_reviewing",
+              // Without this the listing never unlocks: an order sitting in the
+              // recall window is still an active, funded order.
+              "recall_window",
               "disputed",
               "completed",
             ])
@@ -238,6 +242,37 @@ export async function GET(req: NextRequest) {
     } catch (step3Err: any) {
       results.errors.push(`Step 3 error: ${step3Err?.message}`);
         console.error("[housekeeping]", `Step 3 error: ${step3Err?.message}`);
+    }
+
+    // 5. Release held remainders whose recall window closed with no upheld claim.
+    //
+    // Confirmation now pays the seller 80% and holds the rest for a week, so
+    // without this step that money would sit in escrow forever. The RPC itself
+    // refuses while a claim is open and is idempotent, so a double run is safe.
+    try {
+      const { data: windowedOrders } = await supabase
+        .from("escrow_accounts")
+        .select("order_id, recall_deadline, held_amount")
+        .eq("escrow_state", "recall_window")
+        .not("recall_deadline", "is", null)
+        .lte("recall_deadline", now.toISOString());
+
+      for (const row of windowedOrders ?? []) {
+        try {
+          await escrowService.releaseRemainder(row.order_id, null);
+          results.recall_remainders_released += 1;
+        } catch (releaseErr: any) {
+          // An open claim makes this raise on purpose; that is a normal state,
+          // not an error worth failing the whole cron for.
+          const msg = String(releaseErr?.message || "");
+          if (!/claim is open|disputed/i.test(msg)) {
+            results.errors.push(`Recall remainder ${row.order_id}: ${msg}`);
+          }
+        }
+      }
+    } catch (step5Err: any) {
+      results.errors.push(`Step 5 error: ${step5Err?.message}`);
+      console.error("[housekeeping]", `Step 5 error: ${step5Err?.message}`);
     }
 
     // Report non-200 when a step failed: the previous version always returned

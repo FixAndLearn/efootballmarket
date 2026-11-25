@@ -27,7 +27,7 @@ export default async function SellerDashboardPage() {
   const { data: profile } = await primaryClient
     .from("profiles")
     .select(
-      "username, available_balance, escrow_balance, completed_sales_count, seller_rating, is_verified_seller"
+      "username, available_balance, escrow_balance, completed_sales_count, seller_rating, is_verified_seller, seller_tier, confirmed_recall_count, recall_claims_count"
     )
     .eq("id", user.id)
     .maybeSingle();
@@ -45,7 +45,7 @@ export default async function SellerDashboardPage() {
     .from("orders")
     .select("*, listing:listings(id, title, platform, overall_team_strength)")
     .eq("seller_id", user.id)
-    .in("status", ["escrow_locked", "seller_delivered", "buyer_reviewing", "disputed"])
+    .in("status", ["escrow_locked", "seller_delivered", "buyer_reviewing", "recall_window", "disputed"])
     .order("created_at", { ascending: false });
 
   // Fetch incoming buyer price offers for this seller
@@ -61,6 +61,9 @@ export default async function SellerDashboardPage() {
     completed_sales_count: profile?.completed_sales_count || 0,
     seller_rating: Number(profile?.seller_rating || 0),
     is_verified_seller: profile?.is_verified_seller || false,
+    seller_tier: profile?.seller_tier || "new",
+    confirmed_recall_count: Number(profile?.confirmed_recall_count || 0),
+    recall_claims_count: Number(profile?.recall_claims_count || 0),
   };
 
   return (

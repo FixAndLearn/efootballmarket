@@ -46,6 +46,7 @@ import {
   ShieldCheck,
   Star,
   Users,
+  Clock,
 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -369,6 +370,16 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                     </Link>
                   ) : null}
                   <VerifiedSellerBadge seller={listing.seller} size="sm" showPopover={true} />
+                  {listing.verification_status === "verified" ? (
+                    <span className="inline-flex items-center gap-1 text-sx-green-text font-semibold" title="Screenshot team strength matched the listing claim; it does not certify account ownership or every player. ">
+                      <ShieldCheck className="w-3.5 h-3.5" /> Screenshot checked
+                      {listing.verified_strength ? ` · ${listing.verified_strength} OVR` : ""}
+                    </span>
+                  ) : listing.verification_status === "pending" ? (
+                    <span className="inline-flex items-center gap-1 text-sx-amber-text font-medium" title="Screenshot is awaiting a manual review; confirm the squad in-game before releasing payment.">
+                      <Clock className="w-3.5 h-3.5" /> Screenshot review pending
+                    </span>
+                  ) : null}
                   {(listing.seller.completed_sales_count || 0) > 0 && (
                     <span className="inline-flex items-center gap-1 text-sx-ink-soft font-medium">
                       {listing.seller.seller_rating ? (
@@ -671,6 +682,20 @@ export default async function ListingDetailPage({ params }: ListingDetailPagePro
                 <Link href="/browse" className="inline-block pt-1">
                   <Button variant="secondary" size="sm">
                     Browse Available Squads
+                  </Button>
+                </Link>
+              </div>
+            ) : listing.reserved_until && new Date(listing.reserved_until) > new Date() ? (
+              <div className="p-4 rounded-xl bg-sx-amber-tint border border-sx-amber-border text-center space-y-2">
+                <Clock className="w-5 h-5 text-sx-amber-text mx-auto" />
+                <h3 className="text-sm font-bold text-sx-ink">Reserved · Checkout in progress</h3>
+                <p className="text-xs text-sx-muted">
+                  Another buyer is paying for this squad right now. If they do not
+                  complete payment it frees up again within 30 minutes.
+                </p>
+                <Link href="/browse" className="inline-block pt-1">
+                  <Button variant="secondary" size="sm">
+                    Browse Other Squads
                   </Button>
                 </Link>
               </div>

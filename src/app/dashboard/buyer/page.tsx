@@ -40,6 +40,7 @@ export default async function BuyerDashboardPage() {
       "escrow_locked",
       "seller_delivered",
       "buyer_reviewing",
+      "recall_window",
       "disputed",
     ].includes(o.status)
   );

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { detectProhibitedOffPlatformContent } from "@/lib/security/chatFilter";
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ListingOffer } from "@/types/database";
@@ -193,6 +194,24 @@ export async function POST(req: NextRequest) {
         { error: "Listing ID, buyer name, phone number, and amount in KES are required." },
         { status: 400 }
       );
+    }
+
+    // The note field was the one place a buyer could type freely: order chat is
+    // filtered, but an offer note was not. That made "here is my WhatsApp" a
+    // one-field bypass of the whole off-platform defence. Same detector, same
+    // rules, both channels.
+    if (typeof note === "string" && note.trim().length > 0) {
+      const filter = detectProhibitedOffPlatformContent(note);
+      if (filter.isBlocked) {
+        return NextResponse.json(
+          {
+            error:
+              filter.userWarningMessage ||
+              "Prohibited: keep contact and payment inside eFootballMarket. Buyer protection applies only to orders paid through marketplace checkout.",
+          },
+          { status: 400 }
+        );
+      }
     }
 
     const offerNum = Number(offered_price);

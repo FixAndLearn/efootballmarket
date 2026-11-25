@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { ShieldCheck, Shield, Crown, CheckCircle2, HelpCircle, Star, X } from "lucide-react";
+import { ShieldCheck, Shield, ShieldAlert, Crown, CheckCircle2, HelpCircle, Star, X } from "lucide-react";
 import { Profile } from "@/types/database";
 import { getSellerTier } from "@/lib/utils/sellerTier";
 
@@ -21,7 +21,14 @@ export function VerifiedSellerBadge({
   const salesCount = Number(seller?.completed_sales_count || 0);
   const rating = Number(seller?.seller_rating || 0);
   const isVerified = Boolean(seller?.is_verified_seller);
-  const tier = getSellerTier(salesCount, rating, isVerified);
+  const confirmedRecalls = Number((seller as any)?.confirmed_recall_count || 0);
+  const tier = getSellerTier(
+    salesCount,
+    rating,
+    isVerified,
+    confirmedRecalls,
+    (seller as any)?.seller_tier
+  );
 
   const iconSizes = {
     sm: "w-3 h-3",
@@ -41,6 +48,8 @@ export function VerifiedSellerBadge({
         return <Crown className={`${iconSizes[size]} text-sx-amber-text shrink-0`} />;
       case "shield-check":
         return <ShieldCheck className={`${iconSizes[size]} shrink-0`} />;
+      case "alert":
+        return <ShieldAlert className={`${iconSizes[size]} text-sx-red-text shrink-0`} />;
       default:
         return <Shield className={`${iconSizes[size]} shrink-0`} />;
     }
@@ -92,6 +101,12 @@ export function VerifiedSellerBadge({
 
           <p className="text-[11px] text-sx-ink-soft leading-relaxed">
             {tier.description}
+            {tier.level !== "recall_flagged" && (
+              <span className="block mt-1 text-[10px] text-sx-muted">
+                Every sale keeps 20% of the seller&apos;s payout held for 7 days
+                against account recovery.
+              </span>
+            )}
           </p>
 
           <div className="space-y-1.5 pt-0.5">

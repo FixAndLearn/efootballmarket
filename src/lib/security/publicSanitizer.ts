@@ -6,7 +6,7 @@ import { Listing, Profile } from "@/types/database";
  * `available_balance`, or `escrow_balance`.
  */
 export const PUBLIC_SELLER_PROFILE_SELECT =
-  "id, username, avatar_url, bio, country, role, is_verified_seller, is_suspended, seller_rating, total_reviews_count, completed_sales_count, created_at, updated_at";
+  "id, username, avatar_url, bio, country, role, is_verified_seller, is_suspended, seller_rating, total_reviews_count, completed_sales_count, seller_tier, confirmed_recall_count, recall_claims_count, created_at, updated_at";
 
 /**
  * Columns a signed-in user may read for their OWN row.

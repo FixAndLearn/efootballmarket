@@ -40,6 +40,9 @@ export interface SellerDashboardViewProps {
     completed_sales_count: number;
     seller_rating: number;
     is_verified_seller: boolean;
+    seller_tier?: string;
+    confirmed_recall_count?: number;
+    recall_claims_count?: number;
   };
   listings: Listing[];
   pendingOrders: Order[];
@@ -61,14 +64,15 @@ export function SellerDashboardView({
   const tier = getSellerTier(
     sellerProfile.completed_sales_count,
     sellerProfile.seller_rating,
-    Boolean(sellerProfile.is_verified_seller)
+    Boolean(sellerProfile.is_verified_seller),
+    Number(sellerProfile.confirmed_recall_count || 0),
+    sellerProfile.seller_tier
   );
   const currentSales = Number(sellerProfile.completed_sales_count) || 0;
-  const targetSales = tier.level === "new_seller" ? 1 : 10;
-  const progressPercent =
-    tier.level === "top_seller"
-      ? 100
-      : Math.min(100, Math.round((currentSales / targetSales) * 100));
+  const targetSales = Math.max(1, currentSales + tier.salesRequiredForNext);
+  const progressPercent = tier.nextTierLabel
+    ? Math.min(100, Math.round((currentSales / targetSales) * 100))
+    : 100;
 
   const getOrderActionMeta = (status: string) => {
     switch (status) {
@@ -464,7 +468,9 @@ export function SellerDashboardView({
           <div className="flex items-center gap-3">
             <div
               className={`w-11 h-11 rounded-xl flex items-center justify-center border ${
-                tier.level === "top_seller"
+                tier.level === "recall_flagged"
+                  ? "bg-sx-red-tint text-sx-red-text border-sx-red-border"
+                  : tier.level === "top_seller"
                   ? "bg-sx-amber-tint text-sx-amber-text border-sx-amber-border"
                   : tier.level === "id_verified"
                   ? "bg-sx-green-tint text-sx-green-text border-sx-green-border"
@@ -473,7 +479,9 @@ export function SellerDashboardView({
                   : "bg-sx-stone text-sx-ink border-sx-border"
               }`}
             >
-              {tier.level === "top_seller" ? (
+              {tier.level === "recall_flagged" ? (
+                <ShieldAlert className="w-5 h-5" />
+              ) : tier.level === "top_seller" ? (
                 <Crown className="w-5 h-5" />
               ) : tier.level === "id_verified" || tier.level === "proven_seller" ? (
                 <ShieldCheck className="w-5 h-5" />
