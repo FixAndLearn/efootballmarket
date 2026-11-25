@@ -1,6 +1,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import type { Metadata } from "next";
 import {
   ArrowLeft,
   ArrowRight,
@@ -91,6 +92,38 @@ const getStatusConfig = (status: OrderStatus | string) => {
       };
   }
 };
+
+/**
+ * Runs before the loading shell is flushed.
+ *
+ * The page body calls notFound() when the order is missing, but by then the
+ * root app/loading.tsx has already sent a 200 status, so the 404 never reached
+ * the wire. Doing the existence check here keeps the status honest.
+ */
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  try {
+    const resolved = await Promise.resolve(params);
+    if (!resolved?.id) {
+      notFound();
+    }
+
+    const primaryClient = hasServiceRoleKey() ? createAdminClient() : createServerSupabaseClient();
+    const orderService = new OrderService(primaryClient);
+    const order = await orderService.getOrderById(resolved.id);
+    if (!order) {
+      notFound();
+    }
+
+    return {
+      title: `Order ${order.order_number}`,
+      robots: { index: false, follow: false },
+    };
+  } catch (err: any) {
+    // Re-throw Next's control-flow signal; only swallow genuine lookup faults.
+    if (err?.digest?.startsWith?.("NEXT_") || err?.digest === "NEXT_NOT_FOUND") throw err;
+    return { title: "Order", robots: { index: false, follow: false } };
+  }
+}
 
 export default async function OrderDetailPage({ params }: OrderPageProps) {
   const resolved = await Promise.resolve(params);

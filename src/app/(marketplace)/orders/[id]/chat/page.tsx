@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
+import type { Metadata } from "next";
 import {
   ArrowLeft,
   MessageCircle,
@@ -23,6 +24,30 @@ interface OrderChatPageProps {
   params: {
     id: string;
   };
+}
+
+/**
+ * Existence check before the loading shell flushes, so a missing order returns
+ * a real 404 instead of a 200 carrying not-found text.
+ */
+export async function generateMetadata({ params }: { params: { id: string } }): Promise<Metadata> {
+  try {
+    const resolved = await Promise.resolve(params);
+    if (!resolved?.id) notFound();
+
+    const primaryClient = hasServiceRoleKey() ? createAdminClient() : createServerSupabaseClient();
+    const orderService = new OrderService(primaryClient);
+    const order = await orderService.getOrderById(resolved.id);
+    if (!order) notFound();
+
+    return {
+      title: `Order Chat ${order.order_number}`,
+      robots: { index: false, follow: false },
+    };
+  } catch (err: any) {
+    if (err?.digest?.startsWith?.("NEXT_")) throw err;
+    return { title: "Order Chat", robots: { index: false, follow: false } };
+  }
 }
 
 export default async function OrderDedicatedChatPage({

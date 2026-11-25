@@ -5,7 +5,11 @@ import { EDITORIAL_GUIDES } from "@/lib/data/editorialGuides";
 import { isContentDateReached, safeLastModified } from "@/lib/news/publishing";
 import { getPublicStorefrontPath } from "@/lib/security/publicSanitizer";
 
-export const revalidate = 3600;
+// Was 3600. A listing archived (or sold) minutes ago would keep appearing in
+// the sitemap for up to an hour, so search engines were told about squads that
+// were no longer purchasable. The query already filters to status='published',
+// so a shorter window is the whole fix.
+export const revalidate = 300;
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const siteUrl = "https://www.efootballmarket.co.ke";

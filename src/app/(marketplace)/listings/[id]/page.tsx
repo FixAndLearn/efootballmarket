@@ -49,6 +49,9 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+const isUuid = (v?: string) => Boolean(v && UUID_RE.test(v));
 import { Metadata } from "next";
 
 export const revalidate = 0;
@@ -62,14 +65,30 @@ interface ListingDetailPageProps {
 export async function generateMetadata({ params }: ListingDetailPageProps): Promise<Metadata> {
   try {
     const resolvedParams = await Promise.resolve(params);
+
+    // Resolve the id BEFORE any JSX is produced. `params` is a plain object in
+    // Next 14, but the page body below reads `params.id` without awaiting, so
+    // keep that contract intact here too.
+    const listingId = resolvedParams.id;
+    if (!isUuid(listingId)) {
+      notFound();
+    }
+
     const supabase = createServerSupabaseClient();
     const listingService = new ListingService(supabase);
-    const listing = await listingService.getListingById(resolvedParams.id);
+    const listing = await listingService.getListingById(listingId);
 
+    // notFound() here, not in the page body.
+    //
+    // The root app/loading.tsx wraps every route in Suspense, so the 200 shell
+    // and its headers are flushed before the page component finishes querying.
+    // A notFound() thrown from the page body therefore arrives too late to
+    // change the status: the visitor got the right words, but the crawler got a
+    // healthy 200 and indexed a dead listing. generateMetadata runs before that
+    // flush, so throwing here keeps 404 on the wire -- and the not-found page
+    // still renders, because Next renders it for the thrown signal.
     if (!listing) {
-      return {
-        title: "Squad Listing",
-      };
+      notFound();
     }
 
     const primaryImage =
@@ -78,14 +97,30 @@ export async function generateMetadata({ params }: ListingDetailPageProps): Prom
       "/opengraph-image";
 
     const displayTitle = formatSmartListingTitle(listing);
-    const title = `${displayTitle} (${listing.overall_team_strength} OVR)`;
-    const description = `${listing.overall_team_strength} OVR Clean Konami ID eFootball squad listed at ${formatCurrency(
-      listing.price
-    )}. Buyer protection applies to orders from this published listing paid through marketplace checkout, with a 24-hour inspection.`;
+    const isLive = listing.status === "published";
+
+    // An archived, sold or suspended listing is still served so old links and
+    // receipts resolve, but it must not present itself to a search engine as a
+    // buyable squad, and it must not promise "buyer protection on this
+    // published listing" when it is not published. Measured before this fix:
+    // /listings/dc47d722 (status 'archived') answered 200, index/follow, with a
+    // description calling itself a published listing.
+    const title = isLive
+      ? `${displayTitle} (${listing.overall_team_strength} OVR)`
+      : `${displayTitle} — No Longer Available`;
+
+    const description = isLive
+      ? `${listing.overall_team_strength} OVR Clean Konami ID eFootball squad listed at ${formatCurrency(
+          listing.price
+        )}. Buyer protection applies to orders from this published listing paid through marketplace checkout, with a 24-hour inspection.`
+      : `This eFootball squad listing is no longer available. Browse current ${listing.platform || "eFootball"} squads on eFootballMarket Kenya.`;
 
     return {
       title,
       description,
+      robots: isLive
+        ? { index: true, follow: true }
+        : { index: false, follow: true },
       alternates: {
         canonical: `https://www.efootballmarket.co.ke/listings/${listing.id}`,
       },

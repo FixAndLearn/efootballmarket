@@ -20,10 +20,10 @@ export async function generateMetadata({ params }: DirectPayPageProps): Promise<
   const listing = await listingService.getListingById(params.id);
 
   if (!listing) {
-    return {
-      title: "Direct Checkout",
-      robots: { index: false, follow: false },
-    };
+    // A checkout link for a listing that does not exist (or is no longer
+    // published) is a dead end, not a page. Returning metadata here left the
+    // status at 200; throwing notFound() pre-flush keeps it a true 404.
+    notFound();
   }
 
   const displayTitle = formatSmartListingTitle(listing);

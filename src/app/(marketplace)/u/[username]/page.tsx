@@ -178,8 +178,12 @@ export async function generateMetadata({
 }: SellerStorefrontProps): Promise<Metadata> {
   const resolved = await Promise.resolve(params);
   const result = await fetchSellerByUsername(resolved.username);
+
+  // notFound() belongs here, not in the page body: the root app/loading.tsx
+  // flushes a 200 status before the page runs, so a later notFound() cannot
+  // change it. This also keeps unknown usernames out of the index.
   if (!result) {
-    return { title: "Seller Storefront Not Found" };
+    notFound();
   }
 
   const { seller, listings } = result;

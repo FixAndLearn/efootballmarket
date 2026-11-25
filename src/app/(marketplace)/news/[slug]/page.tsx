@@ -283,10 +283,12 @@ export async function generateMetadata({
     const service = new NewsService(primaryClient);
     const article = await service.getArticleBySlug(slug);
 
+    // notFound() belongs here, not in the page body. The root app/loading.tsx
+    // flushes a 200 shell before the page component runs, so a notFound()
+    // thrown later cannot change the status -- the crawler saw a live page for
+    // a slug that does not exist. generateMetadata runs pre-flush.
     if (!article) {
-      return {
-        title: "Guide Not Found",
-      };
+      notFound();
     }
 
     const canonicalUrl = `https://www.efootballmarket.co.ke/news/${article.slug}`;
