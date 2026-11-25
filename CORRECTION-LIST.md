@@ -1,117 +1,104 @@
-# Correction list — ordered
+# Correction list — status
 
-Re-verified against the live DB and current HEAD (`822c513`) on 2026-11-17.
-Three items that older notes listed as open are **not** real. They're at the
-bottom with the reason, so nobody re-opens them.
+Updated 2026-11-17 after working the list. Live at `c82720e`.
 
----
-
-## 1. Rotate the Resend API key  (5 min, you)
-
-**Why first:** it is the only item on this list where something is currently
-broken in production, and the fix is outside the repo.
-
-The key that was pasted in an earlier session (`UW8NwVPzKBqa3Djl`) failed
-authentication, so it was never confirmed live. Every admin alert — new order,
-dispute opened, scammer report — goes out through Resend to
-`brianokibo@gmail.com`. If that key is dead, you are getting no alerts and don't
-know it.
-
-Nothing to code. Rotate in the Resend dashboard, then confirm a test mail
-actually lands in the inbox. Until that's done, the alerting pipeline this repo
-was cleaned up for is unproven.
-
-## 2. Close the two RLS write holes  (10 min, me)
-
-**Why second:** active data-integrity exposure, and it's a single SQL grant
-change — no deploy, no code.
-
-Verified live just now:
-
-- `reviews` has policies for SELECT and INSERT only, **no UPDATE and no DELETE
-  policy** — RLS correctly denies both. But `anon` and `authenticated` still hold
-  the raw `UPDATE`, `DELETE` and `TRUNCATE` table grants. The only thing standing
-  between an anonymous caller and wiping the table is RLS not having a policy for
-  it. That is one `create policy` away from being a hole, and it reads as a
-  mistake rather than a decision.
-- `profiles` is tighter — policies exist for SELECT and UPDATE, so `anon` has no
-  DELETE or TRUNCATE path. The leftover grants are still worth removing.
-
-Fix is `revoke update, delete, truncate on public.reviews from anon, authenticated`
-plus the equivalent on `profiles` for DELETE/TRUNCATE, then `grant` back only
-what the app genuinely needs. I'd rather confirm nothing in `src/` depends on
-those grants before revoking — that's the 10 minutes.
-
-## 3. `/tournaments` should render its brackets server-side  (half a day, me)
-
-**Why third:** real and visible, but cosmetic — nothing is broken for users.
-
-The page is a client component that fetches `/api/tournaments` after mount, so
-the HTML a crawler or a slow phone receives says **"Loading brackets..."** and
-nothing else. Both cups exist and are open in the DB. Google indexes an empty
-page; a user on a bad connection stares at a spinner that a server render would
-have made instant.
-
-This is the last remaining item from the original audit that is a genuine
-defect rather than a preference. It's also the biggest change on this list,
-which is why it's third and not first.
-
-## 4. Sitemap: revalidate on status change, not on a timer  (2 hrs, me)
-
-**Why fourth:** currently correct, just not elegant.
-
-The archived-listing-in-sitemap bug is fixed — I cut `revalidate` from 3600 to
-300 and re-verified that all 70 sitemap URLs return 200 and the archived squad
-is gone. What's left is that correctness now costs a DB query every 5 minutes
-forever. The proper fix is calling `revalidatePath("/sitemap.xml")` from the
-publish/archive path so it only regenerates when something actually changes.
-
-Strictly optional. Nothing is wrong today.
-
-## 5. Automated tests for the four things that broke  (1 day, me)
-
-**Why last:** it doesn't fix anything now, it stops the same class of bug
-returning.
-
-Today I shipped three commits where the first two were correct code that
-changed nothing, and only a live check caught it. The failure modes worth
-locking down:
-
-- a nonexistent listing / article / seller / order returns 404, not 200
-- a 404 emits exactly one robots tag
-- `notFound()` and `redirect()` inside a `try` re-throw `NEXT_` digests
-- no `loading.tsx` is added back at the root
-
-A handful of route-level assertions would have caught every one of those in
-seconds instead of four deploys.
+| # | Item | Status |
+|---|------|--------|
+| 1 | Resend key rotation | **Closed — not needed** |
+| 2 | RLS grant holes | **Done** |
+| 3 | `/tournaments` server render | **Done** |
+| 4 | Sitemap on-demand revalidation | **Done** |
+| 5 | Tests for the four regressions | Open |
 
 ---
+
+## 1. Resend key — closed, no action
+
+You confirmed a notification email arrived yesterday, so the deployed key works
+and the admin alert path is live. The earlier "unverified" flag was only ever
+about the *pasted* key (`UW8NwVPzKBqa3Djl`) being rejected during a test — a
+different string from the one Vercel actually holds. Nothing to rotate.
+
+## 2. RLS grant holes — done
+
+Applied to the live database, recorded as
+`supabase/migrations/20261117_tighten_reviews_profiles_grants.sql`.
+
+**reviews**
+- `anon` and `authenticated` both held UPDATE / DELETE / TRUNCATE grants while
+  policies existed only for SELECT and INSERT. Writes were denied by RLS, but
+  only because no policy existed for them. Revoked.
+- The INSERT policy was named *"Buyers can write reviews for completed orders"*
+  while its predicate was just `auth.uid() = reviewer_id`. It never checked that
+  the order belonged to the reviewer, that the seller matched, or that the order
+  was completed. Rewritten to enforce what its name claims.
+
+**profiles**
+- `authenticated` held table-level UPDATE on every column, including
+  `available_balance`, `escrow_balance`, `is_suspended`, `is_verified_seller`,
+  `role` and `seller_rating`. The `protect_sensitive_profile_fields` trigger
+  reverted those, so nothing was exploitable — but a trigger is the wrong place
+  to stop privilege escalation when the grant system can. Revoked the blanket
+  grant, granted back only the five fields the profile page writes.
+- `anon` held DELETE and TRUNCATE. No code path deletes a profile. Revoked.
+
+Kept deliberately, after reading the code that needs them: `profiles` UPDATE on
+those five fields and `profiles` INSERT for `authenticated` (signup sets trust
+columns at creation; `auth/callback` uses `ignoreDuplicates: true`, i.e.
+ON CONFLICT DO NOTHING, so it never takes an UPDATE path), `profiles` SELECT for
+`anon` (storefronts), `reviews` INSERT for `authenticated` (rate route fallback).
+
+**Verified live:** `reviews` grant list is `INSERT, REFERENCES, SELECT, TRIGGER`.
+`profiles` UPDATE is exactly `country, first_name, last_name, phone_number,
+username`. `service_role` still holds every column, so money RPCs are untouched.
+Anon still sees 61 profiles. An authenticated user naming `available_balance` on
+their own row gets `ERROR 42501: permission denied for table profiles`.
+
+**Trap worth remembering:** `revoke update (col)` is a silent no-op when a
+table-level UPDATE grant exists — a table grant covers every column and a column
+revoke cannot subtract from it. My first attempt revoked the sensitive columns
+and `information_schema` still showed all 21. Revoke the table grant, then grant
+back specific columns.
+
+## 3. `/tournaments` server render — done
+
+Split into a server page (`page.tsx`) and `TournamentsClient.tsx`.
+
+Verified live: **Brinaki Clash** and **1v1 Wager Duel** now appear in the served
+HTML, `Loading brackets...` count is 0, title and canonical are correct.
+
+One thing that could have gone wrong and did not: the server wrapper has to
+apply the same `maskPhoneNumber` + `isUserAdmin` logic as `GET /api/tournaments`,
+or the page would publish participant phone numbers the endpoint deliberately
+hides. Checked the live HTML — the only phone number present is the support
+number inside `wa.me/` links, exactly as the standing rule requires.
+
+## 4. Sitemap revalidation — done
+
+`revalidatePath("/sitemap.xml")` now fires from `api/listings/[id]` when a PATCH
+carries a status change or when a listing is deleted. `revalidate` went back up
+to 900 as a backstop for changes made outside the API (direct SQL, dashboard).
+
+Live: 70 URLs, all 200, archived squad absent.
+
+## 5. Tests — still open
+
+Route assertions for the four failure modes found today: 404 status on bogus
+content, a single robots tag on 404s, `NEXT_` re-throw inside `generateMetadata`,
+and no `loading.tsx` returning to the root. Today that class of bug cost four
+deploys to find; the tests would catch it in seconds.
 
 ## Not real — do not re-open
 
-- **9 `XXX` markers.** All nine are phone-number format examples in user-facing
-  copy (`e.g. +254 7XX XXX XXX`) or a comment (`254XXXXXXXXX format`). None are
-  placeholders. Four of the nine are in M-Pesa files, which are off-limits
-  anyway.
-- **`{userId}/` upload prefix.** The upload route *does* authenticate
-  (`getUser()` at line 28, rejects with 401) and names files
-  `squad_<timestamp>_<uniqueId>_<name>`, so there are no collisions. It isn't
-  namespaced per user, which is untidy for storage housekeeping, but it is not a
-  security or data bug.
-- **`ordering` on the 7 bare `catch {}` blocks.** I checked each: none wraps a
-  `redirect()` or `notFound()`, except two in `middleware.ts` which are
-  deliberate fail-open/fail-closed decisions with comments. The dangerous variant
-  was the one inside `generateMetadata`, and that's fixed.
+- 9 `XXX` markers: phone-format examples in user-facing copy, plus comments.
+  Four are in M-Pesa files, off-limits anyway.
+- `{userId}/` upload prefix: the route authenticates (`getUser()`, 401) and
+  filenames carry a unique ID. Untidy for storage housekeeping, not a bug.
+- 7 bare `catch {}` blocks: none wraps `redirect()` or `notFound()`. The two in
+  `middleware.ts` are deliberate and commented.
 
-## Still yours, unrelated to code
+## Still yours
 
-- 5 clicks in the Supabase auth dashboard (password/email settings).
-- `BUG F` from the old notes has no surviving description and I can't
-  reconstruct it. If you remember what it was, say the word; otherwise I'd drop
-  it rather than guess.
-
-## Reconfirmed fine while checking
-
-RLS is enabled on all of `orders`, `listings`, `messages`, `disputes`,
-`notifications`, `profiles`, `reviews`, `scammer_reports`. Every table has
-policies. The gap in item 2 is specifically the excess *grants*, not missing RLS.
+- 5 clicks in the Supabase auth dashboard.
+- `BUG F` from older notes has no surviving description. If you remember it,
+  say so; otherwise it should be dropped rather than guessed at.
