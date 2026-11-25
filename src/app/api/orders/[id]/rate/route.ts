@@ -149,33 +149,26 @@ export async function POST(
       );
     }
 
-    // 2. Enforce strict 1-rating-per-order invariant via audit_logs
-    const { data: duplicate } = await client
-      .from("audit_logs")
+    // 2. Enforce the 1-rating-per-order invariant.
+    //
+    // This used to read audit_logs, which was only correct because the audit
+    // row was written first and unconditionally. That ordering had a sharp
+    // edge: if the reviews insert then failed, the buyer was permanently
+    // locked out of rating that order -- the guard row existed, the review did
+    // not, and there was no way to retry. The reviews table is the real source
+    // of truth and carries UNIQUE(order_id), so we ask it directly.
+    const { data: alreadyRated } = await client
+      .from("reviews")
       .select("id")
-      .eq("action", "ORDER_SELLER_RATING")
-      .eq("resource_id", orderId)
+      .eq("order_id", orderId)
       .maybeSingle();
 
-    if (duplicate) {
+    if (alreadyRated) {
       return NextResponse.json(
         { error: "You have already submitted a rating for this order." },
         { status: 409 }
       );
     }
-
-    await client.from("audit_logs").insert({
-      actor_id: user.id,
-      action: "ORDER_SELLER_RATING",
-      resource_type: "orders",
-      resource_id: orderId,
-      changes: {
-        rating,
-        comment: comment || null,
-        seller_id: order.seller_id,
-        order_number: order.order_number,
-      },
-    });
 
     // Persist the review itself.
     //
@@ -189,13 +182,17 @@ export async function POST(
     // The review row is now the source of truth. If it cannot be written we
     // do not touch the seller's rating at all -- an honest zero beats a
     // fabricated average.
-    const { error: reviewError } = await client.from("reviews").insert({
-      order_id: orderId,
-      reviewer_id: user.id,
-      seller_id: order.seller_id,
-      rating,
-      comment: comment || "",
-    });
+    const { data: review, error: reviewError } = await client
+      .from("reviews")
+      .insert({
+        order_id: orderId,
+        reviewer_id: user.id,
+        seller_id: order.seller_id,
+        rating,
+        comment: comment || "",
+      })
+      .select("id")
+      .single();
 
     if (reviewError) {
       // 23505 = unique_violation on reviews_order_id_key: this order was
@@ -211,6 +208,25 @@ export async function POST(
         },
         { status }
       );
+    }
+
+    // Audit trail, written only now that the review definitely exists.
+    // Non-fatal: losing an audit line must not undo a rating the buyer earned.
+    const { error: auditError } = await client.from("audit_logs").insert({
+      actor_id: user.id,
+      action: "ORDER_SELLER_RATING",
+      resource_type: "orders",
+      resource_id: orderId,
+      changes: {
+        rating,
+        comment: comment || null,
+        seller_id: order.seller_id,
+        order_number: order.order_number,
+        review_id: (review as any)?.id ?? null,
+      },
+    });
+    if (auditError) {
+      console.warn("[rate] audit insert failed:", auditError.code, auditError.message);
     }
 
     // 3. Recompute rolling seller_rating & total_reviews_count on seller profile

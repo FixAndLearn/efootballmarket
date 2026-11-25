@@ -4,7 +4,7 @@
  */
 
 import { formatDisplayPhone, formatInternationalPhone, formatWhatsAppPhone } from "@/lib/utils/phone";
-import { maskPhone, redactAccidentalPii } from "@/lib/security/publicSanitizer";
+import { redactAccidentalPii } from "@/lib/security/publicSanitizer";
 import { sendAdminAlertEmail } from "./emailAlert";
 
 import {
@@ -244,8 +244,15 @@ export function getAdminWhatsAppAlertUrl(payload: AdminAlertPayload): string {
  * Those dead branches have been removed.
  *
  * Email is the only channel. Every event type routes through it, and the
- * subject line is prefixed so a financial event still stands out in an inbox
- * the way the old [ACTION] SMS was meant to.
+ * subject line is prefixed so a financial event still stands out in an inbox.
+ *
+ * The body is NOT passed through redactAccidentalPii. That helper masks Kenyan
+ * phone numbers, and these alerts deliberately print the buyer's phone, the
+ * seller's M-Pesa payout line and the two wa.me call-back links -- an operator
+ * cannot action a dispute or a withdrawal without being able to ring that
+ * number. Redacting served nobody: the only reader is the admin inbox that
+ * already holds these details. Only a failure line is logged, and it carries
+ * the error, never the alert body.
  */
 export async function dispatchAdminWhatsAppAlert(payload: AdminAlertPayload): Promise<void> {
   const alertText = formatAdminWhatsAppMessage(payload);
@@ -267,12 +274,18 @@ export async function dispatchAdminWhatsAppAlert(payload: AdminAlertPayload): Pr
   }
 
   try {
+    // The subject identifies WHICH event, not which listing. The old chain put
+    // the order number here, and that was the only identifier in the subject
+    // line -- dropping it meant an operator had to open the mail to know what
+    // it was about.
+    const subjectRef = payload.orderNumber || payload.listingTitle?.slice(0, 60) || "";
+
     const result = await sendAdminAlertEmail({
       toEmail: adminEmail,
       subject: `${isActionable ? "[ACTION] " : ""}${payload.eventType.replaceAll("_", " ")}${
-        payload.listingTitle ? ` - ${payload.listingTitle.slice(0, 80)}` : ""
+        subjectRef ? ` - ${subjectRef}` : ""
       }`,
-      body: redactAccidentalPii(alertText),
+      body: alertText,
       severity: isActionable ? "action" : "info",
     });
 

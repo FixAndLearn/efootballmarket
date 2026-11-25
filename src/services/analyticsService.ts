@@ -28,29 +28,40 @@ export class AnalyticsService {
    * active published listings, and any visible orders/payments.
    */
   async getPlatformOverview(): Promise<PlatformMetrics> {
+    // Populated from the RPC when it is available; the aggregation below fills
+    // the metrics it does not cover.
+    let partialRpc: {
+      published: number;
+      completed: number;
+      traders: number;
+      tournaments: number;
+    } | null = null;
+
     // 1. Attempt PostgreSQL SECURITY DEFINER RPC (bypasses RLS server-side)
     try {
       const { data: rpcData, error: rpcError } = await this.supabase.rpc("get_public_platform_metrics");
 
-      // get_public_platform_metrics() is declared to return a single json
-      // object with the keys published_listings / completed_trades /
-      // registered_traders / active_tournaments. This block previously read
-      // total_listings_count, completed_orders_count and friends -- names that
-      // RPC has never returned. The `?? 0` chain then silently produced a
-      // perfectly valid-looking object of ZEROS, so the route answered 200 with
-      // an all-zero payload against a database holding 23 published listings.
-      // The ?? defaults below are gone for the same reason: a missing field now
-      // falls through to the aggregation path instead of becoming a fake zero.
+      // get_public_platform_metrics() returns jsonb with exactly four keys:
+      //   published_listings, completed_trades, registered_traders,
+      //   active_tournaments
+      //
+      // This block previously read total_listings_count, completed_orders_count
+      // and friends -- names the RPC has never returned. Because every lookup
+      // ended in `?? 0`, the mismatch produced a well-formed object of ZEROS
+      // rather than an error, and the route answered 200 against a database
+      // holding 23 published listings.
+      //
+      // The RPC is a partial answer: it carries no volume and no verified-seller
+      // count. Rather than inventing zeros for those two, we merge the RPC into
+      // the aggregation below and let it fill only what it actually knows.
       if (rpcData && !rpcError) {
         const rpc = (Array.isArray(rpcData) ? rpcData[0] : rpcData) as Record<string, any>;
-        const published = rpc?.published_listings;
-        if (published !== undefined && published !== null) {
-          return {
-            totalListingsCount: Number(published),
-            activeListingsCount: Number(published),
-            completedOrdersCount: Number(rpc.completed_trades ?? 0),
-            totalVolumeKes: Number(rpc.total_volume_kes ?? 0),
-            verifiedSellersCount: Number(rpc.verified_sellers ?? 0),
+        if (rpc?.published_listings !== undefined && rpc?.published_listings !== null) {
+          partialRpc = {
+            published: Number(rpc.published_listings) || 0,
+            completed: Number(rpc.completed_trades) || 0,
+            traders: Number(rpc.registered_traders) || 0,
+            tournaments: Number(rpc.active_tournaments) || 0,
           };
         }
       }
@@ -116,10 +127,14 @@ export class AnalyticsService {
     // Strictly real traded volume from completed orders or payments (zero artificial multipliers)
     const finalVolume = Math.max(ordersVolume, paymentsVolume);
 
+    // Prefer the RPC where it has an answer: it is SECURITY DEFINER, so its
+    // counts do not depend on what RLS lets the caller read. Volume and
+    // verified-seller count are not in the RPC at all and always come from the
+    // aggregation.
     return {
-      totalListingsCount: listingsCountRes.count || activeListings.length,
-      activeListingsCount: activeListings.length,
-      completedOrdersCount: finalCompletedOrders,
+      totalListingsCount: partialRpc?.published ?? (listingsCountRes.count || activeListings.length),
+      activeListingsCount: partialRpc?.published ?? activeListings.length,
+      completedOrdersCount: partialRpc?.completed ?? finalCompletedOrders,
       totalVolumeKes: finalVolume,
       verifiedSellersCount: vettedSellersCount,
     };

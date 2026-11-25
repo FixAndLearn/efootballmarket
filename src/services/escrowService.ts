@@ -196,22 +196,14 @@ export class EscrowService {
           is_read: false,
         });
 
-        // Dispatch WhatsApp notification to buyer
-        const { data: buyerProf } = await this.supabase
-          .from("profiles")
-          .select("phone_number")
-          .eq("id", order.buyer_id)
-          .single();
-
-        if (buyerProf?.phone_number) {
-          sendBuyerCredentialsDeliveredWhatsApp(
-            buyerProf.phone_number,
-            order.order_number,
-            (order as any)?.listing?.title || "eFootball Squad",
-            orderId
-          ).catch((e) => console.warn("Buyer credentials WhatsApp alert notice:", e));
-
-        }
+        // Buyer credentials-delivered WhatsApp notice removed with the WhatsApp
+        // transport. The profile lookup that fed it is gone too: a SELECT plus
+        // an if-block whose only purpose was to call a function that cannot
+        // send was pure latency on the escrow release path.
+        //
+        // The in-app insert above is now the buyer's only signal on this path.
+        // There is no email here. If WhatsApp stays off, this is where a
+        // resend notice belongs.
       } catch (notifErr) {
         console.warn("Failed to notify buyer:", notifErr);
       }

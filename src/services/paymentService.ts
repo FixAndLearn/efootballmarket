@@ -180,28 +180,8 @@ export class PaymentService {
         ).catch(() => console.warn('Buyer payment WhatsApp notification failed.'));
       }
 
-      if (payment.order?.seller_id) {
-        try {
-          const { data: sellerProfile } = await this.supabase
-            .from('profiles')
-            .select('phone_number')
-            .eq('id', payment.order.seller_id)
-            .maybeSingle();
-
-          if (sellerProfile?.phone_number) {
-
-            sendSellerDeliverCredentialsWhatsApp(
-              sellerProfile.phone_number,
-              payment.order?.order_number || `ORD-${paymentId.slice(0, 8)}`,
-              amount,
-              payment.order?.listing?.title || 'eFootball squad listing',
-              payment.order_id
-            ).catch(() => console.warn('Seller order WhatsApp notification failed.'));
-          }
-        } catch {
-          console.warn('Seller order notification lookup failed.');
-        }
-      }
+      // Seller "deliver credentials" WhatsApp notice removed along with the
+      // transport, and the profile lookup that existed only to feed it with it.
     }
   }
 

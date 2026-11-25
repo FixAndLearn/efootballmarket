@@ -103,8 +103,8 @@ export async function POST(req: NextRequest) {
         `*4* Speak with Support Desk\n\n` +
         `*Browse Squads:* https://www.efootballmarket.co.ke/browse`;
 
-      await sendWhatsAppMessage({ toPhone: cleanSender, message: menu });
-      return NextResponse.json({ status: "replied_menu" });
+      const sent = await sendWhatsAppMessage({ toPhone: cleanSender, message: menu });
+      return NextResponse.json({ status: sent.success ? "replied_menu" : "reply_not_delivered_menu" });
     }
 
     if (trimmedText === "1" || trimmedText.includes("TILL")) {
@@ -115,8 +115,8 @@ export async function POST(req: NextRequest) {
         `*Support:* +254 105 472 373\n\n` +
         `*Safety Warning:* Pay only through checkout for an active eFootballMarket listing. The checkout page will show the official Till or STK prompt. Payments for external Facebook / WhatsApp deals or to personal numbers are not covered.`;
 
-      await sendWhatsAppMessage({ toPhone: cleanSender, message: tillInfo });
-      return NextResponse.json({ status: "replied_till" });
+      const sent = await sendWhatsAppMessage({ toPhone: cleanSender, message: tillInfo });
+      return NextResponse.json({ status: sent.success ? "replied_till" : "reply_not_delivered_till" });
     }
 
     if (trimmedText === "2" || trimmedText.includes("ESCROW")) {
@@ -130,8 +130,8 @@ export async function POST(req: NextRequest) {
         `Deals arranged and paid directly on WhatsApp, Facebook, or another external service are not covered.\n` +
         `Browse listings: https://www.efootballmarket.co.ke/browse`;
 
-      await sendWhatsAppMessage({ toPhone: cleanSender, message: escrowInfo });
-      return NextResponse.json({ status: "replied_escrow" });
+      const sent = await sendWhatsAppMessage({ toPhone: cleanSender, message: escrowInfo });
+      return NextResponse.json({ status: sent.success ? "replied_escrow" : "reply_not_delivered_escrow" });
     }
 
     if (trimmedText === "3" || trimmedText.startsWith("STATUS") || trimmedText.startsWith("EFM-") || trimmedText.startsWith("ORD-")) {
@@ -159,15 +159,16 @@ export async function POST(req: NextRequest) {
           `*Status:* *${order.status.toUpperCase().replace(/_/g, " ")}*\n\n` +
           `*Sign in to view full details:* https://www.efootballmarket.co.ke/orders/${order.order_number}`;
 
-        await sendWhatsAppMessage({ toPhone: cleanSender, message: orderReply });
+        const sent = await sendWhatsAppMessage({ toPhone: cleanSender, message: orderReply });
+        return NextResponse.json({ status: sent.success ? "replied_order" : "reply_not_delivered_order" });
       } else {
         const notFoundReply =
           `Order *"${orderRef}"* not found.\n\n` +
           `Please provide your full order number (e.g. *EFM-XXXX-123*). You can find this on your email receipt or order page.`;
 
-        await sendWhatsAppMessage({ toPhone: cleanSender, message: notFoundReply });
+        const sent = await sendWhatsAppMessage({ toPhone: cleanSender, message: notFoundReply });
+        return NextResponse.json({ status: sent.success ? "replied_order" : "reply_not_delivered_order_not_found" });
       }
-      return NextResponse.json({ status: "replied_order" });
     }
 
     if (trimmedText === "4" || trimmedText === "5" || trimmedText.includes("AGENT") || trimmedText.includes("BRIAN")) {
@@ -177,7 +178,7 @@ export async function POST(req: NextRequest) {
         `You can also reach him directly on WhatsApp: https://wa.me/254105472373\n\n` +
         `An officer will get back to you shortly. Thank you!`;
 
-      await sendWhatsAppMessage({ toPhone: cleanSender, message: agentReply });
+      const agentSent = await sendWhatsAppMessage({ toPhone: cleanSender, message: agentReply });
 
       // Notify Brian Okibo of customer escalation
       dispatchAdminWhatsAppAlert({
@@ -187,7 +188,9 @@ export async function POST(req: NextRequest) {
         details: `Message: "${text}"`,
       }).catch(() => {});
 
-      return NextResponse.json({ status: "escalated_agent" });
+      return NextResponse.json({
+        status: agentSent.success ? "escalated_agent" : "escalated_agent_reply_not_delivered",
+      });
     }
 
     // Default friendly fallback
@@ -197,8 +200,10 @@ export async function POST(req: NextRequest) {
       `Reply with *MENU* to see options or *4* to message Support (+254 105 472 373).\n\n` +
       `Official Website: https://www.efootballmarket.co.ke`;
 
-    await sendWhatsAppMessage({ toPhone: cleanSender, message: fallback });
-    return NextResponse.json({ status: "replied_default" });
+    const fallbackSent = await sendWhatsAppMessage({ toPhone: cleanSender, message: fallback });
+    return NextResponse.json({
+      status: fallbackSent.success ? "replied_default" : "reply_not_delivered_default",
+    });
   } catch (error: any) {
     console.error("[WhatsApp:Webhook] Inbound error:", error);
     return NextResponse.json({ error: error.message }, { status: 200 }); // Always 200 so the provider stops retrying

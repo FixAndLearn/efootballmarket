@@ -44,15 +44,21 @@ export async function GET(req: NextRequest) {
     const now = new Date();
 
     // Vercel Hobby permits only daily crons, so this runs once a day: prompt
-    // orders that completed more than a few hours ago, and stop after two weeks.
+    // orders that completed more than a few hours ago.
+    //
+    // There used to be a 14-day upper bound here. It looked reasonable and was
+    // fatal: every order older than two weeks became invisible to this cron
+    // forever, so a marketplace that went quiet for a fortnight would never
+    // prompt anyone again. A buyer who has not rated an order does not stop
+    // being able to rate it -- the prompt is still worth sending on day 30.
+    // The once-only guarantee comes from the ORDER_REVIEW_PROMPTED check below,
+    // not from an age cutoff.
     const minAge = new Date(now.getTime() - 3 * 60 * 60 * 1000).toISOString();
-    const maxAge = new Date(now.getTime() - 14 * 24 * 60 * 60 * 1000).toISOString();
 
     const { data: orders, error: ordersErr } = await admin
       .from("orders")
       .select("id, order_number, buyer_id, seller_id, status, updated_at")
       .eq("status", "completed")
-      .gte("updated_at", maxAge)
       .lte("updated_at", minAge)
       .order("updated_at", { ascending: false })
       .limit(MAX_PER_RUN);
@@ -109,18 +115,21 @@ export async function GET(req: NextRequest) {
 
       // In-app notification first: always works, costs nothing.
       let delivered = false;
-      try {
-        await admin.from("notifications").insert({
-          recipient_id: buyer.id,
-          type: "review_request",
-          title: "Rate your completed order",
-          message: `Order ${order.order_number} is complete. Rate the seller to help other buyers.`,
-          action_url: `/orders/${order.id}`,
-          is_read: false,
-        });
+      // supabase-js resolves with { error }; it does not throw. The old
+      // try/catch here could never fire, so `delivered` was set to true even
+      // when the insert was rejected.
+      const { error: notifyError } = await admin.from("notifications").insert({
+        recipient_id: buyer.id,
+        type: "review_request",
+        title: "Rate your completed order",
+        message: `Order ${order.order_number} is complete. Rate the seller to help other buyers.`,
+        action_url: `/orders/${order.id}`,
+        is_read: false,
+      });
+      if (notifyError) {
+        console.warn("[review-prompts] in-app insert failed:", notifyError.code, notifyError.message);
+      } else {
         delivered = true;
-      } catch {
-        // continue to the other channels
       }
 
       // WhatsApp if we have a number and a provider is configured.
