@@ -109,9 +109,13 @@ export const metadata: Metadata = {
       "Seller-listed eFootball squads, tactical guides and player builds in Kenya. Seller badges describe identity checks and sale history, not a pre-audit of the game account. Checkout protection applies to eligible orders.",
     images: ["/opengraph-image"],
   },
+  // Do NOT hardcode index/follow here. This metadata is inherited by every
+  // route, including 404s: Next injects its own `noindex` when notFound()
+  // fires, but this tag still rendered alongside it, so every not-found URL
+  // served `noindex` AND `index, follow` at once, and crawlers resolve that
+  // contradiction inconsistently. Omitting it from the root lets each route
+  // state its own policy; Next's default already means "indexable".
   robots: {
-    index: true,
-    follow: true,
     googleBot: {
       index: true,
       follow: true,
