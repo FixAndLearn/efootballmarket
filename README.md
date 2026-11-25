@@ -5,7 +5,6 @@ Kenyan eFootball account marketplace, M-Pesa Till `1572931` escrow settlement pl
 ## Overview
 
 - **Marketplace & Live Offers**: Verified eFootball Mobile, PlayStation, Xbox, and Steam/PC squad listings with Permanent Team Strength verification and binding M-Pesa escrow checkout.
-- **Middleman Escrow**: On-demand escrow deal room for off-platform agreements negotiated on WhatsApp, Telegram, Discord, or TikTok.
 - **Scammer Registry & Guides**: Public phone/handle lookup and original guides covering Konami ID Data Transfer rules, M-Pesa SMS spoofing checks, and squad inspection.
 - **Device-Adaptive Theme**: Automatically matches OS/device Light and Dark appearance preferences (`prefers-color-scheme`) with zero flash on load.
 

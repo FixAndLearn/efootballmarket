@@ -27,7 +27,6 @@ RLS is enabled on all 39 `public` tables. `FORCE ROW LEVEL SECURITY` is **off** 
 | listings | 7 |
 | login_history | 0 |
 | messages | 2 |
-| middleman_deals | 1 |
 | mpesa_settlement_receipts | 0 |
 | news_articles | 2 |
 | notifications | 2 |
@@ -103,9 +102,6 @@ All listed policies are `PERMISSIVE`.
 ### `messages`
 - **Members can insert messages** — `{public}`, INSERT; CHECK: `(auth.uid() = sender_id) AND EXISTS (SELECT 1 FROM conversation_members WHERE conversation_members.conversation_id = messages.conversation_id AND conversation_members.user_id = auth.uid())`
 - **Members can view messages** — `{public}`, SELECT; USING: `EXISTS (SELECT 1 FROM conversation_members WHERE conversation_members.conversation_id = messages.conversation_id AND conversation_members.user_id = auth.uid())`
-
-### `middleman_deals`
-- **Admins manage middleman deals** — `{authenticated}`, ALL; USING and CHECK: `is_admin_user()`
 
 ### `news_articles`
 - **Admins can manage news** — `{public}`, ALL; USING: authenticated user and (`user_roles` admin/super_admin OR `auth.users.email` equals `brianokibo@gmail.com`); CHECK: —
@@ -193,9 +189,6 @@ CREATE INDEX idx_listings_trgm_manager ON public.listings USING gin (manager_nam
 CREATE INDEX idx_listings_trgm_players ON public.listings USING gin (player_search_text gin_trgm_ops);
 CREATE INDEX idx_listings_trgm_title ON public.listings USING gin (title gin_trgm_ops);
 CREATE INDEX idx_messages_conv_created ON public.messages USING btree (conversation_id, created_at DESC);
-CREATE INDEX idx_middleman_deals_buyer_phone ON public.middleman_deals USING btree (buyer_phone);
-CREATE INDEX idx_middleman_deals_code ON public.middleman_deals USING btree (deal_code);
-CREATE INDEX idx_middleman_deals_seller_phone ON public.middleman_deals USING btree (seller_phone);
 CREATE UNIQUE INDEX mpesa_settlement_receipts_source_entity_uidx ON public.mpesa_settlement_receipts USING btree (source, entity_id);
 CREATE INDEX idx_news_articles_category ON public.news_articles USING btree (category);
 CREATE INDEX idx_news_articles_published ON public.news_articles USING btree (is_published, created_at DESC);
@@ -210,7 +203,6 @@ CREATE INDEX idx_payments_order ON public.payments USING btree (order_id);
 CREATE INDEX idx_payments_receipt ON public.payments USING btree (mpesa_receipt_number);
 CREATE UNIQUE INDEX payments_mpesa_receipt_uidx ON public.payments USING btree (upper(btrim((mpesa_receipt_number)::text))) WHERE mpesa_receipt_number IS NOT NULL AND upper(btrim((mpesa_receipt_number)::text)) ~ '^[A-Z0-9]{8,12}$' AND upper(btrim((mpesa_receipt_number)::text)) <> 'CONFIRMED';
 CREATE INDEX idx_profiles_role ON public.profiles USING btree (id, role);
-CREATE INDEX idx_profiles_telegram_chat_id ON public.profiles USING btree (telegram_chat_id);
 CREATE INDEX idx_profiles_username ON public.profiles USING btree (username);
 CREATE INDEX idx_reviews_seller_created ON public.reviews USING btree (seller_id, created_at DESC);
 CREATE INDEX idx_scammer_reports_phone ON public.scammer_reports USING btree (phone_number);

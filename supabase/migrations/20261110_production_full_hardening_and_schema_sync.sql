@@ -167,7 +167,7 @@ BEGIN
 END;
 $$;
 
--- 4. Schema extensions for listings, listing_offers, middleman_deals, scammer_reports, wanted_requests
+-- 4. Schema extensions for listings, listing_offers, scammer_reports, wanted_requests
 ALTER TABLE public.listings
   ADD COLUMN IF NOT EXISTS allows_swap boolean NOT NULL DEFAULT false,
   ADD COLUMN IF NOT EXISTS swap_preferences text;
@@ -190,26 +190,6 @@ ALTER TABLE public.listing_offers
   ADD COLUMN IF NOT EXISTS note text,
   ADD COLUMN IF NOT EXISTS expires_at timestamptz;
 
-CREATE TABLE IF NOT EXISTS public.middleman_deals (
-  id varchar(80) PRIMARY KEY,
-  deal_code varchar(40) NOT NULL UNIQUE,
-  buyer_name varchar(120) NOT NULL,
-  buyer_phone varchar(40) NOT NULL,
-  seller_name varchar(120) NOT NULL DEFAULT 'Trader',
-  seller_phone varchar(40) NOT NULL,
-  deal_title varchar(200) NOT NULL,
-  deal_description text,
-  item_amount_kes numeric NOT NULL CHECK (item_amount_kes >= 100),
-  escrow_fee_kes numeric NOT NULL DEFAULT 50 CHECK (escrow_fee_kes >= 0),
-  total_amount_kes numeric NOT NULL CHECK (total_amount_kes >= 100),
-  status varchar(40) NOT NULL DEFAULT 'awaiting_payment'
-    CHECK (status IN ('awaiting_payment', 'escrow_locked', 'seller_delivering', 'buyer_verifying', 'completed', 'disputed', 'cancelled')),
-  till_number varchar(20) NOT NULL DEFAULT '1572931',
-  mpesa_receipt varchar(40),
-  created_at timestamptz NOT NULL DEFAULT NOW(),
-  updated_at timestamptz NOT NULL DEFAULT NOW()
-);
-ALTER TABLE public.middleman_deals ENABLE ROW LEVEL SECURITY;
 
 CREATE TABLE IF NOT EXISTS public.scammer_reports (
   id uuid PRIMARY KEY DEFAULT gen_random_uuid(),

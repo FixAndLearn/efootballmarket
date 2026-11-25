@@ -5,7 +5,6 @@ import { checkRateLimit } from "@/lib/security/rateLimiter";
 import { getClientIp, maskPhoneNumber } from "@/lib/security/guards";
 import { isUserAdmin } from "@/lib/security/adminAuth";
 import { normalizePhoneNumber } from "@/lib/utils/phone";
-import { sendSmsAlert } from "@/lib/notifications/smsAlert";
 import { dispatchAdminWhatsAppAlert } from "@/lib/notifications/adminAlert";
 import { sendTransactionalEmail } from "@/lib/resend";
 
@@ -292,18 +291,7 @@ export async function POST(req: NextRequest) {
       console.warn("Seller availability in-app notification note:", e);
     }
 
-    // 2. Direct Phone SMS Notification to Seller
-    if (sellerObj?.phone_number) {
-      sendSmsAlert({
-        toPhone: sellerObj.phone_number,
-        message: `[eFootballMarket] A buyer is ready to pay ${priceLabel} through marketplace checkout for "${listing.title.slice(
-          0,
-          45
-        )}". Is it still available? Tap YES or Sold: ${sellerHubUrl}`,
-      }).catch((err) => console.warn("Seller availability SMS note:", err));
-    }
-
-    // 3. Direct Mobile Email Notification to Seller via Resend
+    // 2. Direct Mobile Email Notification to Seller via Resend
     if (sellerObj?.email) {
       sendTransactionalEmail({
         to: sellerObj.email,
@@ -484,22 +472,6 @@ export async function PATCH(req: NextRequest) {
         }
       }
 
-      // 2. Direct Phone SMS to Buyer
-      if (target.buyer_phone) {
-        sendSmsAlert({
-          toPhone: target.buyer_phone,
-          message:
-            status === "available"
-              ? `[eFootballMarket] Good news! Seller confirmed "${listingTitle.slice(
-                  0,
-                  40
-                )}" (${priceLabel}) IS AVAILABLE now! Complete marketplace checkout for buyer protection (M-Pesa Till 1572931): ${payUrl}`
-              : `[eFootballMarket] Seller confirmed "${listingTitle.slice(
-                  0,
-                  40
-                )}" is no longer available. Browse active squads: https://www.efootballmarket.co.ke/browse`,
-        }).catch(() => {});
-      }
     }
 
     return NextResponse.json({

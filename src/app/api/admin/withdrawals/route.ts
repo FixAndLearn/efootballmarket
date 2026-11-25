@@ -1,7 +1,6 @@
 import { verifyAdminOrSecret } from "@/lib/security/guards";
 import { createAdminClient, hasServiceRoleKey } from "@/lib/supabase/admin";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
-import { sendSellerWithdrawalStatusSms } from "@/lib/notifications/smsAlert";
 import { sendSellerWithdrawalStatusWhatsApp } from "@/lib/whatsapp/notifications";
 import { NextRequest, NextResponse } from "next/server";
 import { z } from "zod";
@@ -284,12 +283,6 @@ export async function PATCH(req: NextRequest) {
           failureReason
         ).catch(() => console.warn("Seller withdrawal WhatsApp notification failed."));
 
-        sendSellerWithdrawalStatusSms(
-          result.phone_number,
-          amount,
-          status,
-          failureReason
-        ).catch(() => console.warn("Seller withdrawal SMS notification failed."));
       }
     }
 

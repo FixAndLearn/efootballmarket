@@ -1,6 +1,5 @@
 import { decryptCredential, encryptCredential } from "@/lib/encryption/crypto";
 import { dispatchAdminWhatsAppAlert } from "@/lib/notifications/adminAlert";
-import { sendBuyerCredentialsDeliveredSms, sendSellerFundsReleasedSms } from "@/lib/notifications/smsAlert";
 import { sendBuyerCredentialsDeliveredWhatsApp, sendSellerFundsReleasedWhatsApp } from "@/lib/whatsapp/notifications";
 import { AccountDelivery, EscrowAccount, EscrowState } from "@/types/database";
 import { SupabaseClient } from "@supabase/supabase-js";
@@ -212,11 +211,6 @@ export class EscrowService {
             orderId
           ).catch((e) => console.warn("Buyer credentials WhatsApp alert notice:", e));
 
-          sendBuyerCredentialsDeliveredSms(
-            buyerProf.phone_number,
-            order.order_number,
-            orderId
-          ).catch((e) => console.warn("Buyer credentials SMS alert notice:", e));
         }
       } catch (notifErr) {
         console.warn("Failed to notify buyer:", notifErr);
@@ -393,11 +387,6 @@ export class EscrowService {
           Number(order.seller_net_amount || order.total_amount || 0)
         ).catch((e) => console.warn("Seller funds released WhatsApp notice:", e));
 
-        sendSellerFundsReleasedSms(
-          sellerProf.phone_number,
-          order.order_number,
-          Number(order.seller_net_amount || order.total_amount || 0)
-        ).catch((e) => console.warn("Seller funds released SMS notice:", e));
       }
     } catch (e) {
       console.warn("Failed to send seller payout alert:", e);

@@ -1,12 +1,10 @@
 /**
- * Admin Notification & WhatsApp Automated Dispatcher
- * Directly routes all high-priority platform events to admin support desk at +254 105 472 373.
+ * Admin notification dispatcher.
+ * Routes high-priority platform events to the admin inbox.
  */
 
 import { formatDisplayPhone, formatInternationalPhone, formatWhatsAppPhone } from "@/lib/utils/phone";
 import { maskPhone, redactAccidentalPii } from "@/lib/security/publicSanitizer";
-import { isMetaCloudApiConfigured, sendWhatsAppMessage } from "@/lib/whatsapp/cloudApi";
-import { sendSmsAlert } from "./smsAlert";
 import { sendAdminAlertEmail } from "./emailAlert";
 
 import {
@@ -238,121 +236,56 @@ export function getAdminWhatsAppAlertUrl(payload: AdminAlertPayload): string {
 }
 
 /**
- * Dispatches automated real-time alerts to Brian Okibo's WhatsApp (+254105472373).
- * Automatically delivers via, in order:
- * 1. Meta WhatsApp Cloud API (official Graph API)
- * 2. CallMeBot WhatsApp API (automated WhatsApp message to Brian's handset)
- * 3. WhatsApp Webhook / External Notification Hub (if configured)
- * 4. SMS Alert (Africa's Talking / Advanta SMS), financial events only
+ * Dispatches automated alerts for platform events.
+ *
+ * This used to be a five-branch waterfall in which four branches required
+ * credentials that were never present. The structure was decorative: it logged
+ * "dispatching" and then delivered nothing until it reached the email step.
+ * Those dead branches have been removed.
+ *
+ * Email is the only channel. Every event type routes through it, and the
+ * subject line is prefixed so a financial event still stands out in an inbox
+ * the way the old [ACTION] SMS was meant to.
  */
 export async function dispatchAdminWhatsAppAlert(payload: AdminAlertPayload): Promise<void> {
   const alertText = formatAdminWhatsAppMessage(payload);
-  console.log(
-    `[ADMIN NOTIFICATION -> ${maskPhone(ADMIN_INTERNATIONAL_PHONE)}]`,
-    redactAccidentalPii(alertText)
-  );
 
-  // 1. Automated Meta WhatsApp Business Cloud API (Official Graph API v21.0)
-  if (isMetaCloudApiConfigured()) {
-    try {
-      const res = await sendWhatsAppMessage({
-        toPhone: ADMIN_WHATSAPP_NUMBER,
-        message: alertText,
-      });
-      if (res.success && res.provider === "meta_cloud_api") {
-        console.log(`[MetaCloud:WhatsApp] Delivered to ${maskPhone(ADMIN_INTERNATIONAL_PHONE)}: ${res.messageId}`);
-        return;
-      }
-    } catch (err: any) {
-      console.warn("Meta Cloud API alert notice:", err.message);
-    }
-  }
+  const FINANCIAL_EVENTS: AdminEventType[] = [
+    "PAYMENT_RECEIVED",
+    "ESCROW_RELEASED",
+    "DISPUTE_OPENED",
+    "POST_RELEASE_DISPUTE_OPENED",
+    "WITHDRAWAL_REQUESTED",
+    "NEW_OFFER_SUBMITTED",
+  ];
+  const isActionable = FINANCIAL_EVENTS.includes(payload.eventType);
 
-  // 2. Automated WhatsApp Dispatch via CallMeBot API (Instant WhatsApp message to 254105472373)
-  const callmebotKey = process.env.CALLMEBOT_API_KEY || process.env.WHATSAPP_BOT_API_KEY;
-  if (callmebotKey) {
-    try {
-      const callmebotUrl = `https://api.callmebot.com/whatsapp.php?phone=${ADMIN_WHATSAPP_NUMBER}&text=${encodeURIComponent(
-        alertText
-      )}&apikey=${callmebotKey.trim()}`;
-      await fetch(callmebotUrl, { method: "GET" });
-      console.log(`[CallMeBot:WhatsApp] Dispatched to ${maskPhone(ADMIN_INTERNATIONAL_PHONE)}`);
-    } catch (err: any) {
-      console.warn("CallMeBot WhatsApp dispatch note:", err.message);
-    }
-  }
-
-  // 3. Automated Webhook (Zapier, Make, Wassenger, or custom WhatsApp gateway)
-  const webhookUrl = process.env.ADMIN_ALERT_WEBHOOK_URL || process.env.WHATSAPP_WEBHOOK_URL;
-  if (webhookUrl) {
-    try {
-      await fetch(webhookUrl, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          phone: ADMIN_WHATSAPP_NUMBER,
-          recipient: ADMIN_INTERNATIONAL_PHONE,
-          message: alertText,
-          eventType: payload.eventType,
-          payload,
-          timestamp: new Date().toISOString(),
-        }),
-      });
-      console.log(`[Webhook:WhatsApp] Forwarded alert to ${webhookUrl}`);
-    } catch (err: any) {
-      console.warn("Webhook dispatch note:", err.message);
-    }
-  }
-
-
-  // 4. Email fallback. This is the channel that actually works today: every
-  // push channel above needs credentials this deployment does not hold, so
-  // without this step a "dispatched" alert reached nobody but the server log.
-  // Placed last so a future configured channel still takes precedence, and
-  // limited to a single recipient to avoid leaking order details to a list.
   const adminEmail = (process.env.ADMIN_EMAIL || ADMIN_EMAIL).trim();
-  if (adminEmail && !adminEmail.includes("placeholder")) {
-    try {
-      const severity =
-        payload.eventType.includes("DISPUTE") || payload.eventType === "WITHDRAWAL_REQUESTED"
-          ? ("action" as const)
-          : ("info" as const);
-
-      const subject = `${payload.eventType.replace(/_/g, " ")}${payload.orderNumber ? ` - ${payload.orderNumber}` : ""}`;
-
-      await sendAdminAlertEmail({
-        toEmail: adminEmail,
-        subject,
-        body: alertText,
-        severity,
-      });
-    } catch (err: any) {
-      console.warn("Admin alert email dispatch note:", err?.message);
-    }
+  if (!adminEmail || adminEmail.includes("placeholder")) {
+    console.warn("[ADMIN ALERT] No admin email configured; alert dropped.");
+    return;
   }
 
-  // 5. Fallback High-Priority SMS to Brian Okibo for Financial Events (Payments / Disputes / Withdrawals)
-  if (["PAYMENT_RECEIVED", "DISPUTE_OPENED", "POST_RELEASE_DISPUTE_OPENED", "WITHDRAWAL_REQUESTED"].includes(payload.eventType)) {
-    try {
-      const smsSummary = `[eFootballMarket] ${payload.eventType}: ${payload.orderNumber || payload.listingTitle || ""} KES ${payload.amount || ""}. Check WhatsApp/Admin.`;
-      await sendSmsAlert({
-        toPhone: ADMIN_INTERNATIONAL_PHONE,
-        message: smsSummary,
-      });
-    } catch {
-      // Non-blocking SMS
+  try {
+    const result = await sendAdminAlertEmail({
+      toEmail: adminEmail,
+      subject: `${isActionable ? "[ACTION] " : ""}${payload.eventType.replaceAll("_", " ")}${
+        payload.listingTitle ? ` - ${payload.listingTitle.slice(0, 80)}` : ""
+      }`,
+      body: redactAccidentalPii(alertText),
+      severity: isActionable ? "action" : "info",
+    });
+
+    if (!result?.success) {
+      console.warn("[ADMIN ALERT] Email delivery failed:", result?.error);
     }
+  } catch (err: any) {
+    console.warn("[ADMIN ALERT] Email dispatch threw:", err?.message);
   }
 }
 
-/**
- * Unified dispatch alias: routes to WhatsApp + SMS.
- */
 export const dispatchAdminAlert = dispatchAdminWhatsAppAlert;
 
-/**
- * Backward compatibility wrapper.
- */
 export async function dispatchAdminOrderAlert(payload: AdminAlertPayload): Promise<void> {
   return dispatchAdminWhatsAppAlert(payload);
 }

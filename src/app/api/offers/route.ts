@@ -4,7 +4,6 @@ import { createServerSupabaseClient } from "@/lib/supabase/server";
 import { ListingOffer } from "@/types/database";
 import { normalizePhoneNumber, formatWhatsAppPhone } from "@/lib/utils/phone";
 import { dispatchAdminWhatsAppAlert } from "@/lib/notifications/adminAlert";
-import { sendSellerOfferReceivedSms, sendBuyerOfferResponseSms } from "@/lib/notifications/smsAlert";
 import { checkRateLimit } from "@/lib/security/rateLimiter";
 import { getClientIp, maskPhoneNumber } from "@/lib/security/guards";
 import { isUserAdmin } from "@/lib/security/adminAuth";
@@ -309,20 +308,7 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    // 4. Automated SMS Alert to Seller
-    const rawSellerPhone = (listing.seller as any)?.phone_number;
-    if (rawSellerPhone) {
-      sendSellerOfferReceivedSms(
-        rawSellerPhone,
-        buyer_name.trim(),
-        offerNum,
-        originalPrice,
-        listing.title,
-        listing.id
-      ).catch((err) => console.warn("Seller offer SMS failed:", err));
-    }
-
-    // 5. Route WhatsApp follow-up through official Escrow Support Desk (never leak raw seller phone)
+    // 4. Route WhatsApp follow-up through official Escrow Support Desk (never leak raw seller phone)
     const waText = encodeURIComponent(
       `Hello eFootballMarket Support! I submitted an offer of KES ${offerNum.toLocaleString()} (${discountPercentage}% off) for "${listing.title}" (https://www.efootballmarket.co.ke/listings/${listing.id}). Escrow via Till 1572931.`
     );
@@ -506,18 +492,7 @@ export async function PATCH(req: NextRequest) {
       }
     }
 
-    // 4. Automated SMS Alert to Buyer
-    if (targetOffer.buyer_phone) {
-      sendBuyerOfferResponseSms(
-        targetOffer.buyer_phone,
-        action === "accept" ? "accepted" : action === "counter" ? "countered" : "declined",
-        action === "counter" ? (finalCounter || 0) : targetOffer.offered_price,
-        listingTitle,
-        action === "accept" ? checkoutUrl : `/listings/${targetOffer.listing_id}`
-      ).catch((err) => console.warn("Buyer offer SMS failed:", err));
-    }
-
-    // 5. WhatsApp Courtesy Notification for Buyer
+    // 4. WhatsApp Courtesy Notification for Buyer
     const cleanBuyerPhone = formatWhatsAppPhone(targetOffer.buyer_phone);
     let buyerWaMessage = "";
     if (action === "accept") {

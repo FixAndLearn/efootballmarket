@@ -237,10 +237,9 @@ export async function sendUserInvitationEmail(params: {
 /**
  * Admin operations alert.
  *
- * Rendered as email because every push channel (Meta Cloud API, CallMeBot,
- * webhook, SMS) requires credentials this deployment does not hold. Email
- * needs one key, has no per-message cost, and lands on a phone instantly via
- * the mail app -- so it is the only path that actually reaches a human.
+ * Email is the delivery path. It needs one key, has no per-message cost, and
+ * lands on a phone instantly via the mail app -- so it is the only path that
+ * actually reaches a human.
  *
  * Deliberately plain: a monospace block that survives dark mode, small
  * screens, and text-only clients. Tables and gradients are for customers;

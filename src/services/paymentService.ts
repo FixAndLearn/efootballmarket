@@ -8,7 +8,6 @@ import {
   normalizePositiveAmount,
 } from "@/lib/mpesa/settlement";
 import { dispatchAdminOrderAlert } from "@/lib/notifications/adminAlert";
-import { sendBuyerPaymentConfirmedSms, sendSellerOrderReceivedSms } from "@/lib/notifications/smsAlert";
 import { sendBuyerPaymentSecuredWhatsApp, sendSellerDeliverCredentialsWhatsApp } from "@/lib/whatsapp/notifications";
 import { Payment } from "@/types/database";
 import { SupabaseClient } from "@supabase/supabase-js";
@@ -172,13 +171,6 @@ export class PaymentService {
       }).catch(() => console.error('Admin order alert failed.'));
 
       if (payment.phone_number) {
-        sendBuyerPaymentConfirmedSms(
-          payment.phone_number,
-          payment.order?.order_number || `ORD-${paymentId.slice(0, 8)}`,
-          amount,
-          payment.order_id
-        ).catch(() => console.warn('Buyer payment SMS failed.'));
-
         sendBuyerPaymentSecuredWhatsApp(
           payment.phone_number,
           payment.order?.order_number || `ORD-${paymentId.slice(0, 8)}`,
@@ -197,13 +189,6 @@ export class PaymentService {
             .maybeSingle();
 
           if (sellerProfile?.phone_number) {
-            sendSellerOrderReceivedSms(
-              sellerProfile.phone_number,
-              payment.order?.order_number || `ORD-${paymentId.slice(0, 8)}`,
-              amount,
-              payment.order?.listing?.title || 'eFootball squad listing',
-              payment.order_id
-            ).catch(() => console.warn('Seller order SMS failed.'));
 
             sendSellerDeliverCredentialsWhatsApp(
               sellerProfile.phone_number,

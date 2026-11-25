@@ -381,32 +381,6 @@ deleted_at timestamp with time zone
 - `messages_sender_id_fkey`: FOREIGN KEY (sender_id) REFERENCES profiles(id) ON DELETE RESTRICT
 - `messages_pkey`: PRIMARY KEY (id)
 
-### `middleman_deals`
-```sql
-id character varying(80) NOT NULL,
-deal_code character varying(40) NOT NULL,
-buyer_name character varying(120) NOT NULL,
-buyer_phone character varying(40) NOT NULL,
-seller_name character varying(120) DEFAULT 'Trader'::character varying NOT NULL,
-seller_phone character varying(40) NOT NULL,
-deal_title character varying(200) NOT NULL,
-deal_description text,
-item_amount_kes numeric NOT NULL,
-escrow_fee_kes numeric DEFAULT 50 NOT NULL,
-total_amount_kes numeric NOT NULL,
-status character varying(40) DEFAULT 'awaiting_payment'::character varying NOT NULL,
-till_number character varying(20) DEFAULT '1572931'::character varying NOT NULL,
-mpesa_receipt character varying(40),
-created_at timestamp with time zone DEFAULT now() NOT NULL,
-updated_at timestamp with time zone DEFAULT now() NOT NULL
-```
-- `middleman_deals_escrow_fee_kes_check`: CHECK (escrow_fee_kes >= 0::numeric)
-- `middleman_deals_item_amount_kes_check`: CHECK (item_amount_kes >= 100::numeric)
-- `middleman_deals_status_check`: CHECK (status::text = ANY (ARRAY['awaiting_payment'::character varying, 'escrow_locked'::character varying, 'seller_delivering'::character varying, 'buyer_verifying'::character varying, 'completed'::character varying, 'disputed'::character varying, 'cancelled'::character varying]::text[]))
-- `middleman_deals_total_amount_kes_check`: CHECK (total_amount_kes >= 100::numeric)
-- `middleman_deals_pkey`: PRIMARY KEY (id)
-- `middleman_deals_deal_code_key`: UNIQUE (deal_code)
-
 ### `mpesa_settlement_receipts`
 ```sql
 receipt_number text NOT NULL,
@@ -552,10 +526,7 @@ updated_at timestamp with time zone DEFAULT now() NOT NULL,
 deleted_at timestamp with time zone,
 role character varying(50) DEFAULT 'user'::character varying,
 email text,
-whatsapp_number character varying(50),
-telegram_chat_id text,
-telegram_username text,
-telegram_phone text
+whatsapp_number character varying(50)
 ```
 - `profiles_available_balance_check`: CHECK (available_balance >= 0.00)
 - `profiles_completed_sales_count_check`: CHECK (completed_sales_count >= 0)

@@ -11,7 +11,7 @@ import { NextRequest, NextResponse } from "next/server";
 export const dynamic = "force-dynamic";
 
 /**
- * 1. Webhook Verification (GET) - Required by Meta WhatsApp Cloud API
+ * 1. Webhook Verification (GET) - challenge/response for the inbound provider
  */
 export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url);
@@ -22,7 +22,7 @@ export async function GET(req: NextRequest) {
   const expectedToken = process.env.WHATSAPP_WEBHOOK_VERIFY_TOKEN?.trim();
 
   if (expectedToken && mode === "subscribe" && timingSafeCompare(token, expectedToken)) {
-    console.log("[WhatsApp:Webhook] Meta Webhook verified successfully!");
+    console.log("[WhatsApp:Webhook] Verification challenge accepted.");
     return new NextResponse(challenge, { status: 200 });
   }
 
@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
 
     const rawText = await req.text();
 
-    // Verify Meta X-Hub-Signature-256 HMAC when WHATSAPP_APP_SECRET is configured
+    // Verify the X-Hub-Signature-256 HMAC when WHATSAPP_APP_SECRET is configured
     const appSecret = process.env.WHATSAPP_APP_SECRET?.trim();
     if (appSecret) {
       const sigHeader = req.headers.get("x-hub-signature-256");
@@ -57,12 +57,12 @@ export async function POST(req: NextRequest) {
 
     const body = JSON.parse(rawText || "{}");
 
-    // Handle Meta Cloud API payload structure
+    // Handle the inbound provider payload structure
     const entry = body?.entry?.[0];
     const change = entry?.changes?.[0]?.value;
     const messageData = change?.messages?.[0];
 
-    // Handle generic gateway structure (UltraMsg, Wassenger)
+    // Handle alternate gateway payload structure
     const sender =
       messageData?.from ||
       body?.data?.from ||
@@ -170,16 +170,6 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ status: "replied_order" });
     }
 
-    if (trimmedText.includes("MIDDLEMAN")) {
-      const retiredServiceInfo =
-        `The off-platform contract service for deals arranged on Facebook / WhatsApp is no longer offered.\n\n` +
-        `For buyer protection, choose a published listing and complete checkout on eFootballMarket: https://www.efootballmarket.co.ke/browse\n\n` +
-        `External deals or payments made outside a marketplace order are not covered.`;
-
-      await sendWhatsAppMessage({ toPhone: cleanSender, message: retiredServiceInfo });
-      return NextResponse.json({ status: "replied_marketplace_policy" });
-    }
-
     if (trimmedText === "4" || trimmedText === "5" || trimmedText.includes("AGENT") || trimmedText.includes("BRIAN")) {
       const agentReply =
         `*CONNECTING TO SUPPORT DESK*\n\n` +
@@ -211,6 +201,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ status: "replied_default" });
   } catch (error: any) {
     console.error("[WhatsApp:Webhook] Inbound error:", error);
-    return NextResponse.json({ error: error.message }, { status: 200 }); // Always 200 for Meta
+    return NextResponse.json({ error: error.message }, { status: 200 }); // Always 200 so the provider stops retrying
   }
 }

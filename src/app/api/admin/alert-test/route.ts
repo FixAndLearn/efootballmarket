@@ -9,12 +9,11 @@ export const dynamic = "force-dynamic";
  *
  * Protected by `Authorization: Bearer <CRON_SECRET>`, same as the cron routes.
  *
- * Why this exists: the alert chain has four optional channels and silently
- * skips any whose credentials are absent. That means a misconfigured deploy
- * looks identical to a quiet one -- an operator finds out something was broken
- * only when a real order goes unanswered. This endpoint fires one synthetic
- * dispatch and reports per-channel configuration, so "are my alerts working?"
- * has a yes/no answer in ten seconds.
+ * Why this exists: a misconfigured deploy used to look identical to a quiet
+ * one -- an operator found out something was broken only when a real order
+ * went unanswered. This endpoint fires one synthetic dispatch and reports the
+ * configuration it used, so "are my alerts working?" has a yes/no answer in
+ * ten seconds.
  *
  * It also reports whether RESEND_API_KEY is present but never returns its
  * value. Add ?probe=1 to send a raw provider email and surface the exact
@@ -35,21 +34,8 @@ export async function GET(req: NextRequest) {
     adminEmail: adminEmail || "(unset)",
     resendKeyPresent: Boolean(process.env.RESEND_API_KEY?.trim()),
     resendFrom: process.env.RESEND_FROM_EMAIL || "notifications@efootballmarket.co.ke",
-    metaWhatsApp: Boolean(
-      (process.env.WHATSAPP_CLOUD_API_TOKEN || process.env.META_WHATSAPP_TOKEN) &&
-        process.env.WHATSAPP_PHONE_NUMBER_ID
-    ),
-    callMeBot: Boolean(
-      process.env.CALLMEBOT_API_KEY || process.env.WHATSAPP_BOT_API_KEY
-    ),
-    webhook: Boolean(
-      process.env.ADMIN_ALERT_WEBHOOK_URL || process.env.WHATSAPP_WEBHOOK_URL
-    ),
-    sms: Boolean(
-      process.env.AT_API_KEY ||
-        process.env.AFRICASTALKING_API_KEY ||
-        process.env.ADVANTA_API_KEY
-    ),
+    // Email is the only delivery channel that exists in this build.
+    email: Boolean(adminEmail),
   };
 
   const wantsProbe = req.nextUrl.searchParams.get("probe") === "1";
