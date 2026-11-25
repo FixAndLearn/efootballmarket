@@ -25,7 +25,10 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    const client = hasServiceRoleKey() ? createAdminClient() : supabase;
+    if (!hasServiceRoleKey()) {
+      return NextResponse.json({ error: "Admin claim queue is temporarily unavailable." }, { status: 503 });
+    }
+    const client = createAdminClient();
 
     const { data: profile } = await client
       .from("profiles")

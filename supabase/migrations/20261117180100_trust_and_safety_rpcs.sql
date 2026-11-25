@@ -188,8 +188,17 @@ begin
   if not found then raise exception 'Claim not found.'; end if;
   if v_claim.status not in ('open','investigating') then raise exception 'Claim is already resolved (%).',v_claim.status; end if;
   select * into v_order from public.orders where id=v_claim.order_id for update;
+  if not found then raise exception 'Claim order not found.'; end if;
   select * into v_escrow from public.escrow_accounts where order_id=v_claim.order_id for update;
   if not found then raise exception 'Escrow account not found.'; end if;
+  if v_escrow.buyer_id is distinct from v_order.buyer_id
+     or v_escrow.seller_id is distinct from v_order.seller_id
+     or not public.escrow_matches_order(v_escrow.net_amount,v_escrow.initial_release_amount,v_escrow.held_amount,v_order.seller_net_amount) then
+    raise exception 'Order and escrow ledger do not match.';
+  end if;
+  if v_order.status <> 'disputed' or v_escrow.escrow_state <> 'disputed' then
+    raise exception 'Order and escrow are not in a claim-resolution state.';
+  end if;
   v_amount:=coalesce(v_escrow.held_amount,0);
 
   if p_outcome='upheld' then
@@ -258,6 +267,21 @@ begin
   return v_tier;
 end;
 $$;
+
+-- Keep privileged ledger RPCs server-only. Public/anon/authenticated callers
+-- must not be able to impersonate buyers or administrators through actor IDs.
+revoke all on function public.confirm_and_open_recall_window(uuid,uuid,numeric,integer) from public, anon, authenticated;
+grant execute on function public.confirm_and_open_recall_window(uuid,uuid,numeric,integer) to service_role;
+revoke all on function public.release_escrow_remainder(uuid,uuid) from public, anon, authenticated;
+grant execute on function public.release_escrow_remainder(uuid,uuid) to service_role;
+revoke all on function public.open_account_recall_claim(uuid,uuid,text,text[],text) from public, anon, authenticated;
+grant execute on function public.open_account_recall_claim(uuid,uuid,text,text[],text) to service_role;
+revoke all on function public.resolve_account_recall_claim(uuid,uuid,text,text) from public, anon, authenticated;
+grant execute on function public.resolve_account_recall_claim(uuid,uuid,text,text) to service_role;
+revoke all on function public.compute_seller_tier(uuid) from public, anon, authenticated;
+grant execute on function public.compute_seller_tier(uuid) to service_role;
+revoke all on function public.refresh_seller_tier(uuid) from public, anon, authenticated;
+grant execute on function public.refresh_seller_tier(uuid) to service_role;
 
 -- Resolve/reject must preserve the invariant after the held amount reaches the
 -- seller: initial_release_amount + held_amount = seller_net_amount.

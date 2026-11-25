@@ -242,12 +242,20 @@ drop trigger if exists trg_sync_listing_reservation on public.orders;
 create trigger trg_sync_listing_reservation after update of status on public.orders
 for each row execute function public.sync_listing_reservation();
 
+-- These SECURITY DEFINER functions are server-only: allowing browser RPC calls
+-- would let a client reserve arbitrary listings by supplying someone else's
+-- order ID. The app routes call them through the service-role client.
+revoke all on function public.reserve_listing_for_checkout(uuid,uuid,integer) from public, anon, authenticated;
+grant execute on function public.reserve_listing_for_checkout(uuid,uuid,integer) to service_role;
+revoke all on function public.release_listing_reservation(uuid,uuid) from public, anon, authenticated;
+grant execute on function public.release_listing_reservation(uuid,uuid) to service_role;
+
 -- Dynamic CREATE OR REPLACE preserves the existing RPC signatures and business
 -- logic while replacing the broken net_amount = seller_net guard.
 do $patch$
 declare r record; v_src text; v_new text;
-  v_old text := '   OR v_escrow.net_amount IS DISTINCT FROM v_order.seller_net_amount THEN' || E'\n' || '    RAISE EXCEPTION ''Order and escrow ledger do not match.'';';
-  v_guard text := '   OR NOT public.escrow_matches_order(' || E'\n' || '        v_escrow.net_amount, v_escrow.initial_release_amount,' || E'\n' || '        v_escrow.held_amount, v_order.seller_net_amount) THEN' || E'\n' || '    RAISE EXCEPTION ''Order and escrow ledger do not match.'';';
+  v_old text := '     OR v_escrow.net_amount IS DISTINCT FROM v_order.seller_net_amount THEN' || E'\n' || '    RAISE EXCEPTION ''Order and escrow ledger do not match.'';';
+  v_guard text := '     OR NOT public.escrow_matches_order(' || E'\n' || '        v_escrow.net_amount, v_escrow.initial_release_amount,' || E'\n' || '        v_escrow.held_amount, v_order.seller_net_amount) THEN' || E'\n' || '    RAISE EXCEPTION ''Order and escrow ledger do not match.'';';
 begin
   for r in select p.oid,p.proname from pg_proc p join pg_namespace n on n.oid=p.pronamespace
    where n.nspname='public' and p.proname in ('open_escrow_dispute','resolve_escrow_dispute','confirm_and_open_recall_window') loop

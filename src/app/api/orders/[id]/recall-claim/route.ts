@@ -73,7 +73,13 @@ export async function POST(
       return NextResponse.json({ error: "Keep the description under 4,000 characters." }, { status: 400 });
     }
 
-    const client = hasServiceRoleKey() ? createAdminClient() : supabase;
+    if (!hasServiceRoleKey()) {
+      return NextResponse.json(
+        { error: "Secure claim filing is temporarily unavailable. No money was moved; contact support." },
+        { status: 503 }
+      );
+    }
+    const client = createAdminClient();
 
     // Confirm the caller is the buyer before touching anything.
     const { data: order } = await client

@@ -38,7 +38,7 @@ export function getSellerTier(
       label: recalls === 1 ? "Account Recovery Upheld" : recalls > 1 ? `${recalls} Recoveries Upheld` : "Seller Restricted",
       shortLabel: "Flagged",
       badgeClass: "bg-sx-red-tint border-sx-red-border text-sx-red-text",
-      iconType: "shield",
+      iconType: "alert",
       salesRequiredForNext: 0,
       nextTierLabel: null,
       whatWasChecked: [
