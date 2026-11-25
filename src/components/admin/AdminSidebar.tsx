@@ -3,18 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Link from "next/link";
 import { useSearchParams, useRouter } from "next/navigation";
-import {
-  Layers,
-  AlertTriangle,
-  Flag,
-  Banknote,
-  Users,
-  Newspaper,
-  Smartphone,
-  Crown,
-  ShieldCheck,
-  ArrowLeft,
-} from "lucide-react";
+import { AlertTriangle, ArrowLeft, Banknote, Crown, Flag, Layers, Newspaper, ShieldAlert, ShieldCheck, Smartphone, Users } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 interface AdminSidebarProps {
@@ -32,6 +21,7 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
     pendingWithdrawals: 0,
     openDisputes: 0,
     pendingReports: 0,
+    pendingScammers: 0,
     totalListings: 0,
     totalUsers: 0,
   });
@@ -56,6 +46,7 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
         // Reports are RLS-locked to service role, so the count comes from the
         // admin API instead of the browser client.
         let pendingReports = 0;
+        let pendingScammers = 0;
         try {
           const res = await fetch("/api/admin/reports?count=true");
           if (res.ok) {
@@ -66,9 +57,20 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
           // non-blocking
         }
 
+        try {
+          const sres = await fetch("/api/admin/scammers?count=true");
+          if (sres.ok) {
+            const sdata = await sres.json();
+            pendingScammers = sdata.pendingScammerReports || 0;
+          }
+        } catch {
+          // non-blocking
+        }
+
         setCounts({
           openDisputes: disputesCount || 0,
           pendingReports,
+          pendingScammers,
           pendingWithdrawals: withdrawalsCount || 0,
           totalListings: listingsCount || 0,
           totalUsers: usersCount || 0,
@@ -107,6 +109,14 @@ export function AdminSidebar({ userEmail }: AdminSidebarProps) {
       href: "/admin?tab=reports",
       badge: counts.pendingReports > 0 ? `${counts.pendingReports} to review` : null,
       badgeColor: "bg-sx-red-tint text-sx-red-text border-sx-red-border",
+    },
+    {
+      id: "scammers",
+      label: "Scammer Reports",
+      icon: ShieldAlert,
+      href: "/admin?tab=scammers",
+      badge: counts.pendingScammers > 0 ? `${counts.pendingScammers} to verify` : null,
+      badgeColor: "bg-sx-amber-tint text-sx-amber-text border-sx-amber-border",
     },
     {
       id: "payments",

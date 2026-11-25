@@ -5,6 +5,7 @@ import { AdminBloggerStudio } from "@/components/admin/AdminBloggerStudio";
 import { AdminPaymentsTab } from "@/components/admin/AdminPaymentsTab";
 import { AdminWithdrawalsTab } from "@/components/admin/AdminWithdrawalsTab";
 import { AdminReportsTab } from "@/components/admin/AdminReportsTab";
+import { AdminScammerTab } from "@/components/admin/AdminScammerTab";
 import { AdminAvailabilityPingsPanel } from "@/components/admin/AdminAvailabilityPingsPanel";
 import { useAuth } from "@/hooks/useAuth";
 import { isSuperAdminEmail, isUserAdmin } from "@/lib/security/adminAuth";
@@ -59,20 +60,20 @@ function AdminControlCenterContent() {
   const searchParams = useSearchParams();
   const { user, profile, isAuthenticated, loading: authLoading } = useAuth();
   const tabParam = searchParams.get("tab");
-  const [activeTab, setActiveTab] = useState<"listings" | "disputes" | "users" | "news" | "withdrawals" | "payments" | "reports">(
-    ["listings", "disputes", "users", "withdrawals", "news", "payments"].includes(tabParam || "")
+  const [activeTab, setActiveTab] = useState<"listings" | "disputes" | "users" | "news" | "withdrawals" | "payments" | "reports" | "scammers">(
+    ["listings", "disputes", "users", "withdrawals", "news", "payments", "reports", "scammers"].includes(tabParam || "")
       ? (tabParam as any)
       : "listings"
   );
 
   // Synchronize active tab whenever URL ?tab= updates from sidebar clicks
   useEffect(() => {
-    if (tabParam && ["listings", "disputes", "users", "withdrawals", "news", "payments"].includes(tabParam)) {
+    if (tabParam && ["listings", "disputes", "users", "withdrawals", "news", "payments", "reports", "scammers"].includes(tabParam)) {
       setActiveTab(tabParam as any);
     }
   }, [tabParam]);
 
-  const switchTab = (tab: "listings" | "disputes" | "users" | "news" | "withdrawals" | "payments") => {
+  const switchTab = (tab: "listings" | "disputes" | "users" | "news" | "withdrawals" | "payments" | "reports" | "scammers") => {
     setActiveTab(tab);
     router.push(`/admin?tab=${tab}`, { scroll: false });
   };
@@ -1468,6 +1469,7 @@ function AdminControlCenterContent() {
 
       {/* TAB: BUYER LISTING REPORTS */}
       {activeTab === "reports" && <AdminReportsTab onFeedback={setFeedback} />}
+      {activeTab === "scammers" && <AdminScammerTab onFeedback={setFeedback} />}
 
       {/* Modal: Takedown Listing with Reason */}
       {takedownTarget && (
